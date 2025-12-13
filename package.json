@@ -4,10 +4,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "engines": {
-    "node": ">=22.x"
-  },
-  "packageManager": "yarn@4.1.0",
   "scripts": {
     "build": "nx run-many --target=build --all --parallel",
     "lint": "oxlint",
@@ -17,8 +13,16 @@
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
+    "browserslist": "^4.28.1",
     "nx": "^22.2.3",
     "oxfmt": "^0.17.0",
     "oxlint": "^1.32.0"
-  }
+  },
+  "packageManager": "yarn@4.1.0",
+  "engines": {
+    "node": ">=22.x"
+  },
+  "browserslist": [
+    "baseline newly available"
+   ]
 }

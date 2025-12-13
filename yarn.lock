@@ -691,6 +691,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^20.2.0"
     "@commitlint/config-conventional": "npm:^20.2.0"
+    browserslist: "npm:^4.28.1"
     nx: "npm:^22.2.3"
     oxfmt: "npm:^0.17.0"
     oxlint: "npm:^1.32.0"
@@ -2487,7 +2488,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.27.0":
+"browserslist@npm:^4.27.0, browserslist@npm:^4.28.1":
   version: 4.28.1
   resolution: "browserslist@npm:4.28.1"
   dependencies:
