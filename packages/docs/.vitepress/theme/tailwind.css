@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "@luxen-ui/css";
+@import "@luxen-ui/css/badge";
+@import "./_component-table.css";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop {
+    border-color: var(--default-border-color, currentColor);
+  }
+}

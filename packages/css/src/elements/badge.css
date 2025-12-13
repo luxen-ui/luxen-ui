@@ -1,0 +1,87 @@
+@layer base {
+  /*
+    Autonomous custom elements
+    https://blog.jim-nielsen.com/2021/custom-elements-without-js/
+  */
+  l-badge {
+    /* https://github.com/w3c/csswg-drafts/issues/10064 */
+    --color:
+      if(
+      style(--variant: info): var(--l-color-text-info);
+      style(--variant: success): var(--l-color-text-success);
+      style(--variant: warning): var(--l-color-text-warning);
+      style(--variant: danger): var(--l-color-text-danger);
+      else: var(--l-color-text-neutral);
+    );
+
+    --background-color:
+      if(
+      style(--variant: info): var(--l-color-status-info-weak);
+      style(--variant: success): var(--l-color-status-success-weak);
+      style(--variant: warning): var(--l-color-status-warning-weak);
+      style(--variant: danger): var(--l-color-status-danger-weak);
+      else: var(--l-color-status-neutral-weak);
+    );
+
+    /* CSS native color manipulations */
+    /* 75% lighter than the text */
+    /*--background-color: --lighten(var(--color), 75%);*/
+
+    /* 20% darker than the background */
+    /*--border-color: --darken(var(--background-color), 20%);*/
+    --border-color: color-mix(in oklab, var(--color) 30%, transparent);
+
+    --border-width: 1px;
+    --border-radius:
+      if(
+      style(--pill: true): var(--radius-full);
+      else: var(--radius-md);
+    );
+
+    --corner-shape:
+      if(
+      style(--pill: true): unset;
+      else: squircle;
+    );
+
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding-block: .25rem;
+    padding-inline: .375rem;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+    corner-shape: var(--corner-shape);
+    background-color: var(--background-color);
+    color: var(--color);
+    /* https://codepen.io/argyleink/pen/dyExJpL */
+    font-family: var(--font-neo-grotesque);
+    font-size: 14px;
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
+
+    iconify-icon {
+      color: currentColor;
+      height: 1em;
+    }
+  }
+
+  l-badge:has(iconify-icon:first-child) {
+    padding-inline-start: .25rem;
+  }
+
+  l-badge::before {
+    content:
+      if(
+      style(--with-dot: true): '';
+      else: normal;
+    );
+    box-sizing: content-box;
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: currentColor;
+  }
+}

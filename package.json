@@ -1,0 +1,24 @@
+{
+  "name": "@luxen-ui/monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.x"
+  },
+  "packageManager": "yarn@4.1.0",
+  "scripts": {
+    "build": "nx run-many --target=build --all --parallel",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "nx": "^22.2.3",
+    "oxfmt": "^0.17.0",
+    "oxlint": "^1.32.0"
+  }
+}

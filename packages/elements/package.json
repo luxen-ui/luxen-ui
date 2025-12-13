@@ -1,0 +1,39 @@
+{
+  "name": "@luxen-ui/elements",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./dist/custom-elements.json": "./dist/custom-elements.json",
+    "./dist/elements/*": "./dist/elements/*",
+    "./*": {
+      "types": "./dist/components/*/*.d.ts",
+      "import": "./dist/components/*/*.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && yarn manifest",
+    "manifest": "cem analyze --litelement --outdir dist",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@custom-elements-manifest/to-markdown": "^0.1.0",
+    "@types/node": "^25.0.1",
+    "tinyglobby": "^0.2.15",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "dependencies": {
+    "lit": "^3.3.1"
+  },
+  "customElements": "dist/custom-elements.json"
+}

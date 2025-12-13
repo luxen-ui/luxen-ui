@@ -1,0 +1,20 @@
+{
+  "name": "@luxen-ui/docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build:docs": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@luxen-ui/css": "workspace:^",
+    "@luxen-ui/elements": "workspace:^",
+    "vitepress": "2.0.0-alpha.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}
