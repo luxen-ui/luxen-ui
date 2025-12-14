@@ -1,0 +1,89 @@
+@layer components {
+  l-skeleton {
+    --_fill: light-dark(var(--color-gray-200), var(--color-gray-700));
+    --_shimmer: light-dark(var(--color-gray-100), var(--color-gray-600));
+
+    position: relative;
+    overflow: hidden;
+    display: block;
+    width: var(--width, 100%);
+    height: var(--height, 1.2em);
+    background-color: var(--_fill);
+    border-radius: var(--radius-sm);
+
+    > * {
+      visibility: hidden;
+    }
+
+    &:not(:empty) {
+      max-width: fit-content;
+      height: auto;
+    }
+
+    /* Shapes */
+
+    &[shape='circle'] {
+      border-radius: var(--radius-full);
+    }
+
+    &[shape='text'] {
+      height: auto;
+      transform: scale(1, 0.6);
+      transform-origin: 0 60%;
+
+      &:empty::before {
+        content: '\00a0';
+      }
+    }
+
+    /* Animations — pulse is default */
+
+    &:not([animation]),
+    &[animation='pulse'] {
+      animation: l-skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) 0.5s infinite;
+      animation-fill-mode: backwards;
+    }
+
+    &[animation='wave']::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        270deg,
+        var(--_fill) 0%,
+        var(--_shimmer) 51%,
+        var(--_fill) 100%
+      );
+      animation: l-skeleton-wave 2s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &,
+      &::after {
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes l-skeleton-pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes l-skeleton-wave {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}

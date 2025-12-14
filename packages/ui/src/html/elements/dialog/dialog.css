@@ -1,0 +1,92 @@
+:host {
+  --width: 31rem;
+  --border-radius: 6px;
+  --show-duration: 200ms;
+  --hide-duration: 200ms;
+  --backdrop: var(--l-backdrop);
+  --backdrop-blur: 0;
+
+  display: contents;
+}
+
+dialog {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: var(--width);
+  max-inline-size: min(90vw, var(--width));
+  max-block-size: min(80dvb, 100%);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--border-radius);
+  background-color: var(--l-color-surface-overlay);
+  color: var(--l-color-text-primary);
+
+  /* EXIT STATE */
+  opacity: 0;
+
+  transition-property: opacity, display, overlay;
+  transition-duration: var(--hide-duration);
+  transition-behavior: allow-discrete;
+
+  &::backdrop {
+    background: var(--backdrop);
+    backdrop-filter: blur(var(--backdrop-blur));
+  }
+
+  /* OPEN STATE */
+  /* grid layout pins header/footer; the middle row (body) scrolls via
+     overflow on [part='body'] and minmax(0, 1fr) allowing it to shrink. */
+  &[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    opacity: 1;
+    transition-duration: var(--show-duration);
+  }
+
+  /* BEFORE-OPEN STATE */
+  @starting-style {
+    &[open] {
+      opacity: 0;
+    }
+  }
+}
+
+[part='header'] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+[part='title'] {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+[part='body'] {
+  padding: 0 1.5rem;
+  overflow-y: auto;
+}
+
+[part='footer'] {
+  display: flex;
+  place-content: end;
+  gap: 0.5rem;
+  padding: 1.5rem;
+}
+
+::slotted(menu[slot='footer']) {
+  display: contents;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --show-duration: 0ms;
+    --hide-duration: 0ms;
+  }
+}

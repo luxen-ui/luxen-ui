@@ -1,0 +1,28 @@
+@import './_base.css';
+
+@layer components {
+  .l-close:not([data-appearance]),
+  .l-close[data-appearance='square'] {
+    --background-color: transparent;
+    --background-color-hover: light-dark(var(--color-gray-100), var(--color-gray-700));
+
+    /*
+    Accessibility: the overall size should be at least 44 pixels in height and width
+    https://www.benjystanton.co.uk/blog/accessible-close-buttons/
+    */
+    padding: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    background-color: var(--background-color);
+
+    transition-property: background-color;
+    transition-duration: 150ms;
+
+    &:hover {
+      background-color: var(--background-color-hover);
+    }
+
+    &:active {
+      background-color: color-mix(in oklab, var(--background-color-hover) 80%, black);
+    }
+  }
+}

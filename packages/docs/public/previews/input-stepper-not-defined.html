@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <style>
+      /* Tailwind base vars (subset needed by input-stepper tokens) */
+      :root {
+        color-scheme: light dark;
+        --color-gray-400: oklch(0.704 0.015 286.067);
+        --color-gray-800: oklch(0.279 0.006 286.033);
+        --color-gray-900: oklch(0.21 0.006 285.885);
+        --radius-md: 0.375rem;
+
+        /* Luxen design tokens */
+        --l-color-border: light-dark(var(--color-gray-400), var(--color-gray-800));
+        --l-color-surface: light-dark(white, var(--color-gray-900));
+        --l-size-control-md: 2rem;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px 12px;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: transparent;
+        color: light-dark(#172b4d, #e6edf3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ── Input stepper CSS (from dist, CSS-only — no JS loaded) ── */
+
+      @layer components {
+        l-input-stepper {
+          --_button-size: var(--l-size-control-md);
+          --_border-color: var(--l-color-border);
+          --_border-radius: var(--border-radius, var(--radius-md));
+
+          display: inline-flex;
+          align-items: stretch;
+          white-space: nowrap;
+        }
+
+        l-input-stepper:not(:defined) {
+          padding-inline: var(--_button-size);
+        }
+
+        l-input-stepper input {
+          font-family: inherit;
+          font-size: inherit;
+          font-variant-numeric: tabular-nums;
+          border: 0;
+          text-align: center;
+          min-width: 0;
+          padding-inline: calc(var(--_button-size) / 3);
+          background: transparent;
+          color: inherit;
+        }
+
+        /* Default appearance — :not(:defined) variant */
+        l-input-stepper:not(:defined):not([appearance]),
+        l-input-stepper:not(:defined)[appearance='default'] {
+          border: 1px solid var(--_border-color);
+          border-radius: var(--_border-radius);
+          background-color: var(--l-color-surface);
+          min-height: var(--_button-size);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <l-input-stepper>
+      <input
+        type="number"
+        value="1"
+      />
+    </l-input-stepper>
+  </body>
+</html>

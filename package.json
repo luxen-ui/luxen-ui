@@ -1,28 +1,36 @@
 {
   "name": "@luxen-ui/monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "license": "MIT",
   "scripts": {
-    "build": "nx run-many --target=build --all --parallel",
-    "lint": "oxlint",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check"
+    "build": "vp run -r --cache build",
+    "lint": "vp lint",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "prepare": "vp config"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.2.0",
-    "@commitlint/config-conventional": "^20.2.0",
-    "browserslist": "^4.28.1",
-    "nx": "^22.2.3",
-    "oxfmt": "^0.17.0",
-    "oxlint": "^1.32.0"
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "browserslist": "catalog:",
+    "csskit": "catalog:",
+    "vite-plus": "catalog:"
   },
-  "packageManager": "yarn@4.1.0",
-  "engines": {
-    "node": ">=22.x"
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.14",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.14"
   },
   "browserslist": [
     "baseline newly available"
-   ]
+  ],
+  "engines": {
+    "node": ">=24.x"
+  },
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "rs-module-lexer"
+    ]
+  }
 }

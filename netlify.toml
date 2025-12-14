@@ -1,0 +1,19 @@
+[build]
+base = "."
+command = "pnpm install --frozen-lockfile && pnpm --filter luxen-ui run build && pnpm --filter @luxen-ui/docs run build:docs"
+publish = "packages/docs/.vitepress/dist"
+
+[build.environment]
+NODE_VERSION = "24"
+PNPM_VERSION = "10.33.0"
+NPM_FLAGS = "--version"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"

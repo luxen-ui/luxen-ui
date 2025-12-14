@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <style>
+    .bg { fill: #E34F26; }
+    .fg { fill: #ffffff; }
+  </style>
+  <rect class="bg" width="32" height="32" rx="6"/>
+  <text class="fg" x="16" y="23" text-anchor="middle"
+        font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+        font-size="17" font-weight="700">l-</text>
+</svg>

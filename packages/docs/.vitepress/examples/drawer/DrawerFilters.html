@@ -1,0 +1,92 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="drawer-filters"
+>
+  Filters
+</button>
+
+<l-drawer
+  id="drawer-filters"
+  title="Filters"
+  placement="end"
+  style="--size: 380px"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-filters"
+  ></button>
+  <div class="flex flex-col gap-6">
+    <fieldset>
+      <legend class="text-sm font-medium mb-2">Category</legend>
+      <div class="flex flex-col gap-2">
+        <label class="flex items-center gap-2 text-sm"
+          ><input
+            type="checkbox"
+            checked
+          />
+          Electronics</label
+        >
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" /> Clothing</label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" /> Books</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend class="text-sm font-medium mb-2">Price range</legend>
+      <div class="flex flex-col gap-2">
+        <label class="flex items-center gap-2 text-sm"
+          ><input
+            type="radio"
+            name="price"
+            checked
+          />
+          All prices</label
+        >
+        <label class="flex items-center gap-2 text-sm"
+          ><input
+            type="radio"
+            name="price"
+          />
+          Under $50</label
+        >
+        <label class="flex items-center gap-2 text-sm"
+          ><input
+            type="radio"
+            name="price"
+          />
+          $50 – $100</label
+        >
+        <label class="flex items-center gap-2 text-sm"
+          ><input
+            type="radio"
+            name="price"
+          />
+          Over $100</label
+        >
+      </div>
+    </fieldset>
+  </div>
+  <menu slot="footer">
+    <button
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="drawer-filters"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="l-button"
+      data-variant="primary"
+    >
+      Apply
+    </button>
+  </menu>
+</l-drawer>

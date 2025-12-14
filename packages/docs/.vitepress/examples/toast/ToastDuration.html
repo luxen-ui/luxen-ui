@@ -1,0 +1,26 @@
+<div class="flex gap-2 flex-wrap">
+  <button
+    class="l-button"
+    onclick="toast({ text: 'Closes in 3 seconds', duration: 3000 })"
+  >
+    3s
+  </button>
+  <button
+    class="l-button"
+    onclick="toast({ text: 'Closes in 10 seconds', duration: 10000 })"
+  >
+    10s
+  </button>
+  <button
+    class="l-button"
+    onclick="toast({ text: 'Stays until dismissed', duration: 0 })"
+  >
+    Persistent
+  </button>
+  <button
+    class="l-button"
+    onclick="toast({ text: 'With countdown bar', duration: 5000, timer: true })"
+  >
+    With timer
+  </button>
+</div>

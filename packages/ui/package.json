@@ -1,0 +1,116 @@
+{
+  "name": "luxen-ui",
+  "version": "0.1.0",
+  "description": "Modern web components and CSS-first UI library built with Lit. Framework-agnostic, customizable prefix, design tokens.",
+  "keywords": [
+    "custom-elements",
+    "design-system",
+    "lit",
+    "ui-library",
+    "web-components"
+  ],
+  "homepage": "https://luxen-ui.com",
+  "bugs": {
+    "url": "https://github.com/luxen-ui/luxen-ui/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Luxen UI",
+    "url": "https://luxen-ui.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxen-ui/luxen-ui.git",
+    "directory": "packages/ui"
+  },
+  "files": [
+    "dist/",
+    "vite-plugin.ts",
+    "postcss-plugin-prefix.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css",
+    "**/define.js",
+    "**/registry.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./css": {
+      "style": "./dist/css/index.css",
+      "import": "./dist/css/index.css"
+    },
+    "./css/base": {
+      "style": "./dist/css/index.css",
+      "import": "./dist/css/index.css"
+    },
+    "./css/*": {
+      "style": "./dist/css/elements/*.css",
+      "import": "./dist/css/elements/*.css"
+    },
+    "./dist/custom-elements.json": "./dist/custom-elements.json",
+    "./dist/elements/*": "./dist/elements/*",
+    "./dist/css/*": "./dist/css/*",
+    "./vite-plugin": "./vite-plugin.ts",
+    "./postcss-plugin-prefix": "./postcss-plugin-prefix.js",
+    "./*/element": {
+      "types": "./dist/elements/*/*.d.ts",
+      "import": "./dist/elements/*/*.js"
+    },
+    "./luxen-element": {
+      "types": "./dist/shared/luxen-element.d.ts",
+      "import": "./dist/shared/luxen-element.js"
+    },
+    "./luxen-form-associated-element": {
+      "types": "./dist/shared/luxen-form-associated-element.d.ts",
+      "import": "./dist/shared/luxen-form-associated-element.js"
+    },
+    "./*": {
+      "types": "./dist/elements/*/index.d.ts",
+      "import": "./dist/elements/*/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
+  },
+  "scripts": {
+    "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",
+    "dev:elements": "vp dev",
+    "build": "vp build --config vite.config.css.ts && tsc && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/generate-skill.mjs",
+    "build:css": "vp build --config vite.config.css.ts",
+    "build:skill": "node scripts/generate-skill.mjs",
+    "manifest": "cem analyze --litelement --outdir dist",
+    "preview": "vp preview"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "catalog:",
+    "embla-carousel": "catalog:",
+    "embla-carousel-autoplay": "catalog:",
+    "iconify-icon": "catalog:",
+    "lit": "catalog:"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "catalog:",
+    "@custom-elements-manifest/to-markdown": "catalog:",
+    "@types/node": "catalog:",
+    "autoprefixer": "catalog:",
+    "css-extras": "catalog:",
+    "postcss": "catalog:",
+    "postcss-import": "catalog:",
+    "tinyglobby": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "customElements": "dist/custom-elements.json"
+}

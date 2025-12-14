@@ -1,0 +1,74 @@
+<nav class="flex items-center gap-2">
+  <button
+    id="mega-products"
+    class="l-button"
+  >
+    Products
+  </button>
+  <button
+    id="mega-resources"
+    class="l-button"
+  >
+    Resources
+  </button>
+</nav>
+
+<l-popover
+  for="mega-products"
+  trigger="hover"
+  placement="bottom-start"
+  without-arrow
+  style="--max-width: none; --show-duration: 0ms; --hide-duration: 0ms"
+>
+  <div
+    class="grid grid-cols-2 gap-4 p-2"
+    style="width: 420px"
+  >
+    <div>
+      <p class="font-medium mb-1">Analytics</p>
+      <p class="text-sm text-gray-500">Understand your traffic and usage patterns.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Automation</p>
+      <p class="text-sm text-gray-500">Streamline repetitive tasks and workflows.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Integrations</p>
+      <p class="text-sm text-gray-500">Connect with the tools you already use.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Security</p>
+      <p class="text-sm text-gray-500">Enterprise-grade protection built in.</p>
+    </div>
+  </div>
+</l-popover>
+
+<l-popover
+  for="mega-resources"
+  trigger="hover"
+  placement="bottom-start"
+  without-arrow
+  style="--max-width: none; --show-duration: 0ms; --hide-duration: 0ms"
+>
+  <div
+    class="grid grid-cols-2 gap-4 p-2"
+    style="width: 420px"
+  >
+    <div>
+      <p class="font-medium mb-1">Documentation</p>
+      <p class="text-sm text-gray-500">Guides, tutorials and API references.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Blog</p>
+      <p class="text-sm text-gray-500">Latest news and product updates.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Community</p>
+      <p class="text-sm text-gray-500">Join the conversation and get help.</p>
+    </div>
+    <div>
+      <p class="font-medium mb-1">Changelog</p>
+      <p class="text-sm text-gray-500">Track every release and improvement.</p>
+    </div>
+  </div>
+</l-popover>

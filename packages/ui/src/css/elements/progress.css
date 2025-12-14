@@ -1,0 +1,114 @@
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(0) scaleX(0);
+  }
+  40% {
+    transform: translateX(0) scaleX(0.4);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.5);
+  }
+}
+
+@keyframes progress-indeterminate-bounce {
+  0% {
+    transform: translateX(0%) scaleX(0.9);
+  }
+
+  25% {
+    transform: translateX(100%) scaleX(1.1);
+  }
+
+  50% {
+    transform: translateX(0%) scaleX(0.9);
+  }
+
+  75% {
+    transform: translateX(100%) scaleX(1.1);
+  }
+
+  100% {
+    transform: translateX(0%) scaleX(0.9);
+  }
+}
+
+@keyframes progress-indeterminate-bounce-vertical {
+  0% {
+    transform: translateY(-20%);
+  }
+
+  50% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(-20%);
+  }
+}
+
+@layer components {
+  .l-progress {
+    --size: 4px;
+    --track-color: rgba(5, 114, 206, 0.2);
+    --indicator-color: rgb(5, 114, 206);
+    --indeterminate-animation: progress-indeterminate;
+    /*--indeterminate-animation: attr(data-indeterminate-animation type(<custom-ident>), progress-indeterminate);*/
+
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--size);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .l-progress::-moz-progress-bar {
+    background-color: var(--indicator-color);
+  }
+
+  .l-progress::-webkit-progress-bar {
+    background-color: var(--track-color);
+  }
+
+  .l-progress::-webkit-progress-value {
+    background-color: var(--indicator-color);
+  }
+
+  .l-progress:indeterminate::-moz-progress-bar {
+    animation: var(--indeterminate-animation) 1s infinite linear;
+    transform-origin: 0% 50%;
+  }
+
+  /*
+    -webkit-progress-value do not accept @keyframes outside the shadow-root
+    https://issues.chromium.org/issues/40417491
+  */
+  .l-progress:indeterminate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--indicator-color);
+    animation: var(--indeterminate-animation) 1s infinite linear;
+    transform-origin: 0% 50%;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆄🅸: vertical
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-progress[data-orientation='vertical'] {
+    --indeterminate-animation: progress-indeterminate-bounce-vertical;
+
+    width: var(--size);
+    height: 100%;
+  }
+
+  .l-progress[data-orientation='vertical']:indeterminate::after {
+    height: 50%;
+  }
+}

@@ -1,0 +1,71 @@
+@layer components {
+  .l-select {
+    --radius: 4px;
+    --border-color: light-dark(var(--color-gray-200), var(--color-gray-800));
+
+    &,
+    &::picker(select) {
+      appearance: base-select;
+    }
+
+    &::picker-icon {
+      display: none;
+    }
+
+    &::picker(select) {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      min-width: 180px;
+      margin-block-start: 0.25rem;
+      padding: 4px;
+    }
+
+    /* enable transitions in the drop down */
+    &::picker(select) {
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s var(--ease-out-3, cubic-bezier(0, 0, 0.3, 1)),
+        display 0.2s allow-discrete,
+        overlay 0.2s allow-discrete;
+    }
+
+    /* set the off stage styles */
+    &:not(:open)::picker(select) {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    /* set the on stage styles */
+    &:open::picker(select) {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .l-select-item {
+    display: flex;
+    position: relative;
+    align-items: center;
+    padding-inline: 8px;
+    padding-block: 6px;
+    isolation: isolate;
+    cursor: pointer;
+    border-radius: var(--radius);
+
+    &::checkmark {
+      background-color: currentColor;
+      block-size: 20px;
+      inline-size: 20px;
+      /* https://lucide.dev/icons/check-check */
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>')
+        center no-repeat;
+      mask-size: 16px;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--color-blue-50);
+      }
+    }
+  }
+}

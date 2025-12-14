@@ -1,0 +1,44 @@
+<style>
+  @scope (#demo-vertical) {
+    .l-progress {
+      --track-color: var(--color-purple-200);
+      --indicator-color: var(--color-purple-800);
+    }
+  }
+</style>
+
+<ul
+  id="demo-vertical"
+  class="grid w-full"
+>
+  <li class="flex px-3 py-2 h-16 bg-white">
+    <progress
+      class="l-progress"
+      aria-label="Loading content…"
+      data-orientation="vertical"
+      value="1"
+    ></progress>
+    <div class="flex-1 px-4 content-center text-sm font-semibold">Paiement acceptée</div>
+  </li>
+
+  <li class="flex px-3 py-2 h-16 bg-purple-100">
+    <progress
+      class="l-progress"
+      aria-label="Loading content…"
+      data-orientation="vertical"
+    ></progress>
+    <div class="flex-1 px-4 content-center text-sm font-semibold">
+      Première récurrence en cours de traitement
+    </div>
+  </li>
+
+  <li class="flex px-3 py-2 h-16 bg-white">
+    <progress
+      class="l-progress"
+      aria-label="Loading content…"
+      data-orientation="vertical"
+      value="0"
+    ></progress>
+    <div class="flex-1 px-4 content-center text-sm font-semibold">Transaction Terminée</div>
+  </li>
+</ul>

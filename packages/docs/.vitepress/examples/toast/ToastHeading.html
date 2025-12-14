@@ -1,0 +1,36 @@
+<div class="flex gap-2 flex-wrap">
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'Your changes have been saved.',
+        heading: 'Saved',
+        variant: 'success',
+        timer: true,
+      })
+    "
+  >
+    Success
+  </button>
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'This action cannot be undone.',
+        heading: 'Warning',
+        variant: 'warning',
+        timer: true,
+      })
+    "
+  >
+    Warning
+  </button>
+  <button
+    class="l-button"
+    onclick="
+      toast({ text: 'Please try again later.', heading: 'Error', variant: 'danger', timer: true })
+    "
+  >
+    Error
+  </button>
+</div>

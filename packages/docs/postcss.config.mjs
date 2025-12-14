@@ -1,4 +1,4 @@
-import { postcssIsolateStyles } from 'vitepress'
+import { postcssIsolateStyles } from 'vitepress';
 
 export default {
   plugins: [
@@ -6,4 +6,4 @@ export default {
       includeFiles: [/vp-doc\.css/], // defaults to /base\.css/
     }),
   ],
-}
+};

@@ -1,0 +1,28 @@
+@import './_base.css';
+
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Variant: line
+   A tablist with a sliding underline indicator below the active tab.
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs[variant='line'] {
+    & [role='tablist'] {
+      border-bottom: 1px solid var(--l-color-border);
+      gap: 0;
+
+      &::before {
+        bottom: -1px;
+        height: 2px;
+        background: var(--l-color-text-primary);
+        border-radius: var(--radius-full);
+      }
+    }
+
+    & [role='tab'] {
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+    }
+  }
+}

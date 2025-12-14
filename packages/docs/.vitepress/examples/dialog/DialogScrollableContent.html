@@ -1,0 +1,109 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-scrollable"
+>
+  Open dialog
+</button>
+
+<l-dialog
+  id="dialog-scrollable"
+  title="Terms of Service"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="dialog-scrollable"
+  ></button>
+  <article class="flex flex-col gap-4">
+    <h3 class="font-semibold">1. Acceptance</h3>
+    <p>
+      By accessing or using this service, you agree to be bound by these terms. If you disagree with
+      any part of the terms, you may not access the service. These terms apply to all visitors,
+      users, and others who access or use the service.
+    </p>
+    <h3 class="font-semibold">2. Accounts</h3>
+    <p>
+      When you create an account with us, you must provide accurate, complete, and current
+      information at all times. Failure to do so constitutes a breach of the terms, which may result
+      in immediate termination of your account on our service.
+    </p>
+    <p>
+      You are responsible for safeguarding the password that you use to access the service and for
+      any activities or actions under your password, whether your password is with our service or a
+      third-party service.
+    </p>
+    <h3 class="font-semibold">3. Content</h3>
+    <p>
+      Our service allows you to post, link, store, share and otherwise make available certain
+      information, text, graphics, videos, or other material. You are responsible for the content
+      that you post, including its legality, reliability, and appropriateness.
+    </p>
+    <p>
+      By posting content, you grant us the right and license to use, modify, publicly perform,
+      publicly display, reproduce, and distribute such content on and through the service. You
+      retain any and all of your rights to any content you submit, post or display.
+    </p>
+    <h3 class="font-semibold">4. Prohibited uses</h3>
+    <p>
+      You may use the service only for lawful purposes and in accordance with these terms. You agree
+      not to use the service in any way that violates any applicable national or international law
+      or regulation.
+    </p>
+    <p>
+      You may not exploit, harm, or attempt to exploit or harm minors in any way by exposing them to
+      inappropriate content, asking for personally identifiable information, or otherwise.
+    </p>
+    <p>
+      You may not transmit, or procure the sending of, any advertising or promotional material,
+      including any junk mail, chain letter, spam, or any other similar solicitation.
+    </p>
+    <h3 class="font-semibold">5. Termination</h3>
+    <p>
+      We may terminate or suspend your account immediately, without prior notice or liability, for
+      any reason whatsoever, including without limitation if you breach the terms. Upon termination,
+      your right to use the service will immediately cease.
+    </p>
+    <p>
+      If you wish to terminate your account, you may simply discontinue using the service. All
+      provisions of the terms which by their nature should survive termination shall survive
+      termination.
+    </p>
+    <h3 class="font-semibold">6. Limitation of liability</h3>
+    <p>
+      In no event shall the company, nor its directors, employees, partners, agents, suppliers, or
+      affiliates, be liable for any indirect, incidental, special, consequential, or punitive
+      damages resulting from your use of the service.
+    </p>
+    <h3 class="font-semibold">7. Changes</h3>
+    <p>
+      We reserve the right, at our sole discretion, to modify or replace these terms at any time. If
+      a revision is material, we will provide at least 30 days notice prior to any new terms taking
+      effect. What constitutes a material change will be determined at our sole discretion.
+    </p>
+  </article>
+  <menu slot="footer">
+    <button
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="dialog-scrollable"
+    >
+      Decline
+    </button>
+    <button
+      type="button"
+      class="l-button"
+      data-variant="primary"
+      command="--hide"
+      commandfor="dialog-scrollable"
+    >
+      Accept
+    </button>
+  </menu>
+</l-dialog>

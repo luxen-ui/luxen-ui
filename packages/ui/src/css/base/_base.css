@@ -1,0 +1,22 @@
+@layer base {
+  .l-visually-hidden {
+    /* Visually hide this, but keep it accessible to keyboard,
+       screen reader and other assistive technologies.
+
+      Also know as CSS helper: `.visually-hidden` / `.sr-only`
+
+      References:
+        - https://www.tpgi.com/the-anatomy-of-visually-hidden/
+        - https://youtu.be/ob_M_qXeDVE?t=677
+    */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0); /* for IE only */
+    white-space: nowrap;
+    border: 0;
+  }
+}

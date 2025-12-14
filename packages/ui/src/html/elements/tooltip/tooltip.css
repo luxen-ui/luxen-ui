@@ -1,0 +1,37 @@
+:host {
+  --background: var(--l-color-bg-fill-brand, light-dark(#1f2937, #f9fafb));
+  --color: light-dark(#fff, #111827);
+  --radius: 4px;
+  --max-width: 180px;
+  --arrow-size: 6px;
+  --show-duration: 150ms;
+  --hide-duration: 150ms;
+
+  display: contents;
+}
+
+[popover] {
+  inset: unset;
+  overflow: visible;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: var(--max-width);
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--color);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 16%));
+  pointer-events: none;
+}
+
+i {
+  position: absolute;
+  display: block;
+  width: var(--arrow-size);
+  height: var(--arrow-size);
+  background: var(--background);
+  transform: rotate(45deg);
+}

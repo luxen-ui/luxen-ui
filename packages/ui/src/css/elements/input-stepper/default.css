@@ -1,0 +1,38 @@
+@import './_base.css';
+
+@layer components {
+  @scope (l-input-stepper:not([appearance]), l-input-stepper[appearance='default']) {
+    :scope {
+      border: 1px solid var(--_border-color);
+      border-radius: var(--_border-radius);
+      background-color: var(--l-color-surface);
+      min-height: var(--_button-size);
+    }
+
+    button:first-of-type {
+      border-radius: var(--_border-radius) 0 0 var(--_border-radius);
+    }
+
+    button:last-of-type {
+      border-radius: 0 var(--_border-radius) var(--_border-radius) 0;
+    }
+
+    :scope:has(input:disabled) {
+      --_track-bg: var(--l-color-bg-disabled);
+      border-color: var(--l-color-border-disabled);
+      background-color: var(--l-color-bg-disabled);
+    }
+  }
+
+  /* FOUCE: match visual appearance before JS loads.
+     min-height adds 2px to account for the 1px border on each side,
+     since no buttons exist to push the content area beyond min-height. */
+  @scope (l-input-stepper:not(:defined):not([appearance]), l-input-stepper:not(:defined)[appearance='default']) {
+    :scope {
+      border: 1px solid var(--_border-color);
+      border-radius: var(--_border-radius);
+      background-color: var(--l-color-surface);
+      min-height: calc(var(--_button-size) + 2px);
+    }
+  }
+}

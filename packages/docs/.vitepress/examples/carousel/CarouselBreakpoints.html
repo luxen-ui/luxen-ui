@@ -1,0 +1,46 @@
+<style>
+  .carousel-breakpoints {
+    --slide-size: 80%;
+    --slide-gap: 1rem;
+    --button-border-color: #d3c9c9;
+    height: 400px;
+  }
+  @media (min-width: 768px) {
+    .carousel-breakpoints {
+      --slide-size: 33%;
+      --slide-gap: 1rem;
+    }
+  }
+</style>
+<l-carousel
+  class="carousel-breakpoints"
+  breakpoints='{"(min-width: 768px)": { "active": false }}'
+>
+  <l-carousel-item>
+    <img
+      class="object-cover"
+      src="https://picsum.photos/id/17/1200/700"
+      width="400"
+      height="400"
+      style="height: 400px"
+    />
+  </l-carousel-item>
+  <l-carousel-item>
+    <img
+      class="object-cover"
+      src="https://picsum.photos/id/18/1200/700"
+      width="400"
+      height="400"
+      style="height: 400px"
+    />
+  </l-carousel-item>
+  <l-carousel-item>
+    <img
+      class="object-cover"
+      src="https://picsum.photos/id/19/1200/700"
+      width="400"
+      height="400"
+      style="height: 400px"
+    />
+  </l-carousel-item>
+</l-carousel>

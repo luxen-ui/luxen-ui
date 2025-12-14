@@ -18,17 +18,7 @@ export default {
         'revert',
       ],
     ],
-    'scope-enum': [
-      2,
-      'always',
-      [
-        'css',
-        'elements',
-        'docs',
-        'deps',
-        'monorepo',
-      ],
-    ],
+    'scope-enum': [2, 'always', ['css', 'elements', 'docs', 'deps', 'monorepo']],
     'scope-empty': [0],
     'subject-case': [2, 'always', 'lower-case'],
   },

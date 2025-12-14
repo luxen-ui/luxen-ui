@@ -1,0 +1,44 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-blurred-backdrop"
+>
+  Open dialog
+</button>
+
+<l-dialog
+  id="dialog-blurred-backdrop"
+  title="Dialog title"
+  style="--backdrop-blur: 4px"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="dialog-blurred-backdrop"
+  ></button>
+  <p>The page behind this dialog is blurred via <code>--backdrop-blur</code>.</p>
+  <menu slot="footer">
+    <button
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="dialog-blurred-backdrop"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="l-button"
+      data-variant="primary"
+      command="--hide"
+      commandfor="dialog-blurred-backdrop"
+    >
+      Confirm
+    </button>
+  </menu>
+</l-dialog>

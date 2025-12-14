@@ -1,7 +1,27 @@
-@import "tailwindcss";
-@import "@luxen-ui/css";
-@import "@luxen-ui/css/badge";
-@import "./_component-table.css";
+@import 'tailwindcss';
+
+@import 'luxen-ui/css';
+@import 'luxen-ui/css/avatar';
+@import 'luxen-ui/css/badge';
+@import 'luxen-ui/css/button';
+@import 'luxen-ui/css/close-button/ring';
+@import 'luxen-ui/css/close-button/square';
+@import 'luxen-ui/css/close-button/circle';
+@import 'luxen-ui/css/divider';
+@import 'luxen-ui/css/disclosure';
+@import 'luxen-ui/css/kbd';
+@import 'luxen-ui/css/input-otp';
+@import 'luxen-ui/css/input-stepper/default';
+@import 'luxen-ui/css/input-stepper/rounded';
+@import 'luxen-ui/css/select';
+@import 'luxen-ui/css/progress';
+@import 'luxen-ui/css/skeleton';
+@import 'luxen-ui/css/tabs/enclosed';
+@import 'luxen-ui/css/tabs/line';
+@import 'luxen-ui/css/toast';
+
+@import './_code.css';
+@import './_component-table.css';
 
 @layer base {
   *,
@@ -10,4 +30,160 @@
   ::backdrop {
     border-color: var(--default-border-color, currentColor);
   }
+}
+
+/* ==============================================
+   Brand theme — warm orange-red from logo #E34F26
+   ============================================== */
+
+:root {
+  /* Brand palette — light mode */
+  --vp-c-brand-1: #d9461f;
+  --vp-c-brand-2: #c53d1a;
+  --vp-c-brand-3: #e35233;
+  --vp-c-brand-soft: rgba(227, 79, 38, 0.14);
+
+  /* Tip blocks match brand */
+  --vp-custom-block-tip-border: var(--vp-c-brand-soft);
+  --vp-custom-block-tip-text: var(--vp-c-brand-1);
+  --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+
+  /* Hero CTA button */
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #fff;
+  --vp-button-brand-bg: #d9461f;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #fff;
+  --vp-button-brand-hover-bg: #c53d1a;
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #fff;
+  --vp-button-brand-active-bg: #b33616;
+
+  /* Warm background tints */
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #faf8f6;
+  --vp-c-bg-soft: #f5f0ec;
+
+  /* Hero name gradient — orange to purple (both logo colors) */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(135deg, #ef652a 0%, #e34f26 40%, #663399 100%);
+
+  /* Hero image glow */
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    rgba(227, 79, 38, 0.35) 0%,
+    rgba(102, 51, 153, 0.25) 100%
+  );
+  --vp-home-hero-image-filter: blur(44px);
+}
+
+.dark {
+  /* Brand palette — dark mode (lighter, more vibrant) */
+  --vp-c-brand-1: #ef6c3a;
+  --vp-c-brand-2: #f58555;
+  --vp-c-brand-3: #fb9e70;
+  --vp-c-brand-soft: rgba(239, 108, 58, 0.16);
+
+  --vp-custom-block-tip-border: var(--vp-c-brand-soft);
+  --vp-custom-block-tip-text: var(--vp-c-brand-1);
+  --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #fff;
+  --vp-button-brand-bg: #d9461f;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #fff;
+  --vp-button-brand-hover-bg: #ef6c3a;
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #fff;
+  --vp-button-brand-active-bg: #d9461f;
+
+  /* Warm dark backgrounds */
+  --vp-c-bg: #1a1a1e;
+  --vp-c-bg-alt: #1e1c1a;
+  --vp-c-bg-soft: #2a2520;
+}
+
+/* ==============================================
+   Body gradient & layout styling
+   ============================================== */
+
+/* Warm gradient on the body background */
+body {
+  background: linear-gradient(
+    180deg,
+    var(--vp-c-bg) 0%,
+    color-mix(in srgb, var(--vp-c-brand-soft) 30%, var(--vp-c-bg)) 50%,
+    var(--vp-c-bg-alt) 100%
+  ) !important;
+  background-attachment: fixed !important;
+}
+
+/* Sidebar — warmer background */
+.VPSidebar {
+  background-color: var(--vp-c-bg-alt) !important;
+}
+
+/* Active sidebar indicator uses brand color */
+.VPSidebarItem.is-active > .item > .indicator {
+  background-color: var(--vp-c-brand-1);
+}
+
+/* Show lighter brand indicator on hover */
+.VPSidebarItem.level-1:not(.is-active) > .item:hover > .indicator {
+  background-color: var(--vp-c-brand-soft);
+}
+
+/* Sidebar element tag badges */
+.sidebar-tag {
+  display: inline;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  margin-left: 4px;
+}
+
+.sidebar-tag--native,
+.sidebar-tag--custom {
+  color: var(--vp-c-text-2);
+}
+
+.VPSidebarItem.is-active .sidebar-tag {
+  color: var(--vp-c-brand-3);
+}
+
+/* Subtle border between sidebar items */
+.VPSidebarItem.level-1 > .item {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+/* Feature cards — warm tinted background */
+.VPFeature {
+  background-color: var(--vp-c-bg-soft) !important;
+  border-color: color-mix(in srgb, var(--vp-c-brand-soft) 50%, var(--vp-c-divider)) !important;
+}
+
+.VPFeature .icon {
+  background-color: var(--vp-c-brand-soft) !important;
+  color: var(--vp-c-brand-1);
+}
+
+/* Search — fill available nav space */
+.VPNavBarSearch {
+  flex: 1;
+
+  #local-search,
+  .DocSearch-Button {
+    width: calc(100% - 24px);
+  }
+
+  .DocSearch-Button-Keys {
+    margin-left: auto;
+  }
+}
+
+/* API reference tables */
+.vp-doc table:not(:where(.vp-raw, .vp-raw *)) {
+  display: table;
+  width: 100%;
 }

@@ -1,0 +1,164 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅸🅽🅿🆄🆃 🅾🆃🅿
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Stripe-style OTP input: a single hidden <input> handles keyboard, paste,
+  and autocomplete while visual cells render each digit with individual borders.
+
+  Usage:
+    <l-input-otp>
+      <input type="text" inputmode="numeric"
+             autocomplete="one-time-code" maxlength="6" />
+    </l-input-otp>
+  */
+
+  l-input-otp {
+    --digits: 6;
+    --size: 2.75rem;
+    --_font-size: calc(var(--size) * 0.45);
+    --_bg: color-mix(in oklab, var(--l-color-text-primary) 4%, var(--l-color-surface));
+    --_border-color: var(--l-color-border);
+    --_highlight-color: var(--l-focus-ring);
+
+    display: inline-flex;
+    position: relative;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅴🅻🅻🆂 🅲🅾🅽🆃🅰🅸🅽🅴🆁
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-input-otp-cells {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap, 0.5rem);
+    position: relative;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅴🅻🅻
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-input-otp-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border: 1px solid var(--_border-color);
+    border-radius: var(--radius-md);
+    background: var(--_bg);
+    font-family:
+      ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+      monospace;
+    font-size: var(--_font-size);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--l-color-text-primary);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+    pointer-events: none;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅰🅲🆃🅸🆅🅴 🅲🅴🅻🅻 (focus highlight)
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-input-otp:focus-within .l-input-otp-cell[data-active] {
+    border-color: var(--_highlight-color);
+    box-shadow: 0 0 0 1px var(--_highlight-color);
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🅴🅿🅰🆁🅰🆃🅾🆁
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-input-otp-separator {
+    display: flex;
+    align-items: center;
+    color: var(--l-color-text-tertiary);
+    padding-inline: 0.125rem;
+    pointer-events: none;
+
+    &::before {
+      content: '\2013'; /* en-dash */
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅷🅸🅳🅳🅴🅽 🅸🅽🅿🆄🆃
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  The native input covers the entire cell area so clicks focus it naturally.
+  It is visually transparent — the cells provide all visual feedback.
+  */
+
+  l-input-otp:defined .l-input-otp-cells > input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    caret-color: transparent;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🅸🆉🅴🆂
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-input-otp[size='sm'] {
+    --size: 2rem;
+  }
+
+  l-input-otp[size='lg'] {
+    --size: 3.5rem;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅳🅸🆂🅰🅱🅻🅴🅳
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-input-otp:has(input:disabled) .l-input-otp-cell {
+    opacity: 0.4;
+    cursor: not-allowed;
+    color: var(--l-color-text-disabled);
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅿🆁🅾🅶🆁🅴🆂🆂🅸🆅🅴 🅴🅽🅷🅰🅽🅲🅴🅼🅴🅽🆃 🅵🅰🅻🅻🅱🅰🅲🅺
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Before JS loads, the raw input is visible and usable.
+  */
+
+  l-input-otp:not(:defined) > input {
+    all: unset;
+    display: inline-block;
+    border: 1px solid var(--l-color-border);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    font-family:
+      ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+      monospace;
+    font-size: 1.25rem;
+    letter-spacing: 0.5ch;
+    color: var(--l-color-text-primary);
+  }
+}

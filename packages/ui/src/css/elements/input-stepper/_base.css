@@ -1,0 +1,209 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅸🅽🅿🆄🆃 🆂🆃🅴🅿🅿🅴🆁
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  - https://www.nngroup.com/articles/input-steppers/
+
+  @scope prevents external styles from leaking into internal elements
+  (button, input, divs) — important when Luxen is used in uncontrolled environments.
+  */
+
+  @scope (l-input-stepper) {
+    /* Reset — :where() keeps specificity at (0,0,0) so component rules always win.
+       Prevents global rules targeting `button`, `input`, `div` from breaking internals.
+       Custom properties are NOT affected by `all` — design tokens cascade through.
+       :scope is excluded — the host is a unique custom element name and gets its
+       styles from the base + appearance :scope blocks without interference. */
+    *:where(:not(img, svg, l-icon):not(svg *)),
+    *::before,
+    *::after {
+      all: unset;
+      display: revert;
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅷🅾🆂🆃
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    :scope {
+      --_button-size: var(--l-size-control-md);
+      --_border-color: var(--l-color-border);
+      --_border-radius: var(--border-radius, var(--radius-md));
+      --_button-bg-hover: var(--l-color-bg-fill-neutral-soft);
+      --_button-bg-active: var(--l-color-bg-fill-neutral-subtle);
+
+      display: inline-flex;
+      align-items: stretch;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅵🅾🆄🅲🅴 🅿🆁🅴🆅🅴🅽🆃🅸🅾🅽
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    Reserve button space before JS loads. Native spin buttons remain as fallback.
+    */
+
+    :scope:not(:defined) {
+      padding-inline: var(--_button-size);
+    }
+
+    :scope:defined {
+      padding-inline: 0;
+    }
+
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆂🅸🆉🅴🆂
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    :scope[size='xs'] {
+      --_button-size: var(--l-size-control-xs);
+    }
+    :scope[size='sm'] {
+      --_button-size: var(--l-size-control-sm);
+    }
+    :scope[size='lg'] {
+      --_button-size: var(--l-size-control-lg);
+    }
+    :scope[size='xl'] {
+      --_button-size: var(--l-size-control-xl);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅱🆄🆃🆃🅾🅽🆂
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    button {
+      padding: 0;
+      appearance: none;
+      background: none;
+      border: 0;
+      font-family: inherit;
+      font-size: inherit;
+      width: var(--_button-size);
+      aspect-ratio: 1;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: -2px;
+      z-index: 1;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    @media (hover: hover) {
+      button:hover:not(:disabled) {
+        background-color: var(--_button-bg-hover);
+      }
+    }
+
+    button:active:not(:disabled) {
+      background-color: var(--_button-bg-active);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅸🅽🅿🆄🆃
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    input {
+      -moz-appearance: textfield;
+      appearance: none;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: inherit;
+      font-variant-numeric: tabular-nums;
+      border: 0;
+      text-align: center;
+      width: calc(3ch + var(--_button-size) * 2 / 3);
+      min-width: 0;
+      padding-inline: calc(var(--_button-size) / 3);
+      align-self: stretch;
+      background: transparent;
+      color: inherit;
+      caret-shape: underscore;
+    }
+
+    input:disabled {
+      cursor: not-allowed;
+      color: var(--l-color-text-disabled);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆃🆁🅰🅲🅺 (animated number display)
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    .l-input-stepper-value {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .l-input-stepper-track-display {
+      position: absolute;
+      inset: 0;
+      height: var(--_button-size);
+      overflow: hidden;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+      background: var(--_track-bg, var(--l-color-surface));
+    }
+
+    .l-input-stepper-track {
+      transition: translate 0.26s ease-out;
+    }
+
+    .l-input-stepper-track div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--_button-size);
+    }
+
+    .l-input-stepper-value:focus-within .l-input-stepper-track-display {
+      visibility: hidden;
+    }
+
+    :scope:not([with-roller]) .l-input-stepper-track-display {
+      display: none;
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅳🅸🆂🅰🅱🅻🅴🅳
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    :scope:has(input:disabled) {
+      color: var(--l-color-text-disabled);
+    }
+  }
+}

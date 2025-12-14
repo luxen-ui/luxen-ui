@@ -1,0 +1,54 @@
+<div class="flex gap-2 flex-wrap">
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'Informational message',
+        heading: 'Info',
+        variant: 'info',
+        icon: 'lucide:info',
+      })
+    "
+  >
+    Info
+  </button>
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'Operation successful!',
+        heading: 'Success',
+        variant: 'success',
+        icon: 'lucide:circle-check',
+      })
+    "
+  >
+    Success
+  </button>
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'Please be careful',
+        heading: 'Warning',
+        variant: 'warning',
+        icon: 'lucide:triangle-alert',
+      })
+    "
+  >
+    Warning
+  </button>
+  <button
+    class="l-button"
+    onclick="
+      toast({
+        text: 'Something went wrong',
+        heading: 'Error',
+        variant: 'danger',
+        icon: 'lucide:circle-x',
+      })
+    "
+  >
+    Danger
+  </button>
+</div>

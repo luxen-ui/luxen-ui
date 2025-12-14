@@ -3,28 +3,36 @@ defineProps({
   vertical: Boolean,
   inverted: Boolean,
   light: Boolean,
+  dark: Boolean,
   html: String,
-})
+});
 </script>
 
 <template>
   <div
     class="vp-raw component-wrapper bg-surface-sunken"
-    :class="[{
-      'bg-surface-sunken--inverted': inverted,
-      'bg-surface-sunken--light': light,
-      'flex flex-wrap items-center gap-2': !vertical,
-    }]"
+    :class="[
+      {
+        'bg-surface-sunken--inverted': inverted,
+        'bg-surface-sunken--light': light,
+        'flex flex-wrap items-center gap-2': !vertical,
+      },
+    ]"
+    :style="dark ? 'color-scheme: dark' : ''"
   >
-    <div v-if="html" v-html="html" />
+    <div
+      v-if="html"
+      class="contents"
+      v-html="html"
+    />
     <slot v-else />
   </div>
 </template>
 
 <style>
 .bg-surface-sunken {
-  --surface-background-color: white;
-  --surface-sunken: #f7f8f9;
+  --surface-background-color: light-dark(white, #0d1117);
+  --surface-sunken: light-dark(#f7f8f9, #161b22);
 
   background-color: var(--surface-background-color);
   background-image:
@@ -38,9 +46,9 @@ defineProps({
     10px -10px,
     0 10px;
   background-size: 20px 20px;
-  border-block-end: 1px solid #091e4224;
+  border-block-end: 1px solid light-dark(#091e4224, #30363d);
   border-radius: 3px 3px 0 0;
-  color: #172b4d;
+  color: light-dark(#172b4d, #e6edf3);
   padding-block: 24px;
   padding-inline: 12px;
 }

@@ -1,0 +1,29 @@
+packages:
+  - packages/*
+  - demos/*
+
+catalog:
+  '@commitlint/cli': '^20.5.2'
+  '@commitlint/config-conventional': '^20.5.0'
+  '@custom-elements-manifest/analyzer': '^0.11.0'
+  '@custom-elements-manifest/to-markdown': '^0.1.0'
+  '@floating-ui/dom': '^1.7.6'
+  '@tailwindcss/vite': '^4.2.4'
+  '@types/node': '^25.6.0'
+  autoprefixer: '^10.5.0'
+  browserslist: '^4.28.2'
+  css-extras: '^0.4.0'
+  csskit: '^0.0.20'
+  embla-carousel: '^8.6.0'
+  embla-carousel-autoplay: '^8.6.0'
+  iconify-icon: '^3.0.2'
+  lit: '^3.3.2'
+  postcss: '^8.5.10'
+  postcss-import: '^16.1.1'
+  tailwindcss: '^4.2.4'
+  tinyglobby: '^0.2.16'
+  typescript: '^6.0.3'
+  vite: '^8.0.10'
+  vite-plugin-dts: '^4.5.4'
+  vite-plus: '^0.1.19'
+  vitepress: '2.0.0-alpha.17'

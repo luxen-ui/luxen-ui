@@ -1,0 +1,128 @@
+:host {
+  --_size: 40px;
+  --_font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: calc(var(--_size) * 0.2);
+  isolation: isolate;
+  vertical-align: middle;
+  flex-shrink: 0;
+  color: var(--l-color-text-secondary);
+}
+
+:host([size='xs']) {
+  --_size: 24px;
+  --_font-size: 0.75rem;
+}
+:host([size='sm']) {
+  --_size: 32px;
+  --_font-size: 0.875rem;
+}
+:host([size='lg']) {
+  --_size: 48px;
+  --_font-size: 1.25rem;
+}
+:host([size='xl']) {
+  --_size: 56px;
+  --_font-size: 1.25rem;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.initials {
+  margin: auto;
+}
+
+.icon {
+  width: 60%;
+  height: 60%;
+  color: currentColor;
+}
+
+.badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  height: 12px;
+  min-width: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 2px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px var(--l-color-surface);
+  background-color: var(--l-color-surface);
+  font-size: 0.625rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--l-color-text-primary);
+  overflow: hidden;
+}
+
+/*
+ * Inset ring via ::after so it renders on top of the <img>.
+ * A box-shadow on :host would be covered by the image since
+ * it fills the entire element with object-fit: cover.
+ */
+.base::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px light-dark(oklch(0 0 0 / 7%), oklch(100% 0 0 / 10%));
+  pointer-events: none;
+}
+
+.base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: calc(var(--_size) * 0.2);
+  background-color: var(--color, var(--l-color-bg-fill-neutral-soft));
+  color: oklch(from var(--color) 0.45 calc(c * 2) h);
+  font-size: var(--_font-size);
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 0;
+  cursor: inherit;
+}
+
+button.base {
+  cursor: pointer;
+}
+
+button.base:focus-visible {
+  outline: 2px solid var(--l-focus-ring);
+  outline-offset: 2px;
+}
+
+button.base:hover {
+  box-shadow: inset 0 0 0 1.5px var(--l-color-border-interactive);
+}
+
+@media (prefers-color-scheme: dark) {
+  .base {
+    color: oklch(from var(--color) 0.85 calc(c * 1.5) h);
+  }
+}
+
+@container style(--appearance: circle) {
+  .base {
+    border-radius: 50%;
+  }
+}

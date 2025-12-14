@@ -1,0 +1,174 @@
+/* https://github.com/tailwindlabs/tailwindcss/blob/main/packages/tailwindcss/theme.css */
+
+@theme static {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅾🅻🅾🆁: text
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  /* Main body text, headings, and high-emphasis content. Use as the default text color throughout the UI. */
+  --l-color-text-primary: light-dark(var(--color-gray-700), var(--color-gray-200));
+
+  /* Supporting text, descriptions, captions, and medium-emphasis content like helper text beneath form fields. */
+  --l-color-text-secondary: light-dark(var(--color-gray-600), var(--color-gray-400));
+
+  /* Placeholder text, disabled labels, and low-emphasis content like timestamps or metadata. */
+  --l-color-text-tertiary: light-dark(var(--color-gray-500), var(--color-gray-500));
+
+  /* Neutral semantic text for default-state badges, tags, and status labels with no specific severity. */
+  --l-color-text-neutral: light-dark(var(--color-gray-700), var(--color-gray-300));
+
+  /* Informational semantic text for badges, alerts, banners, and status indicators conveying neutral information. */
+  --l-color-text-info: light-dark(var(--color-blue-700), var(--color-blue-300));
+
+  /* Warning semantic text for badges, alerts, and status indicators conveying caution or non-blocking issues. */
+  --l-color-text-warning: light-dark(var(--color-yellow-700), var(--color-yellow-300));
+
+  /* Danger/error semantic text for badges, alerts, validation messages, and destructive action labels. */
+  --l-color-text-danger: light-dark(var(--color-red-700), var(--color-red-300));
+
+  /* Success semantic text for badges, alerts, and status indicators conveying completion or positive outcomes. */
+  --l-color-text-success: light-dark(var(--color-green-700), var(--color-green-300));
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅾🅻🅾🆁: surface
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  /* Default page-level background. Use on <body>, main content areas, and cards at the base layer. */
+  --l-color-surface: light-dark(white, var(--color-gray-900));
+
+  /* Elevated overlay background for modals, dialogs, drawers, popovers, and any surface that floats above the page with a backdrop. Slightly lighter than --l-color-surface in dark mode to create visual separation from the page beneath. */
+  --l-color-surface-overlay: light-dark(white, var(--color-gray-800));
+
+  /* Semi-transparent backdrop behind modals, dialogs, drawers, and any overlay that dims the page content. Darker in dark mode for better contrast against dark surfaces. */
+  --l-backdrop: light-dark(oklch(46% 0.01 260 / 33%), oklch(15% 0.01 260 / 60%));
+
+  /* Default border for form controls, secondary buttons, inputs, and selects. */
+  --l-color-border: light-dark(var(--color-gray-400), var(--color-gray-800));
+
+  /* Subtle divider line for separating content sections, list items, and card groups. Lighter than --l-color-border to avoid visual competition with interactive element borders. */
+  --l-color-divider: light-dark(var(--color-gray-200), var(--color-gray-700));
+
+  /* Subtle border or ring for interactive elements like close buttons, toggles, and icon buttons on hover. Provides low-contrast visual feedback without competing with primary content. */
+  --l-color-border-interactive: light-dark(var(--color-gray-300), var(--color-gray-600));
+
+  /* Border color for disabled form controls, buttons, and interactive elements. Faded to signal non-interactivity. */
+  --l-color-border-disabled: light-dark(var(--color-gray-300), var(--color-gray-700));
+
+  /* Text color for disabled labels, values, and icons in form controls, buttons, and interactive elements. */
+  --l-color-text-disabled: light-dark(var(--color-gray-400), var(--color-gray-500));
+
+  /* Background color for disabled form controls, buttons, and interactive elements. Subtle tint to reinforce non-interactivity. */
+  --l-color-bg-disabled: light-dark(var(--color-gray-100), var(--color-gray-800));
+
+  /* Focus ring color for :focus-visible outlines on interactive elements like buttons, inputs, and links. */
+  --l-focus-ring: #d9461f;
+
+  /* Translucent background tint for hovered rows in lists, menus, trees, tables, and similar roving collections. Alpha-based so underlying indent guides, borders, or zebra stripes stay visible. */
+  --l-color-bg-state-hover: light-dark(rgb(0 0 0 / 5%), rgb(255 255 255 / 6%));
+
+  /* Translucent background tint for the selected (persistent) row in lists, trees, menus, listboxes, and tables. Alpha-based so underlying indent guides, borders, or zebra stripes stay visible. Semantically paired with `aria-selected="true"` / `:state(selected)`. */
+  --l-color-bg-state-selected: light-dark(rgb(0 0 0 / 7%), rgb(255 255 255 / 9%));
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅾🅻🅾🆁: fill
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  /* Primary brand fill for CTA buttons, active toggles, and primary action backgrounds. */
+  --l-color-bg-fill-brand: light-dark(var(--color-gray-900), var(--color-gray-50));
+
+  /* Hover state of brand-filled elements like primary buttons and active toggles. */
+  --l-color-bg-fill-brand-hover: light-dark(var(--color-gray-800), var(--color-gray-200));
+
+  /* Active/pressed state of brand-filled elements like primary buttons during click or tap. */
+  --l-color-bg-fill-brand-active: light-dark(var(--color-gray-700), var(--color-gray-300));
+
+  /* Secondary control fill for buttons, toggles, and non-primary interactive surfaces. */
+  --l-color-bg-fill-secondary: light-dark(var(--color-white), var(--color-gray-700));
+
+  /* Text on brand-filled surfaces like primary buttons. Maximum contrast against --l-color-bg-fill-brand. */
+  --l-color-text-on-fill-brand: light-dark(white, var(--color-gray-900));
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅾🅻🅾🆁: fill (soft / subtle / strong)
+
+   Three-tier status fill scale ordered by visual weight:
+     soft    → palest tint, barely colored. Use for large surface areas
+              like toast backgrounds, alert containers, and callout boxes
+              where color should not dominate.
+     subtle  → noticeable tinted background with matching foreground.
+              Use for badges, tags, selected states, and secondary
+              highlights where the color needs to be clearly visible.
+     strong  → full-intensity solid background with contrast foreground.
+              Use for solid badges, high-emphasis status indicators,
+              and primary status pills.
+
+   Future tier:
+     plain   → no background, text color only.
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  /* Soft: palest tint for toast backgrounds, alert containers, and callout boxes. */
+  --l-color-bg-fill-neutral-soft: light-dark(var(--color-gray-50), var(--color-gray-800));
+  --l-color-bg-fill-info-soft: light-dark(var(--color-blue-50), var(--color-blue-950));
+  --l-color-bg-fill-warning-soft: light-dark(var(--color-yellow-50), var(--color-yellow-950));
+  --l-color-bg-fill-danger-soft: light-dark(var(--color-red-50), var(--color-red-950));
+  --l-color-bg-fill-success-soft: light-dark(var(--color-green-50), var(--color-green-950));
+
+  /* Subtle: tinted background for badges, tags, selected states, and secondary highlights. */
+  --l-color-bg-fill-neutral-subtle: light-dark(var(--color-gray-100), var(--color-gray-700));
+  --l-color-bg-fill-info-subtle: light-dark(var(--color-blue-100), var(--color-blue-900));
+  --l-color-bg-fill-warning-subtle: light-dark(var(--color-yellow-100), var(--color-yellow-900));
+  --l-color-bg-fill-danger-subtle: light-dark(var(--color-red-100), var(--color-red-900));
+  --l-color-bg-fill-success-subtle: light-dark(var(--color-green-100), var(--color-green-900));
+
+  /* Strong: solid background for solid badges and high-emphasis status indicators. Pair with --l-color-surface for foreground. */
+  --l-color-bg-fill-neutral-strong: light-dark(var(--color-gray-800), var(--color-gray-200));
+  --l-color-bg-fill-info-strong: light-dark(var(--color-blue-600), var(--color-blue-500));
+  --l-color-bg-fill-warning-strong: light-dark(var(--color-yellow-600), var(--color-yellow-500));
+  --l-color-bg-fill-danger-strong: light-dark(var(--color-red-600), var(--color-red-500));
+  --l-color-bg-fill-success-strong: light-dark(var(--color-green-600), var(--color-green-500));
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🅸🆉🅴
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  /* Standard interactive control height for extra-small elements like compact buttons, tags, and inline controls. */
+  --l-size-control-xs: 1.5rem;
+
+  /* Standard interactive control height for small elements like secondary buttons, small selects, and tight-layout controls. */
+  --l-size-control-sm: 1.75rem;
+
+  /* Standard interactive control height for medium (default) elements like buttons, inputs, selects, and form controls. */
+  --l-size-control-md: 2rem;
+
+  /* Standard interactive control height for large elements like prominent buttons, inputs in spacious layouts, and hero CTAs. */
+  --l-size-control-lg: 2.25rem;
+
+  /* Standard interactive control height for extra-large elements like oversized buttons, landing page CTAs, and touch-optimized controls. */
+  --l-size-control-xl: 2.5rem;
+}
+
+@theme inline {
+  /* Fully round border-radius for pill shapes, avatars, and circular elements. */
+  --radius-full: calc(infinity * 1px);
+
+  /* Tailwind utility aliases for text color tokens — use via class="text-color-primary" etc. */
+  --text-color-primary: var(--l-color-text-primary);
+  --text-color-secondary: var(--l-color-text-secondary);
+  --text-color-tertiary: var(--l-color-text-tertiary);
+
+  --text-color-neutral: var(--l-color-text-neutral);
+  --text-color-info: var(--l-color-text-info);
+  --text-color-warning: var(--l-color-text-warning);
+  --text-color-danger: var(--l-color-text-danger);
+  --text-color-success: var(--l-color-text-success);
+}

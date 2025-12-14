@@ -1,0 +1,38 @@
+@import './_base.css';
+
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Variant: enclosed
+   A pill-shaped tablist with a sliding background indicator behind the active tab.
+   Visual reference: https://ui.shadcn.com/docs/components/radix/tabs
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs[variant='enclosed'] {
+    & [role='tablist'] {
+      background: var(--l-color-bg-fill-neutral-subtle);
+      border-radius: var(--radius-lg);
+      padding: calc(var(--spacing) * 1);
+      gap: calc(var(--spacing) * 1);
+      box-shadow: inset 0 0 0 1px var(--l-color-divider);
+
+      &::before {
+        background: var(--l-color-surface);
+        border-radius: var(--radius-md);
+        box-shadow:
+          0 1px 3px 0 rgb(0 0 0 / 0.08),
+          0 1px 2px -1px rgb(0 0 0 / 0.08);
+        inset-block: calc(var(--spacing) * 1);
+        z-index: 0;
+      }
+    }
+
+    & [role='tab'] {
+      position: relative;
+      z-index: 1;
+      padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+      border-radius: var(--radius-md);
+    }
+  }
+}

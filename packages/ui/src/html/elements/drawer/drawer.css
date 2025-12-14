@@ -1,0 +1,66 @@
+:host {
+  --size: 320px;
+  --border-radius: 0.75rem;
+}
+
+/* Override dialog's opacity fade with a slide from the inline-start edge. */
+dialog {
+  inset: 0;
+  margin: 0;
+  width: min(var(--size), 100dvw);
+  max-inline-size: 100dvw;
+  height: 100dvh;
+  max-block-size: 100dvh;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  opacity: 1;
+  translate: -100% 0;
+  transition-property: translate, display, overlay;
+}
+
+dialog[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  dialog[open] {
+    translate: -100% 0;
+  }
+}
+
+/* Inline-end edge */
+:host([placement='end']) dialog {
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  margin-inline-start: auto;
+  translate: 100% 0;
+}
+
+:host([placement='end']) dialog[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  :host([placement='end']) dialog[open] {
+    translate: 100% 0;
+  }
+}
+
+/* Block-end (bottom) edge */
+:host([placement='bottom']) dialog {
+  width: 100dvw;
+  max-inline-size: 100dvw;
+  height: min(var(--size), 100dvh);
+  max-block-size: 100dvh;
+  margin-block-start: auto;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  translate: 0 100%;
+}
+
+:host([placement='bottom']) dialog[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  :host([placement='bottom']) dialog[open] {
+    translate: 0 100%;
+  }
+}

@@ -1,0 +1,65 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-form"
+>
+  Edit profile
+</button>
+
+<l-dialog
+  id="dialog-form"
+  title="Edit profile"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="dialog-form"
+  ></button>
+  <form class="flex flex-col gap-4">
+    <label class="flex flex-col gap-1">
+      <span class="text-sm font-medium">Name</span>
+      <input
+        autofocus
+        type="text"
+        name="name"
+        value="Ada Lovelace"
+        required
+        class="rounded border px-3 py-2 text-sm outline-none focus:border-sky-500"
+      />
+    </label>
+    <label class="flex flex-col gap-1">
+      <span class="text-sm font-medium">Email</span>
+      <input
+        type="email"
+        name="email"
+        value="ada@example.com"
+        required
+        class="rounded border px-3 py-2 text-sm outline-none focus:border-sky-500"
+      />
+    </label>
+  </form>
+  <menu slot="footer">
+    <button
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="dialog-form"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="l-button"
+      data-variant="primary"
+      command="--hide"
+      commandfor="dialog-form"
+    >
+      Save
+    </button>
+  </menu>
+</l-dialog>

@@ -1,0 +1,31 @@
+@import './_base.css';
+
+@layer components {
+  @scope (l-input-stepper[appearance='rounded']) {
+    :scope {
+      gap: 0.25rem;
+    }
+
+    button {
+      border: 1px solid var(--_border-color);
+      border-radius: var(--radius-full);
+      background-color: var(--l-color-surface);
+    }
+
+    @media (hover: hover) {
+      button:hover:not(:disabled) {
+        border-color: var(--l-color-text-primary);
+        background-color: transparent;
+      }
+    }
+
+    button:active:not(:disabled) {
+      border-color: var(--l-color-text-primary);
+      background-color: var(--_button-bg-active);
+    }
+
+    button:disabled {
+      border-color: var(--l-color-border-disabled);
+    }
+  }
+}

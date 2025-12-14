@@ -1,0 +1,10 @@
+:host {
+  --color: currentColor;
+
+  display: contents;
+  color: var(--color);
+}
+
+iconify-icon {
+  color: inherit;
+}

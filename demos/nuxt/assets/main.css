@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+@import 'luxen-ui/css';
+@import 'luxen-ui/css/badge';
+@import 'luxen-ui/css/button';
+@import 'luxen-ui/css/divider';
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    background:
+      radial-gradient(
+        60rem 40rem at 10% -10%,
+        color-mix(in oklab, #ef652a 12%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        60rem 40rem at 110% 20%,
+        color-mix(in oklab, #663399 14%, transparent),
+        transparent 60%
+      ),
+      var(--ds-color-surface);
+    background-attachment: fixed;
+    color: var(--ds-color-text-primary);
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      sans-serif;
+    min-height: 100vh;
+  }
+}

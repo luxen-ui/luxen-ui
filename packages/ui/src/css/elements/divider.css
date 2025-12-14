@@ -1,0 +1,75 @@
+@layer components {
+  l-divider {
+    --color: var(--l-color-divider);
+    --thickness: 1px;
+    --spacing: var(--spacing-4, 1rem);
+
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Line */
+  l-divider::before {
+    position: absolute;
+    display: block;
+    content: '';
+    background-color: var(--color);
+    z-index: 1;
+  }
+
+  /* Label text */
+  l-divider[label]::after {
+    content: attr(label);
+    position: relative;
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    background-color: var(--l-color-surface);
+    color: var(--l-color-text-tertiary);
+    z-index: 2;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   horizontal (default)
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-divider:not([orientation='vertical']) {
+    margin-block: var(--spacing);
+    width: 100%;
+  }
+
+  l-divider:not([orientation='vertical'])::before {
+    height: var(--thickness);
+    inset: calc(50% - var(--thickness) / 2) 0 0;
+  }
+
+  l-divider:not([orientation='vertical'])[label]::after {
+    padding-inline: var(--spacing-2, 0.5rem);
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   vertical
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-divider[orientation='vertical'] {
+    padding: 0 4px;
+    margin-inline: var(--spacing);
+    height: 100%;
+  }
+
+  l-divider[orientation='vertical']::before {
+    width: var(--thickness);
+    inset: 0 0 0 calc(50% - var(--thickness) / 2);
+  }
+
+  l-divider[orientation='vertical'][label]::after {
+    padding-block: var(--spacing-2, 0.5rem);
+  }
+}

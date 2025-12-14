@@ -1,0 +1,24 @@
+@import './_base.css';
+
+@layer components {
+  .l-close:not([data-appearance]),
+  .l-close[data-appearance='circle'] {
+    --size: 44px;
+    --background-color: light-dark(var(--color-gray-100), var(--color-gray-700));
+    --background-color-hover: light-dark(var(--color-gray-200), var(--color-gray-600));
+
+    border-radius: var(--radius-full);
+    background-color: var(--background-color);
+
+    transition-property: background-color;
+    transition-duration: 150ms;
+
+    &:hover {
+      background-color: var(--background-color-hover);
+    }
+
+    &:active {
+      background-color: color-mix(in oklab, var(--background-color-hover) 80%, black);
+    }
+  }
+}

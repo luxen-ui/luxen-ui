@@ -1,0 +1,37 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-light-dismiss"
+>
+  Open dialog
+</button>
+
+<l-dialog
+  id="dialog-light-dismiss"
+  title="Dialog title"
+  light-dismiss
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="dialog-light-dismiss"
+  ></button>
+  <article class="py-4">
+    <p>Click the backdrop or press Escape to close.</p>
+  </article>
+  <menu slot="footer">
+    <button
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="dialog-light-dismiss"
+    >
+      Close
+    </button>
+  </menu>
+</l-dialog>

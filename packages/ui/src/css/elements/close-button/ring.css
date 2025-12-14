@@ -1,0 +1,29 @@
+@import './_base.css';
+
+@layer components {
+  .l-close:not([data-appearance]),
+  .l-close[data-appearance='ring'] {
+    --ring-color: var(--l-color-border-interactive);
+    --ring-tickness: 0.25rem;
+
+    /* Private custom properties */
+    --_ring-tickness: 0;
+    --_ring-color: var(--ring-color);
+
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 0 var(--_ring-tickness) var(--_ring-color);
+
+    &:hover {
+      --_ring-tickness: var(--ring-tickness);
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-duration: 250ms;
+      }
+    }
+
+    &:active {
+      --_ring-color: --darken(var(--ring-color), 5%);
+      --_ring-tickness: calc(var(--ring-tickness) * 0.6);
+    }
+  }
+}

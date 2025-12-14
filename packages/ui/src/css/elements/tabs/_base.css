@@ -1,0 +1,111 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Base
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs {
+    display: block;
+  }
+
+  l-tabs [role='tablist'] {
+    --_duration: 150ms;
+    --_easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+    display: flex;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      pointer-events: none;
+      will-change: transform, width;
+      transition:
+        transform var(--_duration) var(--_easing),
+        width var(--_duration) var(--_easing);
+      transform: translateX(var(--_indicator-left, 0));
+      width: var(--_indicator-width, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    l-tabs [role='tablist'] {
+      --_duration: 0ms;
+    }
+
+    l-tabs [role='tab'] {
+      transition-duration: 0ms;
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Tab trigger
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs [role='tab'] {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    height: var(--l-size-control-xl);
+    white-space: nowrap;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: var(--text-sm);
+    line-height: 1;
+    color: var(--l-color-text-secondary);
+    transition: color 150ms;
+    -webkit-tap-highlight-color: transparent;
+
+    &[aria-selected='true'] {
+      color: var(--l-color-text-primary);
+    }
+
+    @media (hover: hover) {
+      &:hover:not([aria-selected='true']) {
+        color: var(--l-color-text-primary);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: -2px;
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Tab panel
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs [role='tabpanel'] {
+    &:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Full width
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-tabs[full-width] [role='tablist'] {
+    width: 100%;
+  }
+
+  l-tabs[full-width] [role='tab'] {
+    flex: 1;
+    text-align: center;
+  }
+}

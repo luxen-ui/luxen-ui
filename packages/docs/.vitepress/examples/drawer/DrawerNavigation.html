@@ -1,0 +1,62 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="drawer-nav"
+>
+  Menu
+</button>
+
+<l-drawer
+  id="drawer-nav"
+  title="Navigation"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-nav"
+  ></button>
+  <nav>
+    <ul class="flex flex-col gap-1">
+      <li>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100"
+          >Home</a
+        >
+      </li>
+      <li>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100"
+          >Products</a
+        >
+      </li>
+      <li>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100"
+          >Orders</a
+        >
+      </li>
+      <li>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100"
+          >Customers</a
+        >
+      </li>
+      <li>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100"
+          >Settings</a
+        >
+      </li>
+    </ul>
+  </nav>
+</l-drawer>
