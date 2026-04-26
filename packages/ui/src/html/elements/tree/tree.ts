@@ -108,8 +108,19 @@ export class Tree extends LuxenElement {
   // --- Sync / ARIA / depth / checkbox visibility ---
 
   private _syncAll() {
-    const showCheckbox = this.selection === 'multiple';
+    // `_syncAll()` may run from `updated()` before `<l-tree-item>` is registered
+    // (e.g. when the tree module is imported before tree-item, or in async chunks).
+    // Force-upgrade any pending custom elements in our subtree, then bail and retry
+    // once the registration completes if any item is still un-upgraded.
+    customElements.upgrade(this);
+    const itemTag = tagName('tree-item');
     const roots = this._rootItems();
+    if (roots.some((r) => typeof r.getChildrenItems !== 'function')) {
+      void customElements.whenDefined(itemTag).then(() => this._syncAll());
+      return;
+    }
+
+    const showCheckbox = this.selection === 'multiple';
     for (const root of roots) {
       this._syncSubtree(root, 0, showCheckbox);
     }

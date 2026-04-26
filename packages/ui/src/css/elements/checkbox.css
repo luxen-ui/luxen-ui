@@ -1,90 +1,10 @@
 /* Checkbox — `.l-checkbox` on a native `<input type="checkbox">`.
 
-   Hybrid styling: the `.l-checkbox` class is the canonical primitive (works
-   anywhere). In addition, `l-form-field` auto-styles a bare checkbox via a
-   zero-specificity `:where()` selector, so inside a field no class is needed.
-   `unstyled` on the field opts out (keeps the ARIA wiring, drops styling).
-   `:not([role="switch"])` reserves the toggle look for a future `switch.css`.
+   The visual skin lives in the shared `checkbox-appearance.css` partial so it
+   can be reused by Shadow-DOM elements that render their own checkbox (e.g.
+   `<l-tree-item>` in `selection="multiple"`). The `.l-checkbox` class is the
+   canonical primitive (works anywhere); `l-form-field` also auto-styles a bare
+   checkbox via a zero-specificity `:where()` selector, so inside a field no
+   class is needed (`unstyled` opts out). See the partial for details. */
 
-   The checkmark / indeterminate dash are drawn with a `background-image` SVG on
-   the input itself — `::before`/`::after` do not paint on replaced elements
-   like `<input>`. `background-image` can't read the host's `currentColor`, so
-   the glyph color is baked white. This stays legible because the accent
-   (`--l-form-control-activated-color`) is a stable color that does not invert
-   between light and dark. Override `--checkmark` to swap the icon. */
-
-@layer components {
-  .l-checkbox,
-  :where(l-form-field:not([unstyled])) > input[type='checkbox']:not([role='switch']) {
-    /* Public knobs */
-    --size: var(--l-form-control-toggle-size);
-    --accent: var(--l-form-control-activated-color);
-    --checkmark: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
-    --_dash: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>');
-
-    box-sizing: border-box;
-    flex: 0 0 auto;
-    inline-size: var(--size);
-    block-size: var(--size);
-    margin: 0;
-    padding: 0;
-    appearance: none;
-    border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
-    border-radius: calc(var(--size) * 0.2);
-    background-color: var(--l-form-control-background-color);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 75%;
-    vertical-align: middle;
-    cursor: pointer;
-    transition-property: background-color, border-color;
-    transition-duration: 150ms;
-
-    &:checked,
-    &:indeterminate {
-      border-color: var(--accent);
-      background-color: var(--accent);
-    }
-
-    &:checked {
-      background-image: var(--checkmark);
-    }
-
-    &:indeterminate {
-      background-image: var(--_dash);
-    }
-
-    @media (hover: hover) {
-      &:hover:not(:disabled) {
-        border-color: var(--l-form-control-border-color-hover);
-      }
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--l-focus-ring);
-      outline-offset: 2px;
-    }
-
-    /* Invalid: only after interaction (`:user-invalid`), or forced via
-       `aria-invalid` (set by `l-form-field` / server-side validation).
-       Overriding `--accent` makes a checked invalid box fill with the error
-       color too (not just the border). */
-    &:user-invalid,
-    &[aria-invalid='true'] {
-      --accent: var(--l-form-control-border-color-invalid);
-      border-color: var(--l-form-control-border-color-invalid);
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.4;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .l-checkbox,
-    :where(l-form-field:not([unstyled])) > input[type='checkbox']:not([role='switch']) {
-      transition-duration: 0ms;
-    }
-  }
-}
+@import '../../html/shared/styles/checkbox-appearance.css';

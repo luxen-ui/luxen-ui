@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { tagName } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import checkboxAppearance from '../../shared/styles/checkbox-appearance.styles.js';
 import rawStyles from './tree-item.css?inline';
 
 const styles = unsafeCSS(rawStyles);
@@ -36,7 +37,7 @@ const styles = unsafeCSS(rawStyles);
  * @customElement l-tree-item
  */
 export class TreeItem extends LuxenElement {
-  static override styles = [hostStyles, styles];
+  static override styles = [hostStyles, checkboxAppearance, styles];
 
   private _internals = this.attachInternals();
   private _childObserver?: MutationObserver;
@@ -238,7 +239,7 @@ export class TreeItem extends LuxenElement {
         </span>
 
         <input
-          class="checkbox"
+          class="checkbox l-checkbox"
           part="checkbox"
           type="checkbox"
           tabindex="-1"

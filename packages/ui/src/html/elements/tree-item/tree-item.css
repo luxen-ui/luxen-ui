@@ -57,8 +57,10 @@
 }
 
 /* Hide the DEFAULT fallback chevron SVG on a leaf — slotted content
-   (user-provided icon, avatar, etc.) remains visible. */
-:host(:not(:state(has-children)):not([lazy])) .expand > svg {
+   (user-provided icon, avatar, etc.) remains visible because it lives outside
+   the slot in the DOM tree. The `.expand` span keeps its fixed --chevron-size
+   so leaf rows stay aligned with branches. */
+:host(:not(:state(has-children)):not([lazy])) .expand > slot > svg {
   display: none;
 }
 
@@ -68,16 +70,8 @@
   display: block;
 }
 
-.checkbox {
-  margin: 0;
-  flex: none;
-  accent-color: var(--l-color-bg-fill-brand, Highlight);
-  cursor: pointer;
-  inline-size: 1rem;
-  block-size: 1rem;
-}
-
-/* Checkbox is only rendered when the parent tree enables multi-selection */
+/* The checkbox appearance comes from the shared `.l-checkbox` skin imported
+   above; this rule only governs visibility. */
 :host(:not(:state(checkbox))) .checkbox {
   display: none;
 }
