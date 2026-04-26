@@ -53,20 +53,6 @@ Override the `expand-icon` and `collapse-icon` slots to show a different icon pe
 <<< @/.vitepress/examples/tree/TreeExpandIcons.html [HTML]
 :::
 
-### Row actions
-
-Place any interactive element inside a `<l-tree-item>` to expose per-row actions (e.g. an `<l-dropdown>` menu, a button, a link). Clicks on `<button>`, `<a>`, `<input>` and elements with `role="button"` or `role="menuitem"` never toggle the row's selection or expansion.
-
-This demo is controlled from Vue state: the yellow `…` trigger is rendered only on the selected row via `v-if`, so clicking another row moves the button there without duplicating it in the DOM.
-
-<TreeActionsDemo />
-
-::: details Code
-::: code-group
-<<< @/.vitepress/components/TreeActionsDemo.vue [TreeActionsDemo.vue]
-<<< @/.vitepress/components/TreeActionsNode.vue [TreeActionsNode.vue]
-:::
-
 ### Multiple selection
 
 Set `selection="multiple"` to render a native checkbox on every item. Toggling a parent cascades the selection to its descendants and sets the indeterminate state when only some children are selected.
@@ -124,16 +110,29 @@ Add `lazy` to an item whose children will be fetched on first expand. The compon
 
 ## Examples
 
-### Comment thread
+### Row actions
 
-A discussion tree styled like a Reddit comment thread. Demonstrates stacking `prefix` (avatar), the default slot (multi-line content + action buttons), and swapped `expand-icon` / `collapse-icon` slots (`lucide:circle-plus` / `lucide:circle-minus`). The `::part(base)` and `::part(label)` are overridden to align content to the top and allow wrapping; `--indent-size` and `--indent-guide-width` are tuned for the denser look.
+Place any interactive element inside a `<l-tree-item>` to expose per-row actions (e.g. an `<l-dropdown>` menu, a button, a link). Clicks on `<button>`, `<a>`, `<input>` and elements with `role="button"` or `role="menuitem"` never toggle the row's selection or expansion.
 
-<TreeRedditDemo />
+This demo is controlled from Vue state: the yellow `…` trigger is rendered only on the selected row via `v-if`, so clicking another row moves the button there without duplicating it in the DOM.
+
+<TreeActionsDemo />
 
 ::: details Code
 ::: code-group
-<<< @/.vitepress/components/TreeRedditDemo.vue [TreeRedditDemo.vue]
-<<< @/.vitepress/components/TreeRedditComment.vue [TreeRedditComment.vue]
+<<< @/.vitepress/components/TreeActionsDemo.vue [TreeActionsDemo.vue]
+<<< @/.vitepress/components/TreeActionsNode.vue [TreeActionsNode.vue]
+:::
+
+### Project roadmap
+
+A roadmap of phases and tasks, where collapsing folds away phase details for a high-level overview. Demonstrates the `prefix` slot (per-row icon), the default slot (title), and the `content` slot (block-level description below the row — visible for leaves, hidden when a branch is collapsed). The `::part(base)` and `::part(label)` are overridden to top-align rows and let descriptions wrap.
+
+<TreeRoadmapDemo />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/components/TreeRoadmapDemo.vue [TreeRoadmapDemo.vue]
 :::
 
 ## Accessibility
