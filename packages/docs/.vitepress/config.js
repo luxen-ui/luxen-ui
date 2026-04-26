@@ -114,6 +114,11 @@ export default defineConfig({
         collapsed: false,
         items: [{ text: 'Agent Skills', link: '/resources/agent-skills' }],
       },
+      {
+        text: 'Resources',
+        collapsed: false,
+        items: [{ text: 'Changelog', link: '/resources/changelog' }],
+      },
     ],
   },
 

@@ -137,6 +137,36 @@ Components document CSS custom properties via JSDoc `@cssproperty` tags for mani
 - Node.js >= 24.x
 - pnpm (automatically used via `packageManager` field)
 
+## Release Process
+
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR with user-facing impact must include a `.changeset/*.md` file. The `🦋 Changeset` CI job fails the PR otherwise.
+
+### Adding a changeset to a PR
+
+```bash
+vp run changeset
+```
+
+The CLI prompts: which packages changed → patch/minor/major → write a one-paragraph summary in **user-facing language** (not implementation detail). Commit the generated `.changeset/*.md` file with your code changes.
+
+- **patch** — bug fix, no API change
+- **minor** — new feature, backward-compatible
+- **major** — breaking change
+
+For PRs with no user-facing impact (docs, CI, internal refactor), create an empty changeset:
+
+```bash
+vp run changeset --empty
+```
+
+### How a release happens
+
+1. PRs land on `main` with their changesets queued in `.changeset/`.
+2. The `🚀 Release` workflow opens (or updates) a single rolling **`chore: release`** PR that consumes all queued changesets, bumps versions, and regenerates `packages/ui/CHANGELOG.md`.
+3. Merging that PR triggers the same workflow again — this time it publishes to npm via `pnpm publish -r` and creates a GitHub Release.
+
+The `pnpm publish -r` command is critical: it resolves `catalog:` and `workspace:` protocols into concrete versions in the published tarball. Never publish via `npm publish` directly (that's how `luxen-ui@0.1.0` shipped broken).
+
 <!--VITE PLUS START-->
 
 # Using Vite+, the Unified Toolchain for the Web

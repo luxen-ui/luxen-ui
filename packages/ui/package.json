@@ -80,7 +80,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": false
+    "provenance": true
   },
   "scripts": {
     "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",

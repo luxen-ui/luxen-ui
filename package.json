@@ -7,9 +7,14 @@
     "lint": "vp lint",
     "format": "vp fmt",
     "format:check": "vp fmt --check",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "vp run -r --cache build && pnpm publish -r --access public",
     "prepare": "vp config"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.31.0",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "browserslist": "catalog:",
