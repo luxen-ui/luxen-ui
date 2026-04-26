@@ -36,7 +36,10 @@ jobs:
           publish: vp run release
           title: 'chore: release'
           commit: 'chore: release'
-          createGithubReleases: true
+          # Disabled during 0.x phase (lib under construction).
+          # Re-enable when going to 1.0 to officialize releases on the GitHub Releases page.
+          # Git tags are still created automatically by `pnpm publish` regardless of this flag.
+          # createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
