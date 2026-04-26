@@ -18,28 +18,28 @@ export default {
     });
 
     if (!import.meta.env.SSR) {
-      import('luxen-ui/avatar');
-      import('luxen-ui/badge');
-      import('luxen-ui/carousel');
-      import('luxen-ui/carousel-item');
-      import('luxen-ui/skeleton');
-      import('luxen-ui/spinner');
-      import('luxen-ui/popover');
-      import('luxen-ui/tooltip');
-      import('luxen-ui/input-otp');
-      import('luxen-ui/input-stepper');
-      import('luxen-ui/divider');
-      import('luxen-ui/icon');
-      import('luxen-ui/rating');
-      import('luxen-ui/dialog');
-      import('luxen-ui/drawer');
-      import('luxen-ui/dropdown');
-      import('luxen-ui/dropdown-item');
-      import('luxen-ui/tabs');
-      import('luxen-ui/tree');
-      import('luxen-ui/tree-item');
+      void import('luxen-ui/avatar');
+      void import('luxen-ui/badge');
+      void import('luxen-ui/carousel');
+      void import('luxen-ui/carousel-item');
+      void import('luxen-ui/skeleton');
+      void import('luxen-ui/spinner');
+      void import('luxen-ui/popover');
+      void import('luxen-ui/tooltip');
+      void import('luxen-ui/input-otp');
+      void import('luxen-ui/input-stepper');
+      void import('luxen-ui/divider');
+      void import('luxen-ui/icon');
+      void import('luxen-ui/rating');
+      void import('luxen-ui/dialog');
+      void import('luxen-ui/drawer');
+      void import('luxen-ui/dropdown');
+      void import('luxen-ui/dropdown-item');
+      void import('luxen-ui/tabs');
+      void import('luxen-ui/tree');
+      void import('luxen-ui/tree-item');
 
-      import('luxen-ui/toast').then(({ toast }) => {
+      void import('luxen-ui/toast').then(({ toast }) => {
         window.toast = toast;
       });
     }
