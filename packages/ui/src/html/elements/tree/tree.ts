@@ -330,7 +330,7 @@ export class LuxenTree extends LuxenElement {
   private _onFocusIn = (event: FocusEvent) => {
     const target = event.target;
     if (target instanceof HTMLElement) {
-      const item = target.closest(tagName('tree-item'));
+      const item = target.closest(tagName('tree-item')) as LuxenTreeItem | null;
       if (item) this._lastFocusedItem = item;
     }
   };
