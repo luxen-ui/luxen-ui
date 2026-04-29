@@ -4,12 +4,14 @@ node_modules
 
 # Build
 dist
-cdn
+packages/*/cdn
 storybook-static
 cache
 
 # Artefacts
 __screenshots__
+test-results
+playwright-report
 
 # System Files
 .DS_Store
@@ -21,3 +23,4 @@ Thumbs.db
 
 # AI Files
 .claude/settings.local.json
+.claude/plans

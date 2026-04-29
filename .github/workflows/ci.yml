@@ -26,6 +26,9 @@ jobs:
       - run: vp install
       - run: vp run luxen-ui#build
       - run: vp check
+      - run: vp run luxen-ui#test
+      - run: vp dlx playwright install chromium --with-deps
+      - run: vp run luxen-ui#test:e2e
 
   # 🏗️ Full build: CSS → TypeScript → CDN → Manifest
   build:

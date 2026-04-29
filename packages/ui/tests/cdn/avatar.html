@@ -1,0 +1,26 @@
+<!doctype html>
+<!--
+  CDN isolation test — loads luxen-ui from a CDN-equivalent origin.
+
+  Manual:    cd packages/ui && python3 -m http.server 8080 && open http://localhost:8080/tests/cdn/avatar.html
+  Automated: cd packages/ui && pnpm test:e2e
+  jsDelivr:  replace every "/cdn/..." below with "https://cdn.jsdelivr.net/npm/luxen-ui@x.y.z/cdn/..."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/cdn/styles/index.css" />
+    <script type="module">
+      import('/cdn/elements/avatar/index.js')
+        .then(() => (document.getElementById('status').textContent = '✅ avatar.js loaded'))
+        .catch((err) => (document.getElementById('status').textContent = '❌ ' + err.message));
+    </script>
+  </head>
+  <body>
+    <p id="status">⌛ loading…</p>
+    <l-avatar
+      class="probe"
+      name="Luxen User"
+    ></l-avatar>
+  </body>
+</html>
