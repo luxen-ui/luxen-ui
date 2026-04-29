@@ -6,7 +6,7 @@ Read this before writing the artifact.
 
 ## Starter template (copy into the artifact)
 
-Pin a concrete version — never `@latest`. Today's stable is `0.1.2`.
+Pin a minor range like `@0.1` (latest patch in `0.1.x`) — never `@latest`. The minor pin protects you from breaking changes in `0.2.0` while picking up patches automatically.
 
 ```html
 <!doctype html>
@@ -21,15 +21,15 @@ Pin a concrete version — never `@latest`. Today's stable is `0.1.2`.
     <!-- 1. Tokens + base reset (load once, before any element CSS or JS) -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/styles/index.css"
+      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/styles/index.css"
     />
 
     <!-- 2. One <script> per element you use. Each module side-effect-registers its
          custom element. Always import the element's index.js (the registrar),
          NOT its <name>.js (which only exports the class). -->
     <script type="module">
-      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/avatar/index.js';
-      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/badge/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/avatar/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/badge/index.js';
       // …one import per element used
     </script>
   </head>
@@ -70,7 +70,7 @@ Some have appearance-variant subdirectories (load the variant you use):
 If unsure which elements need a CSS link, fetch the authoritative file listing:
 
 ```
-https://data.jsdelivr.com/v1/package/npm/luxen-ui@0.1.2/flat
+https://data.jsdelivr.com/v1/package/npm/luxen-ui@0.1/flat
 ```
 
 Returns JSON `{"files":[{"name":"/cdn/styles/elements/badge.css", ...}, ...]}`. Anything under `cdn/styles/elements/` is loadable; if a CSS exists for the element, link it.
@@ -84,14 +84,14 @@ Returns JSON `{"files":[{"name":"/cdn/styles/elements/badge.css", ...}, ...]}`. 
 For each element's real attributes, slots, events, and CSS custom properties: read the CEM manifest. Same data is reachable at:
 
 ```
-https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/custom-elements.json
+https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/custom-elements.json
 ```
 
 Use this when writing tag attributes — don't invent attribute names.
 
 ## Don't
 
-- Don't pin to `@latest`. Pin a concrete version (`0.1.2` today).
+- Don't pin to `@latest`. Use a minor range like `@0.1` (latest patch in `0.1.x`) — `@latest` crosses minor bumps which can break in pre-1.0.
 - Don't use Tailwind utility classes for layout/colors. Use the `--l-*` design tokens defined in `cdn/styles/index.css`.
 - Don't fake a tag without consulting `custom-elements.json` for its real shape.
 - Don't import `cdn/elements/<name>/<name>.js` directly — that exports the class but doesn't call `customElements.define()`. Always import `cdn/elements/<name>/index.js`.

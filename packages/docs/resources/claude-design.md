@@ -51,14 +51,14 @@ Depuis `luxen-ui@0.1.2`, le package publie un dossier `cdn/` self-contained (lit
     <!-- Tokens + base reset -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/styles/index.css"
+      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/styles/index.css"
     />
 
     <!-- Une <script> par élément utilisé. Importer index.js (le registrar),
          pas <name>.js (qui n'exporte que la classe). -->
     <script type="module">
-      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/avatar/index.js';
-      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/badge/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/avatar/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/badge/index.js';
     </script>
   </head>
   <body>
