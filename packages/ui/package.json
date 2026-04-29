@@ -25,6 +25,7 @@
   },
   "files": [
     "dist/",
+    "cdn/",
     "vite-plugin.ts",
     "postcss-plugin-prefix.js",
     "README.md",
@@ -59,6 +60,7 @@
     "./dist/custom-elements.json": "./dist/custom-elements.json",
     "./dist/elements/*": "./dist/elements/*",
     "./dist/css/*": "./dist/css/*",
+    "./cdn/*": "./cdn/*",
     "./vite-plugin": "./vite-plugin.ts",
     "./postcss-plugin-prefix": "./postcss-plugin-prefix.js",
     "./*/element": {
@@ -85,11 +87,13 @@
   "scripts": {
     "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",
     "dev:elements": "vp dev",
-    "build": "vp build --config vite.config.css.ts && tsc && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/generate-skill.mjs",
+    "build": "vp build --config vite.config.css.ts && tsc && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/copy-cdn-assets.mjs && node scripts/generate-skill.mjs",
     "build:css": "vp build --config vite.config.css.ts",
     "build:skill": "node scripts/generate-skill.mjs",
     "manifest": "cem analyze --litelement --outdir dist",
-    "preview": "vp preview"
+    "preview": "vp preview",
+    "test": "vp test run --passWithNoTests",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:",
@@ -101,9 +105,12 @@
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "catalog:",
     "@custom-elements-manifest/to-markdown": "catalog:",
+    "@playwright/test": "^1.59.1",
     "@types/node": "catalog:",
     "autoprefixer": "catalog:",
     "css-extras": "catalog:",
+    "http-server": "^14.1.1",
+    "playwright": "^1.59.1",
     "postcss": "catalog:",
     "postcss-import": "catalog:",
     "tinyglobby": "catalog:",
