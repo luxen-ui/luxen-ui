@@ -112,7 +112,10 @@ export default defineConfig({
       {
         text: 'AI ✧',
         collapsed: false,
-        items: [{ text: 'Agent Skills', link: '/resources/agent-skills' }],
+        items: [
+          { text: 'Agent Skills', link: '/resources/agent-skills' },
+          { text: 'Claude Design', link: '/resources/claude-design' },
+        ],
       },
       {
         text: 'Resources',
