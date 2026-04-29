@@ -6,12 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@commitlint/cli':
-      specifier: ^20.5.2
-      version: 20.5.2
-    '@commitlint/config-conventional':
-      specifier: ^20.5.0
-      version: 20.5.0
     '@custom-elements-manifest/analyzer':
       specifier: ^0.11.0
       version: 0.11.0
@@ -27,18 +21,9 @@ catalogs:
     '@types/node':
       specifier: ^25.6.0
       version: 25.6.0
-    autoprefixer:
-      specifier: ^10.5.0
-      version: 10.5.0
-    browserslist:
-      specifier: ^4.28.2
-      version: 4.28.2
     css-extras:
       specifier: ^0.4.0
       version: 0.4.0
-    csskit:
-      specifier: ^0.0.20
-      version: 0.0.20
     embla-carousel:
       specifier: ^8.6.0
       version: 8.6.0
@@ -51,12 +36,6 @@ catalogs:
     lit:
       specifier: ^3.3.2
       version: 3.3.2
-    postcss:
-      specifier: ^8.5.10
-      version: 8.5.10
-    postcss-import:
-      specifier: ^16.1.1
-      version: 16.1.1
     tailwindcss:
       specifier: ^4.2.4
       version: 4.2.4
@@ -75,9 +54,6 @@ catalogs:
     vite-plus:
       specifier: ^0.1.19
       version: 0.1.19
-    vitepress:
-      specifier: 2.0.0-alpha.17
-      version: 2.0.0-alpha.17
 
 importers:
 
@@ -176,9 +152,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.6.0
-      autoprefixer:
-        specifier: 'catalog:'
-        version: 10.5.0(postcss@8.5.10)
       css-extras:
         specifier: 'catalog:'
         version: 0.4.0
@@ -188,12 +161,6 @@ importers:
       playwright:
         specifier: ^1.59.1
         version: 1.59.1
-      postcss:
-        specifier: 'catalog:'
-        version: 8.5.10
-      postcss-import:
-        specifier: 'catalog:'
-        version: 16.1.1(postcss@8.5.10)
       tailwindcss:
         specifier: 'catalog:'
         version: 4.2.4
@@ -4722,10 +4689,6 @@ packages:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
 
-  pify@2.3.0:
-    resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
-    engines: {node: '>=0.10.0'}
-
   pify@4.0.1:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
@@ -4799,12 +4762,6 @@ packages:
     engines: {node: ^18.12.0 || ^20.9.0 || >=22.0}
     peerDependencies:
       postcss: ^8.5.10
-
-  postcss-import@16.1.1:
-    resolution: {integrity: sha512-2xVS1NCZAfjtVdvXiyegxzJ447GyqCeEI5V7ApgQVOWnros1p5lGNovJNapwPpMombyFBfqDwt7AD3n2l0KOfQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      postcss: ^8.0.0
 
   postcss-merge-longhand@7.0.6:
     resolution: {integrity: sha512-lDsWeKRsssX/9vKFpingoRiuvGajtOGCJhs1kyaTJ5fzaVzs0aPPYe38UZ/ukMFEA5iuRIjQJHIkH2niYO3ubQ==}
@@ -4979,9 +4936,6 @@ packages:
 
   rc9@3.0.1:
     resolution: {integrity: sha512-gMDyleLWVE+i6Sgtc0QbbY6pEKqYs97NGi6isHQPqYlLemPoO8dxQ3uGi0f4NiP98c+jMW6cG1Kx9dDwfvqARQ==}
-
-  read-cache@1.0.0:
-    resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
 
   read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
@@ -10623,8 +10577,6 @@ snapshots:
 
   picomatch@4.0.4: {}
 
-  pify@2.3.0: {}
-
   pify@4.0.1: {}
 
   pixelmatch@7.1.0:
@@ -10696,13 +10648,6 @@ snapshots:
   postcss-discard-overridden@7.0.2(postcss@8.5.10):
     dependencies:
       postcss: 8.5.10
-
-  postcss-import@16.1.1(postcss@8.5.10):
-    dependencies:
-      postcss: 8.5.10
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.0
-      resolve: 1.22.12
 
   postcss-merge-longhand@7.0.6(postcss@8.5.10):
     dependencies:
@@ -10859,10 +10804,6 @@ snapshots:
     dependencies:
       defu: 6.1.7
       destr: 2.0.5
-
-  read-cache@1.0.0:
-    dependencies:
-      pify: 2.3.0
 
   read-yaml-file@1.1.0:
     dependencies:
