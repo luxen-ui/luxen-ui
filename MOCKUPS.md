@@ -4,19 +4,9 @@ Instructions for AI assistants composing single-page HTML mockups (Claude.ai art
 
 Read this before writing the artifact.
 
-## ⚠️ Current state — `luxen-ui@0.1.1` does NOT load from any ESM CDN
+## Starter template (copy into the artifact)
 
-The published package is broken for direct CDN/sandbox use. Verified failing on esm.sh, jsDelivr, unpkg, skypack. Root cause:
-
-- `dist/elements/*/*.js` contains unresolved Vite directives like `import rawStyles from './avatar.css?inline'`. CDNs cannot resolve `?inline` → 404.
-- The `cdn/` build folder (where Vite resolves these) is not in the `files` array of `package.json`, so it is absent from the npm tarball.
-- The published per-element CSS files (`dist/css/elements/*.css`) only contain top-level composition styles (e.g. `.l-avatar-group`). The actual element visuals are embedded as JS strings applied to the shadow DOM — unreachable without working JS.
-
-**Until the package is patched, do NOT use a `<script type="module" src=".../luxen-ui">"` import in artifacts. It will fail.**
-
-## What works today — visual mockups with real Luxen tokens
-
-Use this approach for static mockups. `l-*` tags stay as **unknown elements** (no behavior, no Shadow DOM), but they get styled with real Luxen design tokens for color/spacing/radius/typography fidelity.
+Pin a concrete version — never `@latest`. Today's stable is `0.1.2`.
 
 ```html
 <!doctype html>
@@ -28,102 +18,86 @@ Use this approach for static mockups. `l-*` tags stay as **unknown elements** (n
       content="width=device-width, initial-scale=1"
     />
 
-    <!-- Real Luxen design tokens (--l-color-*, --l-space-*, etc.) and base reset -->
+    <!-- 1. Tokens + base reset (load once, before any element CSS or JS) -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1.1/dist/css/index.css"
+      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/styles/index.css"
     />
 
-    <style>
-      /* Hand-rolled rules per <l-*> tag using real Luxen tokens.
-       This replaces the shadow-DOM CSS we can't load from JS. */
-      l-avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        background: var(--l-color-surface-2);
-        color: var(--l-color-text);
-        font-weight: 600;
-        overflow: hidden;
-      }
-      l-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      l-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.125rem 0.5rem;
-        border-radius: var(--l-radius-full, 9999px);
-        background: var(--l-color-brand-100);
-        color: var(--l-color-brand-700);
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      /* …add a small block per <l-*> tag you actually use */
-    </style>
+    <!-- 2. One <script> per element you use. Each module side-effect-registers its
+         custom element. Always import the element's index.js (the registrar),
+         NOT its <name>.js (which only exports the class). -->
+    <script type="module">
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/avatar/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/elements/badge/index.js';
+      // …one import per element used
+    </script>
   </head>
   <body>
-    <l-avatar>LX</l-avatar>
+    <l-avatar name="Luxen User"></l-avatar>
     <l-badge>Beta</l-badge>
   </body>
 </html>
 ```
 
-Why this is better than nothing:
+That's it. After registration, every `l-*` is a real custom element with shadow DOM, lifecycle, and behavior — focus traps, positioning, events all work.
 
-- **Real tokens**: colors, spacing, radius, typography all match the design system.
-- **Tags read like the real API**: `<l-avatar>`, `<l-badge>` etc. — when ported to a real Luxen page, only the hand-rolled `<style>` block is dropped.
-- **No infrastructure**: zero JS, zero dependency on a working ESM CDN.
+## Per-element load rule
 
-Limits:
+For every `<l-foo>` tag in the body, add **one** `<script type="module">` import for its `index.js` on jsDelivr. Tokens CSS is loaded once at the top, regardless of how many elements you use.
 
-- ❌ No `customElements.define()`, no Shadow DOM, no behavior.
-- ❌ `<l-tooltip>` doesn't position. `<l-dialog>` doesn't trap focus. `<l-rating>` is a static picture. `<l-dropdown>` doesn't open.
-- ❌ Don't try to mockup interactive flows that depend on real component behavior.
+## Path derivation
 
-Use this for static visual mockups (cards, page layouts, hero sections). For anything interactive, see the higher-fidelity options below.
+For tag `<l-foo>`:
 
-## Higher-fidelity options (require setup)
+- JS module: `https://cdn.jsdelivr.net/npm/luxen-ui@<version>/cdn/elements/foo/index.js`
+- The `l-` prefix is dropped; element names map 1:1 to directory basenames.
 
-When the workaround isn't enough:
+### Light-DOM elements need an extra CSS link
 
-1. **Vendor source from the repo** — copy `packages/ui/src/html/elements/<name>/*` and shared deps into the design project, serve them locally. Lossy: re-vendor on every release.
-2. **Local self-contained bundle** — run a Vite build locally with `noExternal: true` to produce a single `.js` inlining `lit` + `@floating-ui/dom` + `iconify-icon` + `embla-carousel` + all elements. Host on a Gist, raw GitHub, or pinned branch. Real components, real behavior.
-3. **Wait for the package fix** — see "Long-term fix" below.
+A few light-DOM elements (`l-badge`, `l-divider`, `l-toast`, `l-input-stepper`, `l-tabs`) ship their styles as separate CSS rather than inlined in JS. Add the per-element CSS too:
 
-## Element APIs
+- `https://cdn.jsdelivr.net/npm/luxen-ui@<version>/cdn/styles/elements/badge.css`
+- `https://cdn.jsdelivr.net/npm/luxen-ui@<version>/cdn/styles/elements/divider.css`
+- …etc.
 
-For each element's real attributes, slots, events, and CSS custom properties: read `packages/ui/custom-elements.json` (the CEM manifest). Same data is reachable at:
+Some have appearance-variant subdirectories (load the variant you use):
+
+- `cdn/styles/elements/close-button/{ring,square,circle}.css`
+- `cdn/styles/elements/input-stepper/{default,rounded}.css`
+- `cdn/styles/elements/tabs/{line,enclosed}.css`
+
+If unsure which elements need a CSS link, fetch the authoritative file listing:
 
 ```
-https://cdn.jsdelivr.net/npm/luxen-ui@0.1.1/custom-elements.json
+https://data.jsdelivr.com/v1/package/npm/luxen-ui@0.1.2/flat
 ```
 
-Use this when writing tag attributes — do not invent attribute names.
+Returns JSON `{"files":[{"name":"/cdn/styles/elements/badge.css", ...}, ...]}`. Anything under `cdn/styles/elements/` is loadable; if a CSS exists for the element, link it.
 
 ## Available `l-*` tags
 
 `l-avatar`, `l-badge`, `l-carousel`, `l-carousel-item`, `l-dialog`, `l-divider`, `l-drawer`, `l-dropdown`, `l-dropdown-item`, `l-icon`, `l-input-otp`, `l-input-stepper`, `l-popover`, `l-rating`, `l-skeleton`, `l-spinner`, `l-tabs`, `l-toast`, `l-tooltip`, `l-tree`, `l-tree-item`.
 
+## Element APIs
+
+For each element's real attributes, slots, events, and CSS custom properties: read the CEM manifest. Same data is reachable at:
+
+```
+https://cdn.jsdelivr.net/npm/luxen-ui@0.1.2/cdn/custom-elements.json
+```
+
+Use this when writing tag attributes — don't invent attribute names.
+
 ## Don't
 
-- Don't use a `<script type="module"> import 'https://esm.sh/luxen-ui@0.1.1/...'` in an artifact — it will 404 on `?inline` lookups.
-- Don't pin to `@latest`. Pin a concrete version.
-- Don't use Tailwind utility classes for layout/colors. Use the `--l-*` design tokens defined in `dist/css/index.css`.
+- Don't pin to `@latest`. Pin a concrete version (`0.1.2` today).
+- Don't use Tailwind utility classes for layout/colors. Use the `--l-*` design tokens defined in `cdn/styles/index.css`.
 - Don't fake a tag without consulting `custom-elements.json` for its real shape.
+- Don't import `cdn/elements/<name>/<name>.js` directly — that exports the class but doesn't call `customElements.define()`. Always import `cdn/elements/<name>/index.js`.
 
-## Long-term fix (for maintainers)
+## Notes for specific elements
 
-The package needs one of:
-
-1. **Inline CSS at build time** — replace the `tsc`-generated `dist/elements/*/*.js` (which keeps `?inline` raw) with a Vite-built `dist/` where Vite resolves the directive into an embedded string.
-2. **Publish `cdn/`** — add `"cdn/"` to the `files` array, AND change `vite.config.ts` to bundle deps (`build.rollupOptions.external = []` or use `vite-plugin-singlefile`-equivalent) so CDNs serve a self-contained module.
-
-After the fix, this file should switch back to a CDN-loading template that produces real custom elements. Until then, the workaround above is the supported path.
+- **`<l-icon>`** proxies to `iconify-icon`, which fetches icon sets at runtime from `api.iconify.design`. Works in artifacts, requires network egress.
+- **Form elements** (`l-input-otp`, `l-input-stepper`) render correctly but don't submit data without a custom form handler. Fine for visual mockups, not form-logic prototypes.
+- **Dark mode**: tokens use `light-dark()`. To force a mode in a mockup, set `color-scheme: dark` (or `light`) on `<html>`.
