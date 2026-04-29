@@ -42,72 +42,39 @@ Pour un projet de design system axé sur les visuels + tokens + règles de compo
 
 ## Comment rendre les composants réels dans une maquette
 
-::: danger BUG DE PACKAGING — `luxen-ui@0.1.1` ne se charge sur AUCUN CDN ESM
-Le package publié est cassé pour la consommation directe via CDN (esm.sh, jsDelivr, unpkg, skypack). Cause exacte :
-
-1. Le `dist/` publié contient des imports Vite non transformés du type `import rawStyles from './avatar.css?inline'`. Le `?inline` est une directive Vite, pas un import JS valide → tous les CDN ESM cassent dessus.
-2. Le dossier `cdn/` (build Vite avec ces directives résolues) **n'est pas inclus dans le `files` du `package.json`** → absent du tarball npm.
-3. Le CSS publié seul ne suffit pas : le vrai style de chaque composant est embarqué en string JS via `unsafeCSS(rawStyles)` et appliqué au shadow DOM. Charger uniquement le CSS donne des composants quasi vides.
-
-Conséquence : le template "CDN-loading" qui semble logique sur le papier ne marche pas en pratique sur la version publiée actuelle. Il faut soit patcher le package (fix long-terme), soit utiliser un workaround.
-:::
-
-### Workaround immédiat (visuel uniquement, pas de comportement)
-
-Pour une maquette statique avec un ou deux composants simples (`l-avatar`, `l-badge`), Claude Design peut écrire les tags comme **éléments inconnus** + **CSS hand-rolled** qui utilise les **vrais design tokens Luxen**. Au moins les couleurs/espacements/rayons correspondent au DS.
+Depuis `luxen-ui@0.1.2`, le package publie un dossier `cdn/` self-contained (lit, floating-ui, iconify-icon bundlés en chunks, CSS shadow DOM inliné dans le JS). Un seul `<script type="module">` par élément suffit pour qu'il soit upgradé en vrai custom element avec shadow DOM, lifecycle, et comportement (focus traps, positioning, events).
 
 ```html
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <!-- Tokens réels (--l-color-*, --l-space-*, etc.) -->
+    <!-- Tokens + base reset -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1.1/dist/css/index.css"
+      href="https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/styles/index.css"
     />
-    <style>
-      l-avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        background: var(--l-color-surface-2);
-        color: var(--l-color-text);
-        font-weight: 600;
-        overflow: hidden;
-      }
-      l-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    </style>
+
+    <!-- Une <script> par élément utilisé. Importer index.js (le registrar),
+         pas <name>.js (qui n'exporte que la classe). -->
+    <script type="module">
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/avatar/index.js';
+      import 'https://cdn.jsdelivr.net/npm/luxen-ui@0.1/cdn/elements/badge/index.js';
+    </script>
   </head>
   <body>
-    <l-avatar>LX</l-avatar>
-    <l-avatar
-      ><img
-        src="https://i.pravatar.cc/64"
-        alt=""
-    /></l-avatar>
+    <l-avatar name="Luxen User"></l-avatar>
+    <l-badge>Beta</l-badge>
   </body>
 </html>
 ```
 
-Limites : pas de `customElements.define()`, pas de comportement, pas de Shadow DOM. Visuel approchant uniquement. Convient aux maquettes statiques, pas aux prototypes interactifs.
+Le template complet (avec règles de path derivation, exceptions appearance, fallback API jsDelivr) vit dans `MOCKUPS.md` à la racine du dépôt — c'est lui qu'il faut pointer explicitement à Claude Design en début de conversation.
 
-### Approches à fidélité croissante
+### Pourquoi `esm.sh` ne marche pas (et pourquoi jsDelivr suffit)
 
-1. **CSS tokens + tags inconnus + style à la main** ↑ — décrit ci-dessus. Marche tout de suite.
-2. **Vendor du code source** — copier `packages/ui/src/html/*.js` + le CSS dans le projet de design et le servir localement. Lourd, à re-vendor à chaque release.
-3. **Bundler local self-contained** — lancer un build Vite local avec `noExternal: true` pour produire un seul `.js` qui inline lit + floating-ui + iconify-icon + embla et tous les éléments. Héberger le bundle (Gist, GitHub raw, repo branch). Fidélité 1:1 avec les vrais composants.
-4. **Fix du package** — patcher le build pour que `dist/` ne contienne plus de directives Vite non résolues, OU ajouter `cdn/` au `files` du `package.json` avec un build qui bundle les deps. C'est la solution propre, long-terme.
+Le `dist/` publié contient des directives Vite non transformées (`import rawStyles from './avatar.css?inline'`) — c'est un trou dans le path npm-consumer pour les bundlers non-Vite. esm.sh tente de les résoudre et casse en 404. Mais le `cdn/` (introduit en `0.1.2`) est un build Vite avec ces directives résolues : tous les imports sont relatifs, les CSS shadow sont inlinés en string JS. jsDelivr le sert tel quel, aucune ré-écriture nécessaire.
 
-### Pourquoi `esm.sh` ne suffit pas
-
-Même si `esm.sh` ré-écrit normalement les imports nus (`lit`, `@floating-ui/dom`, etc.), il ne sait pas gérer la directive `?inline` de Vite. Il la transforme en `./avatar.css?inline.mjs` qui n'existe pas → 404. Le problème n'est pas la résolution des deps de premier niveau, c'est la directive de build Vite-spécifique embarquée dans le code transpilé par `tsc`.
+→ **Pour les maquettes : toujours jsDelivr + `/cdn/...`, jamais esm.sh + `/dist/...`.**
 
 ## Lecture des fichiers du dépôt
 
@@ -121,7 +88,7 @@ Claude Design lit les fichiers **à la demande, quand on lui pointe ou quand il 
 
 Claude Design ne connaît pas a priori les chemins exacts des CSS/JS publiés. Deux mécanismes pour qu'il les trouve :
 
-1. **Convention de nommage** — pour `<l-foo>`, le CSS est à `dist/css/elements/foo.css`, le JS à `luxen-ui@<version>/foo` sur esm.sh. Préfixe `l-` retiré, mapping 1:1.
+1. **Convention de nommage** — pour `<l-foo>`, le JS registrar est à `cdn/elements/foo/index.js`, le CSS optionnel à `cdn/styles/elements/foo.css`. Préfixe `l-` retiré, mapping 1:1.
 2. **API jsDelivr de listing** — `https://data.jsdelivr.com/v1/package/npm/luxen-ui@<version>/flat` retourne l'arborescence complète du package en JSON. Claude Design peut la fetcher pour vérifier qu'un chemin existe avant d'écrire un `<link>`.
 
 Les exceptions à la convention (sous-dossiers `appearance`) sont documentées dans `MOCKUPS.md`.
@@ -138,7 +105,7 @@ Les exceptions à la convention (sous-dossiers `appearance`) sont documentées d
 - ✅ Lire n'importe quel fichier du dépôt (markdown, JSON, code source) si on le lui demande ou s'il l'explore.
 - ✅ Charger des modules ESM publics dans les artefacts (jsDelivr, esm.sh, unpkg).
 - ✅ Suivre des instructions repo-resident — à condition d'y être pointé explicitement.
-- ✅ Utiliser `custom-elements.json` (CEM manifest) comme source de vérité pour les attributs/slots/events des éléments — accessible via `https://cdn.jsdelivr.net/npm/luxen-ui@<version>/custom-elements.json`.
+- ✅ Utiliser `custom-elements.json` (CEM manifest) comme source de vérité pour les attributs/slots/events des éléments — accessible via `https://cdn.jsdelivr.net/npm/luxen-ui@<version>/cdn/custom-elements.json`.
 
 ## TL;DR
 
