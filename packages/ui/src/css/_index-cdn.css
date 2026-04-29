@@ -1,0 +1,5 @@
+/* CDN-only entry — opts the rest of the CSS into Tailwind v4's pipeline so
+   @theme blocks resolve to :root declarations at build time. The bundler-
+   source entry (./index.css) stays untouched. */
+@import 'tailwindcss/theme.css';
+@import './index.css';

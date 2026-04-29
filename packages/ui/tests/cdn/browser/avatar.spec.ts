@@ -22,4 +22,16 @@ test('avatar.html upgrades <l-avatar> from cdn/ bundle', async ({ page }) => {
     return Boolean(el?.shadowRoot?.querySelector('.base'));
   });
   expect(hasBase, 'shadow render output (.base) is missing').toBe(true);
+
+  // Tokens loaded from cdn/styles/index.css must be resolved at runtime
+  // (i.e. @theme blocks were processed by Tailwind v4 at build time and
+  // emitted as :root declarations). If this is empty, the browser ignored
+  // unprocessed @theme directives and components will render unstyled.
+  const tokenValue = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--l-color-text-primary').trim(),
+  );
+  expect(
+    tokenValue,
+    '--l-color-text-primary did not resolve — cdn/styles/index.css ships unprocessed @theme blocks',
+  ).not.toBe('');
 });
