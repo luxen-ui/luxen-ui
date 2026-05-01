@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { version } from '../../../../ui/package.json';
 
 const prefixes = ['l-', 'acme-', 'pulse-'];
 const current = ref(0);
@@ -112,7 +113,7 @@ const railTags = [
           height="26"
         />
         <span>luxen-ui</span>
-        <small class="ver">v0.1.0</small>
+        <small class="ver">v{{ version }}</small>
         <span class="badge-preview">//&nbsp;public&nbsp;preview</span>
       </a>
       <div class="topbar-end">

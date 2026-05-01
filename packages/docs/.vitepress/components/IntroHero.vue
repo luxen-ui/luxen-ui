@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { version } from '../../../ui/package.json';
 
 const copied = ref(false);
 let copyTimer = null;
@@ -103,7 +104,7 @@ function copyInstall() {
         </button>
 
         <span class="ver-row">
-          <small class="ver">v0.1.0</small>
+          <small class="ver">v{{ version }}</small>
           <span class="badge-preview">//&nbsp;public&nbsp;preview</span>
         </span>
       </div>
