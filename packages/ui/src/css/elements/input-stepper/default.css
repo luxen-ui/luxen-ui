@@ -3,18 +3,18 @@
 @layer components {
   @scope (l-input-stepper:not([appearance]), l-input-stepper[appearance='default']) {
     :scope {
-      border: 1px solid var(--_border-color);
-      border-radius: var(--_border-radius);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
       background-color: var(--l-color-surface);
       min-height: var(--_button-size);
     }
 
     button:first-of-type {
-      border-radius: var(--_border-radius) 0 0 var(--_border-radius);
+      border-radius: var(--border-radius) 0 0 var(--border-radius);
     }
 
     button:last-of-type {
-      border-radius: 0 var(--_border-radius) var(--_border-radius) 0;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
     }
 
     :scope:has(input:disabled) {
@@ -29,8 +29,8 @@
      since no buttons exist to push the content area beyond min-height. */
   @scope (l-input-stepper:not(:defined):not([appearance]), l-input-stepper:not(:defined)[appearance='default']) {
     :scope {
-      border: 1px solid var(--_border-color);
-      border-radius: var(--_border-radius);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
       background-color: var(--l-color-surface);
       min-height: calc(var(--_button-size) + 2px);
     }

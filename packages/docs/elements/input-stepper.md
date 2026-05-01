@@ -189,5 +189,6 @@ import 'luxen-ui/input-stepper';
 ### CSS custom properties
 
 <ApiTable :data="[
+  { Name: '--border-color', Description: 'Border color of the stepper container (default appearance) and of each button (rounded appearance). Defaults to `--l-color-border`.' },
   { Name: '--border-radius', Description: 'Border radius of the stepper container (default appearance)' },
 ]" />

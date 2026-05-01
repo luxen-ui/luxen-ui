@@ -30,8 +30,8 @@
 
     :scope {
       --_button-size: var(--l-size-control-md);
-      --_border-color: var(--l-color-border);
-      --_border-radius: var(--border-radius, var(--radius-md));
+      --border-color: var(--l-color-border);
+      --border-radius: var(--radius-md);
       --_button-bg-hover: var(--l-color-bg-fill-neutral-soft);
       --_button-bg-active: var(--l-color-bg-fill-neutral-subtle);
 
