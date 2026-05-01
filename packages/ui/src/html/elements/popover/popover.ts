@@ -20,7 +20,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @cssproperty --background - Background color. Default: `Canvas`.
  * @cssproperty --color - Text color. Default: inherited.
- * @cssproperty --radius - Border radius. Default `8px`.
+ * @cssproperty --border-radius - Border radius. Default `8px`.
  * @cssproperty --max-width - Maximum width. Default `320px`.
  * @cssproperty --shadow - Box shadow.
  * @cssproperty --arrow-size - Arrow size. Default `8px`.
@@ -60,6 +60,10 @@ export class LuxenPopover extends LuxenElement {
   /** Hide the directional arrow. */
   @property({ type: Boolean, reflect: true, attribute: 'without-arrow' })
   accessor withoutArrow = false;
+
+  /** Stretch the popover to the viewport width. Useful for mega menus. */
+  @property({ type: Boolean, reflect: true, attribute: 'full-width' })
+  accessor fullWidth = false;
 
   /** Space-separated list of trigger modes: `click`, `hover`, `focus`, `manual`. */
   @property()
@@ -122,7 +126,11 @@ export class LuxenPopover extends LuxenElement {
     const popover = this._popoverEl;
     if (!popover) return;
 
-    const posOpts = { placement: this.placement, distance: this.distance };
+    const posOpts = {
+      placement: this.placement,
+      distance: this.distance,
+      fullWidth: this.fullWidth,
+    };
 
     if (this.open) {
       popover.showPopover();

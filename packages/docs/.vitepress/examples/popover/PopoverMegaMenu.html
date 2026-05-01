@@ -1,74 +1,176 @@
-<nav class="flex items-center gap-2">
-  <button
-    id="mega-products"
-    class="l-button"
+<style>
+  #demo-mega l-popover::part(body) {
+    border: 0;
+    border-bottom: 1px solid var(--l-color-divider);
+  }
+</style>
+
+<nav
+  id="demo-mega"
+  class="vp-raw -mx-3 -my-6 bg-[var(--vp-c-bg)] border-b border-[var(--l-color-divider)]"
+>
+  <div class="flex items-center px-4">
+    <button
+      id="mega-women"
+      class="cursor-pointer px-5 py-4 text-sm font-medium hover:underline underline-offset-[6px]"
+    >
+      Femme
+    </button>
+    <button
+      id="mega-men"
+      class="cursor-pointer px-5 py-4 text-sm font-medium hover:underline underline-offset-[6px]"
+    >
+      Homme
+    </button>
+    <button
+      id="mega-kids"
+      class="cursor-pointer px-5 py-4 text-sm font-medium hover:underline underline-offset-[6px]"
+    >
+      Enfant
+    </button>
+  </div>
+
+  <l-popover
+    for="mega-women"
+    trigger="hover"
+    placement="bottom-start"
+    distance="1"
+    full-width
+    without-arrow
+    style="--shadow: none; --border-radius: 0; --show-duration: 0ms; --hide-duration: 0ms"
   >
-    Products
-  </button>
-  <button
-    id="mega-resources"
-    class="l-button"
+    <div class="max-w-5xl mx-auto grid grid-cols-4 gap-8 px-6 py-6">
+      <div>
+        <p class="font-medium mb-3">Vêtements</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Nouveautés</button>
+          <button class="cursor-pointer hover:underline">Robes</button>
+          <button class="cursor-pointer hover:underline">Tops & T-shirts</button>
+          <button class="cursor-pointer hover:underline">Mailles</button>
+          <button class="cursor-pointer hover:underline">Manteaux & vestes</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Chaussures</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Sneakers</button>
+          <button class="cursor-pointer hover:underline">Bottes</button>
+          <button class="cursor-pointer hover:underline">Escarpins</button>
+          <button class="cursor-pointer hover:underline">Ballerines</button>
+          <button class="cursor-pointer hover:underline">Sandales</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Accessoires</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Sacs</button>
+          <button class="cursor-pointer hover:underline">Bijoux</button>
+          <button class="cursor-pointer hover:underline">Ceintures</button>
+          <button class="cursor-pointer hover:underline">Lunettes</button>
+          <button class="cursor-pointer hover:underline">Foulards</button>
+        </div>
+      </div>
+      <div class="rounded-lg bg-gray-100 p-4 cursor-pointer hover:bg-gray-200">
+        <span class="block text-xs uppercase tracking-wide text-gray-500 mb-1">À la une</span>
+        <span class="block font-medium mb-1">Collection printemps 2026</span>
+        <span class="block text-sm text-gray-600">Jusqu'à -30 % cette semaine.</span>
+      </div>
+    </div>
+  </l-popover>
+
+  <l-popover
+    for="mega-men"
+    trigger="hover"
+    placement="bottom-start"
+    distance="1"
+    full-width
+    without-arrow
+    style="--shadow: none; --border-radius: 0; --show-duration: 0ms; --hide-duration: 0ms"
   >
-    Resources
-  </button>
+    <div class="max-w-5xl mx-auto grid grid-cols-4 gap-8 px-6 py-6">
+      <div>
+        <p class="font-medium mb-3">Vêtements</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Nouveautés</button>
+          <button class="cursor-pointer hover:underline">Chemises</button>
+          <button class="cursor-pointer hover:underline">T-shirts & polos</button>
+          <button class="cursor-pointer hover:underline">Jeans</button>
+          <button class="cursor-pointer hover:underline">Vestes & manteaux</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Chaussures</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Sneakers</button>
+          <button class="cursor-pointer hover:underline">Bottes</button>
+          <button class="cursor-pointer hover:underline">Mocassins</button>
+          <button class="cursor-pointer hover:underline">Sandales</button>
+          <button class="cursor-pointer hover:underline">Ville</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Accessoires</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Montres</button>
+          <button class="cursor-pointer hover:underline">Portefeuilles</button>
+          <button class="cursor-pointer hover:underline">Ceintures</button>
+          <button class="cursor-pointer hover:underline">Lunettes</button>
+          <button class="cursor-pointer hover:underline">Sacs</button>
+        </div>
+      </div>
+      <div class="rounded-lg bg-gray-100 p-4 cursor-pointer hover:bg-gray-200">
+        <span class="block text-xs uppercase tracking-wide text-gray-500 mb-1">À la une</span>
+        <span class="block font-medium mb-1">Workwear essentiel</span>
+        <span class="block text-sm text-gray-600">Les basiques pour la nouvelle saison.</span>
+      </div>
+    </div>
+  </l-popover>
+
+  <l-popover
+    for="mega-kids"
+    trigger="hover"
+    placement="bottom-start"
+    distance="1"
+    full-width
+    without-arrow
+    style="--shadow: none; --border-radius: 0; --show-duration: 0ms; --hide-duration: 0ms"
+  >
+    <div class="max-w-5xl mx-auto grid grid-cols-4 gap-8 px-6 py-6">
+      <div>
+        <p class="font-medium mb-3">Fille</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Nouveautés</button>
+          <button class="cursor-pointer hover:underline">Robes</button>
+          <button class="cursor-pointer hover:underline">Hauts</button>
+          <button class="cursor-pointer hover:underline">Bas</button>
+          <button class="cursor-pointer hover:underline">Pyjamas</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Garçon</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Nouveautés</button>
+          <button class="cursor-pointer hover:underline">T-shirts</button>
+          <button class="cursor-pointer hover:underline">Pantalons</button>
+          <button class="cursor-pointer hover:underline">Sweats</button>
+          <button class="cursor-pointer hover:underline">Pyjamas</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-medium mb-3">Bébé</p>
+        <div class="flex flex-col items-start gap-1.5 text-sm text-gray-600">
+          <button class="cursor-pointer hover:underline">Naissance</button>
+          <button class="cursor-pointer hover:underline">Bodies</button>
+          <button class="cursor-pointer hover:underline">Pyjamas</button>
+          <button class="cursor-pointer hover:underline">Tenues de sortie</button>
+          <button class="cursor-pointer hover:underline">Accessoires</button>
+        </div>
+      </div>
+      <div class="rounded-lg bg-gray-100 p-4 cursor-pointer hover:bg-gray-200">
+        <span class="block text-xs uppercase tracking-wide text-gray-500 mb-1">À la une</span>
+        <span class="block font-medium mb-1">Retour en classe</span>
+        <span class="block text-sm text-gray-600">Tout pour la rentrée 2026.</span>
+      </div>
+    </div>
+  </l-popover>
 </nav>
-
-<l-popover
-  for="mega-products"
-  trigger="hover"
-  placement="bottom-start"
-  without-arrow
-  style="--max-width: none; --show-duration: 0ms; --hide-duration: 0ms"
->
-  <div
-    class="grid grid-cols-2 gap-4 p-2"
-    style="width: 420px"
-  >
-    <div>
-      <p class="font-medium mb-1">Analytics</p>
-      <p class="text-sm text-gray-500">Understand your traffic and usage patterns.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Automation</p>
-      <p class="text-sm text-gray-500">Streamline repetitive tasks and workflows.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Integrations</p>
-      <p class="text-sm text-gray-500">Connect with the tools you already use.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Security</p>
-      <p class="text-sm text-gray-500">Enterprise-grade protection built in.</p>
-    </div>
-  </div>
-</l-popover>
-
-<l-popover
-  for="mega-resources"
-  trigger="hover"
-  placement="bottom-start"
-  without-arrow
-  style="--max-width: none; --show-duration: 0ms; --hide-duration: 0ms"
->
-  <div
-    class="grid grid-cols-2 gap-4 p-2"
-    style="width: 420px"
-  >
-    <div>
-      <p class="font-medium mb-1">Documentation</p>
-      <p class="text-sm text-gray-500">Guides, tutorials and API references.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Blog</p>
-      <p class="text-sm text-gray-500">Latest news and product updates.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Community</p>
-      <p class="text-sm text-gray-500">Join the conversation and get help.</p>
-    </div>
-    <div>
-      <p class="font-medium mb-1">Changelog</p>
-      <p class="text-sm text-gray-500">Track every release and improvement.</p>
-    </div>
-  </div>
-</l-popover>

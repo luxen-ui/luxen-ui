@@ -75,9 +75,9 @@ Hover the button and move your cursor toward the popover. The safe polygon keeps
 
 ### Mega menu
 
-Hover-triggered popovers with rich content for navigation menus.
+E-commerce style mega menu: `full-width` stretches the popover to the viewport, `--show-duration: 0ms` makes it appear instantly on hover.
 
-<ComponentWrapper :html="popoverMegaMenu" />
+<ComponentWrapper :html="popoverMegaMenu" vertical />
 
 ::: details Code
 ::: code-group
@@ -129,6 +129,7 @@ import 'luxen-ui/popover';
   { Attribute: 'distance', Description: 'Offset from trigger in px. Default `8`' },
   { Attribute: 'open', Description: 'Whether popover is visible. Reflects to attribute' },
   { Attribute: 'without-arrow', Description: 'Hide the directional arrow' },
+  { Attribute: 'full-width', Description: 'Stretch the popover to the viewport width. Useful for mega menus — typically combined with `without-arrow`' },
   { Attribute: 'trigger', Description: 'Space-separated trigger modes: `click` (default), `hover`, `focus`, `manual`' },
 ]" />
 
@@ -145,7 +146,7 @@ import 'luxen-ui/popover';
 <ApiTable :data="[
   { Name: '--background', Description: 'Background color. Default: `Canvas`' },
   { Name: '--color', Description: 'Text color. Default: inherited' },
-  { Name: '--radius', Description: 'Border radius. Default `8px`' },
+  { Name: '--border-radius', Description: 'Border radius. Default `8px`' },
   { Name: '--max-width', Description: 'Maximum width. Default `320px`' },
   { Name: '--shadow', Description: 'Box shadow' },
   { Name: '--arrow-size', Description: 'Arrow size. Default `8px`' },

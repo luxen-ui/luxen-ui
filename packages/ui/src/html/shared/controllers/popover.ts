@@ -229,6 +229,7 @@ export interface PopoverControllerConfig {
 export interface PositionOptions {
   placement: Placement;
   distance: number;
+  fullWidth?: boolean;
 }
 
 type TriggerHandlers = {
@@ -290,8 +291,9 @@ export class PopoverController implements ReactiveController {
 
     Object.assign(floating.style, {
       position: 'fixed',
-      left: `${x}px`,
+      left: options.fullWidth ? '0px' : `${x}px`,
       top: `${y}px`,
+      width: options.fullWidth ? '100vw' : '',
     });
 
     if (placement !== this._currentPlacement) {
