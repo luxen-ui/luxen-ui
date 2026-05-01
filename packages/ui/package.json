@@ -35,7 +35,8 @@
   "sideEffects": [
     "*.css",
     "**/define.js",
-    "**/registry.js"
+    "**/registry.js",
+    "**/elements/*/index.js"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
