@@ -16,6 +16,14 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // Pin a non-default port to avoid collisions with sibling Vite projects.
+    // When IPv4 is taken, Vite silently falls back to IPv6-only and Firefox
+    // happy-eyeballs hits the half-bound socket → NS_ERROR_NET_RESET.
+    server: {
+      host: '127.0.0.1',
+      port: 5273,
+      strictPort: true,
+    },
     build: {
       assetsInlineLimit: 0,
     },
