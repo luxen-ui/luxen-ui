@@ -1,35 +1,41 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { useData } from 'vitepress';
 
 const props = defineProps({
   css: { type: String, required: true },
   html: { type: String, required: true },
 });
 
+const { isDark } = useData();
 const tokens = ref('');
 
-onMounted(() => {
+const VARS = [
+  '--l-color-border',
+  '--l-color-border-disabled',
+  '--l-color-surface',
+  '--l-color-text-primary',
+  '--l-color-text-disabled',
+  '--l-color-bg-fill-neutral-soft',
+  '--l-color-bg-fill-neutral-subtle',
+  '--l-color-bg-disabled',
+  '--l-focus-ring',
+  '--l-size-control-xs',
+  '--l-size-control-sm',
+  '--l-size-control-md',
+  '--l-size-control-lg',
+  '--l-size-control-xl',
+  '--radius-md',
+  '--radius-full',
+];
+
+const readTokens = () => {
   const root = getComputedStyle(document.documentElement);
-  const vars = [
-    '--l-color-border',
-    '--l-color-border-disabled',
-    '--l-color-surface',
-    '--l-color-text-primary',
-    '--l-color-text-disabled',
-    '--l-color-bg-fill-neutral-soft',
-    '--l-color-bg-fill-neutral-subtle',
-    '--l-color-bg-disabled',
-    '--l-focus-ring',
-    '--l-size-control-xs',
-    '--l-size-control-sm',
-    '--l-size-control-md',
-    '--l-size-control-lg',
-    '--l-size-control-xl',
-    '--radius-md',
-    '--radius-full',
-  ];
-  tokens.value = vars.map((v) => `${v}: ${root.getPropertyValue(v).trim()};`).join('\n  ');
-});
+  tokens.value = VARS.map((v) => `${v}: ${root.getPropertyValue(v).trim()};`).join('\n  ');
+};
+
+onMounted(readTokens);
+watch(isDark, () => nextTick(readTokens));
 
 const srcdoc = computed(
   () => `<!DOCTYPE html>
@@ -38,7 +44,7 @@ const srcdoc = computed(
 <meta charset="utf-8" />
 <style>
 :root {
-  color-scheme: light dark;
+  color-scheme: ${isDark.value ? 'dark' : 'light'};
   ${tokens.value}
 }
 ${props.css}

@@ -45,7 +45,7 @@
     ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
      🅵🅾🆄🅲🅴 🅿🆁🅴🆅🅴🅽🆃🅸🅾🅽
     ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-    Reserve button space before JS loads. Native spin buttons remain as fallback.
+    Reserve button space before JS loads to avoid layout shift when buttons mount.
     */
 
     :scope:not(:defined) {
@@ -54,12 +54,6 @@
 
     :scope:defined {
       padding-inline: 0;
-    }
-
-    input::-webkit-inner-spin-button,
-    input::-webkit-outer-spin-button {
-      appearance: none;
-      margin: 0;
     }
 
     /*
@@ -132,8 +126,7 @@
     */
 
     input {
-      -moz-appearance: textfield;
-      appearance: none;
+      appearance: textfield;
       box-sizing: border-box;
       font-family: inherit;
       font-size: inherit;
@@ -205,5 +198,14 @@
     :scope:has(input:disabled) {
       color: var(--l-color-text-disabled);
     }
+  }
+
+  /* Hide native spinners — kept outside @scope because Safari ignores
+     ::-webkit-*-spin-button rules nested inside @scope blocks. */
+  l-input-stepper input::-webkit-inner-spin-button,
+  l-input-stepper input::-webkit-outer-spin-button {
+    appearance: none;
+    display: none;
+    margin: 0;
   }
 }
