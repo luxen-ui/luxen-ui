@@ -12,7 +12,20 @@ function el(name, tag, link) {
 
 export default defineConfig({
   title: 'Luxen UI',
-  description: 'An HTML & CSS-first UI library built with modern CSS and HTML custom elements',
+  titleTemplate: ':title — Luxen UI',
+  description:
+    'Native HTML, modern CSS, progressive custom elements. Shadow DOM only when it pays off. Rename the l- prefix to white-label your design system.',
+
+  sitemap: {
+    hostname: 'https://luxen-ui.com',
+    transformItems: (items) =>
+      items.filter(
+        (item) =>
+          !item.url.startsWith('_internal/') &&
+          !item.url.endsWith('AGENTS.html') &&
+          !item.url.endsWith('CLAUDE.html'),
+      ),
+  },
 
   vite: {
     plugins: [tailwindcss()],
@@ -144,6 +157,60 @@ export default defineConfig({
         href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sora:wght@400;500;600;700&display=swap',
         crossorigin: '',
       },
+    ],
+    ['link', { rel: 'canonical', href: 'https://luxen-ui.com/' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'Luxen UI' }],
+    [
+      'meta',
+      {
+        property: 'og:title',
+        content: 'Luxen UI — HTML-first UI library of custom elements',
+      },
+    ],
+    [
+      'meta',
+      {
+        property: 'og:description',
+        content:
+          'Native HTML, modern CSS, progressive custom elements. Shadow DOM only when it pays off. Rename the l- prefix to white-label your design system.',
+      },
+    ],
+    ['meta', { property: 'og:url', content: 'https://luxen-ui.com/' }],
+    ['meta', { property: 'og:image', content: 'https://luxen-ui.com/luxen.png' }],
+    ['meta', { property: 'og:image:alt', content: 'Luxen UI — HTML-first design system' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    [
+      'meta',
+      {
+        name: 'twitter:title',
+        content: 'Luxen UI — HTML-first UI library of custom elements',
+      },
+    ],
+    [
+      'meta',
+      {
+        name: 'twitter:description',
+        content:
+          'Native HTML, modern CSS, progressive custom elements. Rename the l- prefix to white-label your design system.',
+      },
+    ],
+    ['meta', { name: 'twitter:image', content: 'https://luxen-ui.com/luxen.png' }],
+    [
+      'script',
+      { type: 'application/ld+json' },
+      JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareSourceCode',
+        name: 'Luxen UI',
+        description:
+          'Native HTML, modern CSS, progressive custom elements. Shadow DOM only when it pays off.',
+        url: 'https://luxen-ui.com/',
+        codeRepository: 'https://github.com/luxen-ui/luxen-ui',
+        programmingLanguage: ['HTML', 'CSS', 'TypeScript'],
+        license: 'https://github.com/luxen-ui/luxen-ui/blob/main/LICENSE',
+        author: { '@type': 'Organization', name: 'Luxen UI', url: 'https://luxen-ui.com/' },
+      }),
     ],
   ],
 });

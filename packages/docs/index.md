@@ -3,6 +3,8 @@ layout: page
 sidebar: false
 aside: false
 outline: false
+title: Luxen UI — HTML-first UI library of custom elements
+titleTemplate: false
 ---
 
 <LandingTerminal />
