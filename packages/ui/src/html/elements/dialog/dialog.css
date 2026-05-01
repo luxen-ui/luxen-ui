@@ -1,6 +1,7 @@
 :host {
   --width: 31rem;
   --border-radius: 6px;
+  --padding: 1.5rem;
   --show-duration: 200ms;
   --hide-duration: 200ms;
   --backdrop: var(--l-backdrop);
@@ -58,7 +59,7 @@ dialog {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: 1.5rem;
+  padding: var(--padding);
 }
 
 [part='title'] {
@@ -69,7 +70,7 @@ dialog {
 }
 
 [part='body'] {
-  padding: 0 1.5rem;
+  padding-inline: var(--padding);
   overflow-y: auto;
 }
 
@@ -77,7 +78,7 @@ dialog {
   display: flex;
   place-content: end;
   gap: 0.5rem;
-  padding: 1.5rem;
+  padding: var(--padding);
 }
 
 ::slotted(menu[slot='footer']) {

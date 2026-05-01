@@ -42,6 +42,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  *
  * @cssproperty --width - Dialog width. Default `31rem`.
  * @cssproperty --border-radius - Dialog border radius. Default `6px`.
+ * @cssproperty --padding - Padding applied to the header, footer, and inline-padding of the body. Default `1.5rem`. Set to `0` to remove all internal spacing (e.g. for edge-to-edge media).
  * @cssproperty --show-duration - Open transition duration. Default `200ms`.
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
  * @cssproperty --backdrop - Backdrop color.
