@@ -82,7 +82,7 @@ Add `autofocus` to any focusable element inside the dialog to focus it automatic
 
 <AccessibilityTable :data="[
   { Check: 'Role', Description: 'Rendered as a native `<dialog>` in the shadow root — built-in `dialog` role and modal semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'The `title` property is rendered as an `<h2>` inside the dialog header', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Accessible name', Description: 'The `title` property renders as an `<h2>` in the header, or provide a custom heading via `slot=&quot;title&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
   { Check: 'Focus management', Description: 'Focus is trapped inside the modal; moves to the first focusable element on open', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
   { Check: 'Focus restoration', Description: 'Focus returns to the trigger element when the dialog closes', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
   { Check: 'Close button', Description: 'Consumer provides the close button via `slot=&quot;close&quot;` with `aria-label=&quot;Close&quot;`', WCAG: '[WCAG 2.4.6](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels)' },
@@ -119,6 +119,7 @@ import 'luxen-ui/dialog';
   { Attribute: 'title', Description: 'Dialog title rendered in the header as an `<h2>`' },
   { Attribute: 'open', Description: 'Whether the dialog is open. Reflects to attribute' },
   { Attribute: 'light-dismiss', Description: 'Close when the backdrop is clicked' },
+  { Attribute: 'without-header', Description: 'Hide the header entirely (title and close slot)' },
 ]" />
 
 ### Commands
@@ -143,6 +144,7 @@ Open and close the dialog by toggling its `open` property, or via the [Invoker C
 
 <ApiTable :data="[
   { Slot: '(default)', Description: 'Body content' },
+  { Slot: 'title', Description: 'Custom heading element. Overrides the default `<h2>` rendered from the `title` property' },
   { Slot: 'close', Description: 'Close button (typically `<button class=&quot;l-close&quot;>`)' },
   { Slot: 'footer', Description: 'Footer actions' },
 ]" />
