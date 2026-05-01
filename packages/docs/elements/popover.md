@@ -23,7 +23,7 @@ Popovers are used to display rich interactive content in a floating panel anchor
 
 ### Basic
 
-Reference a trigger element by ID using the `for` attribute. Clicks toggle the popover; clicking outside closes it.
+Reference a trigger element by ID using the `for` attribute. Clicks toggle the popover; clicking outside closes it. The popover does not apply any padding — wrap the slotted content in a container with the spacing you want.
 
 <ComponentWrapper :html="popoverBasic" />
 

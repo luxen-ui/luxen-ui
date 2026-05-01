@@ -167,7 +167,7 @@ onUnmounted(() => {
         trigger="hover"
         placement="right"
       >
-        <div class="flex flex-col gap-2 p-1">
+        <div class="flex flex-col gap-2 px-4 py-3">
           <p class="font-medium">Safe area demo</p>
           <p class="text-sm text-gray-500">
             The <span style="color: rgb(239 68 68)">red polygon</span> keeps the popover open while

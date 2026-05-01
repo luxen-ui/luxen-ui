@@ -188,7 +188,7 @@ Luxen elements come in four flavors: ⏣ **Native HTML Elements** are standard H
 </button>
 
 <l-popover for="edit-btn">
-  <p>Popover content here.</p>
+  <p class="px-4 py-3">Popover content here.</p>
 </l-popover>
 ```
 
