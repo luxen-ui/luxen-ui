@@ -5,6 +5,8 @@ import { useData } from 'vitepress';
 const props = defineProps({
   css: { type: String, required: true },
   html: { type: String, required: true },
+  height: { type: [Number, String], default: 150 },
+  direction: { type: String, default: 'row' },
 });
 
 const { isDark } = useData();
@@ -58,8 +60,9 @@ body {
   background: transparent;
   color: light-dark(#172b4d, #e6edf3);
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: ${props.direction};
+  flex-wrap: ${props.direction === 'column' ? 'nowrap' : 'wrap'};
+  align-items: ${props.direction === 'column' ? 'flex-start' : 'center'};
   gap: 16px;
   box-sizing: border-box;
 }
@@ -75,6 +78,6 @@ body {
     :srcdoc="srcdoc"
     class="vp-raw component-wrapper bg-surface-sunken w-full border-0"
     scrolling="no"
-    height="150"
+    :height="height"
   />
 </template>

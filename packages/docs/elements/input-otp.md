@@ -8,6 +8,8 @@ import otpFourDigits from '../.vitepress/examples/input-otp/InputOtpFourDigits.h
 import otpSeparator from '../.vitepress/examples/input-otp/InputOtpSeparator.html?raw'
 import otpDisabled from '../.vitepress/examples/input-otp/InputOtpDisabled.html?raw'
 import otpSizes from '../.vitepress/examples/input-otp/InputOtpSizes.html?raw'
+import otpCustom from '../.vitepress/examples/input-otp/InputOtpCustom.html?raw'
+import notDefinedCss from 'luxen-ui/css/input-otp?raw'
 </script>
 
 # Input OTP <Badge type="tip">&lt;input&gt;</Badge>
@@ -23,7 +25,7 @@ A single native `<input>` with visual digit cells for one-time passcode entry. T
 
 ### Default
 
-<ComponentWrapper :html="otpDefault" />
+<ComponentWrapper vertical :html="otpDefault" />
 
 ::: details Code
 ::: code-group
@@ -34,7 +36,7 @@ A single native `<input>` with visual digit cells for one-time passcode entry. T
 
 Set `--digits` on `<l-input-otp>` to change the number of cells. The element automatically sets `maxlength` and `pattern` on the input.
 
-<ComponentWrapper :html="otpFourDigits" />
+<ComponentWrapper vertical :html="otpFourDigits" />
 
 ::: details Code
 ::: code-group
@@ -45,7 +47,7 @@ Set `--digits` on `<l-input-otp>` to change the number of cells. The element aut
 
 Add `separator-after` attribute to insert a visual dash after the specified position (e.g., `separator-after="3"` for a 3-3 grouping).
 
-<ComponentWrapper :html="otpSeparator" />
+<ComponentWrapper vertical :html="otpSeparator" />
 
 ::: details Code
 ::: code-group
@@ -62,6 +64,36 @@ Set the `size` attribute on `<l-input-otp>`: `sm`, `md` (default), `lg`.
 ::: code-group
 <<< @/.vitepress/examples/input-otp/InputOtpSizes.html [HTML]
 :::
+
+### Custom colors
+
+Override the `--cell-*` properties to retheme. Set `--cell-focus-ring` to a full `box-shadow` value (or `none`) to customize the active state. Target `.l-input-otp-cell` for typography tweaks.
+
+<ComponentWrapper vertical :html="otpCustom" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/input-otp/InputOtpCustom.html [HTML]
+:::
+
+### Not defined
+
+Before JS loads (`:not(:defined)`), CSS reserves the exact box the cells will occupy — a single soft-tinted rectangle, not per-cell artwork. Width tracks `--digits`, `--cell-size`, and `--cell-gap` so layout doesn't shift on hydration, and the tint follows `--cell-bg-color` so custom themes carry over.
+
+<NotDefinedPreview :css="notDefinedCss" direction="column" :height="240" html='<l-input-otp size="sm"><input /></l-input-otp><l-input-otp><input /></l-input-otp><l-input-otp size="lg"><input /></l-input-otp>' />
+
+::: details Code
+::: code-group
+
+```html [HTML]
+<l-input-otp>
+  <input />
+</l-input-otp>
+```
+
+:::
+
+Once upgraded, the custom element replaces the input with its visual cells container.
 
 ### Disabled
 
@@ -131,6 +163,11 @@ Set `--digits` on `<l-input-otp>` to change the digit count.
 
 <ApiTable :data="[
   { Name: '--digits', Description: 'Number of digit cells (default: `6`). Drives `maxlength` and `pattern` automatically' },
-  { Name: '--size', Description: 'Cell width and height (default: `2.75rem`). Font size scales automatically from this value' },
-  { Name: '--gap', Description: 'Space between cells (default: `0.5rem`)' },
+  { Name: '--cell-size', Description: 'Cell width and height (default: `2.75rem`). Font size scales automatically from this value' },
+  { Name: '--cell-gap', Description: 'Space between cells (default: `0.5rem`)' },
+  { Name: '--cell-bg-color', Description: 'Cell background color' },
+  { Name: '--cell-border-color', Description: 'Cell border color' },
+  { Name: '--cell-border-radius', Description: 'Cell border-radius' },
+  { Name: '--cell-focus-color', Description: 'Border + ring color of the active (focused) cell' },
+  { Name: '--cell-focus-ring', Description: 'Full `box-shadow` value of the active cell ring (default: `0 0 0 1px var(--cell-focus-color)`). Set to `none` to disable' },
 ]" />

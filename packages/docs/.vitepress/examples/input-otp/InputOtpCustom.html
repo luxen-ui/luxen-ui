@@ -1,0 +1,31 @@
+<style>
+  #demo-otp-custom {
+    --cell-size: 3.5rem;
+    --cell-gap: 0.75rem;
+    --cell-bg-color: white;
+    --cell-border-color: oklch(0.92 0.01 270);
+    --cell-border-radius: 1rem;
+    --cell-focus-color: oklch(0.55 0.25 275);
+    --cell-focus-ring: 0 0 0 4px color-mix(in oklab, var(--cell-focus-color) 22%, transparent);
+  }
+
+  #demo-otp-custom .l-input-otp-cell {
+    font-family: inherit;
+    font-weight: 700;
+  }
+</style>
+
+<label
+  for="otp-custom"
+  class="block mb-2 text-sm font-semibold text-slate-700"
+  >Label</label
+>
+<l-input-otp
+  id="demo-otp-custom"
+  style="--digits: 4"
+>
+  <input
+    id="otp-custom"
+    value="4200"
+  />
+</l-input-otp>

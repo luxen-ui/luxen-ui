@@ -11,8 +11,13 @@ import { LuxenElement } from '../../shared/luxen-element';
  * @customElement l-input-otp
  *
  * @cssproperty --digits - Number of digit boxes (default: 6). Must match input's maxlength.
- * @cssproperty --size - Cell width and height (default: 2.75rem). Font size scales automatically.
- * @cssproperty --gap - Space between cells (default: 0.5rem).
+ * @cssproperty --cell-size - Cell width and height (default: 2.75rem). Font size scales automatically.
+ * @cssproperty --cell-gap - Space between cells (default: 0.5rem).
+ * @cssproperty --cell-bg-color - Cell background color.
+ * @cssproperty --cell-border-color - Cell border color.
+ * @cssproperty --cell-border-radius - Cell border-radius.
+ * @cssproperty --cell-focus-color - Border + ring color of the active (focused) cell.
+ * @cssproperty --cell-focus-ring - `box-shadow` of the active cell ring (defaults to a 1px solid ring; set to `none` to disable).
  */
 export class LuxenInputOtp extends LuxenElement {
   override createRenderRoot() {
@@ -92,11 +97,12 @@ export class LuxenInputOtp extends LuxenElement {
     // Populate cells if input already has a value (e.g. disabled with prefilled value)
     this._updateCells();
 
-    // Events
+    // Events — focus is deferred so it runs after the click that triggered it
+    // (otherwise selectionStart is stale and the active cell flickers).
     this._input.addEventListener('input', this._updateCells);
     this._input.addEventListener('click', this._updateCells);
     this._input.addEventListener('keyup', this._updateCells);
-    this._input.addEventListener('focus', this._updateCells);
+    this._input.addEventListener('focus', this._scheduleUpdateCells);
     this._input.addEventListener('blur', this._clearCells);
   }
 
@@ -106,7 +112,7 @@ export class LuxenInputOtp extends LuxenElement {
     this._input.removeEventListener('input', this._updateCells);
     this._input.removeEventListener('click', this._updateCells);
     this._input.removeEventListener('keyup', this._updateCells);
-    this._input.removeEventListener('focus', this._updateCells);
+    this._input.removeEventListener('focus', this._scheduleUpdateCells);
     this._input.removeEventListener('blur', this._clearCells);
 
     // Restore input to direct child
@@ -151,5 +157,9 @@ export class LuxenInputOtp extends LuxenElement {
     for (const cell of this._cells) {
       cell.removeAttribute('data-active');
     }
+  };
+
+  private _scheduleUpdateCells = (): void => {
+    requestAnimationFrame(this._updateCells);
   };
 }
