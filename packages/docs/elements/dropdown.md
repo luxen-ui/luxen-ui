@@ -8,6 +8,7 @@ import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabl
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
 import dropdownDisabled from '../.vitepress/examples/dropdown/DropdownDisabled.html?raw'
+import dropdownAccountMenu from '../.vitepress/examples/dropdown/DropdownAccountMenu.html?raw'
 </script>
 
 # Dropdown <Badge type="tip">&lt;l-dropdown&gt;</Badge>
@@ -74,6 +75,19 @@ Add `disabled` to prevent opening.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownDisabled.html [HTML]
+:::
+
+## Examples
+
+### Account menu
+
+Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-item>` for a leading icon, and `<l-divider>` between groups for section breaks — `<l-dropdown>` tightens slotted `<l-divider>` spacing automatically.
+
+<ComponentWrapper :html="dropdownAccountMenu" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownAccountMenu.html [HTML]
 :::
 
 ## Accessibility
@@ -146,11 +160,21 @@ import 'luxen-ui/dropdown-item';
   { Event: 'select', Description: 'Fired when an item is selected. Detail: `{ item }`' },
 ]" />
 
+### Slots
+
+<ApiTable :data="[
+  { Slot: 'trigger', Description: 'The element that opens the dropdown' },
+  { Slot: 'header', Description: 'Optional content rendered above the menu items (e.g. a user profile row)' },
+  { Slot: '(default)', Description: '`l-dropdown-item` elements. Add `<l-divider>` (or `<hr>`) between items to render a section separator' },
+  { Slot: 'footer', Description: 'Optional content rendered below the menu items (e.g. a version label or shortcut row)' },
+]" />
+
 ### CSS custom properties
 
 <ApiTable :data="[
   { Name: '--background', Description: 'Panel background color. Default: `Canvas`' },
   { Name: '--border-radius', Description: 'Panel border radius. Default `8px`' },
+  { Name: '--padding', Description: 'Panel inner padding. Default `0.25rem`. Slotted `<l-divider>` elements bleed by this amount to span panel edges' },
   { Name: '--shadow', Description: 'Panel box shadow' },
   { Name: '--show-duration', Description: 'Show animation duration in ms. Default `150`' },
   { Name: '--hide-duration', Description: 'Hide animation duration in ms. Default `150`' },

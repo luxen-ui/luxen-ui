@@ -1,4 +1,6 @@
 :host {
+  --padding: 0.25rem;
+
   --background: var(--l-color-bg-surface, Canvas);
   --border-radius: 6px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 6%);
@@ -19,7 +21,7 @@
   box-sizing: border-box;
   width: max-content;
   min-width: anchor-size(width);
-  padding: 0.25rem;
+  padding: var(--padding);
   margin: 0;
   border: 1px solid var(--l-color-border-overlay, light-dark(#e5e7eb, #374151));
   border-radius: var(--border-radius);
@@ -28,4 +30,13 @@
   box-shadow: var(--shadow);
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+/* Lightweight separator alternative to <l-divider> — same dimensions, no extra import. */
+::slotted(hr) {
+  height: 1px;
+  margin-block: var(--padding);
+  margin-inline: calc(var(--padding) * -1);
+  border: 0;
+  background: var(--l-color-divider);
 }

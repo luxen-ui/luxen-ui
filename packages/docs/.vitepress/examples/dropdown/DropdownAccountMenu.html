@@ -1,0 +1,71 @@
+<l-dropdown>
+  <l-avatar
+    slot="trigger"
+    interactive
+    name="Jane Cooper"
+    aria-label="Account"
+    style="--appearance: circle; --color: var(--color-purple-200)"
+  ></l-avatar>
+
+  <div
+    slot="header"
+    class="flex items-center gap-3 px-2 py-2"
+  >
+    <l-avatar
+      name="Jane Cooper"
+      style="--appearance: circle; --color: var(--color-purple-200)"
+    ></l-avatar>
+    <div class="flex flex-col">
+      <span class="text-sm font-medium text-primary">jane.cooper@acme.com</span>
+      <span class="text-xs text-secondary">Super admin</span>
+    </div>
+  </div>
+
+  <l-divider></l-divider>
+
+  <l-dropdown-item value="profile">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:user-round-cog"
+    ></iconify-icon>
+    Manage profile
+  </l-dropdown-item>
+  <l-dropdown-item value="preferences">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:settings"
+    ></iconify-icon>
+    Preferences
+  </l-dropdown-item>
+  <l-dropdown-item value="help">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:life-buoy"
+    ></iconify-icon>
+    Get help
+  </l-dropdown-item>
+
+  <l-divider></l-divider>
+
+  <l-dropdown-item value="signout">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:log-out"
+    ></iconify-icon>
+    Sign out
+  </l-dropdown-item>
+
+  <l-divider></l-divider>
+
+  <div
+    slot="footer"
+    class="flex items-center justify-between gap-2 px-2 py-1.5 text-xs text-secondary"
+  >
+    <span>v1.2.3</span>
+    <a
+      class="hover:underline"
+      href="#"
+      >Documentation</a
+    >
+  </div>
+</l-dropdown>

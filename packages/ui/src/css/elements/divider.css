@@ -52,6 +52,13 @@
     padding-inline: var(--spacing-2, 0.5rem);
   }
 
+  /* Compact form when slotted into <l-dropdown>: bleed to panel edges, tighten spacing. */
+  l-dropdown l-divider:not([orientation='vertical']) {
+    margin-block: var(--padding, 0.25rem);
+    margin-inline: calc(var(--padding, 0.25rem) * -1);
+    width: auto;
+  }
+
   /*
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
    vertical

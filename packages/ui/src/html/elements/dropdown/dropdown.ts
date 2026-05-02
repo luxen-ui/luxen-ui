@@ -14,12 +14,15 @@ const styles = unsafeCSS(rawStyles);
  * A dropdown menu anchored to a trigger element.
  *
  * @slot trigger - The element that triggers the dropdown.
- * @slot - Menu content (`l-dropdown-item` elements).
+ * @slot header - Optional content rendered above the menu items (e.g. a user profile row). Use an `<l-divider>` (or `<hr>`) after it to separate from items.
+ * @slot - Menu content (`l-dropdown-item` elements). Drop an `<l-divider>` (or `<hr>`) between items to render a section separator.
+ * @slot footer - Optional content rendered below the menu items (e.g. a version label or shortcut row). Use an `<l-divider>` (or `<hr>`) before it to separate from items.
  *
  * @csspart panel - The floating menu container.
  *
  * @cssproperty --background - Panel background color.
  * @cssproperty --border-radius - Panel border radius. Default `8px`.
+ * @cssproperty --padding - Panel inner padding. Default `0.25rem`. Slotted `<l-divider>` elements bleed by this amount on each side to span the panel edges.
  * @cssproperty --shadow - Panel box shadow.
  * @cssproperty --show-duration - Show animation duration in ms. Default `150`.
  * @cssproperty --hide-duration - Hide animation duration in ms. Default `150`.
@@ -208,8 +211,14 @@ export class LuxenDropdown extends LuxenElement {
 
   // --- Event handlers ---
 
-  private _onTriggerClick = () => {
-    if (!this.disabled) this.toggle();
+  private _onTriggerClick = (e: MouseEvent) => {
+    if (this.disabled) return;
+    this.toggle();
+    // Space/Enter on a native button dispatches click with detail=0; focus the
+    // first item so the menu is keyboard-navigable immediately on open.
+    if (this.open && e.detail === 0) {
+      requestAnimationFrame(() => this._focusFirstItem());
+    }
   };
 
   private _onTriggerKeyDown = (e: KeyboardEvent) => {
@@ -305,12 +314,15 @@ export class LuxenDropdown extends LuxenElement {
       <div
         popover="auto"
         part="panel"
-        role="menu"
         @keydown=${this._onPanelKeyDown}
         @click=${this._onItemClick}
         @toggle=${this._onToggle}
       >
-        <slot></slot>
+        <slot name="header"></slot>
+        <div role="menu">
+          <slot></slot>
+        </div>
+        <slot name="footer"></slot>
       </div>
     `;
   }
