@@ -69,16 +69,26 @@ dialog {
   line-height: 1.4;
 }
 
+/* Pin body and footer so the layout stays correct when [without-header]
+   removes the header and only two children auto-place into the grid. */
 [part='body'] {
+  grid-row: 2;
   padding-inline: var(--padding);
   overflow-y: auto;
 }
 
 [part='footer'] {
+  grid-row: 3;
   display: flex;
   place-content: end;
   gap: 0.5rem;
   padding: var(--padding);
+}
+
+/* Without a header, the body has to provide its own block-start padding
+   (normally inherited visually from the header padding above it). */
+:host([without-header]) [part='body'] {
+  padding-block-start: var(--padding);
 }
 
 ::slotted(menu[slot='footer']) {

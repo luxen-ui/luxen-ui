@@ -8,6 +8,7 @@ import dialogLightDismiss from '../.vitepress/examples/dialog/DialogLightDismiss
 import dialogScrollableContent from '../.vitepress/examples/dialog/DialogScrollableContent.html?raw'
 import dialogBlurredBackdrop from '../.vitepress/examples/dialog/DialogBlurredBackdrop.html?raw'
 import dialogForm from '../.vitepress/examples/dialog/DialogForm.html?raw'
+import dialogWithoutHeader from '../.vitepress/examples/dialog/DialogWithoutHeader.html?raw'
 </script>
 
 # Dialog <Badge type="tip">&lt;l-dialog&gt;</Badge>
@@ -74,6 +75,17 @@ Add `autofocus` to any focusable element inside the dialog to focus it automatic
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dialog/DialogForm.html [HTML]
+:::
+
+### Without header
+
+Add `without-header` to drop the header row entirely (title and close slot). Useful for confirmation prompts where the body already carries the heading. Provide an accessible heading inside the body and rely on `Escape` or a footer action to close.
+
+<ComponentWrapper :html="dialogWithoutHeader" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dialog/DialogWithoutHeader.html [HTML]
 :::
 
 ## Accessibility

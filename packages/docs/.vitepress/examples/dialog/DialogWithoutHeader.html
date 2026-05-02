@@ -1,0 +1,61 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-without-header"
+>
+  Delete account
+</button>
+
+<l-dialog
+  id="dialog-without-header"
+  without-header
+>
+  <div class="grid justify-items-center gap-3 pb-2 text-center">
+    <span
+      class="flex size-12 items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
+    >
+      <svg
+        class="size-6"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 9v4" />
+        <path d="M12 17h.01" />
+        <path
+          d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+        />
+      </svg>
+    </span>
+    <h2 class="text-lg font-semibold">Delete your account?</h2>
+    <p class="text-sm">
+      This action is permanent and cannot be undone. All your data, including projects and billing
+      history, will be erased.
+    </p>
+  </div>
+  <menu slot="footer">
+    <button
+      autofocus
+      type="button"
+      class="l-button"
+      command="--hide"
+      commandfor="dialog-without-header"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="l-button"
+      data-variant="destructive"
+      command="--hide"
+      commandfor="dialog-without-header"
+    >
+      Delete account
+    </button>
+  </menu>
+</l-dialog>
