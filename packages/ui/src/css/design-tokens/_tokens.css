@@ -46,14 +46,17 @@
   /* Semi-transparent backdrop behind modals, dialogs, drawers, and any overlay that dims the page content. Darker in dark mode for better contrast against dark surfaces. */
   --l-backdrop: light-dark(oklch(46% 0.01 260 / 33%), oklch(15% 0.01 260 / 60%));
 
-  /* Default border for form controls, secondary buttons, inputs, and selects. */
-  --l-color-border: light-dark(var(--color-gray-400), var(--color-gray-800));
+  /* Default border for form controls, secondary buttons, inputs, selects, and any element that needs a thin neutral outline. Visible enough to delimit the element without competing with surrounding content. */
+  --l-color-border: light-dark(var(--color-gray-300), var(--color-gray-600));
 
   /* Subtle divider line for separating content sections, list items, and card groups. Lighter than --l-color-border to avoid visual competition with interactive element borders. */
   --l-color-divider: light-dark(var(--color-gray-200), var(--color-gray-700));
 
   /* Subtle border or ring for interactive elements like close buttons, toggles, and icon buttons on hover. Provides low-contrast visual feedback without competing with primary content. */
   --l-color-border-interactive: light-dark(var(--color-gray-300), var(--color-gray-600));
+
+  /* Border for floating surfaces like popovers, dropdowns, menus, tooltips, and combobox listboxes. Aliases --l-color-border so overlays stay visually consistent with form controls, but exposed as a separate semantic so consumers can soften overlay borders independently if needed. Pairs with --l-color-surface-overlay. */
+  --l-color-border-overlay: var(--l-color-border);
 
   /* Border color for disabled form controls, buttons, and interactive elements. Faded to signal non-interactivity. */
   --l-color-border-disabled: light-dark(var(--color-gray-300), var(--color-gray-700));

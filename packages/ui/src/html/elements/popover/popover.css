@@ -1,14 +1,14 @@
 :host {
   --background: var(--l-color-bg-surface, Canvas);
   --color: inherit;
-  --border-radius: 8px;
+  --border-radius: 6px;
   --max-width: 320px;
-  --shadow: 0 4px 16px rgb(0 0 0 / 12%);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 6%);
   --arrow-size: 8px;
   --show-duration: 150ms;
   --hide-duration: 150ms;
 
-  --_border-color: var(--l-color-border, light-dark(#e5e7eb, #374151));
+  --_border-color: var(--l-color-border-overlay, light-dark(#e5e7eb, #374151));
 
   display: contents;
 }

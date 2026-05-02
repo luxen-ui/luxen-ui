@@ -24,7 +24,7 @@
       var(--l-color-text-primary)
     );
     --background-color-hover: var(--background-color-active);
-    --font-size: var(--text-md);
+    --font-size: var(--text-sm);
     --text-color: var(--l-color-text-primary);
     --text-color-hover: var(--text-color);
     --border-color: var(--l-color-border);
