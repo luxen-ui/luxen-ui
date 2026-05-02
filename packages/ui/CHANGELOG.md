@@ -1,5 +1,44 @@
 # luxen-ui
 
+## 0.4.0
+
+### Minor Changes
+
+- b2fadaf: `<l-carousel>` gains a `max-visible-dots` attribute that caps the dot count and shrinks edge dots to indicate hidden pages.
+
+  When the snap count exceeds `max-visible-dots`, a sliding window keeps the active dot in view and the dot at the side where dots are hidden is scaled down — like an iOS PageControl. Theme the shrink ratio with the new `--dot-edge-scale` CSS custom property (default `0.5`).
+
+  ```html
+  <l-carousel with-dots max-visible-dots="7">
+    <!-- 12 slides -->
+  </l-carousel>
+  ```
+
+- 78f2e56: `<l-dropdown>` gains `header` and `footer` named slots for content above and below the menu items, plus a `--padding` CSS custom property to control the panel's inner spacing. Slotted `<l-divider>` and `<hr>` elements are styled as compact section separators that bleed to the panel edges. Pressing Space or Enter on the trigger now focuses the first item, matching the documented keyboard contract.
+
+  ```html
+  <l-dropdown>
+    <l-avatar slot="trigger" interactive name="Jane Cooper"></l-avatar>
+    <div slot="header">…profile row…</div>
+    <l-divider></l-divider>
+    <l-dropdown-item>…</l-dropdown-item>
+    <div slot="footer">…version label…</div>
+  </l-dropdown>
+  ```
+
+- ad1cebd: Improve color contrast and align CSS custom property naming on `<l-avatar>`, `<l-tooltip>`, `<l-dropdown>` and `<select class="l-select">`:
+
+  - `<l-avatar>` text color now derives from the actual background luminance — fixes unreadable text in dark mode when `--color` is a light pastel.
+  - `<l-tooltip>` text color is now auto-derived from `--background-color` for any custom background. Set `--text-color` to override.
+  - Renamed `<l-tooltip>` `--background` → `--background-color`. Removed `--color` (replaced by the optional `--text-color` override).
+  - Renamed `--radius` → `--border-radius` on `<l-tooltip>`, `<l-dropdown>` and `<select class="l-select">` to align with the rest of the design system.
+
+  Migration:
+
+  - `style="--radius: …"` → `style="--border-radius: …"` on tooltip/dropdown/select.
+  - `style="--background: …"` → `style="--background-color: …"` on tooltip.
+  - `style="--color: …"` on tooltip → `style="--text-color: …"` (or remove it and let the auto-derivation handle contrast).
+
 ## 0.3.0
 
 ### Minor Changes
