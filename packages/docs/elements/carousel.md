@@ -48,7 +48,7 @@ Add `single` for one slide at a time.
 
 ### Dots (bar)
 
-Add `with-dots` for dot navigation. Default appearance is `bar`.
+Add `with-dots` for dot navigation. Default appearance is `bar`. Use `max-visible-dots` to cap the rendered dots — edge dots shrink when more dots exist beyond the window.
 
 <ComponentWrapper vertical :html="carouselDots" />
 
@@ -168,6 +168,7 @@ import 'luxen-ui/carousel-item';
   { Attribute: 'with-scrollbar', Description: 'Show native scrollbar on viewport' },
   { Attribute: 'with-fullscreen', Description: 'Show fullscreen button' },
   { Attribute: 'dot-appearance', Description: 'Dot style: `bar` (default) or `circle`' },
+  { Attribute: 'max-visible-dots', Description: 'Maximum number of dots shown at once. Edge dots shrink when more dots exist beyond the window. `0` (default) shows all dots' },
   { Attribute: 'scroll-buttons-position', Description: 'Button position: `inside` (default) or `outside`' },
 ]" />
 
@@ -220,6 +221,7 @@ import 'luxen-ui/carousel-item';
   { Name: '--dot-color', Description: 'Inactive dot color' },
   { Name: '--dot-color-active', Description: 'Active dot color' },
   { Name: '--dot-margin', Description: 'Dot container margin. Default `0.5rem 0`' },
+  { Name: '--dot-edge-scale', Description: 'Scale factor for edge dots when overflow is present. Default `0.5`' },
 ]" />
 
 ### `carousel-item` Attributes & Properties

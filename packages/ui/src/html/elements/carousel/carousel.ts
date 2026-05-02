@@ -10,8 +10,8 @@ type AlignmentOptionType =
 type SlidesToScrollOptionType = 'auto' | number;
 type ScrollContainOptionType = 'trimSnaps' | 'keepSnaps' | false;
 import Autoplay from 'embla-carousel-autoplay';
-import { html, unsafeCSS, type PropertyValues, type CSSResultGroup } from 'lit';
-import { property, query, queryAll } from 'lit/decorators.js';
+import { html, nothing, unsafeCSS, type PropertyValues, type CSSResultGroup } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element';
 import hostStyles from '../../shared/styles/host.styles';
@@ -47,6 +47,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --dot-color - Color of inactive dots.
  * @cssproperty --dot-color-active - Color of active dot.
  * @cssproperty --dot-margin - Margin around dots container.
+ * @cssproperty --dot-edge-scale - Scale factor applied to edge dots that signal more dots exist beyond the visible window (default `0.5`).
  */
 export class LuxenCarousel extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
@@ -160,14 +161,23 @@ export class LuxenCarousel extends LuxenElement {
   @property({ type: String, attribute: 'dot-appearance' })
   accessor dotAppearance: 'circle' | 'bar' = 'bar';
 
+  /**
+   * Maximum number of dots rendered at once. When the snap count exceeds this,
+   * a sliding window keeps the active dot in view and shrinks the edge dot(s)
+   * on the side where dots are hidden. `0` (default) renders all dots.
+   */
+  @property({ type: Number, attribute: 'max-visible-dots' })
+  accessor maxVisibleDots = 0;
+
   @property({ type: String, attribute: 'scroll-buttons-position' })
   accessor scrollButtonsPosition: 'inside' | 'outside' = 'inside';
+
+  @state() private accessor _selectedSnap = 0;
 
   @query('.scroll-buttons') scrollButtons!: HTMLElement;
   @query('.button-previous') previousBtn!: HTMLButtonElement;
   @query('.button-next') nextBtn!: HTMLButtonElement;
   @query('.container') container!: HTMLSlotElement;
-  @queryAll('.dot') dotNodes!: HTMLButtonElement[];
 
   constructor() {
     super();
@@ -251,14 +261,7 @@ export class LuxenCarousel extends LuxenElement {
     this.nextBtn.toggleAttribute('disabled', !this.embla.canScrollNext());
     this.scrollButtons.classList.toggle('scroll-buttons--disabled', !canScroll);
 
-    if (this.withDots) {
-      const previous = this.embla.previousScrollSnap();
-      const selected = this.embla.selectedScrollSnap();
-      this.dotNodes[previous]?.classList.remove('dot--selected');
-      this.dotNodes[previous]?.removeAttribute('aria-selected');
-      this.dotNodes[selected]?.classList.add('dot--selected');
-      this.dotNodes[selected]?.setAttribute('aria-selected', 'true');
-    }
+    this._selectedSnap = this.embla.selectedScrollSnap();
   }
 
   override async updated(changedProperties: PropertyValues<this>) {
@@ -394,6 +397,54 @@ export class LuxenCarousel extends LuxenElement {
     </div>`;
   }
 
+  private renderDots() {
+    if (!this.embla) return nothing;
+    const snaps = this.embla.scrollSnapList();
+    const total = snaps.length;
+    if (total === 0) return nothing;
+
+    const selected = this._selectedSnap;
+    const max = this.maxVisibleDots;
+
+    let start = 0;
+    let end = total;
+    if (max > 0 && max < total) {
+      const half = Math.floor((max - 1) / 2);
+      start = Math.max(0, selected - half);
+      end = Math.min(total, start + max);
+      if (end - start < max) start = Math.max(0, end - max);
+    }
+    const edgeStart = start > 0;
+    const edgeEnd = end < total;
+
+    return html`<div
+      class="dots"
+      part="dots"
+      role="tablist"
+    >
+      ${map(snaps.slice(start, end), (_, i) => {
+        const index = start + i;
+        const isFirst = i === 0;
+        const isLast = i === end - start - 1;
+        const isSelected = index === selected;
+        const isEdge = !isSelected && ((isFirst && edgeStart) || (isLast && edgeEnd));
+        return html`<button
+          part="button-dot"
+          type="button"
+          role="tab"
+          class="dot dot--${this.dotAppearance} ${isSelected ? 'dot--selected' : ''}"
+          aria-label="Go to slide ${index + 1}"
+          aria-selected=${isSelected ? 'true' : nothing}
+          data-index="${index}"
+          data-edge=${isEdge ? '' : nothing}
+          @click=${this.handleDotClick}
+        >
+          <i></i>
+        </button>`;
+      })}
+    </div>`;
+  }
+
   override render() {
     return html`
       <div class="wrapper ${this.isActive() ? '' : 'inactive'}">
@@ -408,28 +459,7 @@ export class LuxenCarousel extends LuxenElement {
           ></slot>
         </div>
         ${this.withFullscreen ? this.renderFullscreenButton() : ''}
-        ${this.renderNextPreviousButtons()}
-        ${this.withDots
-          ? html`<div
-              class="dots"
-              part="dots"
-              role="tablist"
-            >
-              ${map(this.embla.scrollSnapList(), (_, index) => {
-                return html`<button
-                  part="button-dot"
-                  type="button"
-                  role="tab"
-                  class="dot dot--${this.dotAppearance}"
-                  aria-label="Go to slide ${index + 1}"
-                  data-index="${index}"
-                  @click=${this.handleDotClick}
-                >
-                  <i></i>
-                </button>`;
-              })}
-            </div> `
-          : ''}
+        ${this.renderNextPreviousButtons()} ${this.withDots ? this.renderDots() : ''}
       </div>
     `;
   }

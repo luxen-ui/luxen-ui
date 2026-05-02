@@ -16,6 +16,7 @@
   --dot-color: #9ca3af;
   --dot-color-active: #111827;
   --dot-margin: 0.5rem 0;
+  --dot-edge-scale: 0.5;
 
   --scrollbar-color: #d1d5db transparent;
 
@@ -180,6 +181,12 @@
   padding-block: 0.5rem;
   border: 0;
   cursor: pointer;
+  transition: transform 180ms ease;
+  transform-origin: center;
+}
+
+.dot[data-edge] {
+  transform: scale(var(--dot-edge-scale));
 }
 
 .dot--bar i {
