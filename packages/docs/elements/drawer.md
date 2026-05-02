@@ -140,6 +140,15 @@ import 'luxen-ui/drawer';
 
 Open and close the drawer by toggling its `open` property, or via the [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) from any light-DOM button. Custom commands must start with `--`.
 
+::: info
+The Invoker Commands API is [✓ Baseline Newly Available (since 2025-12-12)](https://web-platform-dx.github.io/web-features-explorer/features/invoker-commands/). For older browser versions, load the [`invokers-polyfill`](https://npmx.dev/package/invokers-polyfill) once at app startup:
+
+```js
+import 'invokers-polyfill';
+```
+
+:::
+
 <ApiTable :data="[
   { Command: '--show', Description: 'Sets `open = true`' },
   { Command: '--hide', Description: 'Sets `open = false`' },
