@@ -1,6 +1,6 @@
 @layer components {
   .l-select {
-    --radius: 4px;
+    --border-radius: 4px;
     --border-color: light-dark(var(--color-gray-200), var(--color-gray-800));
 
     &,
@@ -14,7 +14,7 @@
 
     &::picker(select) {
       border: 1px solid var(--border-color);
-      border-radius: var(--radius);
+      border-radius: var(--border-radius);
       min-width: 180px;
       margin-block-start: 0.25rem;
       padding: 4px;
@@ -50,7 +50,7 @@
     padding-block: 6px;
     isolation: isolate;
     cursor: pointer;
-    border-radius: var(--radius);
+    border-radius: var(--border-radius);
 
     &::checkmark {
       background-color: currentColor;

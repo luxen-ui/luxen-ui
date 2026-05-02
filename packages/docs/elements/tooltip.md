@@ -8,6 +8,7 @@ import tooltipPlacement from '../.vitepress/examples/tooltip/TooltipPlacement.ht
 import tooltipAllPlacements from '../.vitepress/examples/tooltip/TooltipAllPlacements.html?raw'
 import tooltipNoArrow from '../.vitepress/examples/tooltip/TooltipNoArrow.html?raw'
 import tooltipClick from '../.vitepress/examples/tooltip/TooltipClick.html?raw'
+import tooltipColor from '../.vitepress/examples/tooltip/TooltipColor.html?raw'
 </script>
 
 # Tooltip <Badge type="tip">&lt;l-tooltip&gt;</Badge>
@@ -63,6 +64,17 @@ Add `without-arrow` to hide the directional arrow.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/tooltip/TooltipNoArrow.html [HTML]
+:::
+
+### Custom color
+
+Set `--background-color` to a base color. Text color is auto-derived from its luminance for readable contrast.
+
+<ComponentWrapper :html="tooltipColor" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tooltip/TooltipColor.html [HTML]
 :::
 
 ## Examples
@@ -136,9 +148,9 @@ import 'luxen-ui/tooltip';
 ### CSS custom properties
 
 <ApiTable :data="[
-  { Name: '--background', Description: 'Background color. Default: dark in light mode, light in dark mode' },
-  { Name: '--color', Description: 'Text color' },
-  { Name: '--radius', Description: 'Border radius. Default `4px`' },
+  { Name: '--background-color', Description: 'Background color. Default: dark in light mode, light in dark mode' },
+  { Name: '--text-color', Description: 'Text color. If unset, auto-derived from `--background-color` luminance' },
+  { Name: '--border-radius', Description: 'Border radius. Default `4px`' },
   { Name: '--max-width', Description: 'Maximum width. Default `180px`' },
   { Name: '--arrow-size', Description: 'Arrow size. Default `6px`' },
   { Name: '--show-duration', Description: 'Show animation duration. Default `150ms`' },

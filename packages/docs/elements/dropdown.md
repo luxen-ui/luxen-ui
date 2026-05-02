@@ -150,7 +150,7 @@ import 'luxen-ui/dropdown-item';
 
 <ApiTable :data="[
   { Name: '--background', Description: 'Panel background color. Default: `Canvas`' },
-  { Name: '--radius', Description: 'Panel border radius. Default `8px`' },
+  { Name: '--border-radius', Description: 'Panel border radius. Default `8px`' },
   { Name: '--shadow', Description: 'Panel box shadow' },
   { Name: '--show-duration', Description: 'Show animation duration in ms. Default `150`' },
   { Name: '--hide-duration', Description: 'Hide animation duration in ms. Default `150`' },

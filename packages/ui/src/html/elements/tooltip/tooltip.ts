@@ -18,9 +18,9 @@ const styles = unsafeCSS(rawStyles);
  * @csspart body - The tooltip popover container.
  * @csspart arrow - The directional arrow element.
  *
- * @cssproperty --background - Background color. Default: dark in light mode, light in dark mode.
- * @cssproperty --color - Text color.
- * @cssproperty --radius - Border radius. Default `4px`.
+ * @cssproperty --background-color - Background color. Default: dark in light mode, light in dark mode.
+ * @cssproperty --text-color - Text color. If unset, auto-derived from `--background-color` luminance.
+ * @cssproperty --border-radius - Border radius. Default `4px`.
  * @cssproperty --max-width - Maximum width. Default `180px`.
  * @cssproperty --arrow-size - Arrow size. Default `6px`.
  * @cssproperty --show-duration - Show animation duration. Default `150ms`.

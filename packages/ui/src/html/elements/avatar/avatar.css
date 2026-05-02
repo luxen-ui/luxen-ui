@@ -93,13 +93,25 @@ img {
   border: none;
   border-radius: calc(var(--_size) * 0.2);
   background-color: var(--color, var(--l-color-bg-fill-neutral-soft));
-  color: oklch(from var(--color) 0.45 calc(c * 2) h);
+  color: oklch(
+    from var(--color) calc(0.65 - 0.2 * sign(l - 0.5)) calc(c * (1.75 + 0.25 * sign(l - 0.5))) h
+  );
   font-size: var(--_font-size);
   font-weight: 500;
   line-height: 1;
   text-transform: uppercase;
   padding: 0;
   cursor: inherit;
+}
+
+@supports (color: contrast-color(red vs black, white)) {
+  .base {
+    color: contrast-color(
+      var(--color, var(--l-color-bg-fill-neutral-soft)) vs
+        oklch(from var(--color) 0.45 calc(c * 2) h),
+      oklch(from var(--color) 0.85 calc(c * 1.5) h) to AA
+    );
+  }
 }
 
 button.base {
@@ -113,12 +125,6 @@ button.base:focus-visible {
 
 button.base:hover {
   box-shadow: inset 0 0 0 1.5px var(--l-color-border-interactive);
-}
-
-@media (prefers-color-scheme: dark) {
-  .base {
-    color: oklch(from var(--color) 0.85 calc(c * 1.5) h);
-  }
 }
 
 @container style(--appearance: circle) {

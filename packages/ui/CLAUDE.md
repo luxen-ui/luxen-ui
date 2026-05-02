@@ -53,6 +53,29 @@ All components must support dark mode. Global design tokens in `_tokens.css` use
 
 `light-dark()` does not reliably resolve nested relative color functions like `oklch(from ...)`. For complex color derivations, use `@media (prefers-color-scheme: dark)` instead.
 
+### Don't switch on a mode signal when contrast depends on a public CSS variable
+
+When a property like `background-color` is driven by a consumer-controlled custom property (e.g. `--color`), the matching text/foreground color must **not** be switched via `light-dark()` or `@media (prefers-color-scheme: dark)`. Both signals are decoupled from the actual background — the consumer's `--color` doesn't change with the document mode, but the mode-based rule will still flip the text and break contrast.
+
+Decide on the **luminance of the actual background** instead. Two options:
+
+```css
+/* Default: luminance-based switch via sign() — Baseline since 2023 everywhere */
+color: oklch(
+  from var(--color) calc(0.65 - 0.2 * sign(l - 0.5)) calc(c * (1.75 + 0.25 * sign(l - 0.5))) h
+);
+
+/* Enhancement: contrast-color() once supported (test the extended syntax) */
+@supports (color: contrast-color(red vs black, white)) {
+  color: contrast-color(
+    var(--color) vs oklch(from var(--color) 0.45 calc(c * 2) h),
+    oklch(from var(--color) 0.85 calc(c * 1.5) h) to AA
+  );
+}
+```
+
+Reference implementation: `<l-avatar>` — `src/html/elements/avatar/avatar.css`.
+
 ## Design Tokens
 
 ### Base tokens

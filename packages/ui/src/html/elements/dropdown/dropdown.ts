@@ -19,7 +19,7 @@ const styles = unsafeCSS(rawStyles);
  * @csspart panel - The floating menu container.
  *
  * @cssproperty --background - Panel background color.
- * @cssproperty --radius - Panel border radius. Default `8px`.
+ * @cssproperty --border-radius - Panel border radius. Default `8px`.
  * @cssproperty --shadow - Panel box shadow.
  * @cssproperty --show-duration - Show animation duration in ms. Default `150`.
  * @cssproperty --hide-duration - Hide animation duration in ms. Default `150`.

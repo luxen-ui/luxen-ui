@@ -1,7 +1,6 @@
 :host {
-  --background: var(--l-color-bg-fill-brand, light-dark(#1f2937, #f9fafb));
-  --color: light-dark(#fff, #111827);
-  --radius: 4px;
+  --background-color: var(--l-color-bg-fill-brand, light-dark(#1f2937, #f9fafb));
+  --border-radius: 4px;
   --max-width: 180px;
   --arrow-size: 6px;
   --show-duration: 150ms;
@@ -18,13 +17,22 @@
   max-width: var(--max-width);
   padding: 4px 8px;
   border: 0;
-  border-radius: var(--radius);
-  background: var(--background);
-  color: var(--color);
+  border-radius: var(--border-radius);
+  background: var(--background-color);
+  color: var(
+    --text-color,
+    oklch(from var(--background-color) calc(0.59 - 0.41 * sign(l - 0.5)) 0 0)
+  );
   font-size: 0.8125rem;
   line-height: 1.4;
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 16%));
   pointer-events: none;
+}
+
+@supports (color: contrast-color(red vs black, white)) {
+  [popover] {
+    color: var(--text-color, contrast-color(var(--background-color) vs #111827, #fff to AA));
+  }
 }
 
 i {
@@ -32,6 +40,6 @@ i {
   display: block;
   width: var(--arrow-size);
   height: var(--arrow-size);
-  background: var(--background);
+  background: var(--background-color);
   transform: rotate(45deg);
 }

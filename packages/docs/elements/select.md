@@ -87,6 +87,6 @@ Selects are used to pick a single option from a dropdown list. Commonly used in 
 ### CSS custom properties
 
 <ApiTable :data="[
-  { Name: '--radius', Description: 'Border radius (default: 4px)' },
+  { Name: '--border-radius', Description: 'Border radius (default: 4px)' },
   { Name: '--border-color', Description: 'Border color (adapts to light/dark)' },
 ]" />
