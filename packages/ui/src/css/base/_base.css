@@ -19,4 +19,14 @@
     white-space: nowrap;
     border: 0;
   }
+
+  /* Hide Shadow-DOM overlay elements until their custom element upgrades.
+     Without this, slotted/inner content flashes inline before the upgrade. */
+  l-dialog:not(:defined),
+  l-drawer:not(:defined),
+  l-dropdown:not(:defined),
+  l-popover:not(:defined),
+  l-tooltip:not(:defined) {
+    display: none;
+  }
 }
