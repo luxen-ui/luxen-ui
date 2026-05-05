@@ -1,0 +1,337 @@
+:host {
+  --width: min(420px, 100vw);
+  --aspect-ratio: 9 / 16;
+  --progress-color: white;
+  --progress-bg: rgb(255 255 255 / 35%);
+  --progress-gap: 4px;
+  --show-duration: 200ms;
+  --hide-duration: 200ms;
+  /* Semi-transparent backdrop so the underlying page (e.g. a product page) stays visible behind the player, but with enough darkness to focus attention on the frame. Override with `--backdrop: …` or set to `oklch(0% 0 0 / 90%)` for an opaque blackout. */
+  --backdrop: var(--l-backdrop-strong);
+
+  display: contents;
+}
+
+dialog {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: white;
+  overflow: clip;
+
+  /* Center the frame at all times. `place-items` is on the base rule so it survives the close transition (only `display` and `opacity` are transitioned with `allow-discrete`; non-transitioned properties revert immediately when `[open]` is removed and would un-center the frame to top-left for one frame). */
+  place-items: center;
+
+  /* EXIT STATE */
+  opacity: 0;
+
+  transition-property: opacity, display, overlay;
+  transition-duration: var(--hide-duration);
+  transition-behavior: allow-discrete;
+
+  &::backdrop {
+    background: var(--backdrop);
+  }
+
+  /* OPEN STATE */
+  &[open] {
+    display: grid;
+    opacity: 1;
+    transition-duration: var(--show-duration);
+  }
+
+  /* BEFORE-OPEN STATE */
+  @starting-style {
+    &[open] {
+      opacity: 0;
+    }
+  }
+}
+
+.frame {
+  position: relative;
+  width: var(--width);
+  max-width: 100vw;
+  max-height: 100dvh;
+  aspect-ratio: var(--aspect-ratio);
+  background: black;
+  border-radius: 0.75rem;
+  overflow: clip;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+@media (max-width: 480px) {
+  .frame {
+    width: 100vw;
+    height: 100dvh;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: black;
+}
+
+/* Loading spinner — centered over the video. Delayed fade-in so a fast buffer never visibly flashes the spinner. */
+.spinner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  z-index: 1;
+  width: 2rem;
+  height: 2rem;
+  color: white;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.spinner[data-state='loading'] {
+  opacity: 1;
+  /* Only paint the spinner if loading actually exceeds 200ms. */
+  transition-delay: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    transition: none;
+  }
+}
+
+.progress {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  display: flex;
+  gap: var(--progress-gap);
+  pointer-events: none;
+}
+
+.progress-segment {
+  flex: 1 1 0;
+  height: 2.5px;
+  border-radius: 999px;
+  background: var(--progress-bg);
+  overflow: clip;
+}
+
+.progress-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--progress-color);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+  transition: transform 80ms linear;
+}
+
+.progress-segment[data-state='past'] .progress-fill {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+  :host {
+    --show-duration: 0ms;
+    --hide-duration: 0ms;
+  }
+}
+
+/* Top-left header — story thumbnail + label (slot fallback) or consumer-supplied content. */
+.header {
+  position: absolute;
+  top: 1.25rem;
+  left: 0.75rem;
+  right: 4rem; /* leave room for the right-side action stack */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.header > ::slotted(*) {
+  pointer-events: auto;
+}
+
+.header-thumb {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  pointer-events: auto;
+}
+
+.header-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Top-right vertical action stack — close, play/pause, mute. */
+.actions {
+  position: absolute;
+  top: 1.25rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  /* 12px gap leaves room for the 6px hit-area extension on each adjacent button (see `.btn::before` below). */
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.actions > ::slotted(*),
+.actions .btn {
+  pointer-events: auto;
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 25%);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: rgb(0 0 0 / 45%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--progress-color);
+    outline-offset: 2px;
+  }
+
+  /* WCAG 2.1 SC 2.5.5 / RGAA 13.4 — 44×44 hit area without changing the visible 32×32 disc. The pseudo carries no paint, only hit testing. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+}
+
+.btn-nav {
+  position: absolute;
+  z-index: 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.25rem;
+
+  /* Chevrons start at 36×36 — 4px each side reaches 44. */
+  &::before {
+    inset: -4px;
+  }
+}
+
+.btn-previous,
+.btn-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Desktop ≥ 768px: chevrons sit outside the frame, on the dim backdrop. */
+@media (min-width: 768px) {
+  .btn-previous {
+    left: calc(50% - var(--width) / 2 - 3rem);
+  }
+  .btn-next {
+    right: calc(50% - var(--width) / 2 - 3rem);
+  }
+}
+
+/* Mobile < 768px: hide chevrons entirely — tap zones drive nav. */
+@media (max-width: 767px) {
+  .btn-previous,
+  .btn-next {
+    display: none;
+  }
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🆃🅰🅿  zones (invisible click/tap targets — left = previous, rest = next)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+.tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.tap-previous {
+  left: 0;
+  width: 30%;
+}
+
+.tap-next {
+  left: 30%;
+  right: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 1;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.overlay > ::slotted(*) {
+  pointer-events: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

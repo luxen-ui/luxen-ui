@@ -1,0 +1,63 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🆃🅾🆁🅸🅴🆂  (the row)
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-stories {
+    /* Per-appearance defaults — each appearance overrides these below. */
+    --size: 80px;
+    --aspect-ratio: 1;
+    --radius: var(--radius-full);
+    --gap: 1rem;
+
+    --ring-color: var(--l-color-bg-fill-brand);
+    /* Same as `--ring-color` by default — no visual distinction for "seen" stories. Override `--ring-color-seen` (e.g. `color-mix(in oklab, var(--ring-color), transparent 65%)`) to fade viewed thumbnails Instagram-style. */
+    --ring-color-seen: var(--ring-color);
+    --ring-width: 2px;
+    /* Default 3 px gap between the image and the ring — matches the Instagram Stories pattern that consumers expect from this widget. Filled with `--ring-offset-color` (defaults to the page surface color). For pages with a non-default background, override `--ring-offset-color` to match. */
+    --ring-offset: 3px;
+    --ring-offset-color: var(--l-color-surface);
+    --label-color: var(--l-color-text-primary);
+
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--gap);
+    /* The row itself has no overflow viewport — items stay flush at the edges and the focus ring is free to extend into the surrounding container's padding. Consumers wrap in a scroll container if they need horizontal scrolling. */
+
+    /* Squared appearance — no ring, no offset, image edge-to-edge. */
+    &[appearance='squared'] {
+      --size: 100px;
+      --radius: 0.75rem;
+      --ring-color: transparent;
+      --ring-width: 0;
+      --ring-offset: 0px;
+    }
+
+    /* Portrait card appearance (Image #19) — no ring, no offset. */
+    &[appearance='portrait'] {
+      --size: 160px;
+      --aspect-ratio: 9 / 16;
+      --radius: 1rem;
+      --ring-color: transparent;
+      --ring-width: 0;
+      --ring-offset: 0px;
+    }
+
+    /* Landscape appearance — no ring, no offset. */
+    &[appearance='landscape'] {
+      --size: 200px;
+      --aspect-ratio: 16 / 9;
+      --radius: 0.75rem;
+      --ring-color: transparent;
+      --ring-width: 0;
+      --ring-offset: 0px;
+    }
+  }
+
+  /* Hide labels when the row opts out. */
+  l-stories[with-labels='false'] l-story .l-story-label {
+    display: none;
+  }
+}
