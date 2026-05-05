@@ -120,6 +120,14 @@ export default defineConfig({
           el('Rating', 'l-rating', 'rating'),
           el('Skeleton', 'l-skeleton', 'skeleton'),
           el('Spinner', 'l-spinner', 'spinner'),
+          {
+            ...el('Stories', 'l-stories', 'stories'),
+            collapsed: true,
+            items: [
+              el('Story', 'l-story', 'story'),
+              el('Stories viewer', 'l-stories-viewer', 'stories-viewer'),
+            ],
+          },
           el('Tabs', 'l-tabs', 'tabs'),
           el('Toast', 'l-toast', 'toast'),
           el('Tooltip', 'l-tooltip', 'tooltip'),

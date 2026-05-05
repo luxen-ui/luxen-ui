@@ -107,6 +107,24 @@ The test: if a name reads like a CSS property, it's probably too low-level. Pref
 
 Every global token in `_tokens.css` must have a CSS comment above it describing its intended usage. The description should be comprehensive enough for an AI agent to decide when to use it.
 
+## Internal CSS Class Naming
+
+Light-DOM elements (`type="custom"` or `type="progressive"`) emit internal classes for their inner markup (e.g. `<l-story>` renders `.l-story-trigger`, `.l-story-thumb`, `.l-story-label`). Use **flat kebab-case**: `l-{tag}-{child}`.
+
+```html
+<!-- Good -->
+<span class="l-story-thumb">…</span>
+<button class="l-toast-action">…</button>
+
+<!-- Avoid (BEM) -->
+<span class="l-story__thumb">…</span>
+<button class="l-toast__action l-toast__action--primary">…</button>
+```
+
+**Why no BEM**: the custom element prefix (`l-{tag}`) already encodes the "block" — adding `__` between block and element duplicates information already carried by the prefix. Modifiers go through `data-*` attributes (`data-variant="primary"`, `data-appearance="ring"`), not class suffixes — so BEM's `--modifier` channel is unused. Shadow-DOM elements skip internal classes entirely (use `::part()` instead), keeping the surface where this rule applies small.
+
+For state and variants, prefer **`data-*` attributes** + attribute selectors (e.g. `.l-toast[data-tone="success"]`) over modifier classes — the codebase is uniform on this and it composes better with HTML-first authoring.
+
 ## Element CSS Appearances
 
 Some elements support multiple **appearances** — different visual themes for the same structural element. The user picks one appearance and imports a single CSS file.

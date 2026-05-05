@@ -32,6 +32,7 @@ const elements = [
   { name: 'Select', tag: 'select', type: 'native', link: '/elements/select' },
   { name: 'Skeleton', tag: 'l-skeleton', type: 'custom', link: '/elements/skeleton' },
   { name: 'Spinner', tag: 'l-spinner', type: 'shadow', link: '/elements/spinner' },
+  { name: 'Stories', tag: 'l-stories', type: 'custom', link: '/elements/stories' },
   { name: 'Tabs', tag: 'l-tabs', type: 'progressive', link: '/elements/tabs' },
   { name: 'Toast', tag: 'l-toast', type: 'custom', link: '/elements/toast' },
   { name: 'Tooltip', tag: 'l-tooltip', type: 'shadow', link: '/elements/tooltip' },

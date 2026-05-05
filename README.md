@@ -20,35 +20,38 @@ Visit https://luxen-ui.com to explore the documentation.
 
 ## 📦 Elements
 
-| Name          | HTML tag            | Type                                    |
-| ------------- | ------------------- | --------------------------------------- |
-| Avatar        | `<l-avatar>`        | ⬢ Custom HTML Element (with Shadow DOM) |
-| Badge         | `<l-badge>`         | ◇ Custom HTML Element (no Shadow DOM)   |
-| Button        | `<button>`          | ⏣ Native HTML Element                   |
-| Carousel      | `<l-carousel>`      | ⬢ Custom HTML Element (with Shadow DOM) |
-| Carousel Item | `<l-carousel-item>` | ⬢ Custom HTML Element (with Shadow DOM) |
-| Close Button  | `<button>`          | ⏣ Native HTML Element                   |
-| Dialog        | `<l-dialog>`        | ⬢ Custom HTML Element (with Shadow DOM) |
-| Disclosure    | `<details>`         | ⏣ Native HTML Element                   |
-| Divider       | `<l-divider>`       | ◇ Custom HTML Element (no Shadow DOM)   |
-| Drawer        | `<l-drawer>`        | ⬢ Custom HTML Element (with Shadow DOM) |
-| Dropdown      | `<l-dropdown>`      | ⬢ Custom HTML Element (with Shadow DOM) |
-| Dropdown Item | `<l-dropdown-item>` | ⬢ Custom HTML Element (with Shadow DOM) |
-| Icon          | `<l-icon>`          | ⬢ Custom HTML Element (with Shadow DOM) |
-| Input OTP     | `<l-input-otp>`     | ⬡ Progressive Custom HTML Element       |
-| Input Stepper | `<l-input-stepper>` | ⬡ Progressive Custom HTML Element       |
-| Kbd           | `<kbd>`             | ⏣ Native HTML Element                   |
-| Popover       | `<l-popover>`       | ⬢ Custom HTML Element (with Shadow DOM) |
-| Progress      | `<progress>`        | ⏣ Native HTML Element                   |
-| Rating        | `<l-rating>`        | ⬢ Custom HTML Element (with Shadow DOM) |
-| Select        | `<select>`          | ⏣ Native HTML Element                   |
-| Skeleton      | `<l-skeleton>`      | ◇ Custom HTML Element (no Shadow DOM)   |
-| Spinner       | `<l-spinner>`       | ⬢ Custom HTML Element (with Shadow DOM) |
-| Tabs          | `<l-tabs>`          | ⬡ Progressive Custom HTML Element       |
-| Toast         | `<l-toast>`         | ◇ Custom HTML Element (no Shadow DOM)   |
-| Tooltip       | `<l-tooltip>`       | ⬢ Custom HTML Element (with Shadow DOM) |
-| Tree          | `<l-tree>`          | ⬢ Custom HTML Element (with Shadow DOM) |
-| Tree Item     | `<l-tree-item>`     | ⬢ Custom HTML Element (with Shadow DOM) |
+| Name           | HTML tag             | Type                                    |
+| -------------- | -------------------- | --------------------------------------- |
+| Avatar         | `<l-avatar>`         | ⬢ Custom HTML Element (with Shadow DOM) |
+| Badge          | `<l-badge>`          | ◇ Custom HTML Element (no Shadow DOM)   |
+| Button         | `<button>`           | ⏣ Native HTML Element                   |
+| Carousel       | `<l-carousel>`       | ⬢ Custom HTML Element (with Shadow DOM) |
+| Carousel Item  | `<l-carousel-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
+| Close Button   | `<button>`           | ⏣ Native HTML Element                   |
+| Dialog         | `<l-dialog>`         | ⬢ Custom HTML Element (with Shadow DOM) |
+| Disclosure     | `<details>`          | ⏣ Native HTML Element                   |
+| Divider        | `<l-divider>`        | ◇ Custom HTML Element (no Shadow DOM)   |
+| Drawer         | `<l-drawer>`         | ⬢ Custom HTML Element (with Shadow DOM) |
+| Dropdown       | `<l-dropdown>`       | ⬢ Custom HTML Element (with Shadow DOM) |
+| Dropdown Item  | `<l-dropdown-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
+| Icon           | `<l-icon>`           | ⬢ Custom HTML Element (with Shadow DOM) |
+| Input OTP      | `<l-input-otp>`      | ⬡ Progressive Custom HTML Element       |
+| Input Stepper  | `<l-input-stepper>`  | ⬡ Progressive Custom HTML Element       |
+| Kbd            | `<kbd>`              | ⏣ Native HTML Element                   |
+| Popover        | `<l-popover>`        | ⬢ Custom HTML Element (with Shadow DOM) |
+| Progress       | `<progress>`         | ⏣ Native HTML Element                   |
+| Rating         | `<l-rating>`         | ⬢ Custom HTML Element (with Shadow DOM) |
+| Select         | `<select>`           | ⏣ Native HTML Element                   |
+| Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |
+| Spinner        | `<l-spinner>`        | ⬢ Custom HTML Element (with Shadow DOM) |
+| Stories        | `<l-stories>`        | ◇ Custom HTML Element (no Shadow DOM)   |
+| Story          | `<l-story>`          | ◇ Custom HTML Element (no Shadow DOM)   |
+| Stories Viewer | `<l-stories-viewer>` | ⬢ Custom HTML Element (with Shadow DOM) |
+| Tabs           | `<l-tabs>`           | ⬡ Progressive Custom HTML Element       |
+| Toast          | `<l-toast>`          | ◇ Custom HTML Element (no Shadow DOM)   |
+| Tooltip        | `<l-tooltip>`        | ⬢ Custom HTML Element (with Shadow DOM) |
+| Tree           | `<l-tree>`           | ⬢ Custom HTML Element (with Shadow DOM) |
+| Tree Item      | `<l-tree-item>`      | ⬢ Custom HTML Element (with Shadow DOM) |
 
 ## Install
 

@@ -166,6 +166,9 @@ Elements in <a class="luxen-tag"><code>bold</code></a> are styled or extended by
 <a class="luxen-tag" href="/elements/rating"><code>&lt;l-rating&gt;</code></a>
 <a class="luxen-tag" href="/elements/skeleton"><code>&lt;l-skeleton&gt;</code></a>
 <a class="luxen-tag" href="/elements/spinner"><code>&lt;l-spinner&gt;</code></a>
+<a class="luxen-tag" href="/elements/stories"><code>&lt;l-stories&gt;</code></a>
+<a class="luxen-tag" href="/elements/story"><code>&lt;l-story&gt;</code></a>
+<a class="luxen-tag" href="/elements/stories-viewer"><code>&lt;l-stories-viewer&gt;</code></a>
 <a class="luxen-tag" href="/elements/tabs"><code>&lt;l-tabs&gt;</code></a>
 <a class="luxen-tag" href="/elements/toast"><code>&lt;l-toast&gt;</code></a>
 <a class="luxen-tag" href="/elements/tooltip"><code>&lt;l-tooltip&gt;</code></a>

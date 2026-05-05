@@ -46,6 +46,9 @@
   /* Semi-transparent backdrop behind modals, dialogs, drawers, and any overlay that dims the page content. Darker in dark mode for better contrast against dark surfaces. */
   --l-backdrop: light-dark(oklch(46% 0.01 260 / 33%), oklch(15% 0.01 260 / 60%));
 
+  /* Stronger backdrop for immersive overlays where the underlying page should fade well into the background — media viewers (`<l-stories-viewer>`), lightboxes, and full-screen players. The page stays barely perceptible but visual focus is unambiguously on the foreground. */
+  --l-backdrop-strong: light-dark(oklch(15% 0.01 260 / 78%), oklch(5% 0 0 / 88%));
+
   /* Default border for form controls, secondary buttons, inputs, selects, and any element that needs a thin neutral outline. Visible enough to delimit the element without competing with surrounding content. */
   --l-color-border: light-dark(var(--color-gray-300), var(--color-gray-600));
 
