@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Luxen UI — og</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #0b0d12;
+        --bg-2: #0f1218;
+        --line: #1d222c;
+        --text: #e6e8ee;
+        --muted: #9aa2b1;
+        --brand: #e34f26;
+        --brand-soft: rgba(227, 79, 38, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, sans-serif;
+        font-feature-settings: 'cv11', 'ss01';
+        -webkit-font-smoothing: antialiased;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size: 32px 32px;
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 45%, black 50%, transparent 100%);
+      }
+
+      .glow {
+        position: absolute;
+        top: -180px;
+        right: -180px;
+        width: 720px;
+        height: 720px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(227, 79, 38, 0.35) 0%,
+          rgba(227, 79, 38, 0.05) 45%,
+          transparent 70%
+        );
+        filter: blur(8px);
+      }
+
+      .glow-2 {
+        position: absolute;
+        bottom: -240px;
+        left: -160px;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(227, 79, 38, 0.14) 0%, transparent 70%);
+        filter: blur(8px);
+      }
+
+      .frame {
+        position: absolute;
+        inset: 0;
+        padding: 80px 96px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .top {
+        display: flex;
+        align-items: flex-start;
+        gap: 32px;
+      }
+
+      .logo {
+        width: 132px;
+        height: 132px;
+        border-radius: 22px;
+        flex-shrink: 0;
+        box-shadow:
+          0 24px 48px rgba(227, 79, 38, 0.28),
+          0 2px 0 rgba(255, 255, 255, 0.06) inset,
+          0 0 0 1px rgba(255, 255, 255, 0.04);
+      }
+
+      .word {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-top: 6px;
+      }
+
+      .wordmark {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 96px;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        line-height: 1;
+        color: var(--text);
+      }
+
+      .meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px;
+        color: var(--muted);
+      }
+
+      .meta .pill {
+        padding: 6px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--bg-2);
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .meta .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.18);
+      }
+
+      .tagline {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: var(--text);
+        max-width: 920px;
+      }
+
+      .tagline em {
+        color: var(--brand);
+        font-style: normal;
+      }
+
+      .bottom {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        max-width: 880px;
+      }
+
+      .tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        color: var(--muted);
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(15, 18, 24, 0.6);
+      }
+
+      .url {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .url::before {
+        content: '↳ ';
+        color: var(--brand);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="glow-2"></div>
+
+    <div class="frame">
+      <div class="top">
+        <svg
+          class="logo"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 32 32"
+          width="132"
+          height="132"
+        >
+          <rect
+            fill="#E34F26"
+            width="32"
+            height="32"
+            rx="6"
+          />
+          <path
+            fill="#ffffff"
+            transform="translate(7.2 9.8) scale(0.34)"
+            d="M27 36.5L18.5 36.5Q15.6 36.5 13.4 35.275Q11.2 34.05 9.975 31.85Q8.75 29.65 8.75 26.75L8.75 6.75L0 6.75L0 0L16.25 0L16.25 26.5Q16.25 27.95 17.075 28.85Q17.9 29.75 19.25 29.75L27 29.75L27 36.5ZM51.75 23.5L35.75 23.5L35.75 16.5L51.75 16.5L51.75 23.5Z"
+          />
+        </svg>
+
+        <div class="word">
+          <div class="wordmark">luxen-ui</div>
+          <div class="meta">
+            <span class="dot"></span>
+            <span>Custom elements · Web standards</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tagline">
+        Native HTML, modern CSS, progressive custom elements.<br />
+        <em>Shadow DOM</em> only when it pays off.
+      </div>
+
+      <div class="bottom">
+        <div class="tags">
+          <span class="tag">l-button</span>
+          <span class="tag">l-input</span>
+          <span class="tag">l-dialog</span>
+          <span class="tag">l-dropdown</span>
+          <span class="tag">l-tabs</span>
+          <span class="tag">l-toast</span>
+          <span class="tag">l-tooltip</span>
+          <span class="tag">l-tree</span>
+          <span class="tag">l-stories</span>
+          <span class="tag">+ 30 more</span>
+        </div>
+        <div class="url">luxen-ui.com</div>
+      </div>
+    </div>
+  </body>
+</html>

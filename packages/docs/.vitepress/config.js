@@ -187,7 +187,10 @@ export default defineConfig({
       },
     ],
     ['meta', { property: 'og:url', content: 'https://luxen-ui.com/' }],
-    ['meta', { property: 'og:image', content: 'https://luxen-ui.com/luxen.png' }],
+    ['meta', { property: 'og:image', content: 'https://luxen-ui.com/og.png' }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:type', content: 'image/png' }],
     ['meta', { property: 'og:image:alt', content: 'Luxen UI — HTML-first design system' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     [
@@ -205,7 +208,7 @@ export default defineConfig({
           'Native HTML, modern CSS, progressive custom elements. Rename the l- prefix to white-label your design system.',
       },
     ],
-    ['meta', { name: 'twitter:image', content: 'https://luxen-ui.com/luxen.png' }],
+    ['meta', { name: 'twitter:image', content: 'https://luxen-ui.com/og.png' }],
     [
       'script',
       { type: 'application/ld+json' },

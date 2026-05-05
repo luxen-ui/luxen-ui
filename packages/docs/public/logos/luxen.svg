@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <style>
-    .bg { fill: #E34F26; }
-    .fg { fill: #ffffff; }
-  </style>
-  <rect class="bg" width="32" height="32" rx="6"/>
-  <text class="fg" x="16" y="23" text-anchor="middle"
-        font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
-        font-size="17" font-weight="700">l-</text>
+  <rect fill="#E34F26" width="32" height="32" rx="6"/>
+  <path fill="#ffffff" transform="translate(7.2 9.8) scale(0.34)"
+        d="M27 36.5L18.5 36.5Q15.6 36.5 13.4 35.275Q11.2 34.05 9.975 31.85Q8.75 29.65 8.75 26.75L8.75 6.75L0 6.75L0 0L16.25 0L16.25 26.5Q16.25 27.95 17.075 28.85Q17.9 29.75 19.25 29.75L27 29.75L27 36.5ZM51.75 23.5L35.75 23.5L35.75 16.5L51.75 16.5L51.75 23.5Z"/>
 </svg>

@@ -154,7 +154,7 @@ const themes = ['light', 'dark'];
               <!-- ICONS -->
               <img
                 v-if="v.icon === 'luxen'"
-                src="/logos/luxen-old.svg"
+                src="/logos/luxen.svg"
                 width="32"
                 height="32"
                 class="icon"
