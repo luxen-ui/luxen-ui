@@ -25,7 +25,7 @@ export type TabsOrientation = 'horizontal' | 'vertical';
  *
  * @customElement l-tabs
  */
-export class LuxenTabs extends LuxenElement {
+export class Tabs extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

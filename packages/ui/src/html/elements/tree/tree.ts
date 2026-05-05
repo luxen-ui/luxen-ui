@@ -2,7 +2,7 @@ import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element';
 import { tagName } from '../../registry';
-import type { LuxenTreeItem } from '../tree-item/tree-item';
+import type { TreeItem } from '../tree-item/tree-item';
 import hostStyles from '../../shared/styles/host.styles';
 import rawStyles from './tree.css?inline';
 
@@ -26,13 +26,13 @@ export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
  * @cssproperty --chevron-size - Size of the expand/collapse chevron box. Default `1.125rem`.
  * @cssproperty --item-gap - Horizontal gap between chevron, prefix, label and suffix on the row; also drives the content slot left indent. Default `0.375rem`.
  *
- * @event selection-change - Fired when the selected items change. Detail: `{ selection: LuxenTreeItem[] }`.
+ * @event selection-change - Fired when the selected items change. Detail: `{ selection: TreeItem[] }`.
  */
-export class LuxenTree extends LuxenElement {
+export class Tree extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   private _mutationObserver?: MutationObserver;
-  private _lastFocusedItem: LuxenTreeItem | null = null;
+  private _lastFocusedItem: TreeItem | null = null;
 
   /**
    * Selection behaviour:
@@ -77,15 +77,15 @@ export class LuxenTree extends LuxenElement {
   // --- Public API ---
 
   /** Returns all items in document (flat) order, including nested ones. */
-  getAllItems({ includeDisabled = true } = {}): LuxenTreeItem[] {
+  getAllItems({ includeDisabled = true } = {}): TreeItem[] {
     const tag = tagName('tree-item');
-    return Array.from(this.querySelectorAll<LuxenTreeItem>(tag)).filter(
+    return Array.from(this.querySelectorAll<TreeItem>(tag)).filter(
       (item) => includeDisabled || !item.disabled,
     );
   }
 
   /** Returns currently selected items. */
-  getSelection(): LuxenTreeItem[] {
+  getSelection(): TreeItem[] {
     return this.getAllItems().filter((i) => i.selected);
   }
 
@@ -116,7 +116,7 @@ export class LuxenTree extends LuxenElement {
     this._ensureTabStop();
   }
 
-  private _syncSubtree(item: LuxenTreeItem, depth: number, showCheckbox: boolean) {
+  private _syncSubtree(item: TreeItem, depth: number, showCheckbox: boolean) {
     item.depth = depth;
     item.showCheckbox = showCheckbox && this._canShowCheckboxOn(item);
     for (const child of item.getChildrenItems()) {
@@ -124,16 +124,16 @@ export class LuxenTree extends LuxenElement {
     }
   }
 
-  private _canShowCheckboxOn(_item: LuxenTreeItem): boolean {
+  private _canShowCheckboxOn(_item: TreeItem): boolean {
     if (this.selection !== 'multiple') return false;
     // In cascade mode, branches get a checkbox too so you can bulk-toggle children.
     // In leaf-only selection, hidden here because selection !== 'multiple'.
     return true;
   }
 
-  private _rootItems(): LuxenTreeItem[] {
+  private _rootItems(): TreeItem[] {
     const tag = tagName('tree-item').toUpperCase();
-    return (Array.from(this.children) as LuxenTreeItem[]).filter((el) => el.tagName === tag);
+    return (Array.from(this.children) as TreeItem[]).filter((el) => el.tagName === tag);
   }
 
   private _ensureTabStop() {
@@ -147,9 +147,9 @@ export class LuxenTree extends LuxenElement {
   }
 
   /** Items currently visible (parent chain all expanded). */
-  private _visibleItems(): LuxenTreeItem[] {
-    const out: LuxenTreeItem[] = [];
-    const walk = (items: LuxenTreeItem[]) => {
+  private _visibleItems(): TreeItem[] {
+    const out: TreeItem[] = [];
+    const walk = (items: TreeItem[]) => {
       for (const i of items) {
         out.push(i);
         if (i.expanded) walk(i.getChildrenItems());
@@ -161,12 +161,12 @@ export class LuxenTree extends LuxenElement {
 
   // --- Selection handling ---
 
-  private _onItemToggle = (event: CustomEvent<{ item: LuxenTreeItem; checked: boolean }>) => {
+  private _onItemToggle = (event: CustomEvent<{ item: TreeItem; checked: boolean }>) => {
     const { item, checked } = event.detail;
     this._selectItem(item, checked);
   };
 
-  private _handleRowActivate(item: LuxenTreeItem) {
+  private _handleRowActivate(item: TreeItem) {
     if (item.disabled) return;
 
     switch (this.selection) {
@@ -186,7 +186,7 @@ export class LuxenTree extends LuxenElement {
     }
   }
 
-  private _setSingleSelection(item: LuxenTreeItem) {
+  private _setSingleSelection(item: TreeItem) {
     for (const i of this.getAllItems()) {
       if (i !== item && i.selected) i.selected = false;
     }
@@ -194,7 +194,7 @@ export class LuxenTree extends LuxenElement {
     this._emitSelectionChange();
   }
 
-  private _selectItem(item: LuxenTreeItem, value: boolean) {
+  private _selectItem(item: TreeItem, value: boolean) {
     if (item.disabled) return;
     item.selected = value;
 
@@ -208,7 +208,7 @@ export class LuxenTree extends LuxenElement {
     this._emitSelectionChange();
   }
 
-  private _setSubtreeSelection(item: LuxenTreeItem, value: boolean) {
+  private _setSubtreeSelection(item: TreeItem, value: boolean) {
     for (const child of item.getChildrenItems()) {
       if (child.disabled) continue;
       child.selected = value;
@@ -225,7 +225,7 @@ export class LuxenTree extends LuxenElement {
       return;
     }
 
-    const recompute = (item: LuxenTreeItem): { all: boolean; any: boolean } => {
+    const recompute = (item: TreeItem): { all: boolean; any: boolean } => {
       const children = item.getChildrenItems({ includeDisabled: false });
       if (children.length === 0) {
         return { all: item.selected, any: item.selected };
@@ -308,18 +308,18 @@ export class LuxenTree extends LuxenElement {
     }
   };
 
-  private _itemFromEvent(event: Event): LuxenTreeItem | null {
+  private _itemFromEvent(event: Event): TreeItem | null {
     const tag = tagName('tree-item');
     const path = event.composedPath();
     for (const node of path) {
       if (node instanceof HTMLElement && node.matches?.(tag)) {
-        return node as LuxenTreeItem;
+        return node as TreeItem;
       }
     }
     return null;
   }
 
-  private _focusItem(item: LuxenTreeItem) {
+  private _focusItem(item: TreeItem) {
     const visible = this._visibleItems();
     for (const i of visible) i.tabIndex = -1;
     item.tabIndex = 0;
@@ -330,7 +330,7 @@ export class LuxenTree extends LuxenElement {
   private _onFocusIn = (event: FocusEvent) => {
     const target = event.target;
     if (target instanceof HTMLElement) {
-      const item = target.closest(tagName('tree-item')) as LuxenTreeItem | null;
+      const item = target.closest(tagName('tree-item')) as TreeItem | null;
       if (item) this._lastFocusedItem = item;
     }
   };
@@ -370,9 +370,7 @@ export class LuxenTree extends LuxenElement {
         if (current.expanded && !current.isLeaf()) {
           current.expanded = false;
         } else {
-          const parent = current.parentElement?.closest(
-            tagName('tree-item'),
-          ) as LuxenTreeItem | null;
+          const parent = current.parentElement?.closest(tagName('tree-item')) as TreeItem | null;
           if (parent) this._focusItem(parent);
         }
         break;
@@ -398,9 +396,7 @@ export class LuxenTree extends LuxenElement {
         event.preventDefault();
         // Expand all siblings of the current item.
         const siblings = (
-          current.parentElement
-            ? (Array.from(current.parentElement.children) as LuxenTreeItem[])
-            : []
+          current.parentElement ? (Array.from(current.parentElement.children) as TreeItem[]) : []
         ).filter((el) => el.tagName === tagName('tree-item').toUpperCase());
         for (const sib of siblings) {
           if (!sib.isLeaf()) sib.expanded = true;

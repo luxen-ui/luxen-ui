@@ -24,7 +24,7 @@ const defaultIcon = svg`<svg class="icon" viewBox="0 0 24 24" fill="currentColor
  * @summary An avatar component for displaying user images, initials, or a default icon.
  * @customElement l-avatar
  */
-export class LuxenAvatar extends LuxenElement {
+export class Avatar extends LuxenElement {
   static styles = [hostStyles, styles];
 
   @property()

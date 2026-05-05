@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenCarousel } from './carousel';
+import { Carousel } from './carousel';
 export * from './carousel';
-define('carousel', LuxenCarousel);
+define('carousel', Carousel);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-carousel': LuxenCarousel;
+    'l-carousel': Carousel;
   }
 }

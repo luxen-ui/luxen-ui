@@ -19,7 +19,7 @@ import { LuxenElement } from '../../shared/luxen-element';
  * @cssproperty --cell-focus-color - Border + ring color of the active (focused) cell.
  * @cssproperty --cell-focus-ring - `box-shadow` of the active cell ring (defaults to a 1px solid ring; set to `none` to disable).
  */
-export class LuxenInputOtp extends LuxenElement {
+export class InputOtp extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

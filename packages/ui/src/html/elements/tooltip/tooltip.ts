@@ -26,7 +26,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --show-duration - Show animation duration. Default `150ms`.
  * @cssproperty --hide-duration - Hide animation duration. Default `150ms`.
  */
-export class LuxenTooltip extends LuxenElement {
+export class Tooltip extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   private _tooltipId = uniqueId('tooltip');

@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenInputStepper } from './input-stepper';
+import { InputStepper } from './input-stepper';
 export * from './input-stepper';
-define('input-stepper', LuxenInputStepper);
+define('input-stepper', InputStepper);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-input-stepper': LuxenInputStepper;
+    'l-input-stepper': InputStepper;
   }
 }

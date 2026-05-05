@@ -289,15 +289,15 @@ Components are NOT decorated with `@customElement()`. Instead, `index.ts` calls 
 ```typescript
 // elements/avatar/index.ts
 import { define } from '../../define';
-import { LuxenAvatar } from './avatar';
+import { Avatar } from './avatar';
 
-define('avatar', LuxenAvatar);
+define('avatar', Avatar);
 
-export type { LuxenAvatar };
+export type { Avatar };
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-avatar': LuxenAvatar;
+    'l-avatar': Avatar;
   }
 }
 ```

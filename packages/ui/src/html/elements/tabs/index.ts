@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenTabs } from './tabs';
+import { Tabs } from './tabs';
 export * from './tabs';
-define('tabs', LuxenTabs);
+define('tabs', Tabs);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-tabs': LuxenTabs;
+    'l-tabs': Tabs;
   }
 }

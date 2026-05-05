@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenDivider } from './divider';
+import { Divider } from './divider';
 export * from './divider';
-define('divider', LuxenDivider);
+define('divider', Divider);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-divider': LuxenDivider;
+    'l-divider': Divider;
   }
 }

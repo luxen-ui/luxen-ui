@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenAvatar } from './avatar';
+import { Avatar } from './avatar';
 export * from './avatar';
-define('avatar', LuxenAvatar);
+define('avatar', Avatar);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-avatar': LuxenAvatar;
+    'l-avatar': Avatar;
   }
 }

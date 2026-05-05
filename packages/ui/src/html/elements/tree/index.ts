@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenTree } from './tree';
+import { Tree } from './tree';
 export * from './tree';
-define('tree', LuxenTree);
+define('tree', Tree);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-tree': LuxenTree;
+    'l-tree': Tree;
   }
 }

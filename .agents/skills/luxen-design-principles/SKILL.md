@@ -160,9 +160,9 @@ Simpler elements (badge, divider, skeleton) have just `name.ts` + `index.ts`.
 Use the `define()` utility from `src/html/define.ts` in `index.ts`:
 ```typescript
 import { define } from '../../define';
-import { LuxenAvatar } from './avatar';
-define('avatar', LuxenAvatar);
-export type { LuxenAvatar };
+import { Avatar } from './avatar';
+define('avatar', Avatar);
+export type { Avatar };
 ```
 
 See [references/typescript-patterns.md](references/typescript-patterns.md) for implementation templates.

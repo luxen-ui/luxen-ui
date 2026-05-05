@@ -112,13 +112,13 @@ import { LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 @customElement('l-component-name')
-export class LuxenComponentName extends LitElement {
+export class ComponentName extends LitElement {
   // Component implementation
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-component-name': LuxenComponentName;
+    'l-component-name': ComponentName;
   }
 }
 ```

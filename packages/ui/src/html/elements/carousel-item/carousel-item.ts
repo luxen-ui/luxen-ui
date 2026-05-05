@@ -10,7 +10,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @cssproperty --aspect-ratio - Aspect ratio of the slide.
  */
-export class LuxenCarouselItem extends LuxenElement {
+export class CarouselItem extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
 
   override connectedCallback() {

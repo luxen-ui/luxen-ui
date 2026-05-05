@@ -33,7 +33,7 @@ const styles = unsafeCSS(rawStyles);
  * @event collapse - Fired when the item is collapsed.
  * @event lazy-load - Fired when a lazy item is expanded for the first time. Consumers should append children and set `lazy=false`.
  */
-export class LuxenTreeItem extends LuxenElement {
+export class TreeItem extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   private _internals = this.attachInternals();
@@ -90,9 +90,9 @@ export class LuxenTreeItem extends LuxenElement {
   private _hasChildren = false;
 
   /** Returns the child `<l-tree-item>` elements directly under this one. */
-  getChildrenItems({ includeDisabled = true } = {}): LuxenTreeItem[] {
+  getChildrenItems({ includeDisabled = true } = {}): TreeItem[] {
     const childTag = tagName('tree-item').toUpperCase();
-    return (Array.from(this.children) as LuxenTreeItem[]).filter(
+    return (Array.from(this.children) as TreeItem[]).filter(
       (el) => el.tagName === childTag && (includeDisabled || !el.disabled),
     );
   }

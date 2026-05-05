@@ -5,7 +5,7 @@ import { LuxenElement } from '../../shared/luxen-element';
  * @summary A badge component for displaying small status indicators.
  * @customElement l-badge
  */
-export class LuxenBadge extends LuxenElement {
+export class Badge extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

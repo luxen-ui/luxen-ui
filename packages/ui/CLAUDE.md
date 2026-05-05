@@ -31,7 +31,7 @@ import rawStyles from './popover.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
-export class LuxenPopover extends LuxenElement {
+export class Popover extends LuxenElement {
   static override styles = [hostStyles, styles];
 }
 ```

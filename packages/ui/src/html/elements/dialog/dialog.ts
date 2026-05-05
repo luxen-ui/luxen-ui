@@ -54,7 +54,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @event hide - Fired when the dialog is about to close. Cancelable — call `event.preventDefault()` to keep it open.
  * @event after-hide - Fired after the close animation completes.
  */
-export class LuxenDialog extends LuxenElement {
+export class Dialog extends LuxenElement {
   static styles = [hostStyles, styles];
 
   /** Dialog title rendered in the header. */

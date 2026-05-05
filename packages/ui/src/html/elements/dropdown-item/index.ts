@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenDropdownItem } from './dropdown-item';
+import { DropdownItem } from './dropdown-item';
 export * from './dropdown-item';
-define('dropdown-item', LuxenDropdownItem);
+define('dropdown-item', DropdownItem);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-dropdown-item': LuxenDropdownItem;
+    'l-dropdown-item': DropdownItem;
   }
 }

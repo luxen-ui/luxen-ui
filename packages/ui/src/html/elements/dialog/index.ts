@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenDialog } from './dialog';
+import { Dialog } from './dialog';
 export * from './dialog';
-define('dialog', LuxenDialog);
+define('dialog', Dialog);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-dialog': LuxenDialog;
+    'l-dialog': Dialog;
   }
 }

@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenTooltip } from './tooltip';
+import { Tooltip } from './tooltip';
 export * from './tooltip';
-define('tooltip', LuxenTooltip);
+define('tooltip', Tooltip);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-tooltip': LuxenTooltip;
+    'l-tooltip': Tooltip;
   }
 }

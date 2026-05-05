@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenSpinner } from './spinner';
+import { Spinner } from './spinner';
 export * from './spinner';
-define('spinner', LuxenSpinner);
+define('spinner', Spinner);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-spinner': LuxenSpinner;
+    'l-spinner': Spinner;
   }
 }

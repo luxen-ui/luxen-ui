@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenPopover } from './popover';
+import { Popover } from './popover';
 export * from './popover';
-define('popover', LuxenPopover);
+define('popover', Popover);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-popover': LuxenPopover;
+    'l-popover': Popover;
   }
 }

@@ -1,7 +1,7 @@
 import { unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import hostStyles from '../../shared/styles/host.styles';
-import { LuxenDialog } from '../dialog/dialog';
+import { Dialog } from '../dialog/dialog';
 import dialogStyles from '../dialog/dialog.styles';
 import rawDrawerStyles from './drawer.css?inline';
 
@@ -34,7 +34,7 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @event hide - Fired when the drawer is about to close. Cancelable — call `event.preventDefault()` to keep it open.
  * @event after-hide - Fired after the close animation completes.
  */
-export class LuxenDrawer extends LuxenDialog {
+export class Drawer extends Dialog {
   static override styles = [hostStyles, dialogStyles, drawerStyles];
 
   /** Edge the drawer slides in from. Defaults to the start (inline-start) edge. */

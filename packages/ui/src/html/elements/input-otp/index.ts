@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenInputOtp } from './input-otp';
+import { InputOtp } from './input-otp';
 export * from './input-otp';
-define('input-otp', LuxenInputOtp);
+define('input-otp', InputOtp);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-input-otp': LuxenInputOtp;
+    'l-input-otp': InputOtp;
   }
 }

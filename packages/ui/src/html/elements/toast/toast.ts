@@ -13,7 +13,7 @@ declare global {
 }
 
 /** Minimal custom element for toast items — no render, no shadow DOM. */
-export class LuxenToastItem extends HTMLElement {}
+export class ToastItem extends HTMLElement {}
 
 interface ToastOptionsBase {
   /** Optional heading text displayed above the message. */
@@ -56,7 +56,7 @@ interface TimerState {
  * @cssproperty --show-duration - Duration of the show animation.
  * @cssproperty --hide-duration - Duration of the hide animation.
  */
-export class LuxenToast extends LuxenElement {
+export class Toast extends LuxenElement {
   /** Use light DOM — no Shadow DOM. */
   override createRenderRoot() {
     return this;
@@ -420,13 +420,13 @@ export class LuxenToast extends LuxenElement {
 
 // ── Standalone function ───────────────────────────────────────────────────────
 
-let _defaultInstance: LuxenToast | null = null;
+let _defaultInstance: Toast | null = null;
 
-function _getDefault(): LuxenToast {
+function _getDefault(): Toast {
   if (!_defaultInstance || !_defaultInstance.isConnected) {
     _defaultInstance =
       document.querySelector(tagName('toast')) ??
-      (document.createElement(tagName('toast')) as LuxenToast);
+      (document.createElement(tagName('toast')) as Toast);
     if (!_defaultInstance.isConnected) {
       document.body.appendChild(_defaultInstance);
     }

@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenRating } from './rating';
+import { Rating } from './rating';
 export * from './rating';
-define('rating', LuxenRating);
+define('rating', Rating);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-rating': LuxenRating;
+    'l-rating': Rating;
   }
 }

@@ -15,7 +15,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @cssproperty --color - Text color.
  */
-export class LuxenDropdownItem extends LuxenElement {
+export class DropdownItem extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   /** The value associated with this item. */

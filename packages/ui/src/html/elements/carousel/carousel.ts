@@ -49,7 +49,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --dot-margin - Margin around dots container.
  * @cssproperty --dot-edge-scale - Scale factor applied to edge dots that signal more dots exist beyond the visible window (default `0.5`).
  */
-export class LuxenCarousel extends LuxenElement {
+export class Carousel extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
 
   embla!: EmblaCarouselType;

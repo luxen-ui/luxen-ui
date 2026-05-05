@@ -7,7 +7,7 @@ import { LuxenElement } from '../../shared/luxen-element';
  * @cssproperty --width - Width of the skeleton
  * @cssproperty --height - Height of the skeleton
  */
-export class LuxenSkeleton extends LuxenElement {
+export class Skeleton extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

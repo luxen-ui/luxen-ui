@@ -27,7 +27,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --show-duration - Show animation duration. Default `150ms`.
  * @cssproperty --hide-duration - Hide animation duration. Default `150ms`.
  */
-export class LuxenPopover extends LuxenElement {
+export class Popover extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   private _popoverId = uniqueId('popover');

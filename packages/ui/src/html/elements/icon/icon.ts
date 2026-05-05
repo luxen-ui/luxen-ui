@@ -14,7 +14,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @cssproperty --color - The color of the icon. Defaults to `currentColor`.
  */
-export class LuxenIcon extends LuxenElement {
+export class Icon extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   /** The icon name in Iconify format (e.g. `mdi:home`, `lucide:check`). */

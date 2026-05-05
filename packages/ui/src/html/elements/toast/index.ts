@@ -1,12 +1,12 @@
 import { define } from '../../define';
-import { LuxenToast, LuxenToastItem } from './toast';
+import { Toast, ToastItem } from './toast';
 export * from './toast';
-define('toast', LuxenToast);
-define('toast-item', LuxenToastItem);
+define('toast', Toast);
+define('toast-item', ToastItem);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-toast': LuxenToast;
-    'l-toast-item': LuxenToastItem;
+    'l-toast': Toast;
+    'l-toast-item': ToastItem;
   }
 }

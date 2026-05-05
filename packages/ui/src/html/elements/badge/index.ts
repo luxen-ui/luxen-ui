@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenBadge } from './badge';
+import { Badge } from './badge';
 export * from './badge';
-define('badge', LuxenBadge);
+define('badge', Badge);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-badge': LuxenBadge;
+    'l-badge': Badge;
   }
 }

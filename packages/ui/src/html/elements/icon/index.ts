@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenIcon } from './icon';
+import { Icon } from './icon';
 export * from './icon';
-define('icon', LuxenIcon);
+define('icon', Icon);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-icon': LuxenIcon;
+    'l-icon': Icon;
   }
 }

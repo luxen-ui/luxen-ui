@@ -21,7 +21,7 @@ export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * @cssproperty --border-color - Border color of the stepper container (default appearance) and of each button (rounded appearance). Defaults to `--l-color-border`.
  * @cssproperty --border-radius - Border radius of the stepper container (default appearance). Defaults to `--radius-md`.
  */
-export class LuxenInputStepper extends LuxenElement {
+export class InputStepper extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

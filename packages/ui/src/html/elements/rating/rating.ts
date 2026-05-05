@@ -21,7 +21,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @event {{ name: string, value: string, checked: boolean, sourceEvent: Event }} change - Emitted when the rating value changes in edit mode.
  */
-export class LuxenRating extends LuxenFormAssociatedElement {
+export class Rating extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];
 
   private currentLabel = '';

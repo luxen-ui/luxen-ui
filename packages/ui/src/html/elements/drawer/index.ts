@@ -1,10 +1,10 @@
 import { define } from '../../define';
-import { LuxenDrawer } from './drawer';
+import { Drawer } from './drawer';
 export * from './drawer';
-define('drawer', LuxenDrawer);
+define('drawer', Drawer);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'l-drawer': LuxenDrawer;
+    'l-drawer': Drawer;
   }
 }

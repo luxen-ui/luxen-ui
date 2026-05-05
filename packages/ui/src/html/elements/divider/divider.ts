@@ -14,7 +14,7 @@ export type DividerOrientation = 'horizontal' | 'vertical';
  *
  * @customElement l-divider
  */
-export class LuxenDivider extends LuxenElement {
+export class Divider extends LuxenElement {
   override createRenderRoot() {
     return this;
   }

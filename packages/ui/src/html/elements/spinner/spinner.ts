@@ -15,7 +15,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --indicator-color - The color of the spinner.
  * @cssproperty --speed - The duration of one full spin cycle.
  */
-export class LuxenSpinner extends LuxenElement {
+export class Spinner extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   override render() {

@@ -4,7 +4,7 @@ import { property } from 'lit/decorators.js';
 import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover';
 import { tagName } from '../../registry';
-import type { LuxenDropdownItem } from '../dropdown-item/dropdown-item';
+import type { DropdownItem } from '../dropdown-item/dropdown-item';
 import hostStyles from '../../shared/styles/host.styles';
 import rawStyles from './dropdown.css?inline';
 
@@ -31,9 +31,9 @@ const styles = unsafeCSS(rawStyles);
  * @event after-show - Fired after the open animation completes.
  * @event hide - Fired before the dropdown closes. Cancelable.
  * @event after-hide - Fired after the close animation completes.
- * @event select - Fired when an item is selected. Detail: `{ item: LuxenDropdownItem }`.
+ * @event select - Fired when an item is selected. Detail: `{ item: DropdownItem }`.
  */
-export class LuxenDropdown extends LuxenElement {
+export class Dropdown extends LuxenElement {
   static override styles = [hostStyles, styles];
 
   private _floating = new PopoverController(this, {
@@ -70,18 +70,18 @@ export class LuxenDropdown extends LuxenElement {
     return this.shadowRoot!.querySelector<HTMLElement>('[popover]');
   }
 
-  private _getItems(): LuxenDropdownItem[] {
+  private _getItems(): DropdownItem[] {
     const menuSlot = this.shadowRoot!.querySelector<HTMLSlotElement>('slot:not([name])');
     if (!menuSlot) return [];
-    return (menuSlot.assignedElements() as LuxenDropdownItem[]).filter(
+    return (menuSlot.assignedElements() as DropdownItem[]).filter(
       (el) => el.tagName === tagName('dropdown-item').toUpperCase() && !el.disabled,
     );
   }
 
-  private _getAllItems(): LuxenDropdownItem[] {
+  private _getAllItems(): DropdownItem[] {
     const menuSlot = this.shadowRoot!.querySelector<HTMLSlotElement>('slot:not([name])');
     if (!menuSlot) return [];
-    return (menuSlot.assignedElements() as LuxenDropdownItem[]).filter(
+    return (menuSlot.assignedElements() as DropdownItem[]).filter(
       (el) => el.tagName === tagName('dropdown-item').toUpperCase(),
     );
   }
@@ -143,7 +143,7 @@ export class LuxenDropdown extends LuxenElement {
 
   // --- Focus management ---
 
-  private _setActiveItem(item: LuxenDropdownItem) {
+  private _setActiveItem(item: DropdownItem) {
     const itemEl = item.shadowRoot!.querySelector<HTMLElement>('.item');
     if (!itemEl) return;
 
@@ -167,7 +167,7 @@ export class LuxenDropdown extends LuxenElement {
     if (items.length) this._setActiveItem(items[items.length - 1]);
   }
 
-  private _getCurrentItem(): LuxenDropdownItem | null {
+  private _getCurrentItem(): DropdownItem | null {
     const items = this._getItems();
     return (
       items.find((item) => {
@@ -271,7 +271,7 @@ export class LuxenDropdown extends LuxenElement {
   };
 
   private _onItemClick = (e: Event) => {
-    const item = (e.target as HTMLElement).closest<LuxenDropdownItem>(tagName('dropdown-item'));
+    const item = (e.target as HTMLElement).closest<DropdownItem>(tagName('dropdown-item'));
     if (item && !item.disabled) {
       this._selectItem(item);
     }
@@ -282,7 +282,7 @@ export class LuxenDropdown extends LuxenElement {
     if (current) this._selectItem(current);
   }
 
-  private _selectItem(item: LuxenDropdownItem) {
+  private _selectItem(item: DropdownItem) {
     if (item.type === 'checkbox') {
       item.checked = !item.checked;
     }
