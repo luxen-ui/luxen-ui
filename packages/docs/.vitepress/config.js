@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress';
 import tailwindcss from '@tailwindcss/vite';
+import { luxenCdnPlugin } from './plugins/luxen-cdn.js';
 
 function el(name, tag, link) {
   const isCustom = tag.startsWith('l-');
@@ -28,7 +29,7 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), luxenCdnPlugin()],
     // Pin a non-default port to avoid collisions with sibling Vite projects.
     // When IPv4 is taken, Vite silently falls back to IPv6-only and Firefox
     // happy-eyeballs hits the half-bound socket → NS_ERROR_NET_RESET.
@@ -120,6 +121,7 @@ export default defineConfig({
           el('Rating', 'l-rating', 'rating'),
           el('Skeleton', 'l-skeleton', 'skeleton'),
           el('Spinner', 'l-spinner', 'spinner'),
+          el('Sticky bar', 'l-sticky-bar', 'sticky-bar'),
           {
             ...el('Stories', 'l-stories', 'stories'),
             collapsed: true,

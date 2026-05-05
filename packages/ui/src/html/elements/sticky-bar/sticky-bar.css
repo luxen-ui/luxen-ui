@@ -1,0 +1,56 @@
+:host {
+  --show-duration: 200ms;
+  --hide-duration: 200ms;
+  --offset: 0px;
+
+  /* Override popover UA defaults. */
+  position: fixed;
+  inset: auto;
+  inset-inline: 0;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  display: block;
+  opacity: 0;
+  transition:
+    opacity var(--hide-duration) ease,
+    translate var(--hide-duration) ease,
+    display var(--hide-duration) allow-discrete,
+    overlay var(--hide-duration) allow-discrete;
+}
+
+:host([placement='bottom']) {
+  bottom: var(--offset);
+  translate: 0 100%;
+}
+
+:host([placement='top']) {
+  top: var(--offset);
+  translate: 0 -100%;
+}
+
+:host(:popover-open) {
+  opacity: 1;
+  translate: 0 0;
+  transition-duration: var(--show-duration);
+}
+
+@starting-style {
+  :host([placement='bottom']:popover-open) {
+    opacity: 0;
+    translate: 0 100%;
+  }
+  :host([placement='top']:popover-open) {
+    opacity: 0;
+    translate: 0 -100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --show-duration: 0ms;
+    --hide-duration: 0ms;
+  }
+}

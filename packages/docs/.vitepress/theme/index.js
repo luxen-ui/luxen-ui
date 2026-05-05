@@ -24,6 +24,7 @@ export default {
       void import('luxen-ui/carousel-item');
       void import('luxen-ui/skeleton');
       void import('luxen-ui/spinner');
+      void import('luxen-ui/sticky-bar');
       void import('luxen-ui/stories');
       void import('luxen-ui/story');
       void import('luxen-ui/stories-viewer');

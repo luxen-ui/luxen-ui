@@ -18,6 +18,7 @@ const ELEMENTS = [
   'drawer',
   'select',
   'progress',
+  'sticky-bar',
   'toast',
   'tree',
 ];
@@ -349,6 +350,7 @@ const elementMeta = {
   drawer: { name: 'Drawer', type: 'Custom element', selector: '<l-drawer>' },
   select: { name: 'Select', type: 'CSS class', selector: '.l-select' },
   progress: { name: 'Progress', type: 'CSS class', selector: '.l-progress' },
+  'sticky-bar': { name: 'Sticky bar', type: 'Custom element', selector: '<l-sticky-bar>' },
   toast: { name: 'Toast', type: 'Custom element', selector: '<l-toast>' },
   tree: { name: 'Tree', type: 'Custom element', selector: '<l-tree>' },
 };

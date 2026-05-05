@@ -16,6 +16,7 @@ export type ElementBaseName =
   | 'skeleton'
   | 'spinner'
   | 'rating'
+  | 'sticky-bar'
   | 'stories'
   | 'story'
   | 'stories-viewer'

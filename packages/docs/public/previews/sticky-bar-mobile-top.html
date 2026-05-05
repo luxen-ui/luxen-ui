@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+    />
+    <title>Sticky bar — top placement</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --l-color-text-primary: light-dark(#1f2937, #e5e7eb);
+        --l-color-text-secondary: light-dark(#4b5563, #9ca3af);
+        --l-color-divider: light-dark(#e5e7eb, #374151);
+        --l-color-surface: light-dark(#ffffff, #18181b);
+        --l-color-bg-fill-brand: light-dark(#111827, #f9fafb);
+        --l-color-text-on-brand: light-dark(#ffffff, #111827);
+        --header-height: 2.5rem;
+      }
+
+      html,
+      body {
+        margin: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        background: var(--l-color-surface);
+        color: var(--l-color-text-primary);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        box-sizing: border-box;
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 16px;
+        background: var(--l-color-surface);
+        border-bottom: 1px solid var(--l-color-divider);
+      }
+
+      header button {
+        all: unset;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--l-color-text-primary);
+      }
+
+      header .brand {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .hero {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        background: linear-gradient(135deg, #ede9fe, #fce7f3);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .hero {
+          background: linear-gradient(135deg, #2e1065, #831843);
+        }
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .price {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        color: var(--l-color-text-secondary);
+      }
+
+      h2 {
+        margin: 12px 0 0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      ul.features {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        color: var(--l-color-text-secondary);
+      }
+
+      ul.features li {
+        display: flex;
+        gap: 8px;
+      }
+
+      ul.features li::before {
+        content: '✓';
+        color: var(--l-color-text-primary);
+      }
+
+      .cta {
+        margin-top: 12px;
+        display: block;
+        width: 100%;
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--l-color-bg-fill-brand);
+        color: var(--l-color-text-on-brand);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .hint {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--l-color-text-secondary);
+      }
+
+      dl.specs {
+        margin: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: 16px;
+        row-gap: 4px;
+        color: var(--l-color-text-secondary);
+      }
+
+      dl.specs dt {
+        color: var(--l-color-text-primary);
+      }
+
+      blockquote {
+        margin: 8px 0;
+        padding-left: 12px;
+        border-left: 2px solid var(--l-color-divider);
+        font-style: italic;
+        color: var(--l-color-text-secondary);
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--l-color-surface);
+        border-bottom: 1px solid var(--l-color-divider);
+      }
+
+      .bar .title {
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .bar button {
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 6px;
+        background: var(--l-color-bg-fill-brand);
+        color: var(--l-color-text-on-brand);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+    <script
+      type="module"
+      src="/luxen-cdn/elements/sticky-bar/index.js"
+    ></script>
+  </head>
+  <body>
+    <header>
+      <button
+        type="button"
+        aria-label="Back"
+      >
+        ←
+      </button>
+      <span class="brand">Acme Store</span>
+      <button
+        type="button"
+        aria-label="Search"
+      >
+        ⌕
+      </button>
+    </header>
+
+    <div class="hero"></div>
+
+    <main>
+      <h1>Magic Mouse</h1>
+      <p class="price">€42</p>
+      <p>
+        Wireless, rechargeable, multi-touch surface. Scroll-and-zoom gestures across an entire flat
+        surface, no scroll wheel required.
+      </p>
+      <p>
+        Designed for precision and comfort across long sessions — Apple Silicon-optimized tracking,
+        palm-rejection across the surface, and a low-profile shape that fits any hand size.
+      </p>
+
+      <h2>Why you'll love it</h2>
+      <ul class="features">
+        <li>Multi-touch gestures replace the scroll wheel entirely</li>
+        <li>One-month battery on a 2-hour USB-C charge</li>
+        <li>Optical sensor tracks on glass, marble, and brushed metal</li>
+        <li>Pairs with up to three devices, switch with a side button</li>
+        <li>2-year manufacturer warranty, free 30-day returns</li>
+      </ul>
+
+      <button
+        id="add-to-cart"
+        class="cta"
+        type="button"
+      >
+        Add to cart — €42
+      </button>
+
+      <p class="hint">
+        With <code>placement="top"</code> and <code>--offset: var(--header-height)</code>, the bar
+        tucks below the existing sticky header instead of overlapping it.
+      </p>
+
+      <h2>Specs</h2>
+      <dl class="specs">
+        <dt>Weight</dt>
+        <dd>99 g</dd>
+        <dt>Battery</dt>
+        <dd>1 month</dd>
+        <dt>Connectivity</dt>
+        <dd>Bluetooth 5.3</dd>
+        <dt>Compatibility</dt>
+        <dd>macOS 11+, iPadOS 14+</dd>
+        <dt>Dimensions</dt>
+        <dd>113 × 58 × 22 mm</dd>
+        <dt>Charging</dt>
+        <dd>USB-C, 2 hours</dd>
+      </dl>
+
+      <h2>Reviews</h2>
+      <p>
+        ★★★★★ — 4.9 / 5 across 1,284 reviews. Customers praise the precision tracking and the silent
+        click feel.
+      </p>
+      <blockquote>
+        "Switched from a Logitech after years. The gestures alone make the price worth it." — Marie
+        L.
+      </blockquote>
+      <blockquote>
+        "Battery life is the real story — I charge it once a month tops." — Tom B.
+      </blockquote>
+
+      <h2>Shipping &amp; returns</h2>
+      <p>Free standard shipping on orders over €60. 30-day return window — we cover the label.</p>
+
+      <h2>Warranty</h2>
+      <p>
+        2-year manufacturer warranty against defects. Optional 3-year extended care available at
+        checkout.
+      </p>
+
+      <h2>Frequently asked</h2>
+      <p><strong>Does it work on glass?</strong></p>
+      <p>Yes. The optical sensor handles glass, marble, and brushed metal without a mat.</p>
+      <p><strong>Can I pair with multiple devices?</strong></p>
+      <p>Up to three. Switch with a long press on the side button.</p>
+    </main>
+
+    <l-sticky-bar
+      for="add-to-cart"
+      placement="top"
+      style="--offset: var(--header-height)"
+    >
+      <div class="bar">
+        <span class="title">Magic Mouse — €42</span>
+        <button type="button">Buy</button>
+      </div>
+    </l-sticky-bar>
+  </body>
+</html>

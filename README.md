@@ -44,6 +44,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Select         | `<select>`           | ⏣ Native HTML Element                   |
 | Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |
 | Spinner        | `<l-spinner>`        | ⬢ Custom HTML Element (with Shadow DOM) |
+| Sticky Bar     | `<l-sticky-bar>`     | ⬢ Custom HTML Element (with Shadow DOM) |
 | Stories        | `<l-stories>`        | ◇ Custom HTML Element (no Shadow DOM)   |
 | Story          | `<l-story>`          | ◇ Custom HTML Element (no Shadow DOM)   |
 | Stories Viewer | `<l-stories-viewer>` | ⬢ Custom HTML Element (with Shadow DOM) |
