@@ -1,5 +1,42 @@
 # luxen-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- 3ad246f: Public element classes drop the `Luxen` prefix. Import them as `Avatar`, `Badge`, `Carousel`, `CarouselItem`, `Dialog`, `Divider`, `Drawer`, `Dropdown`, `DropdownItem`, `Icon`, `InputOtp`, `InputStepper`, `Popover`, `Rating`, `Skeleton`, `Spinner`, `Tabs`, `Toast`, `ToastItem`, `Tooltip`, `Tree`, and `TreeItem` — for example `import { Badge } from 'luxen-ui/badge'`. The internal base classes `LuxenElement` and `LuxenFormAssociatedElement` keep their prefix to avoid colliding with the DOM `Element` interface.
+
+  This is a breaking change at the import site. Rename the class at the call site, or alias on import:
+
+  ```ts
+  import { Badge as LuxenBadge } from "luxen-ui/badge";
+  ```
+
+  Custom elements still register under the same default tags (`<l-badge>`, `<l-dialog>`, …) and `HTMLElementTagNameMap` augmentations are preserved, so `document.createElement('l-badge')` keeps its `Badge` typing.
+
+- aa24ebe: New `<l-sticky-bar>` element — a bar docked to the viewport edge, painted in the document's **top layer** via the native `popover` attribute. Pass `for="<id>"` to track an element (e.g. an Add to cart button on a mobile product page) and the bar slides in once that element leaves the viewport. Omit `for` to keep the bar permanently visible — useful for cookie banners, promo announcements, environment indicators. Set `placement="top"` to dock against the top edge instead of the bottom; `--offset` clears a sticky header. An optional `root="<id>"` scopes the IntersectionObserver to a scrolling ancestor (CMS preview panes, modals). Animations honor `prefers-reduced-motion` and tune via `--show-duration`, `--hide-duration`, `--offset`. Style the revealed state via `l-sticky-bar:popover-open`.
+
+  ```html
+  <button id="add-to-cart" class="l-button" data-variant="primary">
+    Add to cart — €42
+  </button>
+
+  <l-sticky-bar for="add-to-cart">
+    <div class="...">Magic Mouse — €42 / Add to cart</div>
+  </l-sticky-bar>
+  ```
+
+- 7792bee: New `<l-stories>`, `<l-story>`, and `<l-stories-viewer>` elements for Instagram-style web stories on e-commerce surfaces. The thumbnail row supports four appearances (`rounded`, `squared`, `portrait`, `landscape`); thumbnail size, radius, and gap are tweaked via CSS custom properties (`--size`, `--radius`, `--gap`). Each story can opt into a `pulse` attribute for an animated halo + breathing scale that draws attention, and a `chapters="0,5,12"` attribute to split a single video into chapters with one progress segment each. The fullscreen viewer plays the video with mute toggle, play/pause button, auto-advance, keyboard control, tap-to-advance zones (left ~30% = previous, rest = next), swipe gestures, and a `cta` slot for shoppable overlays. On desktop the prev/next chevrons sit outside the frame on the dim backdrop; on mobile they are hidden and tap zones drive navigation.
+
+  ```html
+  <l-stories for="brand" appearance="portrait">
+    <l-story src="…video.mp4" poster="…jpg" label="Look #01"></l-story>
+    <l-story src="…video2.mp4" poster="…jpg" label="Look #02"></l-story>
+  </l-stories>
+
+  <l-stories-viewer id="brand"></l-stories-viewer>
+  ```
+
 ## 0.4.0
 
 ### Minor Changes
