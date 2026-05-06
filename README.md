@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/luxen-ui.svg)](https://www.npmjs.com/package/luxen-ui)
 [![lit](https://img.shields.io/badge/lib-lit-1e40af.svg)](https://github.com/lit/lit/)
-[![CI](https://img.shields.io/github/actions/workflow/status/zedix/luxen-ui/ci.yml?label=CI&color=1a7f37)](https://github.com/zedix/luxen-ui/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/luxen-ui/luxen-ui/ci.yml?label=CI&color=1a7f37)](https://github.com/luxen-ui/luxen-ui/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-MIT-green.svg)
 
 A Web UI library built with with modern CSS-first, native HTML and custom HTML elements.
