@@ -1,11 +1,20 @@
-# Luxen UI
+<p align="center">
+  <a href="https://luxen-ui.com">
+    <img src="https://raw.githubusercontent.com/luxen-ui/luxen-ui/main/packages/docs/public/logos/luxen.svg" width="72" height="72" alt="Luxen UI" />
+  </a>
+</p>
 
-[![npm version](https://img.shields.io/npm/v/luxen-ui.svg)](https://www.npmjs.com/package/luxen-ui)
-[![lit](https://img.shields.io/badge/lib-lit-1e40af.svg)](https://github.com/lit/lit/)
-[![CI](https://img.shields.io/github/actions/workflow/status/luxen-ui/luxen-ui/ci.yml?label=CI&color=1a7f37)](https://github.com/luxen-ui/luxen-ui/actions/workflows/ci.yml)
-![license](https://img.shields.io/badge/license-MIT-green.svg)
+<h1 align="center">Luxen UI</h1>
 
-A Web UI library built with with modern CSS-first, native HTML and custom HTML elements.
+<p align="center">A Web UI library built with modern CSS-first, native HTML and custom HTML elements.</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/luxen-ui"><img alt="npm version" src="https://img.shields.io/npm/v/luxen-ui?style=flat-square&color=0a7ea4&label=npm" /></a>
+  <a href="https://github.com/luxen-ui/luxen-ui/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/luxen-ui/luxen-ui/ci.yml?style=flat-square&label=CI" /></a>
+  <a href="https://bundlephobia.com/package/luxen-ui"><img alt="Bundle size (minzipped)" src="https://img.shields.io/bundlephobia/minzip/luxen-ui?style=flat-square&label=size" /></a>
+  <a href="https://github.com/lit/lit/"><img alt="Built with Lit" src="https://img.shields.io/badge/built_with-lit-324fff?style=flat-square" /></a>
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/npm/l/luxen-ui?style=flat-square" /></a>
+</p>
 
 ## Features
 
