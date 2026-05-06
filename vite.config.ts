@@ -14,6 +14,20 @@ export default defineConfig({
       suspicious: 'warn',
       perf: 'warn',
     },
+    rules: {
+      'typescript/no-unsafe-type-assertion': 'off',
+      'typescript/no-unnecessary-type-parameters': 'off',
+      'typescript/consistent-return': 'off',
+      'unicorn/consistent-function-scoping': 'off',
+    },
+    overrides: [
+      {
+        files: ['packages/ui/scripts/**/*.mjs'],
+        rules: {
+          'typescript/no-implied-eval': 'off',
+        },
+      },
+    ],
   },
   fmt: {
     // https://oxc.rs/docs/guide/usage/formatter/config-file-reference.html

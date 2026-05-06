@@ -112,7 +112,7 @@ export class Dialog extends LuxenElement {
       this.toggleAttribute('data-modal', true);
       this.dialog.showModal();
       this._focusAutofocusTarget();
-      this._emitAfter('after-show');
+      void this._emitAfter('after-show');
     } else if (!this.open && this.dialog.open) {
       // Closing — cancelable. Revert the property if consumer prevents.
       if (!this.emit('hide', { cancelable: true })) {
@@ -152,7 +152,7 @@ export class Dialog extends LuxenElement {
   private _onNativeClose() {
     this.open = false;
     this.removeAttribute('data-modal');
-    this._emitAfter('after-hide');
+    void this._emitAfter('after-hide');
   }
 
   private _onDialogClick(e: MouseEvent) {

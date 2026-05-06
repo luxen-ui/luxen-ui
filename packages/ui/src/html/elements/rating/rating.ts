@@ -148,21 +148,21 @@ export class Rating extends LuxenFormAssociatedElement {
     `;
   }
 
-  private previewValue(value: number) {
+  private previewValue = (value: number) => {
     this.previewedValue = value;
     this.setLabelForValue(value);
-  }
+  };
 
-  private clearPreview(event?: FocusEvent) {
+  private clearPreview = (event?: FocusEvent) => {
     if (event) {
       const related = event.relatedTarget as Node | null;
       if (related && this.shadowRoot?.contains(related)) return;
     }
     this.previewedValue = 0;
     this.setLabelForValue(this.value);
-  }
+  };
 
-  private onClick(event: Event) {
+  private onClick = (event: Event) => {
     const target = event.currentTarget as HTMLInputElement;
     const clickedValue = Number(target.value);
     this.value = clickedValue === this.value ? 0 : clickedValue;
@@ -177,5 +177,5 @@ export class Rating extends LuxenFormAssociatedElement {
         sourceEvent: event,
       },
     });
-  }
+  };
 }

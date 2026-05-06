@@ -94,7 +94,7 @@ export class Tooltip extends LuxenElement {
 
   override updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
-      this._handleOpenChange();
+      void this._handleOpenChange();
     }
     if (changed.has('for')) {
       this._removeTriggerListeners(changed.get('for') as string);

@@ -112,7 +112,7 @@ export class Dropdown extends LuxenElement {
 
   override updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
-      this._handleOpenChange();
+      void this._handleOpenChange();
     }
   }
 

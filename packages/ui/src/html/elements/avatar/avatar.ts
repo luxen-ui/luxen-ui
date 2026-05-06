@@ -99,7 +99,7 @@ export class Avatar extends LuxenElement {
     `;
   }
 
-  private _onError() {
+  private _onError = () => {
     this._hasError = true;
-  }
+  };
 }

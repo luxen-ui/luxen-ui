@@ -179,18 +179,6 @@ export class Carousel extends LuxenElement {
   @query('.button-next') nextBtn!: HTMLButtonElement;
   @query('.container') container!: HTMLSlotElement;
 
-  constructor() {
-    super();
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
-    this.onInit = this.onInit.bind(this);
-    this.onReInit = this.onReInit.bind(this);
-    this.onResize = this.onResize.bind(this);
-    this.onSelect = this.onSelect.bind(this);
-    this.onSlidesInView = this.onSlidesInView.bind(this);
-    this.detachEventListeners = this.detachEventListeners.bind(this);
-  }
-
   override connectedCallback(): void {
     super.connectedCallback();
     this.createEmbla();
@@ -218,41 +206,41 @@ export class Carousel extends LuxenElement {
       .on('destroy', this.detachEventListeners);
   }
 
-  protected onSlidesInView() {
+  protected onSlidesInView = () => {
     this.emit('slides-in-view', {
       detail: { indexes: this.embla.slidesInView() },
     });
-  }
+  };
 
-  protected onInit() {
+  protected onInit = () => {
     this.updateNavigation();
-  }
+  };
 
-  protected onReInit() {
+  protected onReInit = () => {
     this.updateNavigation();
     this.requestUpdate();
-  }
+  };
 
-  protected onSelect() {
+  protected onSelect = () => {
     this.emit('select', {
       detail: { index: this.embla.selectedScrollSnap() },
     });
     this.updateNavigation();
-  }
+  };
 
-  protected onResize() {
+  protected onResize = () => {
     this.requestUpdate();
-  }
+  };
 
   protected attachEventListeners() {
     this.previousBtn.addEventListener('click', this.previous);
     this.nextBtn.addEventListener('click', this.next);
   }
 
-  protected detachEventListeners() {
+  protected detachEventListeners = () => {
     this.previousBtn.removeEventListener('click', this.previous);
     this.nextBtn.removeEventListener('click', this.next);
-  }
+  };
 
   protected updateNavigation() {
     const canScroll = this.embla.canScrollPrev() || this.embla.canScrollNext();
@@ -274,17 +262,17 @@ export class Carousel extends LuxenElement {
     this.embla.reInit(this.options(), [Autoplay(this.autoplayOptions || { delay: this.autoplay })]);
   }
 
-  private handleSlotChange(event: Event) {
+  private handleSlotChange = (event: Event) => {
     const slot = event.target as HTMLSlotElement;
     if (slot.assignedElements().length > 0) {
       this.embla.reInit(this.options());
     }
-  }
+  };
 
-  private handleDotClick(event: Event) {
+  private handleDotClick = (event: Event) => {
     const button = event.currentTarget as HTMLButtonElement;
     this.goToSlide(Number(button.dataset.index));
-  }
+  };
 
   options(): EmblaOptionsType {
     const container = this.shadowRoot!.querySelector('slot')!;
@@ -312,13 +300,13 @@ export class Carousel extends LuxenElement {
     };
   }
 
-  next() {
+  next = () => {
     this.embla.scrollNext();
-  }
+  };
 
-  previous() {
+  previous = () => {
     this.embla.scrollPrev();
-  }
+  };
 
   goToSlide(index: number, jump?: boolean) {
     this.embla.scrollTo(index, jump);
