@@ -109,3 +109,11 @@ l-stories-viewer::part(frame) {
   aspect-ratio: 4/5;
 }
 ```
+
+The `<video>` defaults to `object-fit: cover` so portrait videos fill the 9/16 frame edge-to-edge. For mixed catalogs with landscape or square videos, switch to `contain` to letterbox instead of cropping:
+
+```css
+l-stories-viewer::part(video) {
+  object-fit: contain;
+}
+```
