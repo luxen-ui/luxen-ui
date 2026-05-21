@@ -43,7 +43,7 @@ export class LuxenStory extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   seen = false;
 
-  /** Pulse the thumbnail to draw attention (animated halo + subtle breathing scale). Reflected. */
+  /** Pulse the thumbnail with an animated halo + a subtle scale tap to draw attention. Reflected. */
   @property({ type: Boolean, reflect: true })
   pulse = false;
 
@@ -107,7 +107,6 @@ export class LuxenStory extends LuxenElement {
     this._io?.disconnect();
     this._io = undefined;
   }
-
   override render() {
     return html`
       <button

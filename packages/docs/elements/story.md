@@ -36,7 +36,7 @@ import 'luxen-ui/story';
   { Attribute: 'label', Description: 'Caption shown under the thumbnail and used as the trigger `aria-label`' },
   { Attribute: 'duration', Description: 'Override progress duration in seconds. Defaults to video metadata duration' },
   { Attribute: 'seen', Description: 'Mark this story as already viewed. Reflects to attribute' },
-  { Attribute: 'pulse', Description: 'Animated halo + subtle breathing scale to draw attention' },
+  { Attribute: 'pulse', Description: 'Animated halo + subtle scale tap to draw attention' },
   { Attribute: 'chapters', Description: 'Chapter start times within the video, comma-separated seconds (e.g. `0,5,12`). `0` is implicit. Empty = single chapter' },
   { Attribute: 'tracks', Description: 'Comma-separated VTT track URLs for captions' },
 ]" />
@@ -70,7 +70,7 @@ The thumbnail layout tokens (`--size`, `--radius`, `--ring-color`, `--ring-color
 The pulse animation has its own knobs:
 
 <ApiTable :data="[
-  { Name: '--pulse-color', Description: 'Halo color when `pulse` is set. Default `var(--l-color-bg-fill-brand)`' },
-  { Name: '--pulse-spread', Description: 'Maximum halo spread distance. Default `12px`' },
+  { Name: '--pulse-color', Description: 'Halo paint when `pulse` is set. Accepts any `background` value (solid, `linear-gradient`, `conic-gradient`, image). Default `var(--ring-color)` — the halo matches the ring automatically, gradients included' },
+  { Name: '--pulse-scale', Description: 'Peak scale of the halo at the end of each pulse cycle. Default `1.2`' },
   { Name: '--pulse-duration', Description: 'Animation cycle. Default `1.6s`' },
 ]" />

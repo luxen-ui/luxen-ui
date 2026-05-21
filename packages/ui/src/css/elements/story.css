@@ -22,6 +22,7 @@
   }
 
   .l-story-trigger {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -93,12 +94,12 @@
     & l-icon {
       display: grid;
       place-items: center;
-      width: clamp(24px, 28%, 36px);
+      width: clamp(28px, 32%, 40px);
       aspect-ratio: 1;
       border-radius: 999px;
       background: rgb(0 0 0 / 35%);
       color: white;
-      font-size: clamp(14px, 18%, 22px);
+      font-size: clamp(16px, 22%, 26px);
     }
   }
 
@@ -116,63 +117,62 @@
 
   /*
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-   🅿🆄🅻🆂🅴  (attention halo + breathing scale on the thumbnail)
+   🅿🆄🅻🆂🅴  (attention halo + occasional thumb tap)
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
   */
 
   l-story[pulse] {
     /* Local pulse customization knobs. */
-    --pulse-color: var(--l-color-bg-fill-brand);
-    --pulse-spread: 12px;
+    --pulse-color: var(--ring-color);
+    --pulse-scale: 1.2;
     --pulse-duration: 1.6s;
   }
 
-  l-story[pulse] .l-story-thumb {
-    animation: l-story-pulse-thumb var(--pulse-duration) ease-in-out infinite;
-  }
-
-  /* Halo expands outward and fades. Matches the thumb shape via inherited radius. */
-  l-story[pulse] .l-story-thumb::after {
+  /* Halo is a scaled clone of the thumb shape backed by `--pulse-color` (defaults to `--ring-color`, so gradient/image rings pulse in their own paint). It sits behind the thumb in the trigger's normal flow — the thumb's opaque background hides the part still inside the original bounds, leaving only the portion that scales beyond visible. */
+  l-story[pulse] .l-story-trigger::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: var(--aspect-ratio);
+    border-radius: var(--radius);
+    background: var(--pulse-color);
     pointer-events: none;
     animation: l-story-pulse-halo var(--pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* On hover, freeze the breathing animation and use the regular hover scale so the two motions don't compound. */
-  l-story[pulse] .l-story-trigger:hover .l-story-thumb {
-    animation-play-state: paused;
-    transform: scale(1.05);
-  }
-  l-story[pulse] .l-story-trigger:hover .l-story-thumb::after {
-    animation-play-state: paused;
-    box-shadow: none;
+  /* Subtle "tap" on the thumb every 3s — the motion happens in the first 0.6s of the cycle (10% in, 10% out), then the thumb sits still for 2.4s before the next tap. Slower than the halo so the two don't feel locked in lockstep. */
+  l-story[pulse] .l-story-thumb {
+    animation: l-story-pulse-thumb 3s 1.3s linear infinite both;
   }
 
-  @keyframes l-story-pulse-thumb {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.04);
-    }
+  /* On hover, kill both pulse animations so the regular hover scale takes over without compounding. */
+  l-story[pulse] .l-story-trigger:hover::before,
+  l-story[pulse] .l-story-trigger:hover .l-story-thumb {
+    animation: none;
   }
 
   @keyframes l-story-pulse-halo {
     0% {
-      box-shadow: 0 0 0 0 var(--pulse-color);
-      opacity: 1;
+      transform: scale(1);
+      opacity: 0.5;
     }
-    70% {
-      box-shadow: 0 0 0 var(--pulse-spread) var(--pulse-color);
-      opacity: 0;
-    }
+    70%,
     100% {
-      box-shadow: 0 0 0 var(--pulse-spread) var(--pulse-color);
+      transform: scale(var(--pulse-scale));
       opacity: 0;
+    }
+  }
+
+  @keyframes l-story-pulse-thumb {
+    0%,
+    20%,
+    100% {
+      transform: scale(1);
+    }
+    10% {
+      transform: scale(0.95);
     }
   }
 
@@ -184,8 +184,8 @@
     .l-story-trigger:hover .l-story-thumb {
       transform: none;
     }
-    l-story[pulse] .l-story-thumb,
-    l-story[pulse] .l-story-thumb::after {
+    l-story[pulse] .l-story-trigger::before,
+    l-story[pulse] .l-story-thumb {
       animation: none;
     }
   }
