@@ -77,6 +77,55 @@ import 'luxen-ui/css/button';
 <l-tooltip for="my-button">Hello world</l-tooltip>
 ```
 
+## TypeScript (prefix-aware)
+
+Element classes are exported under `luxen-ui/<name>/element` as side-effect-free
+type entries:
+
+```ts
+import type { Badge, BadgeVariant } from 'luxen-ui/badge/element';
+```
+
+The package does **not** ship a `HTMLElementTagNameMap` augmentation by
+default — consumers own that file so it always reflects the prefix they
+actually use (default `l-*` or rebranded). The Vite plugin can write it for
+you:
+
+```ts
+// vite.config.ts (or nuxt.config.ts)
+import luxen from 'luxen-ui/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    luxen({
+      elementPrefix: 'pulse',
+      cssPrefix: 'pulse',
+      emitTypes: 'types/luxen.d.ts', // ← writes the file on first build
+    }),
+  ],
+});
+```
+
+The generated `types/luxen.d.ts` imports the class types from the
+`*/element` subpaths and augments `HTMLElementTagNameMap` for every Luxen
+element under your prefix. Once written:
+
+- **You own the file.** Edit it freely — drop elements you don't use, or
+  add ones from your own custom element set.
+- **The plugin never overwrites** an existing file silently. Pass
+  `emitTypes: { path: 'types/luxen.d.ts', force: true }` to regenerate.
+- **Drift detection.** If your `elementPrefix` later changes, the plugin
+  logs a warning so you can regenerate.
+
+Need a subset only?
+
+```ts
+luxen({
+  elementPrefix: 'pulse',
+  emitTypes: { path: 'types/luxen.d.ts', elements: ['badge', 'dropdown', 'popover'] },
+});
+```
+
 ## Local Development
 
 Requires **Node.js >= 24** and **pnpm**.

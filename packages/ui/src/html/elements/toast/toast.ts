@@ -15,11 +15,21 @@ declare global {
 /** Minimal custom element for toast items — no render, no shadow DOM. */
 export class ToastItem extends HTMLElement {}
 
+export type ToastVariant = 'info' | 'success' | 'warning' | 'danger';
+
+export type ToastPlacement =
+  | 'top-start'
+  | 'top-center'
+  | 'top-end'
+  | 'bottom-start'
+  | 'bottom-center'
+  | 'bottom-end';
+
 interface ToastOptionsBase {
   /** Optional heading text displayed above the message. */
   heading?: string;
   /** Override the element's variant for this toast. */
-  variant?: string;
+  variant?: ToastVariant;
   /** Override auto-dismiss duration (ms) for this toast. 0 = no auto-dismiss. */
   duration?: number;
   /** Iconify icon name (e.g. 'lucide:check'). Replaces the accent bar. */
@@ -63,19 +73,13 @@ export class Toast extends LuxenElement {
   }
 
   /** Position of the toast stack on the screen. */
-  @property({ reflect: true }) placement:
-    | 'top-start'
-    | 'top-center'
-    | 'top-end'
-    | 'bottom-start'
-    | 'bottom-center'
-    | 'bottom-end' = 'top-end';
+  @property({ reflect: true }) placement: ToastPlacement = 'top-end';
 
   /** Default auto-dismiss delay in milliseconds. 0 disables auto-dismiss. */
   @property({ type: Number, reflect: true }) duration = 5000;
 
-  /** Default variant for toast items: info, success, warning, danger. */
-  @property({ reflect: true }) variant = '';
+  /** Default variant for toast items: `info`, `success`, `warning`, `danger`. */
+  @property({ reflect: true }) variant?: ToastVariant;
 
   private _timers = new WeakMap<HTMLElement, TimerState>();
   private _positionCache = new WeakMap<Element, DOMRect>();

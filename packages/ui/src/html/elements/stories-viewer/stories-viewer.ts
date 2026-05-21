@@ -729,9 +729,3 @@ export class LuxenStoriesViewer extends LuxenElement {
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-stories-viewer': LuxenStoriesViewer;
-  }
-}

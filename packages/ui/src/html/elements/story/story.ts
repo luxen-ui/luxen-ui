@@ -149,9 +149,3 @@ export class LuxenStory extends LuxenElement {
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-story': LuxenStory;
-  }
-}

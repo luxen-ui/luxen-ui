@@ -112,9 +112,3 @@ interface LuxenStoriesViewerLike extends HTMLElement {
 function _isViewer(el: Element): el is LuxenStoriesViewerLike {
   return el.tagName === 'L-STORIES-VIEWER';
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-stories': LuxenStories;
-  }
-}
