@@ -126,6 +126,36 @@ luxen({
 });
 ```
 
+### Vue / Nuxt — strict template checking
+
+`HTMLElementTagNameMap` types the DOM side (`document.querySelector`,
+`el.variant = …`) but Vue's template checker treats custom elements as a
+permissive surface — typos and bad prop values are **not** flagged. Use
+`target: 'vue'` to additionally augment Vue's `GlobalComponents`:
+
+```ts
+luxen({
+  elementPrefix: 'pulse',
+  cssPrefix: 'pulse',
+  emitTypes: { path: 'types/luxen.d.ts', target: 'vue' },
+});
+```
+
+Then enable strict templates in your tsconfig (for Nuxt, set it via
+`nuxt.config.ts` → `typescript.tsConfig.vueCompilerOptions`):
+
+```jsonc
+{
+  "vueCompilerOptions": { "strictTemplates": true },
+}
+```
+
+Now `<pulse-badge variant="bogus">` and `<pulse-badge typo="x">` are errors
+in the editor and in `vue-tsc`, while autocomplete stays scoped to each
+element's real props. The generated file also re-allows `data-*` and `slot`
+on native elements (which `strictTemplates` would otherwise reject) and keeps
+`@event` listeners permissive.
+
 ## Local Development
 
 Requires **Node.js >= 24** and **pnpm**.
