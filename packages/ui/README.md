@@ -156,6 +156,18 @@ element's real props. The generated file also re-allows `data-*` and `slot`
 on native elements (which `strictTemplates` would otherwise reject) and keeps
 `@event` listeners permissive.
 
+Installed under an npm alias? Pass `packageName` so the emitted imports
+resolve:
+
+```jsonc
+// package.json
+{ "dependencies": { "pulse-ui": "npm:luxen-ui@^0.5.0" } }
+```
+
+```ts
+emitTypes: { path: 'types/luxen.d.ts', target: 'vue', packageName: 'pulse-ui' }
+```
+
 ## Local Development
 
 Requires **Node.js >= 24** and **pnpm**.
