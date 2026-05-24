@@ -4,6 +4,10 @@ export default defineConfig({
   staged: {
     '*': 'vp check --fix',
   },
+  test: {
+    include: ['**/tests/**/*.test.ts'],
+    exclude: ['**/browser/**', '**/node_modules/**', '**/dist/**', '**/cdn/**'],
+  },
   lint: {
     options: {
       typeAware: true,
