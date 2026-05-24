@@ -1,0 +1,39 @@
+{
+  "$description": "Font-weight primitives. Vendored from Tailwind v4 default theme.",
+  "font-weight-thin": {
+    "$type": "fontWeight",
+    "$value": "100"
+  },
+  "font-weight-extralight": {
+    "$type": "fontWeight",
+    "$value": "200"
+  },
+  "font-weight-light": {
+    "$type": "fontWeight",
+    "$value": "300"
+  },
+  "font-weight-normal": {
+    "$type": "fontWeight",
+    "$value": "400"
+  },
+  "font-weight-medium": {
+    "$type": "fontWeight",
+    "$value": "500"
+  },
+  "font-weight-semibold": {
+    "$type": "fontWeight",
+    "$value": "600"
+  },
+  "font-weight-bold": {
+    "$type": "fontWeight",
+    "$value": "700"
+  },
+  "font-weight-extrabold": {
+    "$type": "fontWeight",
+    "$value": "800"
+  },
+  "font-weight-black": {
+    "$type": "fontWeight",
+    "$value": "900"
+  }
+}

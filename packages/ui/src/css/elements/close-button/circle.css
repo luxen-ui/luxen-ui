@@ -4,10 +4,10 @@
   .l-close:not([data-appearance]),
   .l-close[data-appearance='circle'] {
     --size: 44px;
-    --background-color: light-dark(var(--color-gray-100), var(--color-gray-700));
-    --background-color-hover: light-dark(var(--color-gray-200), var(--color-gray-600));
+    --background-color: light-dark(var(--l-color-gray-100), var(--l-color-gray-700));
+    --background-color-hover: light-dark(var(--l-color-gray-200), var(--l-color-gray-600));
 
-    border-radius: var(--radius-full);
+    border-radius: var(--l-radius-full);
     background-color: var(--background-color);
 
     transition-property: background-color;

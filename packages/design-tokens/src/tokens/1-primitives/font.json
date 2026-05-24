@@ -1,0 +1,20 @@
+{
+  "$description": "Font-family primitives. `sans`, `serif`, `mono` vendored from Tailwind v4 defaults. `neo-grotesque` is a Luxen-specific stack used by the badge element; override per project.",
+  "font-sans": {
+    "$type": "fontFamily",
+    "$value": "ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'"
+  },
+  "font-serif": {
+    "$type": "fontFamily",
+    "$value": "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif"
+  },
+  "font-mono": {
+    "$type": "fontFamily",
+    "$value": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+  },
+  "font-neo-grotesque": {
+    "$type": "fontFamily",
+    "$value": "Inter, ui-sans-serif, system-ui, sans-serif",
+    "$description": "Luxen-specific neo-grotesque stack (badge, labels). Override at :root to use a project font."
+  }
+}

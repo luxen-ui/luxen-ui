@@ -25,3 +25,8 @@ Thumbs.db
 # AI Files
 .claude/settings.local.json
 .claude/plans
+.claude/worktrees
+.claude/*.png
+.claude/*.jpg
+.claude/*.jpeg
+.claude/*.webp

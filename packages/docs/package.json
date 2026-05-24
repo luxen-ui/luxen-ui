@@ -15,6 +15,7 @@
     "vitepress": "catalog:"
   },
   "devDependencies": {
+    "@luxen-ui/design-tokens": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "tailwindcss": "catalog:"
   }

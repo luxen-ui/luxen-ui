@@ -1,7 +1,7 @@
 @layer components {
   .l-select {
     --border-radius: 4px;
-    --border-color: light-dark(var(--color-gray-200), var(--color-gray-800));
+    --border-color: light-dark(var(--l-color-gray-200), var(--l-color-gray-800));
 
     &,
     &::picker(select) {
@@ -64,7 +64,7 @@
 
     @media (hover: hover) {
       &:hover {
-        background-color: var(--color-blue-50);
+        background-color: var(--l-color-blue-50);
       }
     }
   }

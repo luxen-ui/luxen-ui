@@ -9,7 +9,7 @@
     /* Per-appearance defaults — each appearance overrides these below. */
     --size: 80px;
     --aspect-ratio: 1;
-    --radius: var(--radius-full);
+    --radius: var(--l-radius-full);
     --gap: 1rem;
 
     --ring-color: var(--l-color-bg-fill-brand);

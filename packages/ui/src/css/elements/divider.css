@@ -2,7 +2,7 @@
   l-divider {
     --color: var(--l-color-divider);
     --thickness: 1px;
-    --spacing: var(--spacing-4, 1rem);
+    --spacing: var(--l-spacing-4, 1rem);
 
     position: relative;
     display: flex;
@@ -49,7 +49,7 @@
   }
 
   l-divider:not([orientation='vertical'])[label]::after {
-    padding-inline: var(--spacing-2, 0.5rem);
+    padding-inline: var(--l-spacing-2, 0.5rem);
   }
 
   /* Compact form when slotted into <l-dropdown>: bleed to panel edges, tighten spacing. */
@@ -77,6 +77,6 @@
   }
 
   l-divider[orientation='vertical'][label]::after {
-    padding-block: var(--spacing-2, 0.5rem);
+    padding-block: var(--l-spacing-2, 0.5rem);
   }
 }

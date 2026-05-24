@@ -213,7 +213,7 @@ Add an `<l-spinner>` inside the button. The spinner inherits the button's text c
   { Name: '--background-color-hover', Description: 'Background on hover' },
   { Name: '--background-color-active', Description: 'Background on press' },
   { Name: '--text-color', Description: 'Text color' },
-  { Name: '--text-color-hover', Description: 'Text color on hover' },
+  { Name: '--text-hover', Description: 'Text color on hover' },
   { Name: '--border-color', Description: 'Border color' },
   { Name: '--border-color-hover', Description: 'Border color on hover' },
   { Name: '--font-size', Description: 'Font size' },

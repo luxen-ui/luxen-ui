@@ -1,0 +1,12 @@
+/* Luxen CSS preset — opinionated default, take the wheel anytime.
+
+   Each layer below is independently overridable: swap one for your own
+   implementation, override individual `--l-*` properties at :root, or
+   `npx luxen-ui import <thing>` to copy a layer into your project for full
+   ownership. */
+
+/* Runtime helpers (a11y, custom-element FOUC prevention). */
+@import './base.css';
+
+/* Design tokens — primitives (palette + scales) and semantic aliases. */
+@import './tokens.css';

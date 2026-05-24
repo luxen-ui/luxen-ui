@@ -10,7 +10,7 @@
     --_ring-tickness: 0;
     --_ring-color: var(--ring-color);
 
-    border-radius: var(--radius-full);
+    border-radius: var(--l-radius-full);
     box-shadow: 0 0 0 var(--_ring-tickness) var(--_ring-color);
 
     &:hover {

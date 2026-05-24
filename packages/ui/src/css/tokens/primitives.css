@@ -1,0 +1,12 @@
+/* Luxen primitive tokens only — core palette (5 families) + spacing + radius
+   + text + font-weight + tracking + leading. Skips the semantic aliases.
+
+   Use this if you want to import primitives separately, e.g. to remap them
+   from another palette before loading aliases:
+
+     @import '@radix-ui/colors';
+     @import './my-radix-to-luxen-bridge.css';
+     @import 'luxen-ui/css/tokens/aliases';   // uses your remapped primitives
+*/
+
+@import '@luxen-ui/design-tokens/css/primitives';

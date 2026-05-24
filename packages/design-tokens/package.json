@@ -1,0 +1,49 @@
+{
+  "name": "@luxen-ui/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Luxen UI design tokens — primitives, semantic aliases, optional Tailwind bridge.",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "type": "module",
+  "exports": {
+    "./css": {
+      "style": "./dist/css/index.css",
+      "import": "./dist/css/index.css"
+    },
+    "./css/primitives": {
+      "style": "./dist/css/primitives.css",
+      "import": "./dist/css/primitives.css"
+    },
+    "./css/aliases": {
+      "style": "./dist/css/aliases.css",
+      "import": "./dist/css/aliases.css"
+    },
+    "./css/palette": {
+      "style": "./dist/css/palette.css",
+      "import": "./dist/css/palette.css"
+    },
+    "./tailwind": {
+      "style": "./dist/tailwind/theme.css",
+      "import": "./dist/tailwind/theme.css"
+    },
+    "./json": {
+      "import": "./dist/json/tokens.json",
+      "default": "./dist/json/tokens.json"
+    },
+    "./js": {
+      "import": "./dist/js/tokens.js",
+      "default": "./dist/js/tokens.js"
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist",
+    "sync:tailwind": "node scripts/sync-tailwind-tokens.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.2.0"
+  }
+}

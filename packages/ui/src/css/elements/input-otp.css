@@ -18,7 +18,7 @@
     --cell-size: 2.75rem;
     --cell-bg-color: color-mix(in oklab, var(--l-color-text-primary) 4%, var(--l-color-surface));
     --cell-border-color: var(--l-color-border);
-    --cell-border-radius: var(--radius-md);
+    --cell-border-radius: var(--l-radius-md);
     --cell-focus-color: var(--l-focus-ring);
     --cell-focus-ring: 0 0 0 1px var(--cell-focus-color);
 

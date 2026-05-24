@@ -7,8 +7,8 @@
     display: inline-block;
     padding-block: calc(var(--spacing) * 1);
     padding-inline: calc(var(--spacing) * 2);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
+    font-family: var(--l-font-mono);
+    font-size: var(--l-text-xs);
     font-weight: 600;
     line-height: 1;
     text-box: trim-both cap alphabetic;
@@ -16,6 +16,6 @@
     background-color: var(--l-color-bg-fill-neutral-soft);
     border: 1px solid var(--l-color-border-interactive);
     border-bottom-width: 2px;
-    border-radius: var(--radius-md);
+    border-radius: var(--l-radius-md);
   }
 }

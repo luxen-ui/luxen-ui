@@ -1,0 +1,27 @@
+{
+  "$description": "Letter-spacing primitives. Vendored from Tailwind v4 default theme (`tracking-*` family).",
+  "tracking-tighter": {
+    "$type": "dimension",
+    "$value": "-0.05em"
+  },
+  "tracking-tight": {
+    "$type": "dimension",
+    "$value": "-0.025em"
+  },
+  "tracking-normal": {
+    "$type": "dimension",
+    "$value": "0em"
+  },
+  "tracking-wide": {
+    "$type": "dimension",
+    "$value": "0.025em"
+  },
+  "tracking-wider": {
+    "$type": "dimension",
+    "$value": "0.05em"
+  },
+  "tracking-widest": {
+    "$type": "dimension",
+    "$value": "0.1em"
+  }
+}

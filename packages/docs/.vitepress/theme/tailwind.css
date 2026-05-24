@@ -1,6 +1,7 @@
 @import 'tailwindcss';
+@import 'luxen-ui/tailwind/preset';
 
-@import 'luxen-ui/css';
+@import 'luxen-ui/css/preset';
 @import 'luxen-ui/css/avatar';
 @import 'luxen-ui/css/badge';
 @import 'luxen-ui/css/button';

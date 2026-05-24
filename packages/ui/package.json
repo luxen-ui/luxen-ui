@@ -23,9 +23,13 @@
     "url": "git+https://github.com/luxen-ui/luxen-ui.git",
     "directory": "packages/ui"
   },
+  "bin": {
+    "luxen-ui": "./bin/cli.mjs"
+  },
   "files": [
     "dist/",
     "cdn/",
+    "bin/",
     "vite-plugin.ts",
     "postcss-plugin-prefix.js",
     "README.md",
@@ -46,13 +50,33 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./css": {
-      "style": "./dist/css/index.css",
-      "import": "./dist/css/index.css"
+    "./css/preset": {
+      "style": "./dist/css/preset.css",
+      "import": "./dist/css/preset.css"
     },
     "./css/base": {
-      "style": "./dist/css/index.css",
-      "import": "./dist/css/index.css"
+      "style": "./dist/css/base.css",
+      "import": "./dist/css/base.css"
+    },
+    "./css/tokens": {
+      "style": "./dist/css/tokens.css",
+      "import": "./dist/css/tokens.css"
+    },
+    "./css/tokens/primitives": {
+      "style": "./dist/css/tokens/primitives.css",
+      "import": "./dist/css/tokens/primitives.css"
+    },
+    "./css/tokens/aliases": {
+      "style": "./dist/css/tokens/aliases.css",
+      "import": "./dist/css/tokens/aliases.css"
+    },
+    "./css/tokens/palette": {
+      "style": "./dist/css/tokens/palette.css",
+      "import": "./dist/css/tokens/palette.css"
+    },
+    "./tailwind/preset": {
+      "style": "./dist/css/tailwind/preset.css",
+      "import": "./dist/css/tailwind/preset.css"
     },
     "./css/*": {
       "style": "./dist/css/elements/*.css",
@@ -106,6 +130,7 @@
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "catalog:",
     "@custom-elements-manifest/to-markdown": "catalog:",
+    "@luxen-ui/design-tokens": "workspace:*",
     "@playwright/test": "^1.59.1",
     "@types/node": "catalog:",
     "autoprefixer": "catalog:",

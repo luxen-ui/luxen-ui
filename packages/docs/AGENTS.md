@@ -122,7 +122,9 @@ Show correct HTML. The AI learns patterns from examples, not prose.
 
 ### Always use Tailwind CSS classes, never inline styles
 
-HTML examples must use Tailwind CSS utility classes for layout and spacing. Never use `style="..."` attributes. The docs site has Tailwind available via `@tailwindcss/vite`.
+HTML examples must use Tailwind CSS utility classes for layout and spacing. Never use `style="..."` attributes. The docs site has Tailwind available via `@tailwindcss/vite` + `luxen-ui/tailwind` bridge — utility classes there resolve against the Luxen palette.
+
+This is a **docs-site convention**, not a Luxen requirement. Luxen elements work in projects without Tailwind (consumers can substitute equivalent CSS or use Luxen's `var(--l-color-*)`/`var(--l-size-control-*)` tokens directly). Keep examples Tailwind-flavored anyway — copy-pasteability for the largest consumer base, and the patterns translate cleanly.
 
 Good:
 

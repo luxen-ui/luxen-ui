@@ -282,17 +282,12 @@ A CSS-first web component library built on web standards. Most elements are plai
 
 ## Installation
 
-Import per-element CSS:
+Import the preset (base + tokens) and per-element CSS:
 
 \`\`\`css
+@import 'luxen-ui/css/preset';
 @import 'luxen-ui/css/button';
 @import 'luxen-ui/css/close-button/ring';
-\`\`\`
-
-Or import all elements:
-
-\`\`\`css
-@import 'luxen-ui/css';
 \`\`\`
 
 For custom elements, also import the JavaScript:

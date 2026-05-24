@@ -1,0 +1,9 @@
+/* Luxen design tokens — primitives (core 5 color families + spacing + radius
+   + text + …) and semantic aliases (text-primary, bg-fill-brand, …) in one
+   import. Equivalent to combining:
+
+     @import 'luxen-ui/css/tokens/primitives';
+     @import 'luxen-ui/css/tokens/aliases';
+*/
+
+@import '@luxen-ui/design-tokens/css';

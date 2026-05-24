@@ -1,0 +1,6 @@
+/* Luxen semantic aliases only — text-primary, bg-fill-brand, border-interactive, …
+   Each one references a primitive via `var(--l-color-*)`, so primitives must be
+   defined (either via 'luxen-ui/css/tokens/primitives' or by your own mapping).
+*/
+
+@import '@luxen-ui/design-tokens/css/aliases';

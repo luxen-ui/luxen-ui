@@ -1,0 +1,268 @@
+{
+  "color": {
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.700}", "dark": "{color.gray.200}" },
+        "$description": "Main body text, headings, and high-emphasis content. Use as the default text color throughout the UI."
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.600}", "dark": "{color.gray.400}" },
+        "$description": "Supporting text, descriptions, captions, and medium-emphasis content like helper text beneath form fields."
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.500}", "dark": "{color.gray.500}" },
+        "$description": "Placeholder text, disabled labels, and low-emphasis content like timestamps or metadata."
+      },
+      "neutral": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.700}", "dark": "{color.gray.300}" },
+        "$description": "Neutral semantic text for default-state badges, tags, and status labels with no specific severity."
+      },
+      "info": {
+        "$type": "color",
+        "$value": { "light": "{color.blue.700}", "dark": "{color.blue.300}" },
+        "$description": "Informational semantic text for badges, alerts, banners, and status indicators conveying neutral information."
+      },
+      "warning": {
+        "$type": "color",
+        "$value": { "light": "{color.yellow.700}", "dark": "{color.yellow.300}" },
+        "$description": "Warning semantic text for badges, alerts, and status indicators conveying caution or non-blocking issues."
+      },
+      "danger": {
+        "$type": "color",
+        "$value": { "light": "{color.red.700}", "dark": "{color.red.300}" },
+        "$description": "Danger/error semantic text for badges, alerts, validation messages, and destructive action labels."
+      },
+      "success": {
+        "$type": "color",
+        "$value": { "light": "{color.green.700}", "dark": "{color.green.300}" },
+        "$description": "Success semantic text for badges, alerts, and status indicators conveying completion or positive outcomes."
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.400}", "dark": "{color.gray.500}" },
+        "$description": "Text color for disabled labels, values, and icons in form controls, buttons, and interactive elements."
+      },
+      "on-fill-brand": {
+        "$type": "color",
+        "$value": { "light": "{color.white}", "dark": "{color.gray.900}" },
+        "$description": "Text on brand-filled surfaces like primary buttons. Maximum contrast against --l-color-bg-fill-brand."
+      }
+    },
+
+    "surface": {
+      "$type": "color",
+      "$value": { "light": "{color.white}", "dark": "{color.gray.900}" },
+      "$description": "Default page-level background. Use on <body>, main content areas, and cards at the base layer."
+    },
+    "surface-overlay": {
+      "$type": "color",
+      "$value": { "light": "{color.white}", "dark": "{color.gray.800}" },
+      "$description": "Elevated overlay background for modals, dialogs, drawers, popovers, and any surface that floats above the page with a backdrop. Slightly lighter than --l-color-surface in dark mode to create visual separation from the page beneath."
+    },
+
+    "border": {
+      "$type": "color",
+      "$value": { "light": "{color.gray.300}", "dark": "{color.gray.600}" },
+      "$description": "Default border for form controls, secondary buttons, inputs, selects, and any element that needs a thin neutral outline. Visible enough to delimit the element without competing with surrounding content."
+    },
+    "border-interactive": {
+      "$type": "color",
+      "$value": { "light": "{color.gray.300}", "dark": "{color.gray.600}" },
+      "$description": "Subtle border or ring for interactive elements like close buttons, toggles, and icon buttons on hover. Provides low-contrast visual feedback without competing with primary content."
+    },
+    "border-overlay": {
+      "$type": "color",
+      "$value": "{color.border}",
+      "$description": "Border for floating surfaces like popovers, dropdowns, menus, tooltips, and combobox listboxes. Aliases --l-color-border so overlays stay visually consistent with form controls, but exposed as a separate semantic so consumers can soften overlay borders independently if needed. Pairs with --l-color-surface-overlay."
+    },
+    "border-disabled": {
+      "$type": "color",
+      "$value": { "light": "{color.gray.300}", "dark": "{color.gray.700}" },
+      "$description": "Border color for disabled form controls, buttons, and interactive elements. Faded to signal non-interactivity."
+    },
+    "divider": {
+      "$type": "color",
+      "$value": { "light": "{color.gray.200}", "dark": "{color.gray.700}" },
+      "$description": "Subtle divider line for separating content sections, list items, and card groups. Lighter than --l-color-border to avoid visual competition with interactive element borders."
+    },
+
+    "bg": {
+      "disabled": {
+        "$type": "color",
+        "$value": { "light": "{color.gray.100}", "dark": "{color.gray.800}" },
+        "$description": "Background color for disabled form controls, buttons, and interactive elements. Subtle tint to reinforce non-interactivity."
+      },
+      "state": {
+        "hover": {
+          "$type": "color",
+          "$value": { "light": "rgb(0 0 0 / 5%)", "dark": "rgb(255 255 255 / 6%)" },
+          "$description": "Translucent background tint for hovered rows in lists, menus, trees, tables, and similar roving collections. Alpha-based so underlying indent guides, borders, or zebra stripes stay visible."
+        },
+        "selected": {
+          "$type": "color",
+          "$value": { "light": "rgb(0 0 0 / 7%)", "dark": "rgb(255 255 255 / 9%)" },
+          "$description": "Translucent background tint for the selected (persistent) row in lists, trees, menus, listboxes, and tables. Alpha-based so underlying indent guides, borders, or zebra stripes stay visible. Semantically paired with `aria-selected=\"true\"` / `:state(selected)`."
+        }
+      },
+      "fill": {
+        "brand": {
+          "$type": "color",
+          "$value": { "light": "{color.gray.900}", "dark": "{color.gray.50}" },
+          "$description": "Primary brand fill for CTA buttons, active toggles, and primary action backgrounds."
+        },
+        "brand-hover": {
+          "$type": "color",
+          "$value": { "light": "{color.gray.800}", "dark": "{color.gray.200}" },
+          "$description": "Hover state of brand-filled elements like primary buttons and active toggles."
+        },
+        "brand-active": {
+          "$type": "color",
+          "$value": { "light": "{color.gray.700}", "dark": "{color.gray.300}" },
+          "$description": "Active/pressed state of brand-filled elements like primary buttons during click or tap."
+        },
+        "secondary": {
+          "$type": "color",
+          "$value": { "light": "{color.white}", "dark": "{color.gray.700}" },
+          "$description": "Secondary control fill for buttons, toggles, and non-primary interactive surfaces."
+        },
+
+        "neutral": {
+          "soft": {
+            "$type": "color",
+            "$value": { "light": "{color.gray.50}", "dark": "{color.gray.800}" },
+            "$description": "Soft neutral fill — palest tint for toast backgrounds, alert containers, and callout boxes."
+          },
+          "subtle": {
+            "$type": "color",
+            "$value": { "light": "{color.gray.100}", "dark": "{color.gray.700}" },
+            "$description": "Subtle neutral fill — tinted background for badges, tags, selected states, and secondary highlights."
+          },
+          "strong": {
+            "$type": "color",
+            "$value": { "light": "{color.gray.800}", "dark": "{color.gray.200}" },
+            "$description": "Strong neutral fill — solid background for solid badges and high-emphasis status indicators. Pair with --l-color-surface for foreground."
+          }
+        },
+        "info": {
+          "soft": {
+            "$type": "color",
+            "$value": { "light": "{color.blue.50}", "dark": "{color.blue.950}" },
+            "$description": "Soft info fill — palest tint for toast backgrounds, alert containers, and callout boxes."
+          },
+          "subtle": {
+            "$type": "color",
+            "$value": { "light": "{color.blue.100}", "dark": "{color.blue.900}" },
+            "$description": "Subtle info fill — tinted background for badges, tags, selected states, and secondary highlights."
+          },
+          "strong": {
+            "$type": "color",
+            "$value": { "light": "{color.blue.600}", "dark": "{color.blue.500}" },
+            "$description": "Strong info fill — solid background for solid badges and high-emphasis status indicators."
+          }
+        },
+        "warning": {
+          "soft": {
+            "$type": "color",
+            "$value": { "light": "{color.yellow.50}", "dark": "{color.yellow.950}" },
+            "$description": "Soft warning fill — palest tint for toast backgrounds, alert containers, and callout boxes."
+          },
+          "subtle": {
+            "$type": "color",
+            "$value": { "light": "{color.yellow.100}", "dark": "{color.yellow.900}" },
+            "$description": "Subtle warning fill — tinted background for badges, tags, selected states, and secondary highlights."
+          },
+          "strong": {
+            "$type": "color",
+            "$value": { "light": "{color.yellow.600}", "dark": "{color.yellow.500}" },
+            "$description": "Strong warning fill — solid background for solid badges and high-emphasis status indicators."
+          }
+        },
+        "danger": {
+          "soft": {
+            "$type": "color",
+            "$value": { "light": "{color.red.50}", "dark": "{color.red.950}" },
+            "$description": "Soft danger fill — palest tint for toast backgrounds, alert containers, and callout boxes."
+          },
+          "subtle": {
+            "$type": "color",
+            "$value": { "light": "{color.red.100}", "dark": "{color.red.900}" },
+            "$description": "Subtle danger fill — tinted background for badges, tags, selected states, and secondary highlights."
+          },
+          "strong": {
+            "$type": "color",
+            "$value": { "light": "{color.red.600}", "dark": "{color.red.500}" },
+            "$description": "Strong danger fill — solid background for solid badges and high-emphasis status indicators."
+          }
+        },
+        "success": {
+          "soft": {
+            "$type": "color",
+            "$value": { "light": "{color.green.50}", "dark": "{color.green.950}" },
+            "$description": "Soft success fill — palest tint for toast backgrounds, alert containers, and callout boxes."
+          },
+          "subtle": {
+            "$type": "color",
+            "$value": { "light": "{color.green.100}", "dark": "{color.green.900}" },
+            "$description": "Subtle success fill — tinted background for badges, tags, selected states, and secondary highlights."
+          },
+          "strong": {
+            "$type": "color",
+            "$value": { "light": "{color.green.600}", "dark": "{color.green.500}" },
+            "$description": "Strong success fill — solid background for solid badges and high-emphasis status indicators."
+          }
+        }
+      }
+    }
+  },
+
+  "backdrop": {
+    "$type": "color",
+    "$value": { "light": "oklch(46% 0.01 260 / 33%)", "dark": "oklch(15% 0.01 260 / 60%)" },
+    "$description": "Semi-transparent backdrop behind modals, dialogs, drawers, and any overlay that dims the page content. Darker in dark mode for better contrast against dark surfaces."
+  },
+  "backdrop-strong": {
+    "$type": "color",
+    "$value": { "light": "oklch(15% 0.01 260 / 78%)", "dark": "oklch(5% 0 0 / 88%)" },
+    "$description": "Stronger backdrop for immersive overlays where the underlying page should fade well into the background — media viewers (`<l-stories-viewer>`), lightboxes, and full-screen players. The page stays barely perceptible but visual focus is unambiguously on the foreground."
+  },
+
+  "focus-ring": {
+    "$type": "color",
+    "$value": "#d9461f",
+    "$description": "Focus ring color for :focus-visible outlines on interactive elements like buttons, inputs, and links."
+  },
+
+  "size": {
+    "control": {
+      "xs": {
+        "$type": "dimension",
+        "$value": "1.5rem",
+        "$description": "Standard interactive control height for extra-small elements like compact buttons, tags, and inline controls."
+      },
+      "sm": {
+        "$type": "dimension",
+        "$value": "1.75rem",
+        "$description": "Standard interactive control height for small elements like secondary buttons, small selects, and tight-layout controls."
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "Standard interactive control height for medium (default) elements like buttons, inputs, selects, and form controls."
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": "2.25rem",
+        "$description": "Standard interactive control height for large elements like prominent buttons, inputs in spacious layouts, and hero CTAs."
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": "2.5rem",
+        "$description": "Standard interactive control height for extra-large elements like oversized buttons, landing page CTAs, and touch-optimized controls."
+      }
+    }
+  }
+}

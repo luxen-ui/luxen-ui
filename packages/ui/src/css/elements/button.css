@@ -24,7 +24,7 @@
       var(--l-color-text-primary)
     );
     --background-color-hover: var(--background-color-active);
-    --font-size: var(--text-sm);
+    --font-size: var(--l-text-sm);
     --text-color: var(--l-color-text-primary);
     --text-color-hover: var(--text-color);
     --border-color: var(--l-color-border);
@@ -36,10 +36,10 @@
 
     /*
     --border-radius: if(
-      style(--size: sm): var(--radius-sm);
-      style(--size: lg): var(--radius-md);
-      style(--size: xl): var(--radius-lg);
-      else: var(--radius-md);
+      style(--size: sm): var(--l-radius-sm);
+      style(--size: lg): var(--l-radius-md);
+      style(--size: xl): var(--l-radius-lg);
+      else: var(--l-radius-md);
     );
     */
 
@@ -56,7 +56,7 @@
     color: var(--text-color);
     outline: none;
     font-size: var(--font-size);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--l-font-weight-semibold);
     text-decoration: none;
     user-select: none;
     white-space: nowrap;
@@ -153,18 +153,18 @@
   .l-button[data-size='sm'] {
     --height: var(--_button-size-sm);
     --padding-inline: 0.5rem;
-    --font-size: var(--text-sm);
+    --font-size: var(--l-text-sm);
   }
 
   .l-button[data-size='lg'] {
     --height: var(--_button-size-lg);
     --padding-inline: 0.75rem;
-    --font-size: var(--text-base);
+    --font-size: var(--l-text-base);
   }
 
   .l-button[data-size='xl'] {
     --height: var(--_button-size-xl);
     --padding-inline: 0.875rem;
-    --font-size: var(--text-lg);
+    --font-size: var(--l-text-lg);
   }
 }

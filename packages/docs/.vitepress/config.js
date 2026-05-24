@@ -91,11 +91,17 @@ export default defineConfig({
         items: [
           { text: 'Introduction', link: '/overview/introduction' },
           { text: 'Quick start', link: '/overview/getting-started' },
+          { text: 'Using with Tailwind', link: '/overview/using-with-tailwind' },
           {
             text: 'Customizing the <span class="sidebar-tag sidebar-tag--custom" style="display:inline;margin:0">l-</span> prefix',
             link: '/overview/customizing-prefix',
           },
         ],
+      },
+      {
+        text: 'Foundations',
+        collapsed: false,
+        items: [{ text: 'Design Tokens', link: '/overview/design-tokens' }],
       },
       {
         text: 'Elements',

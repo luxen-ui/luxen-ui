@@ -92,7 +92,7 @@ Use this when writing tag attributes — don't invent attribute names.
 ## Don't
 
 - Don't pin to `@latest`. Use a minor range like `@0.1` (latest patch in `0.1.x`) — `@latest` crosses minor bumps which can break in pre-1.0.
-- Don't use Tailwind utility classes for layout/colors. Use the `--l-*` design tokens defined in `cdn/styles/index.css`.
+- Don't use Tailwind utility classes for layout/colors. The template above ships Luxen only — Tailwind isn't loaded, so any utility class (`bg-rose-500`, `flex`, `gap-2`) is just dead text. Use the `--l-*` design tokens defined in `cdn/styles/index.css` for colors, and plain CSS for layout.
 - Don't fake a tag without consulting `custom-elements.json` for its real shape.
 - Don't import `cdn/elements/<name>/<name>.js` directly — that exports the class but doesn't call `customElements.define()`. Always import `cdn/elements/<name>/index.js`.
 

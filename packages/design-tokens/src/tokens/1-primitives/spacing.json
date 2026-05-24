@@ -1,0 +1,23 @@
+{
+  "$description": "Spacing primitives. Mirrors Tailwind v4's single-source pattern: `--l-spacing: 0.25rem` is the unit, every step is derived via calc(var(--l-spacing) * N). The calc() stays in the output CSS so a brand override of --l-spacing ripples through the whole scale automatically. Step list matches the common Tailwind defaults (0, px, 0_5, 1, 1_5, 2, 2_5, 3, 4–8, 10, 12, 16, 20, 24, 32).",
+
+  "spacing": { "$type": "dimension", "$value": "0.25rem" },
+  "spacing-0": { "$type": "dimension", "$value": "0" },
+  "spacing-px": { "$type": "dimension", "$value": "1px" },
+  "spacing-0_5": { "$type": "dimension", "$value": "calc({spacing} * 0.5)" },
+  "spacing-1": { "$type": "dimension", "$value": "calc({spacing} * 1)" },
+  "spacing-1_5": { "$type": "dimension", "$value": "calc({spacing} * 1.5)" },
+  "spacing-2": { "$type": "dimension", "$value": "calc({spacing} * 2)" },
+  "spacing-2_5": { "$type": "dimension", "$value": "calc({spacing} * 2.5)" },
+  "spacing-3": { "$type": "dimension", "$value": "calc({spacing} * 3)" },
+  "spacing-4": { "$type": "dimension", "$value": "calc({spacing} * 4)" },
+  "spacing-5": { "$type": "dimension", "$value": "calc({spacing} * 5)" },
+  "spacing-6": { "$type": "dimension", "$value": "calc({spacing} * 6)" },
+  "spacing-8": { "$type": "dimension", "$value": "calc({spacing} * 8)" },
+  "spacing-10": { "$type": "dimension", "$value": "calc({spacing} * 10)" },
+  "spacing-12": { "$type": "dimension", "$value": "calc({spacing} * 12)" },
+  "spacing-16": { "$type": "dimension", "$value": "calc({spacing} * 16)" },
+  "spacing-20": { "$type": "dimension", "$value": "calc({spacing} * 20)" },
+  "spacing-24": { "$type": "dimension", "$value": "calc({spacing} * 24)" },
+  "spacing-32": { "$type": "dimension", "$value": "calc({spacing} * 32)" }
+}

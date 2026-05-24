@@ -1,7 +1,7 @@
 @layer components {
   l-skeleton {
-    --_fill: light-dark(var(--color-gray-200), var(--color-gray-700));
-    --_shimmer: light-dark(var(--color-gray-100), var(--color-gray-600));
+    --_fill: light-dark(var(--l-color-gray-200), var(--l-color-gray-700));
+    --_shimmer: light-dark(var(--l-color-gray-100), var(--l-color-gray-600));
 
     position: relative;
     overflow: hidden;
@@ -9,7 +9,7 @@
     width: var(--width, 100%);
     height: var(--height, 1.2em);
     background-color: var(--_fill);
-    border-radius: var(--radius-sm);
+    border-radius: var(--l-radius-sm);
 
     > * {
       visibility: hidden;
@@ -23,7 +23,7 @@
     /* Shapes */
 
     &[shape='circle'] {
-      border-radius: var(--radius-full);
+      border-radius: var(--l-radius-full);
     }
 
     &[shape='text'] {

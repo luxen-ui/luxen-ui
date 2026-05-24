@@ -1,0 +1,10 @@
+/* Luxen runtime base — the 15 lines required for the library to function:
+   - .l-visually-hidden a11y helper
+   - Custom element FOUC prevention (l-dialog:not(:defined), etc.)
+   - css-extras CSS utility functions
+
+   Imports zero tokens. Use this if you want to swap the token layer entirely
+   (e.g. plug in Radix UI primitives + your own aliases). */
+
+@import 'css-extras';
+@import './base/_base.css';
