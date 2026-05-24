@@ -77,7 +77,11 @@ Returns JSON `{"files":[{"name":"/cdn/styles/elements/badge.css", ...}, ...]}`. 
 
 ## Available `l-*` tags
 
-`l-avatar`, `l-badge`, `l-carousel`, `l-carousel-item`, `l-dialog`, `l-divider`, `l-drawer`, `l-dropdown`, `l-dropdown-item`, `l-icon`, `l-input-otp`, `l-input-stepper`, `l-popover`, `l-rating`, `l-skeleton`, `l-spinner`, `l-tabs`, `l-toast`, `l-tooltip`, `l-tree`, `l-tree-item`.
+<!-- generated:l-tags — edit packages/ui/elements.json and run the skill build to update -->
+
+`l-avatar`, `l-badge`, `l-carousel`, `l-carousel-item`, `l-dialog`, `l-divider`, `l-drawer`, `l-dropdown`, `l-dropdown-item`, `l-icon`, `l-input-otp`, `l-input-stepper`, `l-popover`, `l-rating`, `l-skeleton`, `l-spinner`, `l-sticky-bar`, `l-tabs`, `l-toast`, `l-tooltip`, `l-tree`, `l-tree-item`.
+
+<!-- /generated:l-tags -->
 
 ## Element APIs
 

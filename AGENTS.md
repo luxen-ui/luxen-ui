@@ -17,7 +17,7 @@ Component naming convention: All custom elements use the `l-` prefix (e.g., `<l-
 
 ## Designing UI mockups with this library
 
-If you're an AI assistant composing page mockups (e.g. in a Claude.ai artifact) that consume `<l-*>` tags, read [`MOCKUPS.md`](./MOCKUPS.md). It contains the CDN-loading template that turns `l-*` tags into real custom elements rather than styled unknown elements.
+If you're an AI assistant composing page mockups (e.g. in a Claude.ai artifact) that consume `<l-*>` tags, read [`packages/ui/MOCKUPS.md`](./packages/ui/MOCKUPS.md). It contains the CDN-loading template that turns `l-*` tags into real custom elements rather than styled unknown elements.
 
 ## Monorepo Structure
 

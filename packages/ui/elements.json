@@ -1,0 +1,229 @@
+{
+  "$schema": "./elements.schema.json",
+  "_doc": "Single source of truth for Luxen elements. Consumed by scripts/generate-skill.mjs (skill output) and the MOCKUPS.md tag-list updater. When adding/removing an element, edit this file.",
+  "elements": [
+    {
+      "name": "avatar",
+      "displayName": "Avatar",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "badge",
+      "displayName": "Badge",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "button",
+      "displayName": "Button",
+      "kind": "native",
+      "inSkill": true,
+      "inMockups": false
+    },
+    {
+      "name": "carousel",
+      "displayName": "Carousel",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "carousel-item",
+      "displayName": "Carousel item",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true,
+      "subItemOf": "carousel"
+    },
+    {
+      "name": "close-button",
+      "displayName": "Close button",
+      "kind": "native",
+      "inSkill": true,
+      "inMockups": false,
+      "appearances": ["ring", "square", "circle"],
+      "selector": ".l-close"
+    },
+    {
+      "name": "dialog",
+      "displayName": "Dialog",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "disclosure",
+      "displayName": "Disclosure",
+      "kind": "native",
+      "inSkill": false,
+      "inMockups": false
+    },
+    {
+      "name": "divider",
+      "displayName": "Divider",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "drawer",
+      "displayName": "Drawer",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "dropdown",
+      "displayName": "Dropdown",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "dropdown-item",
+      "displayName": "Dropdown item",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true,
+      "subItemOf": "dropdown"
+    },
+    {
+      "name": "icon",
+      "displayName": "Icon",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "input-otp",
+      "displayName": "Input OTP",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "input-stepper",
+      "displayName": "Input stepper",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true,
+      "appearances": ["default", "rounded"]
+    },
+    { "name": "kbd", "displayName": "Kbd", "kind": "native", "inSkill": false, "inMockups": false },
+    {
+      "name": "popover",
+      "displayName": "Popover",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "progress",
+      "displayName": "Progress",
+      "kind": "native",
+      "inSkill": true,
+      "inMockups": false
+    },
+    {
+      "name": "rating",
+      "displayName": "Rating",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "select",
+      "displayName": "Select",
+      "kind": "native",
+      "inSkill": true,
+      "inMockups": false
+    },
+    {
+      "name": "skeleton",
+      "displayName": "Skeleton",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "spinner",
+      "displayName": "Spinner",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "sticky-bar",
+      "displayName": "Sticky bar",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "stories",
+      "displayName": "Stories",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": false,
+      "status": "experimental"
+    },
+    {
+      "name": "stories-viewer",
+      "displayName": "Stories viewer",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": false,
+      "status": "experimental",
+      "subItemOf": "stories"
+    },
+    {
+      "name": "story",
+      "displayName": "Story",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": false,
+      "status": "experimental",
+      "subItemOf": "stories"
+    },
+    {
+      "name": "tabs",
+      "displayName": "Tabs",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true,
+      "appearances": ["line", "enclosed"]
+    },
+    {
+      "name": "toast",
+      "displayName": "Toast",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "tooltip",
+      "displayName": "Tooltip",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true
+    },
+    {
+      "name": "tree",
+      "displayName": "Tree",
+      "kind": "element",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
+      "name": "tree-item",
+      "displayName": "Tree item",
+      "kind": "element",
+      "inSkill": false,
+      "inMockups": true,
+      "subItemOf": "tree"
+    }
+  ]
+}

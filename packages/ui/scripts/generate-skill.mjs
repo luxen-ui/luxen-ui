@@ -8,20 +8,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ELEMENTS_ROOT = resolve(__dirname, '..');
 const DOCS_ROOT = resolve(ELEMENTS_ROOT, '..', 'docs');
 const SKILL_OUTPUT = resolve(ELEMENTS_ROOT, 'dist', 'skills', 'luxen-ui');
+const MANIFEST_PATH = resolve(ELEMENTS_ROOT, 'elements.json');
+const MOCKUPS_PATH = resolve(ELEMENTS_ROOT, 'MOCKUPS.md');
 
-const ELEMENTS = [
-  'avatar',
-  'badge',
-  'button',
-  'close-button',
-  'dialog',
-  'drawer',
-  'select',
-  'progress',
-  'sticky-bar',
-  'toast',
-  'tree',
-];
+const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8'));
+const ELEMENTS = manifest.elements.filter((e) => e.inSkill).map((e) => e.name);
 
 async function main() {
   await mkdir(join(SKILL_OUTPUT, 'references'), { recursive: true });
@@ -34,7 +25,34 @@ async function main() {
   }
 
   await writeFile(join(SKILL_OUTPUT, 'SKILL.md'), generateSkillMd());
+
+  const mockups = await syncMockupsTagList();
+  await writeFile(join(SKILL_OUTPUT, 'MOCKUPS.md'), mockups);
+
   console.log(`Skill generated at ${SKILL_OUTPUT}`);
+}
+
+// Rewrites the auto-generated tag list inside MOCKUPS.md (between
+// <!-- generated:l-tags --> markers) and returns the updated file content.
+// Writes back to the repo root so the source stays in sync; the returned
+// string is what we drop into the skill bundle.
+async function syncMockupsTagList() {
+  const tags = manifest.elements
+    .filter((e) => e.inMockups && e.kind !== 'native')
+    .map((e) => `\`l-${e.name}\``)
+    .join(', ');
+  const block = `<!-- generated:l-tags — edit packages/ui/elements.json and run the skill build to update -->\n${tags}.\n<!-- /generated:l-tags -->`;
+  const re = /<!-- generated:l-tags[\s\S]*?<!-- \/generated:l-tags -->/;
+
+  const current = await readFile(MOCKUPS_PATH, 'utf-8');
+  if (!re.test(current)) {
+    throw new Error(
+      `MOCKUPS.md is missing the <!-- generated:l-tags --> markers; cannot sync the tag list.`,
+    );
+  }
+  const updated = current.replace(re, block);
+  if (updated !== current) await writeFile(MOCKUPS_PATH, updated);
+  return updated;
 }
 
 // --- Markdown transformation ---
@@ -280,7 +298,14 @@ metadata:
 
 A CSS-first web component library built on web standards. Most elements are plain CSS classes applied to native HTML elements — no JavaScript required. Custom elements (like \`<l-badge>\`) use Lit with minimal Shadow DOM.
 
-## Installation
+## Two usage modes
+
+Pick the mode that matches what you're building, then follow the matching guide.
+
+- **Integrate into a project** — npm install, bundler, real app code. Use the installation block below + the per-element references.
+- **Standalone HTML mockup** (Claude.ai artifact, single-page demo, prototype) — load Luxen from jsDelivr via \`<link>\` and \`<script type="module">\`. See [MOCKUPS.md](./MOCKUPS.md) — it has the boilerplate, the per-element CDN paths, and the list of all available \`l-*\` tags.
+
+## Installation (project mode)
 
 Import the preset (base + tokens) and per-element CSS:
 
@@ -336,19 +361,16 @@ For full usage details, see the reference files for each element.
 `;
 }
 
-const elementMeta = {
-  avatar: { name: 'Avatar', type: 'Custom element', selector: '<l-avatar>' },
-  badge: { name: 'Badge', type: 'Custom element', selector: '<l-badge>' },
-  button: { name: 'Button', type: 'CSS class', selector: '.l-button' },
-  'close-button': { name: 'Close button', type: 'CSS class', selector: '.l-close' },
-  dialog: { name: 'Dialog', type: 'Custom element', selector: '<l-dialog>' },
-  drawer: { name: 'Drawer', type: 'Custom element', selector: '<l-drawer>' },
-  select: { name: 'Select', type: 'CSS class', selector: '.l-select' },
-  progress: { name: 'Progress', type: 'CSS class', selector: '.l-progress' },
-  'sticky-bar': { name: 'Sticky bar', type: 'Custom element', selector: '<l-sticky-bar>' },
-  toast: { name: 'Toast', type: 'Custom element', selector: '<l-toast>' },
-  tree: { name: 'Tree', type: 'Custom element', selector: '<l-tree>' },
-};
+const elementMeta = Object.fromEntries(
+  manifest.elements.map((e) => [
+    e.name,
+    {
+      name: e.displayName,
+      type: e.kind === 'native' ? 'CSS class' : 'Custom element',
+      selector: e.selector ?? (e.kind === 'native' ? `.l-${e.name}` : `<l-${e.name}>`),
+    },
+  ]),
+);
 
 main().catch((err) => {
   console.error('Skill generation failed:', err);
