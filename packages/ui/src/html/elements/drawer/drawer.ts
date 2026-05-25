@@ -1,8 +1,8 @@
 import { unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
-import hostStyles from '../../shared/styles/host.styles';
-import { Dialog } from '../dialog/dialog';
-import dialogStyles from '../dialog/dialog.styles';
+import hostStyles from '../../shared/styles/host.styles.js';
+import { Dialog } from '../dialog/dialog.js';
+import dialogStyles from '../dialog/dialog.styles.js';
 import rawDrawerStyles from './drawer.css?inline';
 
 const drawerStyles = unsafeCSS(rawDrawerStyles);

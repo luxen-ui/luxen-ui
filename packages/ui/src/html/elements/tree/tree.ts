@@ -1,9 +1,9 @@
 import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import { tagName } from '../../registry';
-import type { TreeItem } from '../tree-item/tree-item';
-import hostStyles from '../../shared/styles/host.styles';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import { tagName } from '../../registry.js';
+import type { TreeItem } from '../tree-item/tree-item.js';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './tree.css?inline';
 
 const styles = unsafeCSS(rawStyles);

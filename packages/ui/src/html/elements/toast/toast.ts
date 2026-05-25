@@ -1,9 +1,9 @@
 /* eslint-disable no-shadow -- the local `toast` HTMLElement intentionally
    shadows the module-level `toast()` export; renaming would touch ~50 lines
    without behavioral benefit. */
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 import { property } from 'lit/decorators.js';
-import { tagName, cls, uniqueId } from '../../registry';
+import { tagName, cls, uniqueId } from '../../registry.js';
 
 declare global {
   interface Element {

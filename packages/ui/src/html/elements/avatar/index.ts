@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Avatar } from './avatar';
-export * from './avatar';
+import { define } from '../../define.js';
+import { Avatar } from './avatar.js';
+export * from './avatar.js';
 define('avatar', Avatar);

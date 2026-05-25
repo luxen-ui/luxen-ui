@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Icon } from './icon';
-export * from './icon';
+import { define } from '../../define.js';
+import { Icon } from './icon.js';
+export * from './icon.js';
 define('icon', Icon);

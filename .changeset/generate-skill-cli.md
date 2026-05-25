@@ -8,7 +8,7 @@ Both the CLI and the Vite plugin now read a shared `luxen.config.mjs` at the pro
 
 Also:
 
-- `defineConfig` helper + `LuxenConfig` / `LuxenEmitTypesConfig` types exported from `luxen-ui/config` for editor autocompletion in `luxen.config.mjs` without TypeScript.
+- `defineConfig` helper + `LuxenConfig` / `LuxenEmitTypesConfig` types exported from `luxen-ui` for editor autocompletion in `luxen.config.mjs` without TypeScript.
 - Standalone CDN bundle (`cdn/standalone.js` + `cdn/standalone.css`) shipped alongside the existing code-split `cdn/` tree (public jsDelivr consumers unchanged).
 
 `packages/ui/dist/skills/` is no longer produced; every consumer generates their own via the CLI.

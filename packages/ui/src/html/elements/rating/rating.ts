@@ -1,7 +1,7 @@
 import { html, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
-import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element';
-import hostStyles from '../../shared/styles/host.styles';
+import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './rating.css?inline';
 
 const styles = unsafeCSS(rawStyles);

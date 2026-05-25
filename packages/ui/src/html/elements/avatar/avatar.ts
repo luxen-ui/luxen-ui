@@ -1,8 +1,8 @@
 import { html, nothing, svg, unsafeCSS } from 'lit';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 import { html as staticHtml, literal } from 'lit/static-html.js';
 import { property, state } from 'lit/decorators.js';
-import hostStyles from '../../shared/styles/host.styles';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './avatar.css?inline';
 
 const styles = unsafeCSS(rawStyles);

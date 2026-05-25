@@ -1,6 +1,6 @@
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import { uniqueId } from '../../registry';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import { uniqueId } from '../../registry.js';
 
 export type TabsVariant = 'enclosed' | 'line';
 export type TabsOrientation = 'horizontal' | 'vertical';

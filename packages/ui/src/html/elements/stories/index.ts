@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { LuxenStories } from './stories';
-export * from './stories';
+import { define } from '../../define.js';
+import { LuxenStories } from './stories.js';
+export * from './stories.js';
 define('stories', LuxenStories);

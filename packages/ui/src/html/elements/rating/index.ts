@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Rating } from './rating';
-export * from './rating';
+import { define } from '../../define.js';
+import { Rating } from './rating.js';
+export * from './rating.js';
 define('rating', Rating);

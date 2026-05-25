@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Dropdown } from './dropdown';
-export * from './dropdown';
+import { define } from '../../define.js';
+import { Dropdown } from './dropdown.js';
+export * from './dropdown.js';
 define('dropdown', Dropdown);

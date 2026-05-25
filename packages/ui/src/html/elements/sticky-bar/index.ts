@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { StickyBar } from './sticky-bar';
-export * from './sticky-bar';
+import { define } from '../../define.js';
+import { StickyBar } from './sticky-bar.js';
+export * from './sticky-bar.js';
 define('sticky-bar', StickyBar);

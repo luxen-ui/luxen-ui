@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { InputStepper } from './input-stepper';
-export * from './input-stepper';
+import { define } from '../../define.js';
+import { InputStepper } from './input-stepper.js';
+export * from './input-stepper.js';
 define('input-stepper', InputStepper);

@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 
 /**
  * @summary A single story declaration inside an `<l-stories>` row.

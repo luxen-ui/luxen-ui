@@ -1,6 +1,6 @@
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import type { LuxenStory } from '../story/story';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import type { LuxenStory } from '../story/story.js';
 
 export type StoriesAppearance = 'rounded' | 'squared' | 'portrait' | 'landscape';
 

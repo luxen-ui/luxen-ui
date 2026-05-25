@@ -1,5 +1,5 @@
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 
 /**
  * Enhances a child `<input>` with visual digit cells (Stripe-style OTP input).

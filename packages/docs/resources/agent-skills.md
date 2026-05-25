@@ -22,7 +22,7 @@ To customize, drop a `luxen.config.mjs` in your project root:
 // luxen.config.mjs — single source of truth for the CLI *and* the Vite plugin.
 // Each field is consumed by one or both tools — the comments mark which.
 // Wrap in defineConfig() for editor autocompletion / type-checking.
-import { defineConfig } from 'luxen-ui/config';
+import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
   // Skill identity — used by `generate-skill` CLI only (Vite plugin doesn't

@@ -52,10 +52,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./config": {
-      "types": "./dist/config.d.ts",
-      "import": "./dist/config.js"
-    },
     "./css/preset": {
       "style": "./dist/css/preset.css",
       "import": "./dist/css/preset.css"

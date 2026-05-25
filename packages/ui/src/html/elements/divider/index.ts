@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Divider } from './divider';
-export * from './divider';
+import { define } from '../../define.js';
+import { Divider } from './divider.js';
+export * from './divider.js';
 define('divider', Divider);

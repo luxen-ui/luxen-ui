@@ -1,8 +1,8 @@
 import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import { tagName } from '../../registry';
-import hostStyles from '../../shared/styles/host.styles';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import { tagName } from '../../registry.js';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './tree-item.css?inline';
 
 const styles = unsafeCSS(rawStyles);

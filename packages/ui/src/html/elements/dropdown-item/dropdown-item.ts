@@ -1,7 +1,7 @@
 import { html, nothing, unsafeCSS } from 'lit';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 import { property } from 'lit/decorators.js';
-import hostStyles from '../../shared/styles/host.styles';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './dropdown-item.css?inline';
 
 const styles = unsafeCSS(rawStyles);

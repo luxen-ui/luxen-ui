@@ -42,11 +42,11 @@ async function writeEntry() {
     '',
   ];
   for (const e of customElements) {
-    lines.push(`import './../html/elements/${e.name}/index';`);
+    lines.push(`import './../html/elements/${e.name}/index.js';`);
   }
   // Also re-export setPrefix for advanced runtime use (tests, dynamic switch).
   lines.push('');
-  lines.push("export { setPrefix, getPrefix } from '../html/registry';");
+  lines.push("export { setPrefix, getPrefix } from '../html/registry.js';");
   lines.push('');
   await writeFile(ENTRY_OUT, lines.join('\n'), 'utf-8');
   console.log(`[standalone] wrote ${ENTRY_OUT}`);

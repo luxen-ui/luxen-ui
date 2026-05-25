@@ -1,4 +1,4 @@
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 
 /**
  * @summary A skeleton loading placeholder.

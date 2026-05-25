@@ -13,8 +13,8 @@ import Autoplay from 'embla-carousel-autoplay';
 import { html, nothing, unsafeCSS, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import hostStyles from '../../shared/styles/host.styles';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './carousel.css?inline';
 
 const styles = unsafeCSS(rawStyles);

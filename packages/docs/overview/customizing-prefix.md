@@ -19,7 +19,7 @@ The Vite plugin reads a `luxen.config.mjs` at the project root and rewrites ever
 ::: code-group
 
 ```js [luxen.config.mjs]
-import { defineConfig } from 'luxen-ui/config';
+import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
   // Tag names and matching CSS type selectors.
@@ -74,7 +74,7 @@ The package does **not** ship an `HTMLElementTagNameMap` augmentation. A bundled
 
 ```js
 // luxen.config.mjs
-import { defineConfig } from 'luxen-ui/config';
+import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
   elementPrefix: 'pulse',
@@ -104,7 +104,7 @@ emitTypes: {
 
 ```js
 // luxen.config.mjs
-import { defineConfig } from 'luxen-ui/config';
+import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
   elementPrefix: 'pulse',
@@ -134,7 +134,7 @@ If the package is aliased in `package.json`, pass `packageName` so the emitted i
 ```
 
 ```js [luxen.config.mjs]
-import { defineConfig } from 'pulse-ui/config'; // ← use the npm alias name
+import { defineConfig } from 'pulse-ui'; // ← use the npm alias name
 
 export default defineConfig({
   elementPrefix: 'pulse',

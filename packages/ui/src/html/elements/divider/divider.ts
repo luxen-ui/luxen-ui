@@ -1,5 +1,5 @@
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 
 export type DividerOrientation = 'horizontal' | 'vertical';
 

@@ -1,5 +1,5 @@
 import { property } from 'lit/decorators.js';
-import { LuxenElement } from './luxen-element';
+import { LuxenElement } from './luxen-element.js';
 
 /**
  * Base class for form-associated Luxen custom elements.

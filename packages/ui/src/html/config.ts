@@ -7,7 +7,7 @@
  *
  *   ```js
  *   // luxen.config.mjs
- *   import { defineConfig } from 'luxen-ui/config';
+ *   import { defineConfig } from 'luxen-ui';
  *
  *   export default defineConfig({
  *     elementPrefix: 'pulse',

@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { CarouselItem } from './carousel-item';
-export * from './carousel-item';
+import { define } from '../../define.js';
+import { CarouselItem } from './carousel-item.js';
+export * from './carousel-item.js';
 define('carousel-item', CarouselItem);

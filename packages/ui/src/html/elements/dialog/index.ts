@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Dialog } from './dialog';
-export * from './dialog';
+import { define } from '../../define.js';
+import { Dialog } from './dialog.js';
+export * from './dialog.js';
 define('dialog', Dialog);

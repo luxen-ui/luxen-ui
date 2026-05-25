@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Popover } from './popover';
-export * from './popover';
+import { define } from '../../define.js';
+import { Popover } from './popover.js';
+export * from './popover.js';
 define('popover', Popover);

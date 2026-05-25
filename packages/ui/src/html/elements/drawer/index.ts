@@ -1,4 +1,4 @@
-import { define } from '../../define';
-import { Drawer } from './drawer';
-export * from './drawer';
+import { define } from '../../define.js';
+import { Drawer } from './drawer.js';
+export * from './drawer.js';
 define('drawer', Drawer);

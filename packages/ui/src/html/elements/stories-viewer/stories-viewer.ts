@@ -1,10 +1,10 @@
 import { html, nothing, unsafeCSS, type CSSResultGroup, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
-import { LuxenElement } from '../../shared/luxen-element';
-import hostStyles from '../../shared/styles/host.styles';
-import type { LuxenStories } from '../stories/stories';
-import type { LuxenStory } from '../story/story';
+import { LuxenElement } from '../../shared/luxen-element.js';
+import hostStyles from '../../shared/styles/host.styles.js';
+import type { LuxenStories } from '../stories/stories.js';
+import type { LuxenStory } from '../story/story.js';
 import rawStyles from './stories-viewer.css?inline';
 
 const styles = unsafeCSS(rawStyles);

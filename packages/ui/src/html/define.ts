@@ -1,4 +1,4 @@
-import { markRegistered, isRegistered, tagName, type ElementBaseName } from './registry';
+import { markRegistered, isRegistered, tagName, type ElementBaseName } from './registry.js';
 
 /**
  * Register a Luxen element with the custom elements registry.

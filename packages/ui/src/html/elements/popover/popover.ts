@@ -1,10 +1,10 @@
 import { html, nothing, unsafeCSS, type PropertyValues } from 'lit';
-import { LuxenElement } from '../../shared/luxen-element';
+import { LuxenElement } from '../../shared/luxen-element.js';
 import { property } from 'lit/decorators.js';
 import type { Placement } from '@floating-ui/dom';
-import { PopoverController } from '../../shared/controllers/popover';
-import { uniqueId } from '../../registry';
-import hostStyles from '../../shared/styles/host.styles';
+import { PopoverController } from '../../shared/controllers/popover.js';
+import { uniqueId } from '../../registry.js';
+import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './popover.css?inline';
 
 const styles = unsafeCSS(rawStyles);
