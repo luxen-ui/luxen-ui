@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-@import 'luxen-ui/css';
+@import 'luxen-ui/css/preset';
 @import 'luxen-ui/css/badge';
 @import 'luxen-ui/css/button';
 @import 'luxen-ui/css/divider';
