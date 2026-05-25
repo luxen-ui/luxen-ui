@@ -10,7 +10,7 @@
     "format:check": "vp fmt --check",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "vp run -r --cache build && pnpm publish -r --access public",
+    "release": "vp run --filter 'luxen-ui...' build && pnpm publish -r --access public",
     "prepare": "vp config"
   },
   "devDependencies": {
