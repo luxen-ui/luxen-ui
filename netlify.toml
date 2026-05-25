@@ -1,6 +1,6 @@
 [build]
 base = "."
-command = "pnpm install --frozen-lockfile && pnpm --filter luxen-ui run build && pnpm --filter @luxen-ui/docs run build:docs"
+command = "pnpm install --frozen-lockfile && pnpm --filter 'luxen-ui...' run build && pnpm --filter @luxen-ui/docs run build:docs"
 publish = "packages/docs/.vitepress/dist"
 
 [build.environment]
