@@ -97,7 +97,7 @@ The `luxen-ui` package has a multi-step build:
 2. **TypeScript compilation** (`tsc`) — generates JS + types in `dist/`
 3. **CDN build** (`vite build`) — Rollup with glob input, outputs to `cdn/`
 4. **Manifest** (`cem analyze --litelement`) — generates `custom-elements.json`
-5. **Skill generation** (`node scripts/generate-skill.mjs`) — generates Agent Skill docs
+5. **Skill template preparation** (`node scripts/prepare-skill-templates.mjs`) — transforms VitePress element docs into plain markdown templates at `dist/templates/elements/` and copies `MOCKUPS.md` to `dist/templates/mockups.md`. Consumers then run `npx luxen-ui generate-skill` to assemble their own brand-aware skill folder.
 
 - Uses PostCSS transformer (not Lightning CSS) for CSS
 - CSS build supports watch mode via `WATCH=true` environment variable

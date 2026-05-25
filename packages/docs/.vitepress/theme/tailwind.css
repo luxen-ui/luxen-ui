@@ -155,8 +155,9 @@ body {
   color: var(--vp-c-brand-3);
 }
 
-/* Subtle border between sidebar items */
-.VPSidebarItem.level-1 > .item {
+/* Subtle border between sidebar items — skip the last item of each group so
+   it doesn't double up with VitePress's own group-boundary divider. */
+.VPSidebarItem.level-1:not(:last-child) > .item {
   border-bottom: 1px solid var(--vp-c-divider);
 }
 

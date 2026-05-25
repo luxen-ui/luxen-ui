@@ -1,27 +1,26 @@
 <script setup>
 const lanes = [
   {
-    step: '①',
-    title: 'Build time',
-    badge: 'Vite plugin · PostCSS',
-    body: 'Rewrites every CSS file the library ships before they reach the browser.',
+    step: 'e',
+    title: 'elementPrefix',
+    badge: 'tag-shaped identifiers',
+    body: 'Anything that matches a Luxen custom-element tag name.',
     items: [
-      { label: 'CSS classes', example: '.l-button' },
-      { label: 'Custom properties', example: '--l-color-text-primary' },
-      { label: 'Shadow DOM tokens', example: '--l-color-text-primary' },
-      { label: 'Keyframe names', example: '@keyframes l-toast-…' },
-      { label: 'Element type selectors', example: 'l-toast { … }' },
+      { label: 'Custom element tag names', example: '<pulse-toast>' },
+      { label: 'Element type selectors', example: 'pulse-toast { … }' },
     ],
   },
   {
-    step: '②',
-    title: 'Runtime',
-    badge: 'setPrefix() · JS',
-    body: 'Drives every identifier the library generates from JavaScript at runtime.',
+    step: 'c',
+    title: 'cssPrefix',
+    badge: 'CSS-shaped identifiers',
+    body: 'Class names, custom properties, keyframes, and runtime identifiers built by JS.',
     items: [
-      { label: 'Custom element tag names', example: '<l-toast>' },
-      { label: 'Generated IDs', example: 'l-toast-0' },
-      { label: 'Classes added by JS', example: 'l-toast-icon' },
+      { label: 'CSS classes', example: '.p-button' },
+      { label: 'Custom properties', example: '--p-color-text-primary' },
+      { label: 'Keyframe names', example: '@keyframes p-toast-…' },
+      { label: 'Generated IDs', example: 'p:toast:1' },
+      { label: 'Classes added by JS', example: 'p-toast-icon' },
     ],
   },
 ];
@@ -55,7 +54,9 @@ const lanes = [
       </ul>
     </div>
 
-    <div class="note">Both layers must be configured — they cover non-overlapping namespaces.</div>
+    <div class="note">
+      Both prefixes are rewritten at build time by the Vite plugin — no runtime call needed.
+    </div>
   </div>
 </template>
 

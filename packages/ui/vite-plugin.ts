@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { Plugin } from 'vite-plus';
 import postcssPrefix from './postcss-plugin-prefix.js';
 
@@ -78,19 +79,27 @@ export interface LuxenOptions {
 }
 
 export default function luxen(options: LuxenOptions = {}): Plugin {
-  const elementPrefix = options.elementPrefix || 'l';
-  const cssPrefix = options.cssPrefix || 'l';
-
-  if (options.emitTypes) {
-    const cfg: EmitTypesOptions =
-      typeof options.emitTypes === 'string' ? { path: options.emitTypes } : options.emitTypes;
-    syncTypesFile(elementPrefix, cfg);
-  }
+  let elementPrefix = 'l';
+  let cssPrefix = 'l';
 
   return {
     name: 'luxen',
 
-    config() {
+    async config() {
+      // Plugin options take precedence; missing fields fall back to luxen.config.mjs
+      // (same file consumed by `luxen-ui generate-skill`). Keeps prefixes in sync
+      // between dev-time builds and skill generation without duplicating config.
+      const fileCfg = await loadLuxenConfig();
+      elementPrefix = options.elementPrefix ?? fileCfg?.elementPrefix ?? 'l';
+      cssPrefix = options.cssPrefix ?? fileCfg?.cssPrefix ?? 'l';
+      const emitTypes = options.emitTypes ?? fileCfg?.emitTypes;
+
+      if (emitTypes) {
+        const cfg: EmitTypesOptions =
+          typeof emitTypes === 'string' ? { path: emitTypes } : emitTypes;
+        syncTypesFile(elementPrefix, cfg);
+      }
+
       if (elementPrefix === 'l' && cssPrefix === 'l') return;
       return {
         css: {
@@ -100,7 +109,63 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
         },
       };
     },
+
+    /**
+     * Rewrites the two literal initialisers in `luxen-ui/dist/registry.js`
+     * (`let _elementPrefix = 'l'`, `let _cssPrefix = 'l'`) so the configured
+     * prefixes are baked in at build time — no runtime `setPrefix()` call
+     * needed in the consumer's entry point.
+     *
+     * `setPrefix()` remains exported for advanced cases (tests, dynamic
+     * switching), but ordinary consumers don't need to call it.
+     */
+    transform(code, id) {
+      if (elementPrefix === 'l' && cssPrefix === 'l') return null;
+      if (!isLuxenRegistry(id)) return null;
+      let out = code;
+      if (elementPrefix !== 'l') {
+        out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
+      }
+      if (cssPrefix !== 'l') {
+        out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
+      }
+      return out === code ? null : { code: out, map: null };
+    },
   };
+}
+
+function isLuxenRegistry(id: string): boolean {
+  // Normalise for Windows + strip Vite query params (`?import`, `?used`, …)
+  const path = id.replace(/\\/g, '/').split('?')[0];
+  return /\/luxen-ui\/(?:dist|src\/html)\/registry\.(?:js|ts)$/.test(path);
+}
+
+/**
+ * Loads `luxen.config.mjs` (or `.js`) from the current working directory, if
+ * present. Returns the partial config or `null` if no file is found.
+ *
+ * This is the same file consumed by `luxen-ui generate-skill` — keeping a
+ * single source of truth for prefixes avoids drift between dev-time CSS/JS
+ * rebranding and skill generation.
+ */
+async function loadLuxenConfig(): Promise<Partial<LuxenOptions> | null> {
+  const candidates = [
+    resolve(process.cwd(), 'luxen.config.mjs'),
+    resolve(process.cwd(), 'luxen.config.js'),
+  ];
+  for (const p of candidates) {
+    if (existsSync(p)) {
+      try {
+        // eslint-disable-next-line no-await-in-loop -- early-return on first match
+        const mod = await import(pathToFileURL(p).href);
+        return (mod.default ?? mod) as Partial<LuxenOptions>;
+      } catch (err) {
+        console.warn(`[luxen] failed to load ${p}:`, (err as Error).message);
+        return null;
+      }
+    }
+  }
+  return null;
 }
 
 function syncTypesFile(prefix: string, cfg: EmitTypesOptions): void {

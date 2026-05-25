@@ -1,6 +1,6 @@
 {
   "$schema": "./elements.schema.json",
-  "_doc": "Single source of truth for Luxen elements. Consumed by scripts/generate-skill.mjs (skill output) and the MOCKUPS.md tag-list updater. When adding/removing an element, edit this file.",
+  "_doc": "Single source of truth for Luxen elements. Consumed by scripts/prepare-skill-templates.mjs (which feeds the bin/cli.mjs `generate-skill` CLI) and the MOCKUPS.md tag-list updater. When adding/removing an element, edit this file.",
   "elements": [
     {
       "name": "avatar",

@@ -1,41 +1,57 @@
 /* eslint-disable no-await-in-loop -- sequential I/O is intentional in this
    build script for predictable output order and bounded concurrency. */
+/*
+ * prepare-skill-templates.mjs — build-time step that prepares the markdown
+ * templates consumed by the `luxen-ui generate-skill` CLI at consumer-run time.
+ *
+ * Responsibilities (build time, runs from `pnpm build`):
+ *
+ *   1. Transform per-element VitePress docs (packages/docs/elements/*.md) into
+ *      plain markdown (strip <script setup>, inline <ComponentWrapper> HTML,
+ *      convert <AccessibilityTable> / <KeyboardTable> / ::: directives).
+ *      Output: packages/ui/dist/templates/elements/<name>.md
+ *
+ *   2. Sync the auto-generated `l-*` tag list inside packages/ui/MOCKUPS.md
+ *      from the manifest (between <!-- generated:l-tags --> markers), then copy
+ *      the file verbatim to packages/ui/dist/templates/mockups.md.
+ *
+ * This script does NOT generate a complete skill — that's the CLI's job at
+ * consumer-run time, where the prefix, name, and theme overrides are applied.
+ */
 import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// eslint-disable-next-line no-underscore-dangle -- ESM idiom for resolving the script's directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ELEMENTS_ROOT = resolve(__dirname, '..');
-const DOCS_ROOT = resolve(ELEMENTS_ROOT, '..', 'docs');
-const SKILL_OUTPUT = resolve(ELEMENTS_ROOT, 'dist', 'skills', 'luxen-ui');
-const MANIFEST_PATH = resolve(ELEMENTS_ROOT, 'elements.json');
-const MOCKUPS_PATH = resolve(ELEMENTS_ROOT, 'MOCKUPS.md');
+const PKG_ROOT = resolve(__dirname, '..');
+const DOCS_ROOT = resolve(PKG_ROOT, '..', 'docs');
+const MANIFEST_PATH = resolve(PKG_ROOT, 'elements.json');
+const MOCKUPS_PATH = resolve(PKG_ROOT, 'MOCKUPS.md');
+const OUT_ROOT = resolve(PKG_ROOT, 'dist', 'templates');
 
 const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8'));
 const ELEMENTS = manifest.elements.filter((e) => e.inSkill).map((e) => e.name);
 
 async function main() {
-  await mkdir(join(SKILL_OUTPUT, 'references'), { recursive: true });
+  await mkdir(join(OUT_ROOT, 'elements'), { recursive: true });
 
   for (const element of ELEMENTS) {
     const docPath = join(DOCS_ROOT, 'elements', `${element}.md`);
     const raw = await readFile(docPath, 'utf-8');
     const transformed = await transformDoc(raw, element);
-    await writeFile(join(SKILL_OUTPUT, 'references', `${element}.md`), transformed);
+    await writeFile(join(OUT_ROOT, 'elements', `${element}.md`), transformed);
   }
 
-  await writeFile(join(SKILL_OUTPUT, 'SKILL.md'), generateSkillMd());
+  await syncMockupsTagList();
 
-  const mockups = await syncMockupsTagList();
-  await writeFile(join(SKILL_OUTPUT, 'MOCKUPS.md'), mockups);
-
-  console.log(`Skill generated at ${SKILL_OUTPUT}`);
+  console.log(`Skill templates prepared at ${OUT_ROOT}`);
 }
 
-// Rewrites the auto-generated tag list inside MOCKUPS.md (between
-// <!-- generated:l-tags --> markers) and returns the updated file content.
-// Writes back to the repo root so the source stays in sync; the returned
-// string is what we drop into the skill bundle.
+// Keeps the auto-generated `l-*` tag list in packages/ui/MOCKUPS.md (the
+// canonical public-CDN docs) in sync with elements.json. The CLI-generated
+// per-consumer mockups.md uses its own template; this is only for the source
+// doc that ships at the repo root.
 async function syncMockupsTagList() {
   const tags = manifest.elements
     .filter((e) => e.inMockups && e.kind !== 'native')
@@ -52,7 +68,6 @@ async function syncMockupsTagList() {
   }
   const updated = current.replace(re, block);
   if (updated !== current) await writeFile(MOCKUPS_PATH, updated);
-  return updated;
 }
 
 // --- Markdown transformation ---
@@ -125,7 +140,6 @@ function convertAccessibilityTable(content) {
   const regex =
     /<AccessibilityTable\s+:data="(\[[\s\S]*?\])"\s*(?::rules="(\[[\s\S]*?\])"\s*)?\/>/g;
   return content.replace(regex, (_, dataStr, rulesStr) => {
-    // Unescape HTML entities used in markdown attributes
     const unescape = (s) =>
       s
         .replace(/&quot;/g, '"')
@@ -140,7 +154,6 @@ function convertAccessibilityTable(content) {
       return '';
     }
 
-    // Strip markdown links from description, keep label only
     const stripLinks = (s) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
     const lines = [];
@@ -206,7 +219,6 @@ async function convertVitePressBlocks(content, inlinedFiles) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Opening directives
     if (line.startsWith('::: code-group')) {
       stateStack.push('code-group');
       continue;
@@ -223,22 +235,19 @@ async function convertVitePressBlocks(content, inlinedFiles) {
       continue;
     }
 
-    // Closing :::
     if (line.trimEnd() === ':::' && stateStack.length > 0) {
       const closed = stateStack.pop();
       if (closed === 'info') result.push('');
       continue;
     }
 
-    // File includes: <<< @/.vitepress/examples/path.html [Label]
     const includeMatch = line.match(/^<<<\s+@\/(.+?)(?:\s+\[(\w+)\])?\s*$/);
     if (includeMatch) {
       const filePath = resolve(DOCS_ROOT, includeMatch[1]);
-      // Skip if this file was already inlined by <ComponentWrapper>
       try {
         if (inlinedFiles.has(await realpath(filePath))) continue;
       } catch {
-        /* file not found, will be handled below */
+        /* file not found */
       }
       const lang = (includeMatch[2] || extToLang(filePath)).toLowerCase();
       try {
@@ -250,14 +259,12 @@ async function convertVitePressBlocks(content, inlinedFiles) {
       continue;
     }
 
-    // Strip [Label] from fenced code block language (VitePress tab syntax)
     const fenceMatch = line.match(/^(```\w+)\s+\[.*\]$/);
     if (fenceMatch) {
       result.push(fenceMatch[1]);
       continue;
     }
 
-    // In info blocks, prefix lines with >
     if (stateStack.at(-1) === 'info') {
       result.push(`> ${line}`);
       continue;
@@ -275,104 +282,7 @@ function extToLang(filePath) {
   return map[ext] || ext;
 }
 
-// --- SKILL.md generation ---
-
-function generateSkillMd() {
-  const elementsTable = ELEMENTS.map((el) => {
-    const info = elementMeta[el];
-    return `| ${info.name} | ${info.type} | \`${info.selector}\` | [references/${el}.md](references/${el}.md) |`;
-  }).join('\n');
-
-  return `---
-name: luxen-ui
-description: >-
-  Generate UI with Luxen UI, a CSS-first web component library.
-  Provides CSS classes for native HTML elements (button, select, progress,
-  close-button) and custom elements (l-badge, l-dialog, l-toast). Use when
-  building interfaces with Luxen UI.
-metadata:
-  version: "0.1.0"
----
-
-# Luxen UI
-
-A CSS-first web component library built on web standards. Most elements are plain CSS classes applied to native HTML elements — no JavaScript required. Custom elements (like \`<l-badge>\`) use Lit with minimal Shadow DOM.
-
-## Two usage modes
-
-Pick the mode that matches what you're building, then follow the matching guide.
-
-- **Integrate into a project** — npm install, bundler, real app code. Use the installation block below + the per-element references.
-- **Standalone HTML mockup** (Claude.ai artifact, single-page demo, prototype) — load Luxen from jsDelivr via \`<link>\` and \`<script type="module">\`. See [MOCKUPS.md](./MOCKUPS.md) — it has the boilerplate, the per-element CDN paths, and the list of all available \`l-*\` tags.
-
-## Installation (project mode)
-
-Import the preset (base + tokens) and per-element CSS:
-
-\`\`\`css
-@import 'luxen-ui/css/preset';
-@import 'luxen-ui/css/button';
-@import 'luxen-ui/css/close-button/ring';
-\`\`\`
-
-For custom elements, also import the JavaScript:
-
-\`\`\`js
-import 'luxen-ui';
-\`\`\`
-
-## Available Elements
-
-| Element | Type | Selector | Reference |
-|---------|------|----------|-----------|
-${elementsTable}
-
-## Quick Patterns
-
-A button:
-
-\`\`\`html
-<button class="l-button">Label</button>
-<button class="l-button" data-variant="primary">Primary</button>
-\`\`\`
-
-A badge:
-
-\`\`\`html
-<l-badge>Default</l-badge>
-<l-badge style="--variant: success">Success</l-badge>
-\`\`\`
-
-A dialog:
-
-\`\`\`html
-<button class="l-button" command="--show" commandfor="my-dialog">Open</button>
-<l-dialog id="my-dialog" title="Dialog title">
-  <button slot="close" class="l-close" data-appearance="ring" aria-label="Close"
-          command="--hide" commandfor="my-dialog"></button>
-  <p>Dialog content</p>
-  <div slot="footer">
-    <button class="l-button" command="--hide" commandfor="my-dialog">Close</button>
-  </div>
-</l-dialog>
-\`\`\`
-
-For full usage details, see the reference files for each element.
-`;
-}
-
-const elementMeta = Object.fromEntries(
-  manifest.elements.map((e) => [
-    e.name,
-    {
-      name: e.displayName,
-      type: e.kind === 'native' ? 'CSS class' : 'Custom element',
-      selector: e.selector ?? (e.kind === 'native' ? `.l-${e.name}` : `<l-${e.name}>`),
-    },
-  ]),
-);
-
 main().catch((err) => {
-  console.error('Skill generation failed:', err);
+  console.error('Skill template preparation failed:', err);
   process.exit(1);
 });

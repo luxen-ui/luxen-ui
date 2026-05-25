@@ -30,6 +30,8 @@
     "dist/",
     "cdn/",
     "bin/",
+    "templates/",
+    "elements.json",
     "vite-plugin.ts",
     "postcss-plugin-prefix.js",
     "README.md",
@@ -49,6 +51,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
     },
     "./css/preset": {
       "style": "./dist/css/preset.css",
@@ -112,9 +118,10 @@
   "scripts": {
     "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",
     "dev:elements": "vp dev",
-    "build": "vp build --config vite.config.css.ts && tsc && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/copy-cdn-assets.mjs && node scripts/generate-skill.mjs",
+    "build": "vp build --config vite.config.css.ts && tsc && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/copy-cdn-assets.mjs && node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts && node scripts/prepare-skill-templates.mjs",
     "build:css": "vp build --config vite.config.css.ts",
-    "build:skill": "node scripts/generate-skill.mjs",
+    "build:standalone": "node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts",
+    "build:skill-templates": "node scripts/prepare-skill-templates.mjs",
     "manifest": "cem analyze --litelement --outdir dist",
     "preview": "vp preview",
     "test": "vp test run --passWithNoTests",

@@ -2,7 +2,9 @@
 
 ## Docs as Skill Source
 
-The markdown files in `elements/` are the **source of truth** for the `luxen-ui` Agent Skill shipped in `luxen-ui`. A build script (`packages/ui/scripts/generate-skill.mjs`) transforms these docs into `dist/skills/luxen-ui/` — stripping VitePress syntax and inlining HTML examples.
+The markdown files in `elements/` are the **source of truth** for the Agent Skill that consumers generate via `npx luxen-ui generate-skill`.
+
+At Luxen build time, `packages/ui/scripts/prepare-skill-templates.mjs` transforms these docs into plain markdown (strips VitePress syntax, inlines HTML examples) and writes them to `packages/ui/dist/templates/elements/`. The CLI then assembles a per-consumer skill (with their prefix and tokens applied) from those templates.
 
 **Every edit to an element doc directly affects what AI agents see when generating Luxen UI code.**
 
@@ -164,4 +166,4 @@ Always update the element list in these files:
 - [ ] API reference includes: Importing, Attributes & Properties (if any), Events (if any), CSS classes table, CSS custom properties table
 - [ ] No inline styles — use Tailwind CSS utility classes instead
 - [ ] No time-sensitive language
-- [ ] Tested: run `cd packages/ui && node scripts/generate-skill.mjs` and inspect the output in `dist/skills/luxen-ui/references/`
+- [ ] Tested: run `cd packages/ui && node scripts/prepare-skill-templates.mjs` and inspect the output in `dist/templates/elements/`

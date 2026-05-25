@@ -1,70 +1,129 @@
 # Agent Skills
 
-Luxen UI ships an [Agent Skill](https://agentskills.io/) — a structured documentation format that helps AI coding assistants generate accurate UI code using Luxen UI components.
+Luxen UI ships a CLI that generates an [Agent Skill](https://agentskills.io/) tailored to your project — same name as your design system, same prefix, same brand tokens. AI assistants (Claude Code, Cursor, others that support the spec) read the skill to produce accurate Luxen UI code on the first try.
 
-::: info WHY USE IT?
-Without an Agent Skill, AI assistants often hallucinate class names, invent non-existent APIs, or produce outdated markup. The skill provides the exact component catalog, CSS classes, custom properties, and HTML patterns — so the AI generates correct code on the first try.
+::: info WHY GENERATE PER-PROJECT?
+A pre-built skill can only describe the default — `l-` prefix, Luxen colors. If you rebrand the prefix (e.g. to `pulse-`) or override brand tokens, the skill must reflect _your_ project, not the canonical defaults. The CLI does that in one command.
 :::
 
-## Accessing the Skill
+## Generate the skill
 
-The skill is included in the `luxen-ui` npm package:
+After installing `luxen-ui`, run:
+
+```bash
+npx luxen-ui generate-skill
+```
+
+Default output (no config): `.claude/skills/luxen-ui/` with `l-` prefix and Luxen tokens.
+
+To customize, drop a `luxen.config.mjs` in your project root:
+
+```js
+// luxen.config.mjs — single source of truth for the CLI *and* the Vite plugin.
+// Each field is consumed by one or both tools — the comments mark which.
+// Wrap in defineConfig() for editor autocompletion / type-checking.
+import { defineConfig } from 'luxen-ui/config';
+
+export default defineConfig({
+  // Skill identity — used by `generate-skill` CLI only (Vite plugin doesn't
+  // care about display names: it just rebrands code at build time).
+  name: 'pulse', // skill folder name + SKILL.md `name` frontmatter
+  displayName: 'Pulse', // heading + branding in generated docs
+  description: 'Pulse design system — CSS-first web components for Pulse apps.',
+
+  // Prefixes — used by BOTH the CLI and the Vite plugin (no trailing dash).
+  elementPrefix: 'pulse', // <pulse-badge>, type selector pulse-badge
+  cssPrefix: 'p', // .p-button, --p-color-*, @keyframes p-*
+
+  // Skill-generation knobs — CLI only. The Vite plugin ignores these because
+  // they describe where to write the skill folder and which theme tokens to
+  // bundle into it — concerns specific to skill output, not dev/build.
+  themeCss: 'src/styles/design-tokens.css', // optional: appended to <name>-standalone.css
+  out: '.claude/skills/pulse', // where the skill folder is written
+
+  // Dev-tooling output — Vite plugin only. The CLI ignores this; it's the
+  // plugin's responsibility to emit a prefix-aware `.d.ts` for your IDE.
+  emitTypes: 'types/pulse.d.ts',
+});
+```
+
+The same file is read by the [Vite plugin](https://github.com/luxen-ui/luxen-ui/blob/main/packages/ui/vite-plugin.ts) when no plugin options are passed — keeping `elementPrefix`/`cssPrefix` in sync between dev-time CSS/JS rebranding and skill generation. Plugin options passed at the call site take precedence over the file.
+
+### CLI-only fields explained
+
+**`themeCss`** — _optional._ Path to a CSS file containing your brand-token overrides (e.g. brand colour, radius, typography). When set, its contents are appended to the generated `<name>-standalone.css`, after the Luxen defaults — so any `:root { --pulse-color-brand-primary: …; }` you write there overrides the built-in token of the same name. Typically you produce this file once with `npx luxen-ui import design-tokens` and edit it. If omitted, mockups render with the Luxen defaults.
+
+```css
+/* src/styles/design-tokens.css — example */
+:root {
+  --pulse-color-brand-primary: oklch(0.62 0.21 268);
+  --pulse-radius-md: 10px;
+}
+```
+
+**`out`** — output directory for the generated skill folder, relative to the project root. Default `.claude/skills/<name>/`. Commit this folder so AI agents (Claude Code, Cursor, Claude Design projects, etc.) and your team can read it without running the CLI themselves. Re-run the CLI after a `luxen-ui` bump or a token change to refresh it.
+
+Then re-run:
+
+```bash
+npx luxen-ui generate-skill
+```
+
+Output structure (per [Agent Skills spec](https://agentskills.io/specification)):
 
 ```
-node_modules/luxen-ui/dist/skills/luxen-ui/
-├── SKILL.md
+.claude/skills/<name>/
+├── SKILL.md                       ← entry point (router: integration vs mockup mode)
+├── assets/
+│   ├── claude-design.md           ← workflow template for Claude Design projects
+│   ├── <name>-standalone.css      ← all CSS in one file: tokens + base + every element
+│   └── <name>-standalone.js       ← all JS in one file: registers every element with your prefix
 └── references/
-    ├── badge.md
-    ├── button.md
-    ├── close-button.md
-    ├── dialog.md
-    ├── select.md
-    └── progress.md
+    ├── integration.md             ← integration-mode guide + element inventory
+    ├── mockups.md                 ← 2-line HTML boilerplate using the standalone assets
+    └── <element>.md               ← per-element specs (attributes, slots, events)
 ```
 
-| File              | Description                                                                      |
-| ----------------- | -------------------------------------------------------------------------------- |
-| `SKILL.md`        | Overview of Luxen UI, installation, available elements, and quick patterns       |
-| `references/*.md` | Per-element documentation with HTML examples, CSS classes, and custom properties |
+**Commit the output.** AI agents — and your team — read it as a regular folder. Re-run the CLI whenever you bump `luxen-ui` or change your token overrides.
 
-## How to Use It
+## How to use the generated skill
 
 ### Claude Code
 
-Install the skill with the `skills` CLI:
+Once the folder is committed, Claude Code discovers `.claude/skills/<name>/SKILL.md` automatically (or run `npx skills add ./.claude/skills/<name>` for explicit registration).
 
-```bash
-npx skills add ./node_modules/luxen-ui/dist/skills/luxen-ui
-```
+### Claude Design (Claude.ai design environment)
 
-The skill is installed as a symlink, so it stays up to date when you update Luxen UI via npm.
+Claude Design is the Claude.ai project environment for design / HTML mockups. Upload your generated skill folder into a Claude Design project, alongside a root `CLAUDE.md` derived from the bundled workflow template.
 
-To remove:
-
-```bash
-npx skills remove luxen-ui
-```
-
-### Cursor
-
-Add the skill as documentation context in your Cursor settings. Point to the `SKILL.md` file:
+**Expected layout under `Design System > Design Files`:**
 
 ```
-node_modules/luxen-ui/dist/skills/luxen-ui/SKILL.md
+┌──────────────────┐ ┌──────────────────┐
+│  Design System   │ │  Design Files  ✓ │
+└──────────────────┘ └──────────────────┘
+
+ project
+
+ FOLDERS ─────────────────────────────────────
+  <name>/                              Folder
+
+ DOCUMENTS ───────────────────────────────────
+  CLAUDE.md                          Document
 ```
 
-### Other Tools
+The `<name>/` folder contains the full uploaded skill (`SKILL.md`, `assets/`, `references/`). `CLAUDE.md` at the root is the workflow file — its content is exactly `<name>/assets/claude-design.md`.
 
-Any AI tool that supports the [Agent Skills specification](https://agentskills.io/specification) can use this skill. Point it to the `dist/skills/luxen-ui/` directory in the installed package.
+**Steps:**
 
-For tools that don't support Agent Skills, you can manually include the contents of `SKILL.md` in your system prompt or project context.
+1. Run `npx luxen-ui generate-skill` locally with your config.
+2. Upload the generated `<name>/` folder into your Claude Design project (drag the folder, or zip + ask Claude Design to unzip).
+3. Create a `CLAUDE.md` at the project root with the exact content of `<name>/assets/claude-design.md`.
 
-## What's Included
+Mockups attached to this Design System automatically read the uploaded files — no per-conversation prompt needed.
 
-The skill provides:
+Re-run the CLI and re-upload after a `luxen-ui` bump or a token change.
 
-- Complete element catalog (badge, button, close button, dialog, select, progress)
-- HTML markup patterns with correct class names and attributes
-- CSS custom properties reference (e.g., `--variant`, `--pill`, `--with-dot`)
-- Per-element CSS import paths (`@import 'luxen-ui/css/button'`)
-- Accessible markup patterns (`role`, `aria-label`, native semantics)
+### Other tools
+
+Any tool that supports the [Agent Skills specification](https://agentskills.io/specification) can use the generated folder. For tools that don't, paste the contents of `SKILL.md` into your system prompt.
