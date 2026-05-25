@@ -23,6 +23,9 @@ export default defineConfig({
       'typescript/no-unnecessary-type-parameters': 'off',
       'typescript/consistent-return': 'off',
       'unicorn/consistent-function-scoping': 'off',
+      // Private TS fields prefixed with `_` are idiomatic in Lit components
+      // (mirrors the @state / @internalProperty convention). Don't flag them.
+      'no-underscore-dangle': 'off',
     },
     overrides: [
       {
