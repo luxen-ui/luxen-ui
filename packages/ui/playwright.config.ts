@@ -14,7 +14,7 @@ export default defineConfig({
   },
   webServer: {
     command: `http-server -p ${PORT} -s --cors -c-1 .`,
-    url: `http://127.0.0.1:${PORT}/cdn/styles/index.css`,
+    url: `http://127.0.0.1:${PORT}/cdn/styles/preset.css`,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

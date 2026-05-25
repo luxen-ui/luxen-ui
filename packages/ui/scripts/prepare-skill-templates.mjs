@@ -57,7 +57,7 @@ async function syncMockupsTagList() {
     .filter((e) => e.inMockups && e.kind !== 'native')
     .map((e) => `\`l-${e.name}\``)
     .join(', ');
-  const block = `<!-- generated:l-tags — edit packages/ui/elements.json and run the skill build to update -->\n${tags}.\n<!-- /generated:l-tags -->`;
+  const block = `<!-- generated:l-tags — edit packages/ui/elements.json and run the skill build to update -->\n\n${tags}.\n\n<!-- /generated:l-tags -->`;
   const re = /<!-- generated:l-tags[\s\S]*?<!-- \/generated:l-tags -->/;
 
   const current = await readFile(MOCKUPS_PATH, 'utf-8');
