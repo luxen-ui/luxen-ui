@@ -1,5 +1,51 @@
 # luxen-ui
 
+## 0.6.0
+
+### Minor Changes
+
+- b04d5b9: Extract design tokens into a new `@luxen-ui/design-tokens` workspace (vendored from Tailwind v4 oklch palette). Tailwind is now opt-in via a separate bridge preset.
+
+  **Breaking changes:**
+  - `@import 'luxen-ui/css'` → `@import 'luxen-ui/css/preset'`
+  - `@import 'luxen-ui/tailwind'` → `@import 'luxen-ui/tailwind/preset'`
+  - `@import 'luxen-ui/css/base'` no longer includes tokens (now just runtime helpers — `.l-visually-hidden`, custom element FOUC fix)
+
+  **New atomic CSS imports:**
+  - `luxen-ui/css/preset` — opinionated default (base + tokens)
+  - `luxen-ui/css/base` — runtime helpers only
+  - `luxen-ui/css/tokens` — primitives + aliases combined
+  - `luxen-ui/css/tokens/primitives` — palette + spacing + radius + text + …
+  - `luxen-ui/css/tokens/aliases` — semantic tokens (text-primary, bg-fill-brand, …)
+  - `luxen-ui/css/tokens/palette` — extended 21 Tailwind palette families
+  - `luxen-ui/tailwind/preset` — opt-in Tailwind v4 bridge
+
+  **New CLI:** `npx luxen-ui import {preset,tailwind,design-tokens}` copies any preset for customization.
+
+- 2d84aaf: New `npx luxen-ui generate-skill` CLI subcommand that produces a brand-aware Agent Skill folder for your project — uses your prefix, your brand tokens, your design system name. The skill is fully self-contained: a single `<name>-standalone.{js,css}` pair under `assets/` loads every element in a mockup HTML with one `<link>` and one `<script>` — no CDN dependency.
+
+  Both the CLI and the Vite plugin now read a shared `luxen.config.mjs` at the project root (`elementPrefix`, `cssPrefix`, `emitTypes`, `themeCss`, …) — one source of truth for dev/build and skill generation. The Vite plugin also rewrites the runtime registry initialisers at build time, so `setPrefix()` is no longer needed in consumer entry points (still exported for advanced cases).
+
+  Also:
+  - `defineConfig` helper + `LuxenConfig` / `LuxenEmitTypesConfig` types exported from `luxen-ui` for editor autocompletion in `luxen.config.mjs` without TypeScript.
+  - Standalone CDN bundle (`cdn/standalone.js` + `cdn/standalone.css`) shipped alongside the existing code-split `cdn/` tree (public jsDelivr consumers unchanged).
+
+  `packages/ui/dist/skills/` is no longer produced; every consumer generates their own via the CLI.
+
+- ed44f7b: Elements no longer ship a global `HTMLElementTagNameMap` augmentation. The Vite plugin gains an `emitTypes` option that generates a project-local, prefix-aware type map you own and commit, so `document.querySelector('l-badge')` (or your rebranded prefix) type-checks. Prop types are now exported from `luxen-ui/<name>/element` (e.g. `BadgeVariant`, `ToastPlacement`).
+
+  `emitTypes` also accepts `target: 'vue'`, which augments Vue's `GlobalComponents` so custom elements get strict prop/typo checking inside `.vue` templates (with `vueCompilerOptions.strictTemplates`), while keeping autocomplete scoped to each element's own props.
+
+  **Breaking**: the package no longer augments `HTMLElementTagNameMap` automatically. TypeScript consumers relying on built-in `l-*` typing should add `emitTypes: 'types/luxen.d.ts'` to the Vite plugin (or hand-write the augmentation).
+
+- 64a21bd: `<l-story>` `pulse` halo now uses the ring's paint by default — including gradient and image rings — so the attention pulse always feels of-a-piece with the thumbnail it surrounds. Override `--pulse-color` with any `background` value (solid color, `linear-gradient`, `conic-gradient`, image) to decouple the halo from the ring.
+
+  **Breaking**: the `--pulse-spread` custom property (px-based shadow distance) has been replaced by `--pulse-scale` (unitless transform multiplier, default `1.2`). If you set `--pulse-spread`, switch to `--pulse-scale` — roughly `1 + (spread × 2 / size)` for the equivalent visual reach.
+
+### Patch Changes
+
+- 9e5eee0: The luxen-ui skill now bundles MOCKUPS.md, giving agents the CDN-loading template and per-element jsDelivr paths to compose standalone HTML mockups (Claude.ai artifacts and similar). The skill also lists `l-sticky-bar` in its tag inventory, which was previously omitted.
+
 ## 0.5.0
 
 ### Minor Changes
@@ -64,14 +110,12 @@
   ```
 
 - ad1cebd: Improve color contrast and align CSS custom property naming on `<l-avatar>`, `<l-tooltip>`, `<l-dropdown>` and `<select class="l-select">`:
-
   - `<l-avatar>` text color now derives from the actual background luminance — fixes unreadable text in dark mode when `--color` is a light pastel.
   - `<l-tooltip>` text color is now auto-derived from `--background-color` for any custom background. Set `--text-color` to override.
   - Renamed `<l-tooltip>` `--background` → `--background-color`. Removed `--color` (replaced by the optional `--text-color` override).
   - Renamed `--radius` → `--border-radius` on `<l-tooltip>`, `<l-dropdown>` and `<select class="l-select">` to align with the rest of the design system.
 
   Migration:
-
   - `style="--radius: …"` → `style="--border-radius: …"` on tooltip/dropdown/select.
   - `style="--background: …"` → `style="--background-color: …"` on tooltip.
   - `style="--color: …"` on tooltip → `style="--text-color: …"` (or remove it and let the auto-derivation handle contrast).
@@ -94,7 +138,6 @@
 
 - 21cf492: `<l-dialog>` (and `<l-drawer>`) now expose a `title` slot for providing a custom heading element, and a `without-header` attribute to hide the header entirely. When neither the `title` property nor the `title` slot is used, the default `<h2>` is no longer rendered.
 - 71ffc8b: Tighten the visual chrome of `<l-dropdown>`, `<l-popover>`, and any element using `--l-color-border`:
-
   - Lighter default `--l-color-border` — moved from `gray-400 / gray-800` to `gray-300 / gray-600`, with `--l-color-divider` shifted to `gray-200 / gray-700` to keep the hierarchy. Elements affected globally: `.l-button`, `.l-disclosure`, `.l-input-otp`, `.l-input-stepper`, `.l-tabs`, `<l-tree-item>`, `<l-popover>`, `<l-dropdown>`.
   - New `--l-color-border-overlay` design token (aliases `--l-color-border` by default) so consumers can soften overlay borders — popovers, dropdowns, menus, tooltips — independently of form-control borders.
   - Smaller default `--radius` / `--border-radius` on `<l-dropdown>` and `<l-popover>` (`8px` → `6px`).
