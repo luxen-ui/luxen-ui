@@ -2,6 +2,8 @@
   --width: 31rem;
   --border-radius: 6px;
   --padding: 1.5rem;
+  --header-padding: var(--padding);
+  --footer-padding: var(--padding);
   --show-duration: 200ms;
   --hide-duration: 200ms;
   --backdrop: var(--l-backdrop);
@@ -59,7 +61,7 @@ dialog {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: var(--padding);
+  padding: var(--header-padding);
 }
 
 [part='title'] {
@@ -82,7 +84,7 @@ dialog {
   display: flex;
   place-content: end;
   gap: 0.5rem;
-  padding: var(--padding);
+  padding: var(--footer-padding);
 }
 
 /* Without a header, the body has to provide its own block-start padding
