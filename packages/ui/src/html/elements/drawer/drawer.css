@@ -1,6 +1,6 @@
 :host {
   --size: 320px;
-  --border-radius: 0.75rem;
+  --border-radius: 0.375rem;
 }
 
 /* Override dialog's opacity fade with a slide from the inline-start edge. */

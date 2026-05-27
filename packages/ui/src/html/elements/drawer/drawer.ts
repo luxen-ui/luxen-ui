@@ -24,7 +24,7 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @csspart footer - The footer wrapper around the footer slot.
  *
  * @cssproperty --size - Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `bottom`). Default `320px`.
- * @cssproperty --border-radius - Drawer border radius on the inner edges. Default `0.75rem`.
+ * @cssproperty --border-radius - Drawer border radius on the inner edges. Default `0.375rem`.
  * @cssproperty --show-duration - Open transition duration. Default `200ms`.
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
  * @cssproperty --backdrop - Backdrop color.
