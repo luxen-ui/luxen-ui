@@ -37,6 +37,10 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
 export class Drawer extends Dialog {
   static override styles = [hostStyles, dialogStyles, drawerStyles];
 
+  // Edge-attached: opt out of the centered modal's stable scrollbar gutter,
+  // which would otherwise push the drawer off the actual viewport edge.
+  protected override _modalKind = 'edge' as const;
+
   /** Edge the drawer slides in from. Defaults to the start (inline-start) edge. */
   @property({ reflect: true })
   placement?: 'start' | 'end' | 'bottom';

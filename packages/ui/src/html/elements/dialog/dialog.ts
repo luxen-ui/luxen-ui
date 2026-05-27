@@ -16,10 +16,18 @@ const supportsClosedBy =
 // `:has()` to freeze the root scroll container whenever any modal l-dialog
 // is open. Purely declarative — no manual lock/unlock bookkeeping.
 // Symbol guard makes the injection idempotent across HMR reloads.
+//
+// `scrollbar-gutter: stable` only applies to centered modals — it prevents
+// the page behind from shifting horizontally when the scrollbar disappears.
+// Edge-attached modals (drawers) opt out via `data-modal="edge"`: a reserved
+// gutter would push the drawer off the actual viewport edge.
 const SCROLL_LOCK_SHEET = Symbol.for('luxen-dialog-scroll-lock');
 if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
   const sheet = new CSSStyleSheet();
-  sheet.replaceSync(`html:has([data-modal]) { overflow: hidden; scrollbar-gutter: stable; }`);
+  sheet.replaceSync(`
+    html:has([data-modal]) { overflow: hidden; }
+    html:has([data-modal="centered"]) { scrollbar-gutter: stable; }
+  `);
   document.adoptedStyleSheets.push(sheet);
   Object.defineProperty(document, SCROLL_LOCK_SHEET, { value: sheet });
 }
@@ -76,6 +84,10 @@ export class Dialog extends LuxenElement {
   @query('dialog')
   dialog!: HTMLDialogElement;
 
+  // Drives the scroll-lock stylesheet: `centered` reserves the scrollbar
+  // gutter (no page shift); `edge` skips it (drawers sit flush to the edge).
+  protected _modalKind: 'centered' | 'edge' = 'centered';
+
   private _mouseDownTarget: EventTarget | null = null;
 
   private _commandListener: EventListenerObject = {
@@ -109,7 +121,7 @@ export class Dialog extends LuxenElement {
     if (this.open && !this.dialog.open) {
       // Opening — not cancelable.
       this.emit('show');
-      this.toggleAttribute('data-modal', true);
+      this.setAttribute('data-modal', this._modalKind);
       this.dialog.showModal();
       this._focusAutofocusTarget();
       void this._emitAfter('after-show');
