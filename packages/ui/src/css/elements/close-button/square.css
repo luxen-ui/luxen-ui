@@ -6,11 +6,6 @@
     --background-color: transparent;
     --background-color-hover: light-dark(var(--l-color-gray-100), var(--l-color-gray-700));
 
-    /*
-    Accessibility: the overall size should be at least 44 pixels in height and width
-    https://www.benjystanton.co.uk/blog/accessible-close-buttons/
-    */
-    padding: var(--l-spacing-2);
     border-radius: var(--l-radius-sm);
     background-color: var(--background-color);
 
