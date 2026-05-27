@@ -1,5 +1,14 @@
 # luxen-ui
 
+## 0.6.2
+
+### Patch Changes
+
+- d323879: Add `--header-padding` and `--footer-padding` custom properties to `<l-dialog>`, both defaulting to `--padding`, so the header and footer paddings can be tweaked independently.
+- 1073cff: Reduce the default `--border-radius` of `<l-drawer>` from `0.75rem` to `0.375rem` (≈6px) for a tighter inner-edge curve.
+- 84148bb: Fix the `<button class="l-close" data-appearance="square">` icon being offset by ~2px from the button's geometric center. The `padding: 8px` had no effect on the button size (Tailwind's global `box-sizing: border-box` absorbs it) but shrunk the grid content area below the icon's intrinsic size, breaking centering. Removing the padding restores proper centering.
+- 48c6ef0: Fix `<l-drawer>` edge-attached placements being offset from the viewport edge by the scrollbar-gutter width (~15px) when opened on a page with an active vertical scrollbar. The scroll-lock stylesheet now reserves the gutter only for centered `<l-dialog>` (where it prevents horizontal page shift) and skips it for `<l-drawer>` (which sits flush to the edge).
+
 ## 0.6.1
 
 ### Patch Changes
