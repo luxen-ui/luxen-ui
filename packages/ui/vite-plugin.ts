@@ -136,7 +136,7 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
 
 function isLuxenRegistry(id: string): boolean {
   // Normalise for Windows + strip Vite query params (`?import`, `?used`, …)
-  const path = id.replace(/\\/g, '/').split('?')[0];
+  const path = id.replace(/\\/g, '/').split('?')[0] ?? '';
   return /\/luxen-ui\/(?:dist|src\/html)\/registry\.(?:js|ts)$/.test(path);
 }
 

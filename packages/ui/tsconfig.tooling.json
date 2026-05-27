@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["vite-plugin.ts", "postcss-plugin-prefix.d.ts"],
+  "exclude": ["node_modules", "dist", "src"]
+}
