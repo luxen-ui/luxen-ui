@@ -4,6 +4,9 @@ outline: deep
 
 <script setup>
 import closeButton from '../.vitepress/examples/close-button/CloseButton.html?raw'
+import closeButtonRing from '../.vitepress/examples/close-button/CloseButtonRing.html?raw'
+import closeButtonSquare from '../.vitepress/examples/close-button/CloseButtonSquare.html?raw'
+import closeButtonCircle from '../.vitepress/examples/close-button/CloseButtonCircle.html?raw'
 </script>
 
 # Close button <Badge type="tip">&lt;button&gt;</Badge>
@@ -23,9 +26,11 @@ Pick a visual style via `data-appearance`. Each appearance has its own CSS impor
 
 #### Ring
 
-<ComponentWrapper :html="'<button type=&quot;button&quot; class=&quot;l-close&quot; data-appearance=&quot;ring&quot; aria-label=&quot;Close&quot;></button>'" />
+<ComponentWrapper :html="closeButtonRing" />
 
 ::: code-group
+
+<<< @/.vitepress/examples/close-button/CloseButtonRing.html [HTML]
 
 ```css [CSS]
 @import 'luxen-ui/css/close-button/ring';
@@ -35,9 +40,11 @@ Pick a visual style via `data-appearance`. Each appearance has its own CSS impor
 
 #### Square
 
-<ComponentWrapper :html="'<button type=&quot;button&quot; class=&quot;l-close&quot; data-appearance=&quot;square&quot; aria-label=&quot;Close&quot;></button>'" />
+<ComponentWrapper :html="closeButtonSquare" />
 
 ::: code-group
+
+<<< @/.vitepress/examples/close-button/CloseButtonSquare.html [HTML]
 
 ```css [CSS]
 @import 'luxen-ui/css/close-button/square';
@@ -47,9 +54,11 @@ Pick a visual style via `data-appearance`. Each appearance has its own CSS impor
 
 #### Circle
 
-<ComponentWrapper :html="'<button type=&quot;button&quot; class=&quot;l-close&quot; data-appearance=&quot;circle&quot; aria-label=&quot;Close&quot;></button>'" />
+<ComponentWrapper :html="closeButtonCircle" />
 
 ::: code-group
+
+<<< @/.vitepress/examples/close-button/CloseButtonCircle.html [HTML]
 
 ```css [CSS]
 @import 'luxen-ui/css/close-button/circle';
