@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import 'luxen-ui/tailwind/preset';
 
+/* VitePress toggles dark mode via `.dark` on <html>. Align Tailwind's `dark:`
+   variant so it follows the site toggle instead of `prefers-color-scheme`. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @import 'luxen-ui/css/preset';
 @import 'luxen-ui/css/avatar';
 @import 'luxen-ui/css/badge';
