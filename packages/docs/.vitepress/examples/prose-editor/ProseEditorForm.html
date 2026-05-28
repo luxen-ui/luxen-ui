@@ -1,0 +1,25 @@
+<form
+  class="flex flex-col items-start gap-4"
+  onsubmit="
+    event.preventDefault();
+    const data = new FormData(event.target);
+    alert('description = ' + data.get('description'));
+  "
+>
+  <label class="flex w-full flex-col gap-1">
+    <span class="text-sm font-medium">Description</span>
+    <l-prose-editor
+      name="description"
+      required
+      toolbar-preset="minimal"
+      placeholder="Describe your product…"
+    ></l-prose-editor>
+  </label>
+  <button
+    type="submit"
+    class="l-button"
+    data-variant="primary"
+  >
+    Submit
+  </button>
+</form>

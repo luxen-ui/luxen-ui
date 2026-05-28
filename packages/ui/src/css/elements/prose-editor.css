@@ -1,0 +1,128 @@
+/*
+ * Styles for the editable content of <l-prose-editor>.
+ *
+ * The ProseMirror editable element is rendered in light DOM (slotted), not the
+ * shadow root, to work around contenteditable caret/selection bugs in Firefox
+ * and WebKit inside shadow trees. So its styles live in this published CSS file
+ * rather than the element's shadow styles. Import once globally:
+ *
+ *   @import 'luxen-ui/css/prose-editor';
+ */
+@layer components {
+  l-prose-editor .ProseMirror {
+    padding: var(--content-padding, 0.75rem 1rem);
+    min-height: var(--content-min-height, 8rem);
+    outline: none;
+  }
+
+  l-prose-editor .ProseMirror :first-child {
+    margin-top: 0;
+  }
+
+  l-prose-editor .ProseMirror :last-child {
+    margin-bottom: 0;
+  }
+
+  /* Block spacing & typography — baseline so content reads correctly without a
+     typography framework. A consumer's `prose` class (e.g. Tailwind Typography)
+     layers on top via the higher-priority utilities layer. */
+  l-prose-editor .ProseMirror p {
+    margin-block: 0.5em;
+  }
+
+  l-prose-editor .ProseMirror :is(h1, h2, h3, h4) {
+    margin-block: 1em 0.5em;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  l-prose-editor .ProseMirror h1 {
+    font-size: 1.5em;
+  }
+
+  l-prose-editor .ProseMirror h2 {
+    font-size: 1.3em;
+  }
+
+  l-prose-editor .ProseMirror h3 {
+    font-size: 1.15em;
+  }
+
+  l-prose-editor .ProseMirror :is(ul, ol) {
+    margin-block: 0.5em;
+    padding-inline-start: 1.5rem;
+  }
+
+  l-prose-editor .ProseMirror ul {
+    list-style: disc;
+  }
+
+  l-prose-editor .ProseMirror ol {
+    list-style: decimal;
+  }
+
+  l-prose-editor .ProseMirror li {
+    margin-block: 0.25em;
+  }
+
+  /* Placeholder — Tiptap Placeholder extension */
+  l-prose-editor .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: inline-start;
+    height: 0;
+    color: var(--placeholder-color, var(--l-color-text-tertiary));
+    pointer-events: none;
+  }
+
+  /* Highlight mark */
+  l-prose-editor .ProseMirror mark {
+    border-radius: 0.2em;
+    background-color: var(--l-color-bg-fill-warning-subtle);
+    box-decoration-break: clone;
+  }
+
+  /* Links */
+  l-prose-editor .ProseMirror a {
+    color: var(--l-color-text-info);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* Blockquote */
+  l-prose-editor .ProseMirror blockquote {
+    border-inline-start: 3px solid var(--l-color-border);
+    padding-inline-start: 1rem;
+    color: var(--l-color-text-secondary);
+  }
+
+  /* Inline code & code blocks */
+  l-prose-editor .ProseMirror code {
+    border-radius: 0.25rem;
+    padding: 0.125em 0.3em;
+    background-color: var(--l-color-bg-fill-neutral-subtle);
+    font-size: 0.9em;
+  }
+
+  l-prose-editor .ProseMirror pre {
+    border-radius: var(--l-radius-md);
+    padding: 0.75rem 1rem;
+    background-color: var(--l-color-bg-fill-neutral-subtle);
+    overflow-x: auto;
+  }
+
+  l-prose-editor .ProseMirror pre code {
+    padding: 0;
+    background: none;
+  }
+
+  /* Horizontal rule */
+  l-prose-editor .ProseMirror hr {
+    margin-block: 1rem;
+    border: none;
+    border-top: 1px solid var(--l-color-divider);
+  }
+
+  l-prose-editor .ProseMirror hr.ProseMirror-selectednode {
+    border-top-color: var(--l-focus-ring);
+  }
+}

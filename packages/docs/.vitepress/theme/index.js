@@ -42,6 +42,7 @@ export default {
       void import('luxen-ui/tabs');
       void import('luxen-ui/tree');
       void import('luxen-ui/tree-item');
+      void import('luxen-ui/prose-editor');
 
       void import('luxen-ui/toast').then(({ toast }) => {
         window.toast = toast;

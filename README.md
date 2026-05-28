@@ -49,6 +49,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Kbd            | `<kbd>`              | ⏣ Native HTML Element                   |
 | Popover        | `<l-popover>`        | ⬢ Custom HTML Element (with Shadow DOM) |
 | Progress       | `<progress>`         | ⏣ Native HTML Element                   |
+| Prose Editor   | `<l-prose-editor>`   | ⬢ Custom HTML Element (with Shadow DOM) |
 | Rating         | `<l-rating>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Select         | `<select>`           | ⏣ Native HTML Element                   |
 | Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |

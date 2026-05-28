@@ -124,6 +124,7 @@ export default defineConfig({
           el('Select', 'select', 'select'),
           el('Popover', 'l-popover', 'popover'),
           el('Progress', 'progress', 'progress'),
+          el('Prose editor', 'l-prose-editor', 'prose-editor'),
           el('Rating', 'l-rating', 'rating'),
           el('Skeleton', 'l-skeleton', 'skeleton'),
           el('Spinner', 'l-spinner', 'spinner'),

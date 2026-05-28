@@ -13,6 +13,7 @@ export type ElementBaseName =
   | 'input-otp'
   | 'input-stepper'
   | 'popover'
+  | 'prose-editor'
   | 'skeleton'
   | 'spinner'
   | 'rating'

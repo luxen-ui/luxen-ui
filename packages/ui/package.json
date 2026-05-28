@@ -125,9 +125,16 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@emoji-mart/data": "catalog:",
     "@floating-ui/dom": "catalog:",
+    "@tiptap/core": "catalog:",
+    "@tiptap/extension-highlight": "catalog:",
+    "@tiptap/extensions": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
     "embla-carousel": "catalog:",
     "embla-carousel-autoplay": "catalog:",
+    "emoji-mart": "catalog:",
     "iconify-icon": "catalog:",
     "lit": "catalog:"
   },

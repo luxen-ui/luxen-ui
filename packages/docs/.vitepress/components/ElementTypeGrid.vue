@@ -28,6 +28,7 @@ const elements = [
   { name: 'Kbd', tag: 'kbd', type: 'native', link: '/elements/kbd' },
   { name: 'Popover', tag: 'l-popover', type: 'shadow', link: '/elements/popover' },
   { name: 'Progress', tag: 'progress', type: 'native', link: '/elements/progress' },
+  { name: 'Prose Editor', tag: 'l-prose-editor', type: 'shadow', link: '/elements/prose-editor' },
   { name: 'Rating', tag: 'l-rating', type: 'shadow', link: '/elements/rating' },
   { name: 'Select', tag: 'select', type: 'native', link: '/elements/select' },
   { name: 'Skeleton', tag: 'l-skeleton', type: 'custom', link: '/elements/skeleton' },
