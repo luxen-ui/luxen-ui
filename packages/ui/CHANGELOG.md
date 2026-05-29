@@ -1,5 +1,15 @@
 # luxen-ui
 
+## 0.7.0
+
+### Minor Changes
+
+- 79fee52: Add `<l-prose-editor>`, a form-associated rich text editor built on Tiptap (ProseMirror). It ships a configurable toolbar (`toolbar-preset` or a custom `toolbar` list), top/bottom placement, placeholder and initial HTML/JSON content, a lazy-loaded emoji picker, and submits its HTML value inside a `<form>`. Import the editable-content styles once globally with `@import 'luxen-ui/css/prose-editor';`.
+
+### Patch Changes
+
+- 27204da: Fix unreadable white text on `<l-toast-item>` variants (info/success/warning/danger) in browsers that support `contrast-color()`. The variant text now uses its `text-<variant>` token directly, so it renders consistently across all browsers and stays legible on the soft background.
+
 ## 0.6.2
 
 ### Patch Changes
