@@ -143,7 +143,7 @@
     &[variant] {
       --_shadow-color: color-mix(in oklab, var(--_accent-color) 8%, transparent);
       background: var(--_bg);
-      color: contrast-color(var(--_accent-color));
+      color: var(--_accent-color);
     }
 
     /*
