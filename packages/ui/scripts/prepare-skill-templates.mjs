@@ -7,9 +7,10 @@
  * Responsibilities (build time, runs from `pnpm build`):
  *
  *   1. Transform per-element VitePress docs (packages/docs/elements/*.md) into
- *      plain markdown (strip <script setup>, inline <ComponentWrapper> HTML,
- *      convert <AccessibilityTable> / <KeyboardTable> / ::: directives).
- *      Output: packages/ui/dist/templates/elements/<name>.md
+ *      plain markdown (strip <script setup> / <style scoped>, inline
+ *      <ComponentWrapper> HTML, convert <AccessibilityTable> / <KeyboardTable> /
+ *      <ApiTable> / <ElementSpec> / ::: directives, drop leftover demo
+ *      components). Output: packages/ui/dist/templates/elements/<name>.md
  *
  *   2. Sync the auto-generated `l-*` tag list inside packages/ui/MOCKUPS.md
  *      from the manifest (between <!-- generated:l-tags --> markers), then copy
@@ -79,6 +80,11 @@ async function transformDoc(content, _elementName) {
   // 2. Strip <script setup> block
   content = content.replace(/<script setup>[\s\S]*?<\/script>\s*/m, '');
 
+  // 2b. Strip page-level <style scoped> blocks — Vue SFC presentation CSS for
+  //     the docs site, irrelevant to the skill. The `scoped` marker is SFC-only
+  //     so this never matches a plain <style> inside an inlined code example.
+  content = content.replace(/<style scoped>[\s\S]*?<\/style>\s*/m, '');
+
   // 3. Strip <Badge> components from headings
   content = content.replace(/\s*<Badge[^>]*>[^<]*<\/Badge>/g, '');
 
@@ -91,6 +97,15 @@ async function transformDoc(content, _elementName) {
 
   // 5b. Replace <KeyboardTable> with markdown
   content = convertKeyboardTable(content);
+
+  // 5c. Replace <ApiTable> with a markdown table
+  content = convertApiTable(content);
+
+  // 5d. Replace <ElementSpec> with a concise markdown line
+  content = convertElementSpec(content);
+
+  // 5e. Strip leftover docs-only components (interactive demos)
+  content = stripLeftoverComponents(content);
 
   // 6. Convert VitePress container directives and file includes
   content = await convertVitePressBlocks(content, wrapperResult.inlinedFiles);
@@ -173,6 +188,7 @@ function convertAccessibilityTable(content) {
       if (rules.length) {
         lines.push('');
         lines.push('### Rules');
+        lines.push('');
         for (const rule of rules) {
           lines.push(`- ${rule}`);
         }
@@ -209,6 +225,101 @@ function convertKeyboardTable(content) {
 
     return lines.join('\n');
   });
+}
+
+// Shared HTML-entity unescaper for the `:data="[...]"` Vue attribute payloads.
+// `&amp;` is undone last so an already-escaped `&lt;` is not double-decoded.
+function unescapeEntities(s) {
+  return s
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
+// First-column keys that name a CSS token (rendered as `code`); every other
+// first column (Attribute, Slot, Event, Method, Property, Command) is **bold**.
+const CODE_NAME_KEYS = new Set(['Name', 'Class', 'Part']);
+
+// Converts <ApiTable :data="[...]" /> into a markdown list — one bullet per row.
+// A list (not a table) keeps long descriptions readable, needs no pipe
+// escaping, and matches the API-reference convention AI agents are tuned on.
+// The row shape is generic: the first column is the identifier; a `Description`
+// column becomes the trailing "— …"; the remaining columns (Type, Default,
+// Arguments, Returns, Detail) fold into inline annotations, e.g.
+//   - **text**: `string` (default: `—`) — The message text to display
+//   - **toast()**: `options: ToastOptions` → `HTMLElement` — Creates a toast
+//   - `--width` — The preferred width of the dialog
+function convertApiTable(content) {
+  const regex = /<ApiTable\s+:data="(\[[\s\S]*?\])"\s*\/>/g;
+  return content.replace(regex, (_, dataStr) => {
+    let data;
+    try {
+      data = new Function(`return ${unescapeEntities(dataStr)}`)();
+    } catch {
+      return '';
+    }
+    if (!Array.isArray(data) || data.length === 0) return '';
+
+    const lines = [];
+    for (const row of data) {
+      const keys = Object.keys(row);
+      const nameKey = keys[0];
+      const rawName = row[nameKey];
+      if (rawName === undefined || rawName === null || rawName === '') continue;
+      const name = CODE_NAME_KEYS.has(nameKey) ? `\`${rawName}\`` : `**${rawName}**`;
+
+      // Fold the middle columns into inline annotations. `head` sits right after
+      // the name (type/signature); `tail` trails it (default value).
+      let head = '';
+      let tail = '';
+      for (const key of keys.slice(1)) {
+        if (key === 'Description') continue;
+        const v = row[key];
+        if (v === undefined || v === null || v === '' || v === '—') continue;
+        if (key === 'Returns') head += ` → ${v}`;
+        else if (key === 'Type' || key === 'Arguments' || key === 'Detail') head += `: ${v}`;
+        else if (key === 'Default') tail += ` (default: ${v})`;
+        else tail += ` (${key.toLowerCase()}: ${v})`;
+      }
+
+      const desc = row.Description ? ` — ${row.Description}` : '';
+      lines.push(`- ${name}${head}${tail}${desc}`);
+    }
+
+    return lines.join('\n');
+  });
+}
+
+// Converts the <ElementSpec tag="..." type="..." /> banner into a concise
+// markdown line so the skill keeps the tag name and the element category
+// (which signals whether to expect Shadow DOM / progressive enhancement).
+function convertElementSpec(content) {
+  const TYPE_LABEL = {
+    native: 'Native HTML Element',
+    progressive: 'Progressive Custom Element',
+    custom: 'Custom Element (no Shadow DOM)',
+    shadow: 'Custom Element · Shadow DOM',
+  };
+  const regex = /<ElementSpec\s+([^>]*?)\/>/g;
+  return content.replace(regex, (_, attrs) => {
+    const tag = attrs.match(/tag="([^"]*)"/)?.[1];
+    if (!tag) return '';
+    const type = attrs.match(/type="([^"]*)"/)?.[1];
+    const label = TYPE_LABEL[type];
+    return label ? `**\`<${tag}>\`** — ${label}` : `**\`<${tag}>\`**`;
+  });
+}
+
+// Strips leftover docs-only Vue components (interactive demos such as
+// <NotDefinedPreview> or <*Demo>) that carry no skill-relevant output. The
+// attribute matcher tolerates quoted values containing `>` (e.g. an inline
+// `html='<l-... >'` prop). Must run BEFORE `<<<` file includes are inlined
+// (convertVitePressBlocks) so PascalCase tags inside inlined .vue examples are
+// never touched.
+function stripLeftoverComponents(content) {
+  const regex = /<[A-Z][A-Za-z0-9]*(?:\s+[\w:@-]+(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?)*\s*\/>/g;
+  return content.replace(regex, '');
 }
 
 async function convertVitePressBlocks(content, inlinedFiles) {
