@@ -133,6 +133,13 @@ const DEFAULT_CONFIG = {
   jsImportPath: 'luxen-ui',
   themeCss: null,
   out: null,
+  // Mockup / Claude Design mode is off by default. It produces the heavy
+  // standalone bundle (assets/<name>-standalone.{js,css}, ~1.7 MB committed),
+  // assets/claude-design.md, references/mockups.md, and the "Mode 2" section in
+  // SKILL.md. The common case (integration via npm + bundler, read by Claude
+  // Code / Cursor) never needs these, so opt in with `--with-mockups` or
+  // `mockups: true` in the config.
+  mockups: false,
 };
 
 async function cmdGenerateSkill(args) {
@@ -140,12 +147,22 @@ async function cmdGenerateSkill(args) {
   const config = await loadConfig(opts.config);
   const ctx = buildContext(config, opts);
 
+  if (ctx.themeCss && !ctx.mockups) {
+    console.warn(
+      '⚠ themeCss is only applied to the standalone bundle, which is skipped without --with-mockups. Ignoring it.',
+    );
+  }
+
   await runGenerateSkill(ctx);
 
   console.log(`✓ Skill generated at ${relative(process.cwd(), ctx.outDir)}`);
   console.log('');
   console.log('Next steps:');
   console.log(`  • Commit ${ctx.outDir} so AI agents (and the rest of your team) can read it.`);
+  if (!ctx.mockups) {
+    console.log('  • Mockup / Claude Design assets were skipped (standalone bundle, mockups.md,');
+    console.log('    claude-design.md). Re-run with --with-mockups to include them.');
+  }
   console.log(`  • Re-run \`luxen-ui generate-skill\` whenever luxen-ui or your tokens change.`);
 }
 
@@ -159,6 +176,8 @@ function parseFlags(argv) {
     else if (arg === '--css-prefix') opts.cssPrefix = argv[++i];
     else if (arg === '--name') opts.name = argv[++i];
     else if (arg === '--theme-css') opts.themeCss = argv[++i];
+    else if (arg === '--with-mockups') opts.mockups = true;
+    else if (arg === '--no-mockups') opts.mockups = false;
     else if (arg === '-h' || arg === '--help') usageGenerateSkill(0);
     else {
       console.error(`✗ Unknown flag: ${arg}`);
@@ -215,8 +234,7 @@ function stripUndefined(obj) {
 async function runGenerateSkill(ctx) {
   ensureDir(ctx.outDir);
   ensureDir(join(ctx.outDir, 'references'));
-  ensureDir(join(ctx.outDir, 'assets'));
-  ensureDir(join(ctx.outDir, 'assets', 'css'));
+  if (ctx.mockups) ensureDir(join(ctx.outDir, 'assets'));
 
   // 1. Read templates (hand-written) and pre-transformed element docs (build).
   const tplDir = resolve(ctx.pkgRoot, 'templates');
@@ -245,9 +263,11 @@ async function runGenerateSkill(ctx) {
     elementsTable: buildElementsTable(skillElements, ctx),
     elementsList: buildElementsList(skillElements),
     tagsList: buildTagsList(elements.elements),
+    // Drives the conditional "Mode 2" section in SKILL.md ({{#mockups}}…).
+    mockups: ctx.mockups,
   };
 
-  // 3. Render SKILL.md, integration.md, claude-design.md
+  // 3. Render SKILL.md + integration.md (always). claude-design.md is mockup-only.
   await renderTemplate(join(tplDir, 'SKILL.md.tpl'), join(ctx.outDir, 'SKILL.md'), vars, ctx);
   await renderTemplate(
     join(tplDir, 'integration.md.tpl'),
@@ -255,12 +275,14 @@ async function runGenerateSkill(ctx) {
     vars,
     ctx,
   );
-  await renderTemplate(
-    join(tplDir, 'claude-design.md.tpl'),
-    join(ctx.outDir, 'assets', 'claude-design.md'),
-    vars,
-    ctx,
-  );
+  if (ctx.mockups) {
+    await renderTemplate(
+      join(tplDir, 'claude-design.md.tpl'),
+      join(ctx.outDir, 'assets', 'claude-design.md'),
+      vars,
+      ctx,
+    );
+  }
 
   // 4. Per-element references (with prefix + package-name substitution).
   for (const el of skillElements) {
@@ -270,6 +292,10 @@ async function runGenerateSkill(ctx) {
     const out = applyPackageName(applyPrefix(content, ctx), ctx);
     writeFileSync(dst, out, 'utf-8');
   }
+
+  // Everything below is mockup / Claude Design mode only — the standalone
+  // bundle and the docs that point at it. Skipped unless `--with-mockups`.
+  if (!ctx.mockups) return;
 
   // 5. mockups.md — rendered from template (local-assets paths, prefix-aware
   // since assets/cdn/ has been substituted to the consumer's prefix).
@@ -336,8 +362,21 @@ async function renderTemplate(srcPath, dstPath, vars, ctx) {
   writeFileSync(dstPath, final, 'utf-8');
 }
 
+// Minimal Mustache: section blocks plus `{{var}}` substitution.
+//   {{#key}}…{{/key}}  → kept only when vars[key] is truthy
+//   {{^key}}…{{/key}}  → kept only when vars[key] is falsy (inverted)
+// Sections don't nest. Stripping a multi-line block leaves a blank-line gap, so
+// 3+ newlines are collapsed to 2 afterwards — safe here because none of the
+// templates rely on triple newlines (verified at authoring time).
 function applyMustache(content, vars) {
-  return content.replace(/\{\{(\w+)\}\}/g, (m, key) => (key in vars ? String(vars[key]) : m));
+  content = content.replace(/\{\{\^(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (m, key, inner) =>
+    vars[key] ? '' : inner,
+  );
+  content = content.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (m, key, inner) =>
+    vars[key] ? inner : '',
+  );
+  content = content.replace(/\{\{(\w+)\}\}/g, (m, key) => (key in vars ? String(vars[key]) : m));
+  return content.replace(/\n{3,}/g, '\n\n');
 }
 
 // Substitutes the npm package name `luxen-ui` with the consumer's name in
@@ -486,6 +525,10 @@ function usageGenerateSkill(code = 1) {
     '  --css-prefix <p>          CSS class/var prefix without trailing dash (default: l)',
   );
   console.error('  --theme-css <path>        Optional CSS file with token overrides');
+  console.error(
+    '  --with-mockups            Also emit the standalone bundle + mockup/Claude Design',
+  );
+  console.error('                            docs (off by default)');
   console.error('  --out <path>              Output dir (default: .claude/skills/<name>)');
   console.error('');
   console.error('Config file (luxen.config.mjs) takes the same keys, plus identity:');
@@ -496,6 +539,7 @@ function usageGenerateSkill(code = 1) {
   console.error("    elementPrefix: 'pulse',");
   console.error("    cssPrefix: 'pulse',");
   console.error("    themeCss: 'src/styles/tokens.css',");
+  console.error('    mockups: true,   // emit standalone bundle + mockup docs');
   console.error("    out: '.claude/skills/pulse',");
   console.error('  }');
   console.error('');

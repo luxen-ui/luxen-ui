@@ -11,7 +11,7 @@ metadata:
 
 A CSS-first web component library built on web standards. Most elements are plain CSS classes on native HTML; custom elements (like `<l-badge>`) use Lit with minimal Shadow DOM.
 
-Two consumption modes — read the right reference file.
+{{#mockups}}Two consumption modes — read the right reference file.
 
 ## Mode 1 — Integration (real application)
 
@@ -24,6 +24,10 @@ You import `{{name}}` from npm and bundle with Vite/Webpack. Code samples below 
 You load two locally-bundled assets — `assets/{{name}}-standalone.css` and `assets/{{name}}-standalone.js`. No npm, no per-element imports, no remote CDN.
 
 → **[references/mockups.md](references/mockups.md)** — `<head>` boilerplate, local asset paths, available `l-*` tags.
+{{/mockups}}{{^mockups}}You import `{{name}}` from npm and bundle with Vite/Webpack. Code samples below use the `l-` prefix.
+
+→ **[references/integration.md](references/integration.md)** — installation, element inventory, code patterns.
+{{/mockups}}
 
 ## Per-element specs
 
