@@ -1,0 +1,29 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="dialog-without-footer"
+>
+  Open dialog
+</button>
+
+<l-dialog
+  id="dialog-without-footer"
+  title="Release notes"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="dialog-without-footer"
+  ></button>
+  <article class="h-[340px]">
+    <p>
+      Leave out the <code>footer</code> slot and the footer row collapses — no empty padded band at
+      the bottom.
+    </p>
+  </article>
+</l-dialog>

@@ -87,6 +87,21 @@ dialog {
   padding: var(--footer-padding);
 }
 
+/* Collapse the footer row when nothing is slotted into it, so an empty
+   dialog/drawer reserves no space at the bottom. `data-empty` is toggled by the
+   HasSlotController in dialog.ts: `:host(:has(...))` can't be used because
+   `:has()` is invalid inside `:host()` and the whole rule is dropped by the
+   browser. */
+[part='footer'][data-empty] {
+  display: none;
+}
+
+/* With the footer collapsed, the body has to provide its own block-end padding
+   (normally inherited visually from the footer padding below it). */
+[part='body']:has(~ [part='footer'][data-empty]) {
+  padding-block-end: var(--padding);
+}
+
 /* Without a header, the body has to provide its own block-start padding
    (normally inherited visually from the header padding above it). */
 :host([without-header]) [part='body'] {

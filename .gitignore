@@ -24,6 +24,7 @@ Thumbs.db
 
 # AI Files
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 .claude/plans
 .claude/worktrees
 .claude/*.png

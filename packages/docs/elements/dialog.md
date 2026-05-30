@@ -8,6 +8,7 @@ import dialogLightDismiss from '../.vitepress/examples/dialog/DialogLightDismiss
 import dialogScrollableContent from '../.vitepress/examples/dialog/DialogScrollableContent.html?raw'
 import dialogBlurredBackdrop from '../.vitepress/examples/dialog/DialogBlurredBackdrop.html?raw'
 import dialogForm from '../.vitepress/examples/dialog/DialogForm.html?raw'
+import dialogWithoutFooter from '../.vitepress/examples/dialog/DialogWithoutFooter.html?raw'
 import dialogWithoutHeader from '../.vitepress/examples/dialog/DialogWithoutHeader.html?raw'
 </script>
 
@@ -75,6 +76,17 @@ Add `autofocus` to any focusable element inside the dialog to focus it automatic
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dialog/DialogForm.html [HTML]
+:::
+
+### Without footer
+
+Omit the `footer` slot and the footer row collapses — no empty space is reserved at the bottom.
+
+<ComponentWrapper :html="dialogWithoutFooter" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dialog/DialogWithoutFooter.html [HTML]
 :::
 
 ### Without header

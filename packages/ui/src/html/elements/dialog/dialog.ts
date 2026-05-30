@@ -1,6 +1,7 @@
 import { html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { HasSlotController } from '../../shared/controllers/has-slot-controller.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import styles from './dialog.styles.js';
 
@@ -80,6 +81,12 @@ export class Dialog extends LuxenElement {
   /** Hide the header entirely (title and close slot). */
   @property({ type: Boolean, reflect: true, attribute: 'without-header' })
   withoutHeader = false;
+
+  // Tracks whether the footer slot has content, so the footer row can collapse
+  // when empty (toggles `data-empty` below). A controller drives this because
+  // `:host(:has(> [slot='footer']))` is invalid — `:has()` can't be nested in
+  // `:host()`, so browsers drop the whole rule.
+  private _slots = new HasSlotController(this, 'footer');
 
   @query('dialog')
   dialog!: HTMLDialogElement;
@@ -233,7 +240,10 @@ export class Dialog extends LuxenElement {
         <div part="body">
           <slot></slot>
         </div>
-        <footer part="footer">
+        <footer
+          part="footer"
+          ?data-empty=${!this._slots.test('footer')}
+        >
           <slot name="footer"></slot>
         </footer>
       </dialog>
