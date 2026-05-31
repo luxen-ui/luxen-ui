@@ -1,4 +1,6 @@
-import { html, unsafeCSS, type PropertyValues, type TemplateResult } from 'lit';
+import { unsafeCSS, type PropertyValues, type TemplateResult } from 'lit';
+import { html } from 'lit/static-html.js';
+import { staticTag } from '../../static-tag.js';
 import { property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { map } from 'lit/directives/map.js';
@@ -413,6 +415,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     onClick: () => void,
     active = false,
   ): TemplateResult {
+    const iconTag = staticTag('icon');
     return html`
       <button
         type="button"
@@ -424,7 +427,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
         title=${label}
         @click=${onClick}
       >
-        <l-icon name=${icon}></l-icon>
+        <${iconTag} name=${icon}></${iconTag}>
       </button>
     `;
   }
