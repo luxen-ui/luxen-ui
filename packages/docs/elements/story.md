@@ -6,10 +6,7 @@ outline: deep
 
 A single story declaration inside [`<l-stories>`](/elements/stories). Renders the clickable thumbnail; the [viewer](/elements/stories-viewer) reads its `src`, `poster`, `label`, `chapters`, and `tracks` to play it. See [Stories](/elements/stories) for examples and the row layout.
 
-<ElementSpec
-  tag="l-story"
-  type="custom"
-/>
+<ElementSpec element="story" />
 
 ## API reference
 
@@ -29,39 +26,19 @@ import 'luxen-ui/story';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'src', Description: 'Video URL (full story playback)' },
-  { Attribute: 'poster', Description: 'Thumbnail image. Falls back to the first video frame' },
-  { Attribute: 'preview', Description: 'Short looping preview video (typically 2-3s, 480p, no audio). When set, replaces the poster with a muted autoplay loop on the thumbnail. Off-screen previews are paused via `IntersectionObserver`' },
-  { Attribute: 'label', Description: 'Caption shown under the thumbnail and used as the trigger `aria-label`' },
-  { Attribute: 'duration', Description: 'Override progress duration in seconds. Defaults to video metadata duration' },
-  { Attribute: 'seen', Description: 'Mark this story as already viewed. Reflects to attribute' },
-  { Attribute: 'pulse', Description: 'Animated halo + subtle scale tap to draw attention' },
-  { Attribute: 'chapters', Description: 'Chapter start times within the video, comma-separated seconds (e.g. `0,5,12`). `0` is implicit. Empty = single chapter' },
-  { Attribute: 'tracks', Description: 'Comma-separated VTT track URLs for captions' },
-]" />
+<ApiTable element="story" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'getChapterStarts()', Description: 'Returns the parsed chapter start times as `number[]`. Always begins with `0`, sorted, deduplicated' },
-]" />
+<ApiTable element="story" section="methods" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: 'cta', Description: 'Overlay surfaced by the viewer when this story is active (e.g. shoppable card)' },
-  { Slot: 'header', Description: 'Header overlay (e.g. avatar + author)' },
-]" />
+<ApiTable element="story" section="slots" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-story-trigger', Description: 'The `<button>` rendered inside each `<l-story>`' },
-  { Class: '.l-story-thumb', Description: 'The poster wrapper (image + play overlay)' },
-  { Class: '.l-story-play', Description: 'The centered play-icon disc on the thumbnail (default: white icon on 35 % black). Target `.l-story-play l-icon` to restyle the disc' },
-  { Class: '.l-story-label', Description: 'The caption shown under the thumbnail' },
-]" />
+<ApiTable element="story" section="cssClasses" />
 
 ### CSS custom properties
 
@@ -69,8 +46,4 @@ The thumbnail layout tokens (`--size`, `--radius`, `--ring-color`, `--ring-color
 
 The pulse animation has its own knobs:
 
-<ApiTable :data="[
-  { Name: '--pulse-color', Description: 'Halo paint when `pulse` is set. Accepts any `background` value (solid, `linear-gradient`, `conic-gradient`, image). Default `var(--ring-color)` — the halo matches the ring automatically, gradients included' },
-  { Name: '--pulse-scale', Description: 'Peak scale of the halo at the end of each pulse cycle. Default `1.2`' },
-  { Name: '--pulse-duration', Description: 'Animation cycle. Default `1.6s`' },
-]" />
+<ApiTable element="story" section="cssProperties" />

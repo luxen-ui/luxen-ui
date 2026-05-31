@@ -48,6 +48,12 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --dot-color-active - Color of active dot.
  * @cssproperty --dot-margin - Margin around dots container.
  * @cssproperty --dot-edge-scale - Scale factor applied to edge dots that signal more dots exist beyond the visible window (default `0.5`).
+ *
+ * @event select - Fired when the active slide changes. Detail: `{ index: number }`.
+ * @event slides-in-view - Fired when the set of slides in view changes. Detail: `{ indexes: number[] }`.
+ * @event fullscreen - Fired when the fullscreen button is activated.
+ *
+ * @customElement l-carousel
  */
 export class Carousel extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];

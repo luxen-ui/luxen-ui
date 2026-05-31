@@ -13,10 +13,7 @@ import dividerWithText from '../.vitepress/examples/divider/DividerWithText.html
 
 Dividers are used to visually separate groups of content with a horizontal or vertical line. They can include an optional text label.
 
-<ElementSpec
-  tag="l-divider"
-  type="custom"
-/>
+<ElementSpec element="divider" />
 
 ## Options
 
@@ -92,15 +89,8 @@ import 'luxen-ui/divider';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'orientation', Description: '`horizontal` (default) · `vertical`' },
-  { Attribute: 'label', Description: 'Optional text label displayed over the divider line' },
-]" />
+<ApiTable element="divider" section="properties" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--color', Description: 'Divider line color (default: `--l-color-divider`)' },
-  { Name: '--thickness', Description: 'Divider thickness (default: `1px`)' },
-  { Name: '--spacing', Description: 'Margin around the divider (default: `--spacing-4`)' },
-]" />
+<ApiTable element="divider" section="cssProperties" />

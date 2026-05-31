@@ -10,6 +10,8 @@ import { LuxenElement } from '../../shared/luxen-element.js';
  * @summary Stripe-style OTP input with visual digit cells over a hidden native input.
  * @customElement l-input-otp
  *
+ * @attribute size - sm | lg — Cell size. Default is md.
+ *
  * @cssproperty --digits - Number of digit boxes (default: 6). Must match input's maxlength.
  * @cssproperty --cell-size - Cell width and height (default: 2.75rem). Font size scales automatically.
  * @cssproperty --cell-gap - Space between cells (default: 0.5rem).

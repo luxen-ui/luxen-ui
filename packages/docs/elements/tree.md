@@ -16,10 +16,7 @@ import treeExpandIcons from '../.vitepress/examples/tree/TreeExpandIcons.html?ra
 
 Tree views present hierarchical data like file explorers, navigation menus, and taxonomies. Each node expands/collapses to reveal nested items and can be selected in several ways.
 
-<ElementSpec
-  tag="l-tree"
-  type="shadow"
-/>
+<ElementSpec element="tree" />
 
 ## Options
 
@@ -186,37 +183,18 @@ import 'luxen-ui/tree-item';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'selection', Description: 'Selection mode: `single` (default), `multiple`, `leaf`, or `none`' },
-  { Attribute: 'independent', Description: 'When set with `selection=&quot;multiple&quot;`, parent and descendants selection are decoupled (no cascade, no indeterminate)' },
-]" />
+<ApiTable element="tree" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'getAllItems()', Description: 'Returns every `<l-tree-item>` in document order (including nested)' },
-  { Method: 'getSelection()', Description: 'Returns the currently selected items' },
-  { Method: 'expandAll()', Description: 'Expands every branch' },
-  { Method: 'collapseAll()', Description: 'Collapses every item' },
-]" />
+<ApiTable element="tree" section="methods" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'selection-change', Description: 'Fired when the selection changes. Detail: `{ selection }`' },
-]" />
+<ApiTable element="tree" section="events" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--indent-size', Description: 'Horizontal indent per depth level. Default `1rem`' },
-  { Name: '--indent-guide-width', Description: 'Thickness of the vertical guide line between a parent and its children. Default `1px`. Set to `0` to hide guides' },
-  { Name: '--indent-guide-style', Description: 'Line style of the guide: `solid` (default), `dashed`, `dotted`, `double`' },
-  { Name: '--indent-guide-color', Description: 'Color of the guide line' },
-  { Name: '--row-height', Description: 'Minimum row height. Default `1.75rem`' },
-  { Name: '--row-padding-inline', Description: 'Inner inline padding of the row; also drives the content slot left indent and the guide column. Default `0.25rem`' },
-  { Name: '--chevron-size', Description: 'Size of the expand/collapse chevron/avatar box. Default `1.125rem`' },
-  { Name: '--item-gap', Description: 'Horizontal gap between chevron, prefix, label and suffix on the row; also drives the content slot left indent. Default `0.375rem`' },
-]" />
+<ApiTable element="tree" section="cssProperties" />
 
 See [`<l-tree-item>`](/elements/tree-item) for the per-item API.

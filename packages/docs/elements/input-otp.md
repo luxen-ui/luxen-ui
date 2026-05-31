@@ -16,10 +16,7 @@ import notDefinedCss from 'luxen-ui/css/input-otp?raw'
 
 A single native `<input>` with visual digit cells for one-time passcode entry. The `<l-input-otp>` wrapper renders individual bordered cells over a hidden input that handles keyboard, paste, and autocomplete.
 
-<ElementSpec
-  tag="l-input-otp"
-  type="progressive"
-/>
+<ElementSpec element="input-otp" />
 
 ## Options
 
@@ -152,22 +149,10 @@ import 'luxen-ui/input-otp';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'size', Description: 'Control size: `sm`, `md` (default), `lg`' },
-  { Attribute: 'separator-after', Description: 'Position after which to insert a visual separator dash (e.g., `3` for a 3-3 grouping)' },
-]" />
+<ApiTable element="input-otp" section="properties" />
 
 ### CSS custom properties
 
 Set `--digits` on `<l-input-otp>` to change the digit count.
 
-<ApiTable :data="[
-  { Name: '--digits', Description: 'Number of digit cells (default: `6`). Drives `maxlength` and `pattern` automatically' },
-  { Name: '--cell-size', Description: 'Cell width and height (default: `2.75rem`). Font size scales automatically from this value' },
-  { Name: '--cell-gap', Description: 'Space between cells (default: `0.5rem`)' },
-  { Name: '--cell-bg-color', Description: 'Cell background color' },
-  { Name: '--cell-border-color', Description: 'Cell border color' },
-  { Name: '--cell-border-radius', Description: 'Cell border-radius' },
-  { Name: '--cell-focus-color', Description: 'Border + ring color of the active (focused) cell' },
-  { Name: '--cell-focus-ring', Description: 'Full `box-shadow` value of the active cell ring (default: `0 0 0 1px var(--cell-focus-color)`). Set to `none` to disable' },
-]" />
+<ApiTable element="input-otp" section="cssProperties" />

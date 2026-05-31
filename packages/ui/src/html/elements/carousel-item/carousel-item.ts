@@ -9,6 +9,8 @@ const styles = unsafeCSS(rawStyles);
  * A single slide inside an `<l-carousel>`.
  *
  * @cssproperty --aspect-ratio - Aspect ratio of the slide.
+ *
+ * @customElement l-carousel-item
  */
 export class CarouselItem extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];

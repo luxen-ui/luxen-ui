@@ -102,10 +102,10 @@ One-line description.
 
 ## API reference
 ### Importing                ← @import path
-### Attributes & Properties   ← native HTML attributes + data-* attributes (only if element has them)
-### Events                   ← native DOM events (only if element has them)
-### CSS classes              ← single source of truth for all classes
-### CSS custom properties    ← public --* properties table
+### Attributes & Properties   ← <ApiTable element section="properties"|"attributes" /> (only if element has them)
+### Events                   ← <ApiTable element section="events" /> (only if element has them)
+### CSS classes              ← <ApiTable element section="cssClasses" />
+### CSS custom properties    ← <ApiTable element section="cssProperties" />
 ````
 
 - **Hero snippet** shows the most common usage (1-3 lines of HTML)
@@ -115,8 +115,7 @@ One-line description.
 - **Accessibility** (required for interactive elements) — two subsections:
   - **Criteria** uses `<AccessibilityTable>` with `Check`, `Description`, and `WCAG` columns. Always include both **WCAG** and **RGAA** criteria where applicable. Format: `[WCAG 1.4.3](url), [RGAA 3.2](url)`. The `:rules` prop lists skill-only instructions for AI agents (e.g., "Always add `aria-label`"). See `close-button.md` for reference.
   - **Keyboard interactions** uses `<KeyboardTable>` with `Key` and `Description` columns. Keys support `+` separator (e.g., `Shift + Tab`). See `close-button.md` for reference.
-- **CSS classes** is the single source of truth — lists the base class and all modifiers
-- **CSS custom properties** uses `<ApiTable>` with `Name` and `Description` columns
+- **API reference** tables are **generated from the element source**, not hand-written. Use `<ApiTable element="<name>" section="<section>" />` (sections: `properties`, `attributes`, `events`, `methods`, `slots`, `cssClasses`, `cssParts`, `cssProperties`, `commands`) and `<ElementSpec element="<name>" />`. The data comes from the element's JSDoc / native `*.meta.ts` sidecar via `luxen-ui/metadata` — to add or fix a row, edit the **source**, not the doc (see `packages/ui/CLAUDE.md` → "Element Reference Metadata"). The `metadata` build check fails if a referenced section is empty or mis-routed. Inline `<ApiTable :data="[…]" />` remains only for data that isn't code-derived (e.g. a function's options object).
 
 ### Examples over explanations
 
@@ -163,7 +162,7 @@ Always update the element list in these files:
 - [ ] Examples section shows real-world patterns and compositions
 - [ ] Has `outline: deep` frontmatter
 - [ ] Accessibility section (for interactive elements): Criteria with both WCAG + RGAA references, Keyboard interactions table
-- [ ] API reference includes: Importing, Attributes & Properties (if any), Events (if any), CSS classes table, CSS custom properties table
+- [ ] API reference uses `<ApiTable element section>` / `<ElementSpec element>` (metadata-driven) — and the underlying element source (JSDoc / `*.meta.ts`) actually exposes every referenced section
 - [ ] No inline styles — use Tailwind CSS utility classes instead
 - [ ] No time-sensitive language
 - [ ] Tested: run `cd packages/ui && node scripts/prepare-skill-templates.mjs` and inspect the output in `dist/templates/elements/`

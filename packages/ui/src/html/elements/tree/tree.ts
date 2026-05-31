@@ -27,6 +27,8 @@ export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
  * @cssproperty --item-gap - Horizontal gap between chevron, prefix, label and suffix on the row; also drives the content slot left indent. Default `0.375rem`.
  *
  * @event selection-change - Fired when the selected items change. Detail: `{ selection: TreeItem[] }`.
+ *
+ * @customElement l-tree
  */
 export class Tree extends LuxenElement {
   static override styles = [hostStyles, styles];

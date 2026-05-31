@@ -12,10 +12,7 @@ import spinnerCustom from '../.vitepress/examples/spinner/SpinnerCustom.html?raw
 
 Spinners are used to indicate an indeterminate loading state. Commonly used inside buttons, forms, or content areas while waiting for an asynchronous operation to complete.
 
-<ElementSpec
-  tag="l-spinner"
-  type="shadow"
-/>
+<ElementSpec element="spinner" />
 
 ## Options
 
@@ -75,8 +72,4 @@ import 'luxen-ui/spinner';
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--size', Description: 'The size of the spinner (width and height). Defaults to `1em`' },
-  { Name: '--indicator-color', Description: 'The color of the spinner' },
-  { Name: '--speed', Description: 'The duration of one full spin cycle' },
-]" />
+<ApiTable element="spinner" section="cssProperties" />

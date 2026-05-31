@@ -34,6 +34,21 @@ const OUT_ROOT = resolve(PKG_ROOT, 'dist', 'templates');
 const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8'));
 const ELEMENTS = manifest.elements.filter((e) => e.inSkill).map((e) => e.name);
 
+// Normalized reference metadata (built by scripts/normalize-metadata.mjs from
+// the CEM manifest + elements.json). The doc placeholders
+// <ApiTable element section /> and <ElementSpec element /> are resolved from
+// this — no regex parsing of inline `:data` payloads anymore.
+const METADATA_PATH = resolve(PKG_ROOT, 'dist', 'metadata', 'index.json');
+let META_BY_NAME = new Map();
+try {
+  const meta = JSON.parse(await readFile(METADATA_PATH, 'utf-8'));
+  META_BY_NAME = new Map(meta.elements.map((e) => [e.name, e]));
+} catch {
+  throw new Error(
+    `Missing ${METADATA_PATH}. Run \`pnpm run metadata\` (cem analyze + normalize-metadata) before preparing skill templates.`,
+  );
+}
+
 async function main() {
   await mkdir(join(OUT_ROOT, 'elements'), { recursive: true });
 
@@ -151,20 +166,17 @@ async function replaceComponentWrappers(content, imports) {
   return { content, inlinedFiles };
 }
 
+// Accessibility criteria are doc-authored (not code-extracted), so this still
+// reads the inline `:data`. Rendered as a bullet list — one criterion per line —
+// to match the API-reference list style (no pipe escaping, long descriptions
+// stay readable). Reference links are stripped; they're noise in a skill.
 function convertAccessibilityTable(content) {
   const regex =
     /<AccessibilityTable\s+:data="(\[[\s\S]*?\])"\s*(?::rules="(\[[\s\S]*?\])"\s*)?\/>/g;
   return content.replace(regex, (_, dataStr, rulesStr) => {
-    const unescape = (s) =>
-      s
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&');
-
     let data;
     try {
-      data = new Function(`return ${unescape(dataStr)}`)();
+      data = new Function(`return ${unescapeEntities(dataStr)}`)();
     } catch {
       return '';
     }
@@ -172,16 +184,14 @@ function convertAccessibilityTable(content) {
     const stripLinks = (s) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
     const lines = [];
-    lines.push('| Check | Description |');
-    lines.push('|-------|-------------|');
     for (const row of data) {
-      lines.push(`| ${row.Check} | ${stripLinks(row.Description)} |`);
+      lines.push(`- **${row.Check}** — ${stripLinks(row.Description)}`);
     }
 
     if (rulesStr) {
       let rules;
       try {
-        rules = new Function(`return ${unescape(rulesStr)}`)();
+        rules = new Function(`return ${unescapeEntities(rulesStr)}`)();
       } catch {
         rules = [];
       }
@@ -199,28 +209,21 @@ function convertAccessibilityTable(content) {
   });
 }
 
+// Keyboard interactions are doc-authored too. Rendered as a bullet list with the
+// key combo as inline code (e.g. `- \`Shift + Tab\` — …`).
 function convertKeyboardTable(content) {
   const regex = /<KeyboardTable\s+:data="(\[[\s\S]*?\])"\s*\/>/g;
   return content.replace(regex, (_, dataStr) => {
-    const unescape = (s) =>
-      s
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&');
-
     let data;
     try {
-      data = new Function(`return ${unescape(dataStr)}`)();
+      data = new Function(`return ${unescapeEntities(dataStr)}`)();
     } catch {
       return '';
     }
 
     const lines = [];
-    lines.push('| Key | Description |');
-    lines.push('|-----|-------------|');
     for (const row of data) {
-      lines.push(`| ${row.Key} | ${row.Description} |`);
+      lines.push(`- \`${row.Key}\` — ${row.Description}`);
     }
 
     return lines.join('\n');
@@ -237,63 +240,121 @@ function unescapeEntities(s) {
     .replace(/&amp;/g, '&');
 }
 
+// Renders one bullet per metadata item for an API-reference section. A list
+// (not a table) keeps long descriptions readable, needs no pipe escaping, and
+// matches the convention AI agents are tuned on. Per section:
+//   - **open**: `boolean` (default: `false`) — Whether the dialog is open
+//   - **data-variant**: `primary | destructive` — Visual variant
+//   - **getTextLabel()** → `string` — Returns the item's text label
+//   - `--width` (default: `31rem`) — Dialog width
+//   - `dialog` — The native `<dialog>` element   (slots / parts)
+function renderSectionBullet(section, it) {
+  let name;
+  let head = '';
+  let tail = '';
+
+  if (
+    section === 'cssProperties' ||
+    section === 'cssParts' ||
+    section === 'cssClasses' ||
+    section === 'commands'
+  ) {
+    name = `\`${it.name}\``; // CSS tokens / selectors read as code, not bold
+    if (section === 'cssProperties' && it.default != null) tail += ` (default: \`${it.default}\`)`;
+  } else if (section === 'slots') {
+    name = `**${it.name === '' ? '(default)' : it.name}**`;
+  } else if (section === 'methods') {
+    const sig = (it.params ?? []).map((p) => `${p.name}: ${p.type ?? 'unknown'}`).join(', ');
+    name = `**${it.name}(${sig})**`;
+    if (it.returns) head += ` → \`${it.returns}\``;
+  } else if (section === 'properties') {
+    name = `**${it.attribute ?? it.name}**`;
+    if (it.type) head += `: \`${it.type}\``;
+    if (it.default != null && it.default !== "''") tail += ` (default: \`${it.default}\`)`;
+  } else if (section === 'attributes') {
+    name = `**${it.name}**`;
+    if (it.values?.length) head += `: \`${it.values.join(' | ')}\``;
+  } else if (section === 'events') {
+    name = `**${it.name}**`;
+    if (it.cancelable) tail += ' (cancelable)';
+  } else {
+    name = `**${it.name}**`;
+  }
+
+  const desc = it.description ? ` — ${it.description}` : '';
+  return `- ${name}${head}${tail}${desc}`;
+}
+
 // First-column keys that name a CSS token (rendered as `code`); every other
 // first column (Attribute, Slot, Event, Method, Property, Command) is **bold**.
+// LEGACY — only the inline `:data` fallback below uses this.
 const CODE_NAME_KEYS = new Set(['Name', 'Class', 'Part']);
 
-// Converts <ApiTable :data="[...]" /> into a markdown list — one bullet per row.
-// A list (not a table) keeps long descriptions readable, needs no pipe
-// escaping, and matches the API-reference convention AI agents are tuned on.
-// The row shape is generic: the first column is the identifier; a `Description`
-// column becomes the trailing "— …"; the remaining columns (Type, Default,
-// Arguments, Returns, Detail) fold into inline annotations, e.g.
-//   - **text**: `string` (default: `—`) — The message text to display
-//   - **toast()**: `options: ToastOptions` → `HTMLElement` — Creates a toast
-//   - `--width` — The preferred width of the dialog
-function convertApiTable(content) {
-  const regex = /<ApiTable\s+:data="(\[[\s\S]*?\])"\s*\/>/g;
-  return content.replace(regex, (_, dataStr) => {
-    let data;
-    try {
-      data = new Function(`return ${unescapeEntities(dataStr)}`)();
-    } catch {
-      return '';
+// LEGACY inline-data renderer. Migrated docs use <ApiTable element section />;
+// this handles the not-yet-migrated `:data="[...]"` docs so the build stays
+// green during the incremental rollout. Delete once every doc is migrated
+// (big-bang) — see convertApiTable. As before, only inline array literals are
+// supported; `:data="someVar"` references fall through to '' (matching prior
+// behavior where such tags were stripped downstream).
+function renderLegacyApiTable(dataStr) {
+  let data;
+  try {
+    data = new Function(`return ${unescapeEntities(dataStr)}`)();
+  } catch {
+    return '';
+  }
+  if (!Array.isArray(data) || data.length === 0) return '';
+
+  const lines = [];
+  for (const row of data) {
+    const keys = Object.keys(row);
+    const nameKey = keys[0];
+    const rawName = row[nameKey];
+    if (rawName == null || rawName === '') continue;
+    const name = CODE_NAME_KEYS.has(nameKey) ? `\`${rawName}\`` : `**${rawName}**`;
+    let head = '';
+    let tail = '';
+    for (const key of keys.slice(1)) {
+      if (key === 'Description') continue;
+      const v = row[key];
+      if (v == null || v === '' || v === '—') continue;
+      if (key === 'Returns') head += ` → ${v}`;
+      else if (key === 'Type' || key === 'Arguments' || key === 'Detail') head += `: ${v}`;
+      else if (key === 'Default') tail += ` (default: ${v})`;
+      else tail += ` (${key.toLowerCase()}: ${v})`;
     }
-    if (!Array.isArray(data) || data.length === 0) return '';
+    const desc = row.Description ? ` — ${row.Description}` : '';
+    lines.push(`- ${name}${head}${tail}${desc}`);
+  }
+  return lines.join('\n');
+}
 
-    const lines = [];
-    for (const row of data) {
-      const keys = Object.keys(row);
-      const nameKey = keys[0];
-      const rawName = row[nameKey];
-      if (rawName === undefined || rawName === null || rawName === '') continue;
-      const name = CODE_NAME_KEYS.has(nameKey) ? `\`${rawName}\`` : `**${rawName}**`;
-
-      // Fold the middle columns into inline annotations. `head` sits right after
-      // the name (type/signature); `tail` trails it (default value).
-      let head = '';
-      let tail = '';
-      for (const key of keys.slice(1)) {
-        if (key === 'Description') continue;
-        const v = row[key];
-        if (v === undefined || v === null || v === '' || v === '—') continue;
-        if (key === 'Returns') head += ` → ${v}`;
-        else if (key === 'Type' || key === 'Arguments' || key === 'Detail') head += `: ${v}`;
-        else if (key === 'Default') tail += ` (default: ${v})`;
-        else tail += ` (${key.toLowerCase()}: ${v})`;
+// Resolves <ApiTable element="x" section="y" /> from the normalized metadata
+// (the single source of truth). Falls back to renderLegacyApiTable for docs
+// still using the inline `:data` form, until they are all migrated.
+function convertApiTable(content, scriptVars) {
+  const regex = /<ApiTable\s+([^>]*?)\/>/g;
+  return content.replace(regex, (_, attrs) => {
+    const element = attrs.match(/element="([^"]*)"/)?.[1];
+    const section = attrs.match(/section="([^"]*)"/)?.[1];
+    if (element && section) {
+      const el = META_BY_NAME.get(element);
+      if (!el) throw new Error(`<ApiTable element="${element}"> — unknown element in metadata.`);
+      const items = el[section];
+      if (!Array.isArray(items)) {
+        throw new Error(`<ApiTable element="${element}" section="${section}"> — unknown section.`);
       }
-
-      const desc = row.Description ? ` — ${row.Description}` : '';
-      lines.push(`- ${name}${head}${tail}${desc}`);
+      return items.map((it) => renderSectionBullet(section, it)).join('\n');
     }
-
-    return lines.join('\n');
+    const dataAttr = attrs.match(/:data="([\s\S]*?)"\s*$/)?.[1];
+    if (dataAttr != null) return renderLegacyApiTable(dataAttr, scriptVars);
+    return '';
   });
 }
 
-// Converts the <ElementSpec tag="..." type="..." /> banner into a concise
-// markdown line so the skill keeps the tag name and the element category
-// (which signals whether to expect Shadow DOM / progressive enhancement).
+// Resolves <ElementSpec element="x" /> into a concise banner line from metadata,
+// keeping the tag/selector and the element category (which signals whether to
+// expect Shadow DOM / progressive enhancement).
 function convertElementSpec(content) {
   const TYPE_LABEL = {
     native: 'Native HTML Element',
@@ -303,10 +364,18 @@ function convertElementSpec(content) {
   };
   const regex = /<ElementSpec\s+([^>]*?)\/>/g;
   return content.replace(regex, (_, attrs) => {
+    const element = attrs.match(/element="([^"]*)"/)?.[1];
+    if (element) {
+      const el = META_BY_NAME.get(element);
+      if (!el) throw new Error(`<ElementSpec element="${element}"> — unknown element in metadata.`);
+      const display = el.isCustomElement ? `<${el.tag}>` : el.selector;
+      const label = TYPE_LABEL[el.type];
+      return label ? `**\`${display}\`** — ${label}` : `**\`${display}\`**`;
+    }
+    // LEGACY tag="…" type="…" form, until all docs migrate to element="…".
     const tag = attrs.match(/tag="([^"]*)"/)?.[1];
     if (!tag) return '';
-    const type = attrs.match(/type="([^"]*)"/)?.[1];
-    const label = TYPE_LABEL[type];
+    const label = TYPE_LABEL[attrs.match(/type="([^"]*)"/)?.[1]];
     return label ? `**\`<${tag}>\`** — ${label}` : `**\`<${tag}>\`**`;
   });
 }

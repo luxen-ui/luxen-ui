@@ -23,6 +23,11 @@ const defaultIcon = svg`<svg class="icon" viewBox="0 0 24 24" fill="currentColor
 /**
  * @summary An avatar component for displaying user images, initials, or a default icon.
  * @customElement l-avatar
+ *
+ * @cssproperty --color - Background fill color for initials and the default icon.
+ * @cssproperty --appearance - Set to `circle` for a fully circular avatar (default is a rounded square).
+ *
+ * @cssClass .l-avatar-group - Flex wrapper that overlaps a row of stacked avatars.
  */
 export class Avatar extends LuxenElement {
   static styles = [hostStyles, styles];

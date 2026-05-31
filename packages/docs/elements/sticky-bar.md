@@ -44,10 +44,7 @@ A bar docked to the viewport edge, painted in the document's **top layer**. Pass
 
 Common use cases: mobile product Add to cart, sticky save action on long forms, post-form newsletter signup, cookie banners, environment indicators, promo announcements.
 
-<ElementSpec
-  tag="l-sticky-bar"
-  type="shadow"
-/>
+<ElementSpec element="sticky-bar" />
 
 ## Examples
 
@@ -103,33 +100,18 @@ import 'luxen-ui/sticky-bar';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'for', Description: 'HTML id of the element to track. The bar reveals when it leaves the viewport. Omit for a permanently visible bar' },
-  { Attribute: 'placement', Description: '`bottom` (default) or `top`. Edge to dock against' },
-  { Attribute: 'root', Description: 'HTML id of the scrolling ancestor used as the IntersectionObserver root. Omit to use the viewport. Useful for nested scroll containers' },
-]" />
+<ApiTable element="sticky-bar" section="properties" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'show', Description: 'Fired before the bar reveals. Cancelable' },
-  { Event: 'after-show', Description: 'Fired after the reveal animation completes' },
-  { Event: 'hide', Description: 'Fired before the bar hides. Cancelable' },
-  { Event: 'after-hide', Description: 'Fired after the hide animation completes' },
-]" />
+<ApiTable element="sticky-bar" section="events" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: '(default)', Description: 'Bar content. Owns its own background, padding, and typography' },
-]" />
+<ApiTable element="sticky-bar" section="slots" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--show-duration', Description: 'Reveal animation duration. Default `200ms`' },
-  { Name: '--hide-duration', Description: 'Dismiss animation duration. Default `200ms`' },
-  { Name: '--offset', Description: 'Distance from the active edge. Default `0px`. Use to clear a sticky header when `placement=&quot;top&quot;`' },
-]" />
+<ApiTable element="sticky-bar" section="cssProperties" />
 
 > **Top layer.** The bar uses `popover="manual"` internally, so it paints in the document's top layer — `z-index` is not needed and would be ignored. Target `l-sticky-bar:popover-open` to style the revealed state.

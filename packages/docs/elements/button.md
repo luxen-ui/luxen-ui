@@ -14,20 +14,13 @@ import buttonGroup from '../.vitepress/examples/button/ButtonGroup.html?raw'
 import buttonFormActions from '../.vitepress/examples/button/ButtonFormActions.html?raw'
 import buttonDestructive from '../.vitepress/examples/button/ButtonDestructive.html?raw'
 import buttonLoading from '../.vitepress/examples/button/ButtonLoading.html?raw'
-
-const cssClasses = [
-  { Class: '.l-button', Description: 'Base button style' },
-]
 </script>
 
 # Button <Badge type="tip">&lt;button&gt;</Badge>
 
 Buttons are used to trigger actions such as submitting forms, confirming dialogs, or navigating. They are the primary interactive control in any interface.
 
-<ElementSpec
-  tag="button"
-  type="native"
-/>
+<ElementSpec element="button" />
 
 ## Options
 
@@ -190,31 +183,12 @@ Add an `<l-spinner>` inside the button. The spinner inherits the button's text c
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'disabled', Description: 'Disables the button' },
-  { Attribute: 'command', Description: 'Invoker command (`show-modal`, `close`, `show-popover`, etc.)' },
-  { Attribute: 'commandfor', Description: 'ID of the target element for `command`' },
-  { Attribute: 'data-variant', Description: 'Visual variant (`primary`, `destructive`)' },
-  { Attribute: 'data-size', Description: 'Size (`sm`, `lg`, `xl`). Default is md.' },
-  { Attribute: 'data-icon-only', Description: 'Icon-only mode (square button, width equals height)' },
-  { Attribute: 'data-press-effect', Description: 'Press effect (scale + translate on active)' },
-]" />
+<ApiTable element="button" section="attributes" />
 
 ### CSS classes
 
-<ApiTable :data="cssClasses" />
+<ApiTable element="button" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--height', Description: 'Button height' },
-  { Name: '--padding-inline', Description: 'Horizontal padding' },
-  { Name: '--background-color', Description: 'Background color' },
-  { Name: '--background-color-hover', Description: 'Background on hover' },
-  { Name: '--background-color-active', Description: 'Background on press' },
-  { Name: '--text-color', Description: 'Text color' },
-  { Name: '--text-hover', Description: 'Text color on hover' },
-  { Name: '--border-color', Description: 'Border color' },
-  { Name: '--border-color-hover', Description: 'Border color on hover' },
-  { Name: '--font-size', Description: 'Font size' },
-]" />
+<ApiTable element="button" section="cssProperties" />

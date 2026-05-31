@@ -4,21 +4,13 @@ outline: deep
 
 <script setup>
 import selectExample from '../.vitepress/examples/select/Select.html?raw'
-
-const events = [
-  { Event: 'change', Description: 'Fired when the selected option changes' },
-  { Event: 'input', Description: 'Fired when the selection changes (same as `change` for `<select>`)' },
-]
 </script>
 
 # Select <Badge type="tip">&lt;select&gt;</Badge>
 
 Selects are used to pick a single option from a dropdown list. Commonly used in forms for choosing categories, countries, or any predefined set of values.
 
-<ElementSpec
-  tag="select"
-  type="native"
-/>
+<ElementSpec element="select" />
 
 ## Options
 
@@ -67,26 +59,16 @@ Selects are used to pick a single option from a dropdown list. Commonly used in 
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'disabled', Description: 'Disables the select' },
-  { Attribute: 'required', Description: 'Marks the field as required' },
-  { Attribute: 'multiple', Description: 'Allows multiple selections' },
-]" />
+<ApiTable element="select" section="attributes" />
 
 ### Events
 
-<ApiTable :data="events" />
+<ApiTable element="select" section="events" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-select', Description: 'Base select element with `appearance: base-select`' },
-  { Class: '.l-select-item', Description: 'Option styling with checkmark indicator' },
-]" />
+<ApiTable element="select" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--border-radius', Description: 'Border radius (default: 4px)' },
-  { Name: '--border-color', Description: 'Border color (adapts to light/dark)' },
-]" />
+<ApiTable element="select" section="cssProperties" />

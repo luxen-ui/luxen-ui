@@ -13,10 +13,7 @@ import iconAccessible from '../.vitepress/examples/icon/IconAccessible.html?raw'
 
 Renders icons from any Iconify icon set. Icons are loaded on demand from the Iconify CDN. By default all icons are scaled to `1em` height — use `font-size` to control icon size.
 
-<ElementSpec
-  tag="l-icon"
-  type="shadow"
-/>
+<ElementSpec element="icon" />
 
 ::: info
 `l-icon` uses [Iconify](https://iconify.design/) under the hood. Browse all available icons at [icon-sets.iconify.design](https://icon-sets.iconify.design/).
@@ -90,13 +87,8 @@ import 'luxen-ui/icon';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Name: 'name', Description: 'Icon name in Iconify format (`prefix:name`). Example: `lucide:home`' },
-  { Name: 'label', Description: 'Accessible label. When set, icon becomes meaningful (`role=&quot;img&quot;` + `aria-label`). When absent, icon is decorative' },
-]" />
+<ApiTable element="icon" section="properties" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--color', Description: 'The color of the icon. Defaults to `currentColor`' },
-]" />
+<ApiTable element="icon" section="cssProperties" />

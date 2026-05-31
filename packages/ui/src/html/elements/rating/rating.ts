@@ -20,6 +20,8 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --icon - Custom SVG shape as a `url()`. Defaults to a 5-pointed star.
  *
  * @event {{ name: string, value: string, checked: boolean, sourceEvent: Event }} change - Emitted when the rating value changes in edit mode.
+ *
+ * @customElement l-rating
  */
 export class Rating extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];

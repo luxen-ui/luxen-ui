@@ -50,18 +50,23 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @csspart body - The body wrapper around the default slot.
  * @csspart footer - The footer wrapper around the footer slot.
  *
- * @cssproperty --width - Dialog width. Default `31rem`.
- * @cssproperty --border-radius - Dialog border radius. Default `6px`.
- * @cssproperty --padding - Padding applied to the header, footer, and inline-padding of the body. Default `1.5rem`. Set to `0` to remove all internal spacing (e.g. for edge-to-edge media).
- * @cssproperty --show-duration - Open transition duration. Default `200ms`.
- * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
+ * @cssproperty [--width=31rem] - Dialog width.
+ * @cssproperty [--border-radius=6px] - Dialog border radius.
+ * @cssproperty [--padding=1.5rem] - Padding applied to the header, footer, and inline-padding of the body. Set to `0` to remove all internal spacing (e.g. for edge-to-edge media).
+ * @cssproperty [--show-duration=200ms] - Open transition duration.
+ * @cssproperty [--hide-duration=200ms] - Close transition duration.
  * @cssproperty --backdrop - Backdrop color.
- * @cssproperty --backdrop-blur - Backdrop blur amount (any CSS length). Default `0` (no blur). Set to e.g. `4px` for a subtle frost.
+ * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length). `0` means no blur; set e.g. `4px` for a subtle frost.
  *
  * @event show - Fired when the dialog opens. Not cancelable.
  * @event after-show - Fired after the open animation completes.
  * @event hide - Fired when the dialog is about to close. Cancelable — call `event.preventDefault()` to keep it open.
  * @event after-hide - Fired after the close animation completes.
+ *
+ * @command --show - Sets `open = true`.
+ * @command --hide - Sets `open = false`.
+ *
+ * @customElement l-dialog
  */
 export class Dialog extends LuxenElement {
   static styles = [hostStyles, styles];

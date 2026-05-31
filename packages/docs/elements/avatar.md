@@ -11,24 +11,13 @@ import avatarCircle from '../.vitepress/examples/avatar/AvatarCircle.html?raw'
 import avatarInteractive from '../.vitepress/examples/avatar/AvatarInteractive.html?raw'
 import avatarGroup from '../.vitepress/examples/avatar/AvatarGroup.html?raw'
 import avatarColors from '../.vitepress/examples/avatar/AvatarColors.html?raw'
-
-const attributes = [
-  { Attribute: 'src', Description: 'Image URL for the avatar' },
-  { Attribute: 'name', Description: 'Full name used for initials extraction and `aria-label`' },
-  { Attribute: 'size', Description: 'Avatar size: `xs` (24px), `sm` (32px), `md` (40px, default), `lg` (48px), `xl` (56px)' },
-  { Attribute: 'badge', Description: 'Number. Shows a count indicator at bottom-right' },
-  { Attribute: 'interactive', Description: 'Boolean. Renders as a `<button>` with focus and hover states' },
-]
 </script>
 
 # Avatar <Badge type="tip">&lt;l-avatar&gt;</Badge>
 
 Avatars are used to represent a user or entity with a profile image, initials, or icon fallback. Commonly used in headers, comments, contact lists, and user cards.
 
-<ElementSpec
-  tag="l-avatar"
-  type="shadow"
-/>
+<ElementSpec element="avatar" />
 
 ## Options
 
@@ -159,17 +148,12 @@ import 'luxen-ui/avatar';
 
 ### Attributes & Properties
 
-<ApiTable :data="attributes" />
+<ApiTable element="avatar" section="properties" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-avatar-group', Description: 'Flex container with negative margins and surface-colored ring for overlapping avatars' },
-]" />
+<ApiTable element="avatar" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Property: '--color', Description: 'Base color for initials/icon background. Text color is auto-derived via relative color syntax' },
-  { Property: '--appearance', Description: 'Set to `circle` for a fully circular shape (default is rounded square)' },
-]" />
+<ApiTable element="avatar" section="properties" />

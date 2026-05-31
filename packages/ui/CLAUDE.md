@@ -15,6 +15,47 @@ Luxen elements fall into four buckets. Pick one at creation time — it drives t
 
 When adding a new element, also update the table in `README.md` and the `<ElementTypeGrid />` data in `packages/docs/.vitepress/components/ElementTypeGrid.vue`.
 
+## Element Reference Metadata (keep it in sync with the code)
+
+The reference data shown in the docs (`<ApiTable element="…" section="…" />`, `<ElementSpec element="…" />`) and shipped to AI consumers via the `luxen-ui/metadata` export is **generated from the element source**, not hand-written. The pipeline is `cem analyze` (config: `custom-elements-manifest.config.js`, plugins: `scripts/cem-plugins/*`) → `scripts/normalize-metadata.mjs` → `dist/metadata/*.json`, validated by `scripts/check-metadata.mjs` (runs in `build`; fails the build on gaps). Regenerate locally with `pnpm run metadata`.
+
+**This means every element's public API must be described in its source.** When you add or modify an element, update its metadata in the same change:
+
+### Custom elements (`progressive` / `custom` / `shadow`)
+
+Maintain the JSDoc block above the `export class …` declaration. The class **must** carry a `@customElement l-<name>` tag (or decorator) — without it the analyzer treats the class as plain and extracts **nothing**. Document the full public surface with these tags:
+
+- `@summary` — one-line description (required for `inSkill` elements)
+- `@cssproperty [--name=default] - description` — public CSS custom property (bracket-default syntax; never document `--_private` ones)
+- `@event name - description` — every event the element emits (write "Not cancelable" / "Cancelable" — the word is parsed)
+- `@slot name - description`, `@csspart name - description`
+- `@attribute name - a | b — description` — public `data-*` or HTML attributes (reactive `@property` fields are picked up automatically; use `@attribute` only for non-property attributes)
+- `@cssClass .l-<name>-<child> - description` — internal light-DOM classes (custom/progressive only)
+- `@command --name - description` — Invoker commands (e.g. dialog/drawer)
+
+### Native elements (`native` — CSS only, no Lit class)
+
+A CSS-only native element has no class for the analyzer to read, so it **must** ship a sidecar `src/html/elements/<name>/<name>.meta.ts` — a JSDoc-only class. **When you create a new native element, create its `.meta.ts`. When you change a native element's CSS API, update its `.meta.ts`.** For `inSkill` native elements this is enforced: `check-metadata.mjs` fails the build if the sidecar is missing. See `src/html/elements/button/button.meta.ts` for the template:
+
+```ts
+/**
+ * @summary Buttons trigger actions such as submitting forms or navigating.
+ * @nativeElement button          // host HTML tag → marks the element native
+ * @selector .l-button            // consumer-facing selector
+ * @attribute data-variant - primary | destructive — Visual variant.
+ * @cssproperty [--height=32px] - Button height.
+ * @cssClass .l-button - Base button style.
+ */
+// oxlint-disable-next-line typescript/no-extraneous-class -- JSDoc-only metadata carrier.
+export class ButtonMeta {}
+```
+
+Keep the `.meta.ts` in sync with the element's `.css` file (the CSS custom properties, `data-*` selectors, and classes you actually expose).
+
+### Registry
+
+Every element has an entry in `elements.json` with a `type` field (`native` | `progressive` | `custom` | `shadow`) — add it for new elements; it drives metadata extraction and the `<ElementSpec>` banner.
+
 ## Element Styles (Shadow DOM)
 
 Shadow-DOM elements load their styles from real `.css` files imported via Vite's `?inline` query, not from Lit `css\`...\``templates. This lets the consumer's`luxen-ui/vite-plugin`rewrite`--l-\*` tokens at build time — there is no runtime token-prefix mechanism.

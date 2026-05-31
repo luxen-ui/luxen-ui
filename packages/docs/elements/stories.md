@@ -15,10 +15,7 @@ import storiesShoppable from '../.vitepress/examples/stories/StoriesShoppable.ht
 
 Instagram-style web stories. A horizontal row of clickable thumbnails opens a fullscreen viewer that plays each video with a segmented progress bar, previous/next navigation, mute toggle, and auto-advance.
 
-<ElementSpec
-  tag="l-stories"
-  type="custom"
-/>
+<ElementSpec element="stories" />
 
 ## Options
 
@@ -133,39 +130,22 @@ import 'luxen-ui/stories-viewer';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'for', Description: 'ID of the linked `<l-stories-viewer>`. If omitted, a singleton viewer is appended on first click' },
-  { Attribute: 'appearance', Description: '`rounded` (default) · `squared` · `portrait` · `landscape`' },
-]" />
+<ApiTable element="stories" section="properties" />
 
 To customize size, radius, gap, or hide labels, set the [CSS custom properties](#css-custom-properties) directly via inline `style` or external CSS — no extra attributes needed.
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'open(index?)', Description: 'Open the linked viewer at the given story index' },
-  { Method: 'stories()', Description: 'Returns the direct `<l-story>` children as `LuxenStory[]`' },
-]" />
+<ApiTable element="stories" section="methods" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'story-open', Description: 'Fired when a thumbnail is clicked. Detail: `{ index, story }`' },
-  { Event: 'story-close', Description: 'Fired when the viewer closes. Detail: `{ index }`' },
-]" />
+<ApiTable element="stories" section="events" />
 
 ### CSS custom properties
 
 These tokens are set on `<l-stories>` and cascade to every `<l-story>` child.
 
-<ApiTable :data="[
-  { Name: '--size', Description: 'Thumbnail size. Per-appearance default' },
-  { Name: '--radius', Description: 'Thumbnail border radius. Per-appearance default' },
-  { Name: '--gap', Description: 'Gap between thumbnails. Default `1rem`' },
-  { Name: '--ring-color', Description: 'Ring color around fresh thumbnails' },
-  { Name: '--ring-color-seen', Description: 'Ring color for `[seen]` thumbnails' },
-  { Name: '--ring-width', Description: 'Ring width. Default `2px`' },
-  { Name: '--label-color', Description: 'Label text color' },
-]" />
+<ApiTable element="stories" section="cssProperties" />
 
 The play-icon disc inside `.l-story-play l-icon` is styled inline (white icon, 35 % black background). Override it directly via standard CSS: `l-story .l-story-play l-icon { background: …; color: … }`.

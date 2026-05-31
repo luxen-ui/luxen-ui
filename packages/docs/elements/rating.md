@@ -42,10 +42,7 @@ onMounted(() => {
 
 Ratings are used to display or collect a score on a star-based scale. Commonly used for product reviews, feedback forms, and satisfaction surveys.
 
-<ElementSpec
-  tag="l-rating"
-  type="shadow"
-/>
+<ElementSpec element="rating" />
 
 ## Options
 
@@ -197,39 +194,20 @@ import 'luxen-ui/rating';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'value', Description: 'Current rating value (0 to `length`, supports decimals in read-only mode). Defaults to `0`' },
-  { Attribute: 'length', Description: 'Number of stars. Defaults to `5`' },
-  { Attribute: 'edit-mode', Description: 'Enables interactive radio input mode' },
-  { Attribute: 'name', Description: 'Form field name for the radio inputs' },
-  { Attribute: 'labels', Description: 'Pipe-separated labels for each star (e.g., `Terrible|Poor|Average|Good|Excellent`)' },
-  { Attribute: 'disabled', Description: 'Disables the rating' },
-]" />
+<ApiTable element="rating" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Property: 'getIcon', Description: 'A function `(value: number) => string` returning a CSS `url()` for the given position (1-based). Enables value-based icons.' },
-]" />
+<ApiTable element="rating" section="properties" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'change', Description: 'Fired when the value changes in edit mode. `event.detail` contains `name`, `value`, `checked`, and `sourceEvent`.' },
-]" />
+<ApiTable element="rating" section="events" />
 
 ### CSS Parts
 
-<ApiTable :data="[
-  { Part: 'label', Description: 'The label element shown in edit mode when `labels` are provided' },
-]" />
+<ApiTable element="rating" section="cssParts" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--icon-size', Description: 'The size of each star (width and height). Defaults to `20px`' },
-  { Name: '--active-color', Description: 'The fill color for rated stars. Defaults to `gold`' },
-  { Name: '--inactive-color', Description: 'The fill color for empty stars. Defaults to `#ddd`' },
-  { Name: '--spacing', Description: 'The spacing between stars. Defaults to `2px`' },
-  { Name: '--icon', Description: 'Custom SVG shape as a `url()`. Defaults to a 5-pointed star' },
-]" />
+<ApiTable element="rating" section="cssProperties" />

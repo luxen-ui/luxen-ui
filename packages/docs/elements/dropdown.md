@@ -15,10 +15,7 @@ import dropdownAccountMenu from '../.vitepress/examples/dropdown/DropdownAccount
 
 Dropdowns are used to present a list of actions or options in a floating menu anchored to a trigger button. Commonly used for overflow menus, contextual actions, and navigation.
 
-<ElementSpec
-  tag="l-dropdown"
-  type="shadow"
-/>
+<ElementSpec element="dropdown" />
 
 ## Options
 
@@ -135,64 +132,28 @@ import 'luxen-ui/dropdown-item';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'open', Description: 'Whether the dropdown is visible. Reflects to attribute' },
-  { Attribute: 'placement', Description: 'Preferred placement: `bottom-start` (default), `bottom`, `bottom-end`, `top-start`, `top`, `top-end`, `right-start`, `right`, `right-end`, `left-start`, `left`, `left-end`' },
-  { Attribute: 'distance', Description: 'Offset from trigger in px. Default `4`' },
-  { Attribute: 'disabled', Description: 'Prevents the dropdown from opening' },
-]" />
+<ApiTable element="dropdown" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'show()', Description: 'Opens the dropdown' },
-  { Method: 'hide()', Description: 'Closes the dropdown' },
-  { Method: 'toggle()', Description: 'Toggles the dropdown' },
-]" />
+<ApiTable element="dropdown" section="methods" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'show', Description: 'Fired before the dropdown opens. Cancelable' },
-  { Event: 'after-show', Description: 'Fired after the open animation completes' },
-  { Event: 'hide', Description: 'Fired before the dropdown closes. Cancelable' },
-  { Event: 'after-hide', Description: 'Fired after the close animation completes' },
-  { Event: 'select', Description: 'Fired when an item is selected. Detail: `{ item }`' },
-]" />
+<ApiTable element="dropdown" section="events" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: 'trigger', Description: 'The element that opens the dropdown' },
-  { Slot: 'header', Description: 'Optional content rendered above the menu items (e.g. a user profile row)' },
-  { Slot: '(default)', Description: '`l-dropdown-item` elements. Add `<l-divider>` (or `<hr>`) between items to render a section separator' },
-  { Slot: 'footer', Description: 'Optional content rendered below the menu items (e.g. a version label or shortcut row)' },
-]" />
+<ApiTable element="dropdown" section="slots" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--background', Description: 'Panel background color. Default: `Canvas`' },
-  { Name: '--border-radius', Description: 'Panel border radius. Default `8px`' },
-  { Name: '--padding', Description: 'Panel inner padding. Default `0.25rem`. Slotted `<l-divider>` elements bleed by this amount to span panel edges' },
-  { Name: '--shadow', Description: 'Panel box shadow' },
-  { Name: '--show-duration', Description: 'Show animation duration in ms. Default `150`' },
-  { Name: '--hide-duration', Description: 'Hide animation duration in ms. Default `150`' },
-]" />
+<ApiTable element="dropdown" section="cssProperties" />
 
 ### `dropdown-item` Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'value', Description: 'The value associated with this item' },
-  { Attribute: 'disabled', Description: 'Disables the item' },
-  { Attribute: 'type', Description: 'Item type: `normal` (default) or `checkbox`' },
-  { Attribute: 'checked', Description: 'Whether a checkbox item is checked' },
-]" />
+<ApiTable element="dropdown-item" section="properties" />
 
 ### `dropdown-item` Slots
 
-<ApiTable :data="[
-  { Slot: '(default)', Description: 'Item label text' },
-  { Slot: 'prefix', Description: 'Leading content (e.g. icon)' },
-  { Slot: 'suffix', Description: 'Trailing content' },
-]" />
+<ApiTable element="dropdown-item" section="slots" />

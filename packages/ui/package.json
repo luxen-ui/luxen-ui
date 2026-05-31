@@ -86,6 +86,8 @@
       "import": "./dist/css/elements/*.css"
     },
     "./dist/custom-elements.json": "./dist/custom-elements.json",
+    "./metadata": "./dist/metadata/index.json",
+    "./metadata/*": "./dist/metadata/*.json",
     "./dist/elements/*": "./dist/elements/*",
     "./dist/css/*": "./dist/css/*",
     "./cdn/*": "./cdn/*",
@@ -115,11 +117,12 @@
   "scripts": {
     "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",
     "dev:elements": "vp dev",
-    "build": "vp build --config vite.config.css.ts && tsc && tsc -p tsconfig.tooling.json && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/copy-cdn-assets.mjs && node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts && node scripts/prepare-skill-templates.mjs",
+    "build": "vp build --config vite.config.css.ts && tsc && tsc -p tsconfig.tooling.json && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/normalize-metadata.mjs && node scripts/check-metadata.mjs && node scripts/copy-cdn-assets.mjs && node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts && node scripts/prepare-skill-templates.mjs",
     "build:css": "vp build --config vite.config.css.ts",
     "build:standalone": "node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts",
     "build:skill-templates": "node scripts/prepare-skill-templates.mjs",
-    "manifest": "cem analyze --litelement --outdir dist",
+    "manifest": "cem analyze",
+    "metadata": "pnpm run manifest && node scripts/normalize-metadata.mjs && node scripts/check-metadata.mjs",
     "preview": "vp preview",
     "test": "vp test run --passWithNoTests",
     "test:e2e": "playwright test"
