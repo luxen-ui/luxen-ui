@@ -12,10 +12,7 @@ import progressBarVertical from '../.vitepress/examples/progress/ProgressBarVert
 
 Progress bars are used to indicate the completion status of a task. Commonly used for file uploads, multi-step processes, and loading indicators with a known duration.
 
-<ElementSpec
-  tag="progress"
-  type="native"
-/>
+<ElementSpec element="progress" />
 
 ## Options
 
@@ -80,22 +77,12 @@ Add `data-orientation="vertical"` attribute.
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'value', Description: 'Current progress between `0` and `1` (omit for indeterminate)' },
-  { Attribute: 'data-orientation=&quot;vertical&quot;', Description: 'Vertical orientation' },
-]" />
+<ApiTable element="progress" section="attributes" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-progress', Description: 'Base progress bar style' },
-]" />
+<ApiTable element="progress" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--size', Description: 'Bar thickness (default: 4px)' },
-  { Name: '--track-color', Description: 'Track background color' },
-  { Name: '--indicator-color', Description: 'Fill/indicator color' },
-  { Name: '--indeterminate-animation', Description: 'Animation name for indeterminate state' },
-]" />
+<ApiTable element="progress" section="cssProperties" />

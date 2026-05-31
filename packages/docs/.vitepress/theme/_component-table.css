@@ -58,3 +58,30 @@
     color 0.25s,
     opacity 0.25s;
 }
+
+/* Inline metadata annotations (type, default, allowed values, return type…)
+   rendered by ApiTable in metadata mode between the name and the trailing label.
+   The wrapper is transparent: a muted text label (e.g. "default:") precedes the
+   value, which renders as a branded code chip matching the name chip. */
+.api-list-annotation {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.api-list-annotation-label {
+  font-size: 0.6875rem;
+  color: var(--vp-c-text-3);
+}
+
+/* Scoped under `dt` to outweigh `.api-list dt code` (the name chip), keeping
+   annotation values small and neutral instead of brand-colored. */
+.api-list dt .api-list-annotation code {
+  font-weight: 500;
+  font-size: 0.6875rem;
+  line-height: 1;
+  color: var(--vp-c-text-2);
+  background-color: var(--vp-c-default-soft);
+  padding: 2px 5px;
+  border-radius: 5px;
+}

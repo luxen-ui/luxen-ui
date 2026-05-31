@@ -65,6 +65,11 @@ interface TimerState {
  * @cssproperty --width - Width of the toast stack.
  * @cssproperty --show-duration - Duration of the show animation.
  * @cssproperty --hide-duration - Duration of the hide animation.
+ *
+ * @cssClass .l-toast-accent - The left accent bar, colored by variant.
+ * @cssClass .l-toast-icon - The leading icon, colored by variant (replaces the accent bar).
+ * @cssClass .l-toast-content - The content column wrapping the heading and message.
+ * @cssClass .l-toast-timer - The countdown progress bar (for timed toasts).
  */
 export class Toast extends LuxenElement {
   /** Use light DOM — no Shadow DOM. */

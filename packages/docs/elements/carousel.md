@@ -17,10 +17,7 @@ import carouselBreakpoints from '../.vitepress/examples/carousel/CarouselBreakpo
 
 Carousels are used to cycle through a set of content slides in a horizontal scrollable area. Commonly used for image galleries, product showcases, and featured content. Powered by [Embla Carousel](https://www.embla-carousel.com/).
 
-<ElementSpec
-  tag="l-carousel"
-  type="shadow"
-/>
+<ElementSpec element="carousel" />
 
 ## Options
 
@@ -150,88 +147,24 @@ import 'luxen-ui/carousel-item';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'autoplay', Description: 'Autoplay delay in milliseconds. `0` disables autoplay' },
-  { Attribute: 'autoplay-options', Description: 'Embla autoplay plugin options (JSON object)' },
-  { Attribute: 'axis', Description: 'Scroll axis: `x` (default) or `y`' },
-  { Attribute: 'align', Description: 'Slide alignment: `start` (default), `center`, `end`' },
-  { Attribute: 'breakpoints', Description: 'Breakpoint-specific option overrides (JSON object)' },
-  { Attribute: 'loop', Description: 'Enable infinite looping' },
-  { Attribute: 'drag-free', Description: 'Enable momentum scrolling' },
-  { Attribute: 'duration', Description: 'Scroll animation duration. Default `20`' },
-  { Attribute: 'skip-snaps', Description: 'Allow skipping snap points on vigorous drag' },
-  { Attribute: 'slides-to-scroll', Description: 'Number of slides per scroll group. Default `1`' },
-  { Attribute: 'start-index', Description: 'Initial scroll snap index. Default `0`' },
-  { Attribute: 'contain-scroll', Description: 'Trim empty space: `trimSnaps` (default) or `keepSnaps`' },
-  { Attribute: 'single', Description: 'Show one slide at a time' },
-  { Attribute: 'with-dots', Description: 'Show dot navigation' },
-  { Attribute: 'with-scrollbar', Description: 'Show native scrollbar on viewport' },
-  { Attribute: 'with-fullscreen', Description: 'Show fullscreen button' },
-  { Attribute: 'dot-appearance', Description: 'Dot style: `bar` (default) or `circle`' },
-  { Attribute: 'max-visible-dots', Description: 'Maximum number of dots shown at once. Edge dots shrink when more dots exist beyond the window. `0` (default) shows all dots' },
-  { Attribute: 'scroll-buttons-position', Description: 'Button position: `inside` (default) or `outside`' },
-]" />
+<ApiTable element="carousel" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'next()', Description: 'Scroll to the next slide' },
-  { Method: 'previous()', Description: 'Scroll to the previous slide' },
-  { Method: 'goToSlide(index, jump?)', Description: 'Scroll to a specific slide index' },
-  { Method: 'isActive()', Description: 'Returns whether the carousel is active' },
-]" />
+<ApiTable element="carousel" section="methods" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'select', Description: 'Fired when the selected slide changes. Detail: `{ index }`' },
-  { Event: 'slides-in-view', Description: 'Fired when visible slides change. Detail: `{ indexes }`' },
-  { Event: 'fullscreen', Description: 'Fired when the fullscreen button is clicked' },
-]" />
+<ApiTable element="carousel" section="events" />
 
 ### CSS Parts
 
-<ApiTable :data="[
-  { Part: 'viewport', Description: 'The overflow container' },
-  { Part: 'container', Description: 'The slides slot' },
-  { Part: 'scroll-buttons', Description: 'Previous/next button wrapper' },
-  { Part: 'button', Description: 'Any navigation button' },
-  { Part: 'button-previous', Description: 'The previous button' },
-  { Part: 'button-next', Description: 'The next button' },
-  { Part: 'button-dot', Description: 'A dot navigation button' },
-  { Part: 'button-fullscreen', Description: 'The fullscreen button' },
-  { Part: 'button-icon', Description: 'Any button icon SVG' },
-  { Part: 'dots', Description: 'The dots container' },
-]" />
+<ApiTable element="carousel" section="cssParts" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--slide-height', Description: 'Slide height for vertical axis mode. Default `19rem`' },
-  { Name: '--slide-size', Description: 'Slide width (flex-basis). Default `100%`' },
-  { Name: '--slide-gap', Description: 'Gap between slides. Default `0`' },
-  { Name: '--button-size', Description: 'Navigation button size. Default `48px`' },
-  { Name: '--button-arrow-size', Description: 'Arrow icon size. Default `20px`' },
-  { Name: '--button-arrow-color', Description: 'Arrow icon color' },
-  { Name: '--button-offset', Description: 'Inside-positioned button offset. Default `8px`' },
-  { Name: '--button-border-color', Description: 'Button border color' },
-  { Name: '--button-border-radius', Description: 'Button border radius. Default `8px`' },
-  { Name: '--button-bg', Description: 'Button background color' },
-  { Name: '--button-color', Description: 'Button text/icon color' },
-  { Name: '--dot-color', Description: 'Inactive dot color' },
-  { Name: '--dot-color-active', Description: 'Active dot color' },
-  { Name: '--dot-margin', Description: 'Dot container margin. Default `0.5rem 0`' },
-  { Name: '--dot-edge-scale', Description: 'Scale factor for edge dots when overflow is present. Default `0.5`' },
-]" />
-
-### `carousel-item` Attributes & Properties
-
-<ApiTable :data="[
-  { Attribute: 'role', Description: 'Automatically set to `group`' },
-]" />
+<ApiTable element="carousel" section="cssProperties" />
 
 ### `carousel-item` CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--aspect-ratio', Description: 'Aspect ratio of the slide. Default `inherit`' },
-]" />
+<ApiTable element="carousel-item" section="cssProperties" />

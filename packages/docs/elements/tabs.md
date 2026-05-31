@@ -13,10 +13,7 @@ import tabsDefaultValue from '../.vitepress/examples/tabs/TabsDefaultValue.html?
 
 Tabs organize content into panels, showing one at a time. Progressive enhancement — plain HTML is enhanced with ARIA roles, keyboard navigation, and an animated indicator.
 
-<ElementSpec
-  tag="l-tabs"
-  type="progressive"
-/>
+<ElementSpec element="tabs" />
 
 ## Options
 
@@ -115,24 +112,8 @@ import 'luxen-ui/tabs';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'variant=&quot;enclosed&quot;', Description: 'Pill-shaped tablist with sliding background indicator' },
-  { Attribute: 'variant=&quot;line&quot;', Description: 'Tablist with sliding underline indicator' },
-  { Attribute: 'value', Description: 'Active tab index (0-based string). Default `&quot;0&quot;`' },
-  { Attribute: 'full-width', Description: 'Stretches tabs to fill the container width' },
-  { Attribute: 'orientation=&quot;horizontal&quot;', Description: 'Horizontal tab layout (default). Arrow Left/Right navigate' },
-  { Attribute: 'orientation=&quot;vertical&quot;', Description: 'Vertical tab layout. Arrow Up/Down navigate' },
-]" />
+<ApiTable element="tabs" section="properties" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'change', Description: 'Fires when the active tab changes. `e.detail.index` (number) and `e.detail.name` (button `name` attribute or `null`)' },
-]" />
-
-### CSS custom properties
-
-<ApiTable :data="[
-  { Name: '--_duration', Description: 'Indicator animation duration (default: `150ms`, `0ms` with reduced motion)' },
-  { Name: '--_easing', Description: 'Indicator animation easing (default: `cubic-bezier(0.25, 0.1, 0.25, 1)`)' },
-]" />
+<ApiTable element="tabs" section="events" />

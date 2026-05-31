@@ -16,10 +16,7 @@ import notDefinedCss from 'luxen-ui/css/input-stepper/default?raw'
 
 A stepper control that enhances a native `<input type="number">` with decrement/increment buttons and an animated number track.
 
-<ElementSpec
-  tag="l-input-stepper"
-  type="progressive"
-/>
+<ElementSpec element="input-stepper" />
 
 ## Options
 
@@ -169,26 +166,12 @@ import 'luxen-ui/input-stepper';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'size', Description: 'Control size: `xs`, `sm`, `md` (default), `lg`, `xl`' },
-  { Attribute: 'appearance', Description: 'Visual appearance: `default`, `rounded`' },
-  { Attribute: 'min', Description: 'Minimum allowed value. Falls back to the input\'s `min` attribute' },
-  { Attribute: 'max', Description: 'Maximum allowed value. Falls back to the input\'s `max` attribute' },
-  { Attribute: 'step', Description: 'Increment/decrement amount. Falls back to the input\'s `step` attribute' },
-  { Attribute: 'with-roller', Description: 'Enables the animated number roller overlay' },
-  { Attribute: 'decrement-icon', Description: 'Icon name for the decrement button. Defaults to `lucide:minus`' },
-  { Attribute: 'increment-icon', Description: 'Icon name for the increment button. Defaults to `lucide:plus`' },
-]" />
+<ApiTable element="input-stepper" section="properties" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'change', Description: 'Fired when the value changes. `event.detail.value` contains the new value.' },
-]" />
+<ApiTable element="input-stepper" section="events" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--border-color', Description: 'Border color of the stepper container (default appearance) and of each button (rounded appearance). Defaults to `--l-color-border`.' },
-  { Name: '--border-radius', Description: 'Border radius of the stepper container (default appearance)' },
-]" />
+<ApiTable element="input-stepper" section="cssProperties" />

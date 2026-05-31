@@ -32,6 +32,8 @@ const styles = unsafeCSS(rawStyles);
  * @event expand - Fired when the item is expanded.
  * @event collapse - Fired when the item is collapsed.
  * @event lazy-load - Fired when a lazy item is expanded for the first time. Consumers should append children and set `lazy=false`.
+ *
+ * @customElement l-tree-item
  */
 export class TreeItem extends LuxenElement {
   static override styles = [hostStyles, styles];

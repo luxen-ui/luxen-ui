@@ -15,10 +15,7 @@ import toastPlacement from '../.vitepress/examples/toast/ToastPlacement.html?raw
 
 Toasts are used to display brief, non-blocking notifications that auto-dismiss. Commonly used to confirm actions, report errors, or surface system messages without interrupting the user's workflow.
 
-<ElementSpec
-  tag="l-toast"
-  type="custom"
-/>
+<ElementSpec element="toast" />
 
 ## Options
 
@@ -168,17 +165,11 @@ toast({ text: 'Hello!' });
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'placement', Description: 'Position of the toast stack: `top-start`, `top-center`, `top-end` (default), `bottom-start`, `bottom-center`, `bottom-end`' },
-  { Attribute: 'duration', Description: 'Default auto-dismiss delay in ms. Default `5000`. Set to `0` or `Infinity` to keep open until dismissed' },
-  { Attribute: 'variant', Description: 'Default variant for toast items: `info`, `success`, `warning`, `danger`' },
-]" />
+<ApiTable element="toast" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'toast()', Arguments: '`options: ToastOptions`', Returns: '`HTMLElement`', Description: 'Creates and shows a toast notification' },
-]" />
+<ApiTable element="toast" section="methods" />
 
 ### ToastOptions
 
@@ -194,29 +185,12 @@ toast({ text: 'Hello!' });
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'l-show', Detail: '`{ toast }`', Description: 'Emitted when a toast begins to show. Cancelable' },
-  { Event: 'l-after-show', Detail: '`{ toast }`', Description: 'Emitted after the show animation completes' },
-  { Event: 'l-hide', Detail: '`{ toast }`', Description: 'Emitted when a toast begins to hide. Cancelable' },
-  { Event: 'l-after-hide', Detail: '`{ toast }`', Description: 'Emitted after the hide animation completes and toast is removed' },
-]" />
+<ApiTable element="toast" section="events" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: 'l-toast-item', Description: 'Toast item custom element (generated internally)' },
-  { Class: '.l-toast-accent', Description: 'Left accent bar, colored by variant' },
-  { Class: '.l-toast-content', Description: 'Content area' },
-  { Class: '.l-toast-heading', Description: 'Heading text' },
-  { Class: '.l-toast-message', Description: 'Message text' },
-  { Class: '.l-toast-timer', Description: 'Countdown progress bar (auto-added for timed toasts)' },
-]" />
+<ApiTable element="toast" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Property: '--gap', Description: 'Gap between stacked items. Default `0.5rem`' },
-  { Property: '--width', Description: 'Width of the toast stack. Default `28rem`' },
-  { Property: '--show-duration', Description: 'Show animation duration. Default `200ms`' },
-  { Property: '--hide-duration', Description: 'Hide animation duration. Default `200ms`' },
-]" />
+<ApiTable element="toast" section="cssProperties" />

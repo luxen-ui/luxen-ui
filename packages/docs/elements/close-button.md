@@ -13,10 +13,7 @@ import closeButtonCircle from '../.vitepress/examples/close-button/CloseButtonCi
 
 Close buttons are used to dismiss overlays such as dialogs, drawers, toasts, and popovers. They render a close icon without any visible label.
 
-<ElementSpec
-  tag="button"
-  type="native"
-/>
+<ElementSpec element="close-button" />
 
 ## Options
 
@@ -109,24 +106,12 @@ Pick a visual style via `data-appearance`. Each appearance has its own CSS impor
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'data-appearance', Description: '`ring` · `square` · `circle`' },
-  { Attribute: 'command', Description: 'Invoker command (typically `close`)' },
-  { Attribute: 'commandfor', Description: 'ID of the target element to close' },
-]" />
+<ApiTable element="close-button" section="attributes" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-close', Description: 'Base close button with X icon via CSS mask' },
-]" />
+<ApiTable element="close-button" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--size', Description: 'Button size (default: 36px)' },
-  { Name: '--icon-color', Description: 'Icon color' },
-  { Name: '--icon-size', Description: 'Icon size (default: 24px)' },
-  { Name: '--ring-color', Description: 'Hover ring color (`ring` appearance only)' },
-  { Name: '--ring-tickness', Description: 'Hover ring thickness (`ring` appearance only)' },
-]" />
+<ApiTable element="close-button" section="cssProperties" />

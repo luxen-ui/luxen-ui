@@ -24,10 +24,7 @@ A rich text editor built on [Tiptap](https://tiptap.dev) (ProseMirror). Form-ass
 
 The editable area renders in light DOM, so its content styles ship as a separate stylesheet you import once globally. See [Importing](#importing).
 
-<ElementSpec
-  tag="l-prose-editor"
-  type="shadow"
-/>
+<ElementSpec element="prose-editor" />
 
 ## Options
 
@@ -137,74 +134,24 @@ import 'luxen-ui/prose-editor';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'initial-html', Description: 'Initial content as an HTML string' },
-  { Attribute: 'initial-json', Description: 'Initial content as a serialized ProseMirror JSON string. Used when `initial-html` is not set' },
-  { Attribute: 'toolbar-preset', Description: 'Built-in toolbar layout: `default` (full) or `minimal`. Defaults to `default`' },
-  { Attribute: 'toolbar', Description: 'Comma-separated list of commands. Overrides `toolbar-preset` when set' },
-  { Attribute: 'toolbar-placement', Description: 'Where the toolbar sits: `top` (default) or `bottom`. Reflects to attribute' },
-  { Attribute: 'editor-class', Description: 'Class applied to the editable element. Defaults to `prose` (for Tailwind Typography)' },
-  { Attribute: 'placeholder', Description: 'Text shown when the editor is empty' },
-  { Attribute: 'autofocus', Description: 'Focus the editor on creation' },
-  { Attribute: 'name', Description: 'Form field name. The submitted value is the editor HTML' },
-  { Attribute: 'required', Description: 'Marks the field invalid while the editor is empty' },
-  { Attribute: 'disabled', Description: 'Disables editing' },
-  { Property: 'editor', Description: 'The underlying Tiptap `Editor` instance. Available after first render' },
-]" />
+<ApiTable element="prose-editor" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'getHTML()', Description: 'Returns the content as an HTML string. An empty paragraph resolves to `\'\'`' },
-  { Method: 'getJSON()', Description: 'Returns the content as ProseMirror JSON' },
-  { Method: 'clear()', Description: 'Removes all content' },
-  { Method: 'focus()', Description: 'Focuses the editable content' },
-  { Method: 'blur()', Description: 'Removes focus from the editable content' },
-]" />
+<ApiTable element="prose-editor" section="methods" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'change', Description: 'Fired when the content changes. `event.detail` is `{ html, json }`' },
-  { Event: 'add-file', Description: 'Fired when the `attachment` toolbar button is clicked. Wire up your own upload flow' },
-]" />
+<ApiTable element="prose-editor" section="events" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: 'toolbar-start', Description: 'Content placed before the generated toolbar buttons' },
-  { Slot: 'toolbar-end', Description: 'Content placed after the generated toolbar buttons' },
-]" />
+<ApiTable element="prose-editor" section="slots" />
 
 ### CSS Parts
 
-<ApiTable :data="[
-  { Part: 'wrapper', Description: 'The editor frame wrapping the toolbar and content' },
-  { Part: 'toolbar', Description: 'The toolbar row' },
-  { Part: 'toolbar-button', Description: 'Any toolbar button' },
-  { Part: 'divider', Description: 'A toolbar divider' },
-  { Part: 'editor', Description: 'The container around the editable content' },
-]" />
+<ApiTable element="prose-editor" section="cssParts" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--border-color', Description: 'Color of the editor frame border' },
-  { Name: '--border-width', Description: 'Width of the editor frame border' },
-  { Name: '--border-radius', Description: 'Corner radius of the editor frame' },
-  { Name: '--background', Description: 'Background color of the editor' },
-  { Name: '--color', Description: 'Text color of the editor' },
-  { Name: '--toolbar-background', Description: 'Background color of the toolbar' },
-  { Name: '--toolbar-padding', Description: 'Padding around the toolbar' },
-  { Name: '--toolbar-gap', Description: 'Gap between toolbar buttons' },
-  { Name: '--toolbar-divider-color', Description: 'Color of toolbar dividers' },
-  { Name: '--toolbar-button-size', Description: 'Size of toolbar buttons' },
-  { Name: '--toolbar-button-radius', Description: 'Corner radius of toolbar buttons' },
-  { Name: '--toolbar-button-color', Description: 'Icon color of inactive toolbar buttons' },
-  { Name: '--toolbar-button-color-active', Description: 'Icon color of hovered/active toolbar buttons' },
-  { Name: '--toolbar-button-background-hover', Description: 'Background of hovered toolbar buttons' },
-  { Name: '--toolbar-button-background-active', Description: 'Background of active toolbar buttons' },
-  { Name: '--content-padding', Description: 'Padding of the editable content area' },
-  { Name: '--content-min-height', Description: 'Minimum height of the editable content area' },
-  { Name: '--placeholder-color', Description: 'Color of the placeholder text' },
-]" />
+<ApiTable element="prose-editor" section="cssProperties" />

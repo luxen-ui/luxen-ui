@@ -11,10 +11,7 @@ import kbdShortcuts from '../.vitepress/examples/kbd/KbdShortcuts.html?raw'
 
 Kbd elements are used to display keyboard keys or shortcuts inline with text. Commonly used in documentation, tooltips, and help panels to indicate key bindings.
 
-<ElementSpec
-  tag="kbd"
-  type="native"
-/>
+<ElementSpec element="kbd" />
 
 ## Options
 
@@ -54,6 +51,4 @@ Wrap individual `<kbd>` elements in an outer `<kbd>` with `+` separators.
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-kbd', Description: 'Base class for keyboard key styling on `<kbd>` elements' },
-]" />
+<ApiTable element="kbd" section="cssClasses" />

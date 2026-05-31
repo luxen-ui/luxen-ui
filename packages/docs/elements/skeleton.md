@@ -12,10 +12,7 @@ import skeletonCard from '../.vitepress/examples/skeleton/SkeletonCardExample.ht
 
 Skeletons are used as animated placeholders that mimic the shape of content while it loads. Commonly used to reduce perceived loading time in lists, cards, and dashboards.
 
-<ElementSpec
-  tag="l-skeleton"
-  type="custom"
-/>
+<ElementSpec element="skeleton" />
 
 ## Options
 
@@ -82,14 +79,8 @@ import 'luxen-ui/skeleton';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'shape', Description: 'Shape of the skeleton: `text` (default), `rect`, `circle`' },
-  { Attribute: 'animation', Description: 'Animation style: `pulse` (default), `wave`' },
-]" />
+<ApiTable element="skeleton" section="attributes" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--width', Description: 'Width of the skeleton' },
-  { Name: '--height', Description: 'Height of the skeleton' },
-]" />
+<ApiTable element="skeleton" section="cssProperties" />

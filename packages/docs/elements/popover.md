@@ -14,10 +14,7 @@ import popoverMegaMenu from '../.vitepress/examples/popover/PopoverMegaMenu.html
 
 Popovers are used to display rich interactive content in a floating panel anchored to a trigger element. Commonly used for mini forms, additional details, and contextual controls. Dismissed by clicking outside.
 
-<ElementSpec
-  tag="l-popover"
-  type="shadow"
-/>
+<ElementSpec element="popover" />
 
 ## Options
 
@@ -123,33 +120,12 @@ import 'luxen-ui/popover';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'for', Description: 'ID of the trigger element' },
-  { Attribute: 'placement', Description: 'Preferred placement: `bottom` (default), `bottom-start`, `bottom-end`, `top`, `top-start`, `top-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`' },
-  { Attribute: 'distance', Description: 'Offset from trigger in px. Default `8`' },
-  { Attribute: 'open', Description: 'Whether popover is visible. Reflects to attribute' },
-  { Attribute: 'without-arrow', Description: 'Hide the directional arrow' },
-  { Attribute: 'full-width', Description: 'Stretch the popover to the viewport width. Useful for mega menus — typically combined with `without-arrow`' },
-  { Attribute: 'trigger', Description: 'Space-separated trigger modes: `click` (default), `hover`, `focus`, `manual`' },
-]" />
+<ApiTable element="popover" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'show()', Description: 'Shows the popover' },
-  { Method: 'hide()', Description: 'Hides the popover' },
-  { Method: 'toggle()', Description: 'Toggles the popover' },
-]" />
+<ApiTable element="popover" section="methods" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--background', Description: 'Background color. Default: `Canvas`' },
-  { Name: '--color', Description: 'Text color. Default: inherited' },
-  { Name: '--border-radius', Description: 'Border radius. Default `8px`' },
-  { Name: '--max-width', Description: 'Maximum width. Default `320px`' },
-  { Name: '--shadow', Description: 'Box shadow' },
-  { Name: '--arrow-size', Description: 'Arrow size. Default `8px`' },
-  { Name: '--show-duration', Description: 'Show animation duration. Default `150ms`' },
-  { Name: '--hide-duration', Description: 'Hide animation duration. Default `150ms`' },
-]" />
+<ApiTable element="popover" section="cssProperties" />

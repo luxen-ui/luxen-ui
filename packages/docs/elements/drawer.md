@@ -15,10 +15,7 @@ import drawerFilters from '../.vitepress/examples/drawer/DrawerFilters.html?raw'
 
 Drawers display supplementary content in a panel that slides in from a screen edge. Commonly used for navigation menus, filters, and detail views without leaving the current page.
 
-<ElementSpec
-  tag="l-drawer"
-  type="shadow"
-/>
+<ElementSpec element="drawer" />
 
 ## Options
 
@@ -129,12 +126,7 @@ import 'luxen-ui/drawer';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'title', Description: 'Drawer title rendered in the header as an `<h2>`' },
-  { Attribute: 'open', Description: 'Whether the drawer is open. Reflects to attribute' },
-  { Attribute: 'light-dismiss', Description: 'Close when the backdrop is clicked' },
-  { Attribute: 'placement', Description: 'Edge the drawer slides from: `start` (default), `end`, or `bottom`' },
-]" />
+<ApiTable element="drawer" section="properties" />
 
 ### Commands
 
@@ -149,44 +141,20 @@ import 'invokers-polyfill';
 
 :::
 
-<ApiTable :data="[
-  { Command: '--show', Description: 'Sets `open = true`' },
-  { Command: '--hide', Description: 'Sets `open = false`' },
-]" />
+<ApiTable element="drawer" section="commands" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'show', Description: 'Fired when the drawer opens' },
-  { Event: 'after-show', Description: 'Fired after the open animation completes' },
-  { Event: 'hide', Description: 'Fired when the drawer is about to close. Cancelable — call `event.preventDefault()` to keep it open' },
-  { Event: 'after-hide', Description: 'Fired after the close animation completes' },
-]" />
+<ApiTable element="drawer" section="events" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: '(default)', Description: 'Body content' },
-  { Slot: 'close', Description: 'Close button (typically `<button class=&quot;l-close&quot;>`)' },
-  { Slot: 'footer', Description: 'Footer actions' },
-]" />
+<ApiTable element="drawer" section="slots" />
 
 ### CSS parts
 
-<ApiTable :data="[
-  { Part: 'dialog', Description: 'The native `<dialog>` element' },
-  { Part: 'header', Description: 'The header wrapper containing the title and close slot' },
-  { Part: 'title', Description: 'The drawer title heading' },
-  { Part: 'body', Description: 'The body wrapper around the default slot' },
-  { Part: 'footer', Description: 'The footer wrapper around the footer slot' },
-]" />
+<ApiTable element="drawer" section="cssParts" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--size', Description: 'Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `bottom`). Default `320px`' },
-  { Name: '--border-radius', Description: 'Border radius on the inner edges. Default `0.75rem`' },
-  { Name: '--show-duration', Description: 'Open transition duration. Default `200ms`' },
-  { Name: '--hide-duration', Description: 'Close transition duration. Default `200ms`' },
-  { Name: '--backdrop', Description: 'Backdrop color' },
-]" />
+<ApiTable element="drawer" section="cssProperties" />

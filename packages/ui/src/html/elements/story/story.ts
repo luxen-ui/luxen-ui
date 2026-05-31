@@ -12,6 +12,15 @@ import { LuxenElement } from '../../shared/luxen-element.js';
  * @slot cta - Overlay surfaced by the viewer when this story is active (e.g. product card, link).
  * @slot header - Header overlay (e.g. avatar + author).
  *
+ * @cssproperty --pulse-color - Color of the attention pulse ring (only with the `pulse` attribute).
+ * @cssproperty --pulse-scale - Peak scale of the pulse animation. Default `1.2`.
+ * @cssproperty --pulse-duration - Duration of one pulse cycle. Default `1.6s`.
+ *
+ * @cssClass .l-story-trigger - The clickable thumbnail button wrapper.
+ * @cssClass .l-story-thumb - The poster/video thumbnail frame (ring + offset).
+ * @cssClass .l-story-play - The centered play-icon overlay.
+ * @cssClass .l-story-label - The caption text below the thumbnail.
+ *
  * @customElement l-story
  */
 export class LuxenStory extends LuxenElement {

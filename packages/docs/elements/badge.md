@@ -13,10 +13,7 @@ import badgePill from '../.vitepress/examples/badge/BadgePill.html?raw'
 
 Badges are used to draw attention and display statuses or counts. Commonly used in tabular data, lists, and navigation to indicate state or category.
 
-<ElementSpec
-  tag="l-badge"
-  type="custom"
-/>
+<ElementSpec element="badge" />
 
 ## Options
 
@@ -95,9 +92,4 @@ import 'luxen-ui/badge';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'size', Description: 'Badge size (`sm`, `lg`). Default is md.' },
-  { Attribute: 'appearance', Description: 'Visual appearance (`filled`, `filled-outlined`, `accent`). Default is outlined.' },
-  { Attribute: 'variant', Description: 'Style variant (`info`, `success`, `warning`, `danger`). Default is neutral.' },
-  { Attribute: 'pill', Description: 'Fully rounded pill shape' },
-]" />
+<ApiTable element="badge" section="properties" />

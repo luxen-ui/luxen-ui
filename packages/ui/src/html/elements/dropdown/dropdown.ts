@@ -32,6 +32,8 @@ const styles = unsafeCSS(rawStyles);
  * @event hide - Fired before the dropdown closes. Cancelable.
  * @event after-hide - Fired after the close animation completes.
  * @event select - Fired when an item is selected. Detail: `{ item: DropdownItem }`.
+ *
+ * @customElement l-dropdown
  */
 export class Dropdown extends LuxenElement {
   static override styles = [hostStyles, styles];

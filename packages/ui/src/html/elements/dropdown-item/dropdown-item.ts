@@ -14,6 +14,8 @@ const styles = unsafeCSS(rawStyles);
  * @slot suffix - Trailing content.
  *
  * @cssproperty --color - Text color.
+ *
+ * @customElement l-dropdown-item
  */
 export class DropdownItem extends LuxenElement {
   static override styles = [hostStyles, styles];

@@ -15,10 +15,7 @@ import tooltipColor from '../.vitepress/examples/tooltip/TooltipColor.html?raw'
 
 Tooltips are used to display a short text label on hover or focus to describe an element. Commonly used on icon buttons, truncated text, and controls that need additional context.
 
-<ElementSpec
-  tag="l-tooltip"
-  type="shadow"
-/>
+<ElementSpec element="tooltip" />
 
 ## Options
 
@@ -128,31 +125,12 @@ import 'luxen-ui/tooltip';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'for', Description: 'ID of the trigger element' },
-  { Attribute: 'placement', Description: 'Preferred placement: `top` (default), `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`' },
-  { Attribute: 'distance', Description: 'Offset from trigger in px. Default `8`' },
-  { Attribute: 'open', Description: 'Whether tooltip is visible. Reflects to attribute' },
-  { Attribute: 'without-arrow', Description: 'Hide the directional arrow' },
-  { Attribute: 'trigger', Description: 'Space-separated trigger modes: `hover focus` (default), `click`, `manual`' },
-]" />
+<ApiTable element="tooltip" section="properties" />
 
 ### Methods
 
-<ApiTable :data="[
-  { Method: 'show()', Description: 'Shows the tooltip' },
-  { Method: 'hide()', Description: 'Hides the tooltip' },
-  { Method: 'toggle()', Description: 'Toggles the tooltip' },
-]" />
+<ApiTable element="tooltip" section="methods" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--background-color', Description: 'Background color. Default: dark in light mode, light in dark mode' },
-  { Name: '--text-color', Description: 'Text color. If unset, auto-derived from `--background-color` luminance' },
-  { Name: '--border-radius', Description: 'Border radius. Default `4px`' },
-  { Name: '--max-width', Description: 'Maximum width. Default `180px`' },
-  { Name: '--arrow-size', Description: 'Arrow size. Default `6px`' },
-  { Name: '--show-duration', Description: 'Show animation duration. Default `150ms`' },
-  { Name: '--hide-duration', Description: 'Hide animation duration. Default `150ms`' },
-]" />
+<ApiTable element="tooltip" section="cssProperties" />

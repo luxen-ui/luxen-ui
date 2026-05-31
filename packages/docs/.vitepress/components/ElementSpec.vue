@@ -1,4 +1,7 @@
 <script setup>
+import { computed } from 'vue';
+import metadata from 'luxen-ui/metadata' with { type: 'json' };
+
 const TYPE_LABEL = {
   native: 'Native HTML Element',
   progressive: 'Progressive Custom Element',
@@ -6,14 +9,25 @@ const TYPE_LABEL = {
   shadow: 'Custom Element · Shadow DOM',
 };
 
-defineProps({
-  tag: { type: String, required: true },
+// Preferred: <ElementSpec element="dialog" /> — tag + type come from metadata.
+// Legacy: <ElementSpec tag="button" type="native" /> — explicit props.
+const props = defineProps({
+  element: { type: String, default: null },
+  tag: { type: String, default: null },
   type: {
     type: String,
-    required: true,
-    validator: (v) => ['native', 'progressive', 'custom', 'shadow'].includes(v),
+    default: null,
+    validator: (v) => v == null || ['native', 'progressive', 'custom', 'shadow'].includes(v),
   },
 });
+
+const entry = computed(() =>
+  props.element ? metadata.elements.find((e) => e.name === props.element) : null,
+);
+// Display tag: custom tag for custom elements (l-dialog), native host tag for
+// native elements (button). Falls back to the legacy `tag` prop.
+const tag = computed(() => entry.value?.tag ?? entry.value?.nativeTag ?? props.tag);
+const type = computed(() => entry.value?.type ?? props.type);
 </script>
 
 <template>

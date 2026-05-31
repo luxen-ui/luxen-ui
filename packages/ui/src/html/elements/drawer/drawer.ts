@@ -33,6 +33,11 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @event after-show - Fired after the open animation completes.
  * @event hide - Fired when the drawer is about to close. Cancelable — call `event.preventDefault()` to keep it open.
  * @event after-hide - Fired after the close animation completes.
+ *
+ * @command --show - Sets `open = true`.
+ * @command --hide - Sets `open = false`.
+ *
+ * @customElement l-drawer
  */
 export class Drawer extends Dialog {
   static override styles = [hostStyles, dialogStyles, drawerStyles];

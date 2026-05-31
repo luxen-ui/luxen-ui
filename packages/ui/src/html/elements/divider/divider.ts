@@ -9,7 +9,7 @@ export type DividerOrientation = 'horizontal' | 'vertical';
  * @example <l-divider></l-divider>
  *
  * @cssproperty --color - The color of the divider line.
- * @cssproperty --width - The thickness of the divider line.
+ * @cssproperty --thickness - The thickness of the divider line.
  * @cssproperty --spacing - The spacing between the divider and its neighboring elements.
  *
  * @customElement l-divider

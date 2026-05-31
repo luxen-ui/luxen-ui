@@ -91,6 +91,9 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * @cssproperty --toolbar-button-color-active - Icon color of hovered/active toolbar buttons.
  * @cssproperty --toolbar-button-background-hover - Background of hovered toolbar buttons.
  * @cssproperty --toolbar-button-background-active - Background of active toolbar buttons.
+ * @cssproperty --content-padding - Padding inside the editable content region. Default `0.75rem 1rem`.
+ * @cssproperty --content-min-height - Minimum height of the editable content region. Default `8rem`.
+ * @cssproperty --placeholder-color - Placeholder text color.
  */
 export class ProseEditor extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];

@@ -13,10 +13,7 @@ import disclosureFaq from '../.vitepress/examples/disclosure/DisclosureFaq.html?
 
 Disclosures are used to show and hide content sections on demand. Commonly used for FAQs, collapsible panels, and progressive disclosure of secondary information.
 
-<ElementSpec
-  tag="details"
-  type="native"
-/>
+<ElementSpec element="disclosure" />
 
 ## Options
 
@@ -100,30 +97,16 @@ Use the native `name` attribute to create an exclusive accordion — only one it
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'open', Description: 'Native attribute — starts the disclosure expanded' },
-  { Attribute: 'name', Description: 'Native attribute — groups disclosures into an exclusive accordion' },
-  { Attribute: 'data-marker=&quot;arrow&quot;', Description: 'Shows a chevron icon that rotates 180° when open' },
-  { Attribute: 'data-marker=&quot;plus&quot;', Description: 'Shows a plus icon that rotates 45° into a cross when open' },
-  { Attribute: 'data-variant=&quot;bordered&quot;', Description: 'Adds border, background, and border-radius' },
-  { Attribute: 'disabled', Description: 'Disables interaction on the disclosure (set on `<details>` or `<summary>`)' },
-]" />
+<ApiTable element="disclosure" section="attributes" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'toggle', Description: 'Fires when the disclosure opens or closes (`e.newState` is `&quot;open&quot;` or `&quot;closed&quot;`)' },
-]" />
+<ApiTable element="disclosure" section="events" />
 
 ### CSS classes
 
-<ApiTable :data="[
-  { Class: '.l-disclosure', Description: 'Headless base — layout, animation, and marker behavior only' },
-]" />
+<ApiTable element="disclosure" section="cssClasses" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--marker-size', Description: 'Marker icon size (default: `20px`)' },
-  { Name: '--marker-color', Description: 'Marker icon color (default: `var(--l-color-text-tertiary)`)' },
-]" />
+<ApiTable element="disclosure" section="cssProperties" />

@@ -16,10 +16,7 @@ import dialogWithoutHeader from '../.vitepress/examples/dialog/DialogWithoutHead
 
 Dialogs display critical information or request user input in a modal overlay that blocks interaction with the rest of the page. Commonly used for confirmations, forms, and alerts.
 
-<ElementSpec
-  tag="l-dialog"
-  type="shadow"
-/>
+<ElementSpec element="dialog" />
 
 ## Options
 
@@ -139,12 +136,7 @@ import 'luxen-ui/dialog';
 
 ### Attributes & Properties
 
-<ApiTable :data="[
-  { Attribute: 'title', Description: 'Dialog title rendered in the header as an `<h2>`' },
-  { Attribute: 'open', Description: 'Whether the dialog is open. Reflects to attribute' },
-  { Attribute: 'light-dismiss', Description: 'Close when the backdrop is clicked' },
-  { Attribute: 'without-header', Description: 'Hide the header entirely (title and close slot)' },
-]" />
+<ApiTable element="dialog" section="properties" />
 
 ### Commands
 
@@ -159,46 +151,20 @@ import 'invokers-polyfill';
 
 :::
 
-<ApiTable :data="[
-  { Command: '--show', Description: 'Sets `open = true`' },
-  { Command: '--hide', Description: 'Sets `open = false`' },
-]" />
+<ApiTable element="dialog" section="commands" />
 
 ### Events
 
-<ApiTable :data="[
-  { Event: 'show', Description: 'Fired when the dialog opens' },
-  { Event: 'after-show', Description: 'Fired after the open animation completes' },
-  { Event: 'hide', Description: 'Fired when the dialog is about to close. Cancelable — call `event.preventDefault()` to keep it open' },
-  { Event: 'after-hide', Description: 'Fired after the close animation completes' },
-]" />
+<ApiTable element="dialog" section="events" />
 
 ### Slots
 
-<ApiTable :data="[
-  { Slot: '(default)', Description: 'Body content' },
-  { Slot: 'title', Description: 'Custom heading element. Overrides the default `<h2>` rendered from the `title` property' },
-  { Slot: 'close', Description: 'Close button (typically `<button class=&quot;l-close&quot;>`)' },
-  { Slot: 'footer', Description: 'Footer actions' },
-]" />
+<ApiTable element="dialog" section="slots" />
 
 ### CSS parts
 
-<ApiTable :data="[
-  { Part: 'dialog', Description: 'The native `<dialog>` element' },
-  { Part: 'header', Description: 'The header wrapper containing the title and close slot' },
-  { Part: 'title', Description: 'The dialog title heading' },
-  { Part: 'body', Description: 'The body wrapper around the default slot' },
-  { Part: 'footer', Description: 'The footer wrapper around the footer slot' },
-]" />
+<ApiTable element="dialog" section="cssParts" />
 
 ### CSS custom properties
 
-<ApiTable :data="[
-  { Name: '--width', Description: 'Dialog width. Default `31rem`' },
-  { Name: '--border-radius', Description: 'Border radius. Default `6px`' },
-  { Name: '--show-duration', Description: 'Open transition duration. Default `200ms`' },
-  { Name: '--hide-duration', Description: 'Close transition duration. Default `200ms`' },
-  { Name: '--backdrop', Description: 'Backdrop color' },
-  { Name: '--backdrop-blur', Description: 'Backdrop blur amount (any CSS length). Default `0`' },
-]" />
+<ApiTable element="dialog" section="cssProperties" />
