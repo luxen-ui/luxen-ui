@@ -1,6 +1,8 @@
-import { html, nothing } from 'lit';
+import { nothing } from 'lit';
+import { html } from 'lit/static-html.js';
 import { property, query } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { staticTag } from '../../static-tag.js';
 
 /**
  * @summary A single story declaration inside an `<l-stories>` row.
@@ -117,6 +119,7 @@ export class LuxenStory extends LuxenElement {
     this._io = undefined;
   }
   override render() {
+    const iconTag = staticTag('icon');
     return html`
       <button
         type="button"
@@ -125,31 +128,33 @@ export class LuxenStory extends LuxenElement {
         data-story-trigger
       >
         <span class="l-story-thumb">
-          ${this.preview
-            ? html`<video
-                data-preview
-                src=${this.preview}
-                poster=${this.poster || nothing}
-                muted
-                loop
-                playsinline
-                autoplay
-                preload="auto"
-                aria-hidden="true"
-              ></video>`
-            : this.poster
-              ? html`<img
-                  src=${this.poster}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />`
-              : nothing}
+          ${
+            this.preview
+              ? html`<video
+                  data-preview
+                  src=${this.preview}
+                  poster=${this.poster || nothing}
+                  muted
+                  loop
+                  playsinline
+                  autoplay
+                  preload="auto"
+                  aria-hidden="true"
+                ></video>`
+              : this.poster
+                ? html`<img
+                    src=${this.poster}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />`
+                : nothing
+          }
           <span
             class="l-story-play"
             aria-hidden="true"
           >
-            <l-icon name="mdi:play"></l-icon>
+            <${iconTag} name="mdi:play"></${iconTag}>
           </span>
         </span>
         ${this.label ? html`<span class="l-story-label">${this.label}</span>` : nothing}

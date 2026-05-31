@@ -1,7 +1,9 @@
-import { html, nothing, unsafeCSS, type CSSResultGroup, type PropertyValues } from 'lit';
+import { nothing, unsafeCSS, type CSSResultGroup, type PropertyValues } from 'lit';
+import { html } from 'lit/static-html.js';
 import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { staticTag } from '../../static-tag.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import type { LuxenStories } from '../stories/stories.js';
 import type { LuxenStory } from '../story/story.js';
@@ -549,6 +551,8 @@ export class LuxenStoriesViewer extends LuxenElement {
     const chapterStarts = this._chapterStarts.length
       ? this._chapterStarts
       : (currentStory?.getChapterStarts() ?? [0]);
+    const iconTag = staticTag('icon');
+    const spinnerTag = staticTag('spinner');
 
     return html`
       <dialog
@@ -593,23 +597,27 @@ export class LuxenStoriesViewer extends LuxenElement {
             data-no-gesture
           >
             <slot name="header">
-              ${currentStory?.poster
-                ? html`<img
-                    class="header-thumb"
-                    src=${currentStory.poster}
-                    alt=""
-                  />`
-                : nothing}
-              ${currentStory?.label
-                ? html`<div class="header-text">
-                    <div
-                      part="header-label"
-                      class="header-label"
-                    >
-                      ${currentStory.label}
-                    </div>
-                  </div>`
-                : nothing}
+              ${
+                currentStory?.poster
+                  ? html`<img
+                      class="header-thumb"
+                      src=${currentStory.poster}
+                      alt=""
+                    />`
+                  : nothing
+              }
+              ${
+                currentStory?.label
+                  ? html`<div class="header-text">
+                      <div
+                        part="header-label"
+                        class="header-label"
+                      >
+                        ${currentStory.label}
+                      </div>
+                    </div>`
+                  : nothing
+              }
             </slot>
           </header>
 
@@ -626,7 +634,7 @@ export class LuxenStoriesViewer extends LuxenElement {
                 aria-label="Close"
                 @click=${() => this.close()}
               >
-                <l-icon name="mdi:close"></l-icon>
+                <${iconTag} name="mdi:close"></${iconTag}>
               </button>
             </slot>
             <button
@@ -637,7 +645,7 @@ export class LuxenStoriesViewer extends LuxenElement {
               aria-pressed=${this._paused ? 'true' : 'false'}
               @click=${() => (this._paused ? this.play() : this.pause())}
             >
-              <l-icon name=${this._paused ? 'mdi:play' : 'mdi:pause'}></l-icon>
+              <${iconTag} name=${this._paused ? 'mdi:play' : 'mdi:pause'}></${iconTag}>
             </button>
             <button
               type="button"
@@ -650,7 +658,7 @@ export class LuxenStoriesViewer extends LuxenElement {
                 this.emit('mute-change', { detail: { muted: this.muted } });
               }}
             >
-              <l-icon name=${this.muted ? 'mdi:volume-off' : 'mdi:volume-high'}></l-icon>
+              <${iconTag} name=${this.muted ? 'mdi:volume-off' : 'mdi:volume-high'}></${iconTag}>
             </button>
           </div>
 
@@ -662,13 +670,13 @@ export class LuxenStoriesViewer extends LuxenElement {
             ?muted=${this.muted}
           ></video>
 
-          <l-spinner
+          <${spinnerTag}
             part="spinner"
             class="spinner"
             aria-label="Loading"
             data-no-gesture
             data-state=${this._loading ? 'loading' : 'idle'}
-          ></l-spinner>
+          ></${spinnerTag}>
 
           <!-- Tap zones: invisible overlays that translate clicks into previous/next.
                Sit BELOW header / overlay / chevron buttons in z-order, above the video. -->
@@ -695,36 +703,42 @@ export class LuxenStoriesViewer extends LuxenElement {
             class="sr-only"
             aria-live="polite"
           >
-            ${total
-              ? `Story ${this.index + 1} of ${total}${
-                  this.stories[this.index]?.label ? ` — ${this.stories[this.index].label}` : ''
-                }${chapterStarts.length > 1 ? ` — chapter ${this.chapter + 1} of ${chapterStarts.length}` : ''}`
-              : ''}
+            ${
+              total
+                ? `Story ${this.index + 1} of ${total}${
+                    this.stories[this.index]?.label ? ` — ${this.stories[this.index].label}` : ''
+                  }${chapterStarts.length > 1 ? ` — chapter ${this.chapter + 1} of ${chapterStarts.length}` : ''}`
+                : ''
+            }
           </div>
         </div>
 
-        ${isFirstStory
-          ? nothing
-          : html`<button
+        ${
+          isFirstStory
+            ? nothing
+            : html`<button
               type="button"
               part="button-previous"
               class="btn btn-nav btn-previous"
               aria-label="Previous story"
               @click=${() => this.previousStory()}
             >
-              <l-icon name="mdi:chevron-left"></l-icon>
-            </button>`}
-        ${isLastStory
-          ? nothing
-          : html`<button
+              <${iconTag} name="mdi:chevron-left"></${iconTag}>
+            </button>`
+        }
+        ${
+          isLastStory
+            ? nothing
+            : html`<button
               type="button"
               part="button-next"
               class="btn btn-nav btn-next"
               aria-label="Next story"
               @click=${() => this.nextStory()}
             >
-              <l-icon name="mdi:chevron-right"></l-icon>
-            </button>`}
+              <${iconTag} name="mdi:chevron-right"></${iconTag}>
+            </button>`
+        }
       </dialog>
     `;
   }

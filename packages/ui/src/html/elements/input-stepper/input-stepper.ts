@@ -1,5 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { tagName } from '../../registry.js';
 
 export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -168,7 +169,8 @@ export class InputStepper extends LuxenElement {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.setAttribute('aria-label', label);
-    btn.innerHTML = `<l-icon name="${icon}"></l-icon>`;
+    const iconTag = tagName('icon');
+    btn.innerHTML = `<${iconTag} name="${icon}"></${iconTag}>`;
     return btn;
   }
 
