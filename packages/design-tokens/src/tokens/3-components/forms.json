@@ -1,0 +1,109 @@
+{
+  "$description": "Form component tokens — shared by every form control (checkbox, radio, switch, input, textarea, select) and the `l-form-field` wrapper. Two families: `form.control.*` (control appearance) and `form.field.*` (field layout). References semantic aliases so theming/dark-mode is inherited.",
+  "form": {
+    "control": {
+      "activated-color": {
+        "$type": "color",
+        "$value": "{color.blue.600}",
+        "$description": "Color of a control when activated (checked checkbox, selected radio, on switch). Form-wide accent, akin to native `accent-color`. A stable, saturated color that does not invert between light and dark, so the baked white glyph stays legible in both modes — override per brand."
+      },
+      "activated-content-color": {
+        "$type": "color",
+        "$value": "{color.white}",
+        "$description": "Color of the glyph on the activated fill (checkmark, radio dot, switch thumb). Pairs with the stable accent."
+      },
+      "background-color": {
+        "$type": "color",
+        "$value": "{color.surface}",
+        "$description": "Control background (input, textarea, select, unchecked toggle box)."
+      },
+      "value-color": {
+        "$type": "color",
+        "$value": "{color.text.primary}",
+        "$description": "Color of the user-entered value text."
+      },
+      "placeholder-color": {
+        "$type": "color",
+        "$value": "{color.text.tertiary}",
+        "$description": "Placeholder text color."
+      },
+      "border-color": {
+        "$type": "color",
+        "$value": "{color.border}",
+        "$description": "Control border color."
+      },
+      "border-width": {
+        "$type": "dimension",
+        "$value": "1px",
+        "$description": "Control border width."
+      },
+      "border-radius": {
+        "$type": "dimension",
+        "$value": "{radius-md}",
+        "$description": "Control border radius."
+      },
+      "border-color-hover": {
+        "$type": "color",
+        "$value": "{color.text.tertiary}",
+        "$description": "Control border color on hover."
+      },
+      "border-color-invalid": {
+        "$type": "color",
+        "$value": "{color.bg.fill.danger.strong}",
+        "$description": "Control border color when invalid."
+      },
+      "toggle-size": {
+        "$type": "dimension",
+        "$value": "1.25em",
+        "$description": "Box size of toggle controls (checkbox, radio, switch). Relative to font size so it scales with the label."
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "{size.control.md}",
+        "$description": "Height of text controls (input, select, textarea)."
+      },
+      "padding-inline": {
+        "$type": "dimension",
+        "$value": "{spacing-3}",
+        "$description": "Horizontal padding of text controls."
+      },
+      "label-color": {
+        "$type": "color",
+        "$value": "{color.text.primary}",
+        "$description": "Field label color."
+      },
+      "hint-color": {
+        "$type": "color",
+        "$value": "{color.text.secondary}",
+        "$description": "Helper/description text color (`l-hint`)."
+      },
+      "error-color": {
+        "$type": "color",
+        "$value": "{color.text.danger}",
+        "$description": "Error message text color (`l-error`)."
+      },
+      "required-content": {
+        "$type": "content",
+        "$value": "'*'",
+        "$description": "Marker appended to a required field's label."
+      },
+      "required-color": {
+        "$type": "color",
+        "$value": "{color.text.danger}",
+        "$description": "Color of the required marker."
+      }
+    },
+    "field": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{spacing-2}",
+        "$description": "Vertical gap between label, control, and messages in a stacked field."
+      },
+      "choice-gap": {
+        "$type": "dimension",
+        "$value": "{spacing-2}",
+        "$description": "Horizontal gap between a toggle control and its label in an inline field."
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+/* Form field — `l-form-field` wraps a label, a control, and optional
+   `.l-hint` / `.l-error` messages. The element wires ARIA (id/for,
+   aria-describedby, aria-invalid, …) and reflects `layout`,
+   `required` / `optional`, and `invalid`. This file only
+   styles the anatomy; the control keeps its own styling (`.l-checkbox`, …). */
+
+@layer components {
+  l-form-field {
+    display: grid;
+    gap: var(--l-form-field-gap);
+    /* Controls size to their content; text controls (`.l-input`, `.l-textarea`)
+       opt into full width via their own CSS — the field never forces width. */
+    justify-items: start;
+
+    & > label {
+      color: var(--l-form-control-label-color);
+    }
+
+    /* Required marker on the label. */
+    &[required] > label::after {
+      content: var(--l-form-control-required-content);
+      margin-inline-start: 0.25ch;
+      color: var(--l-form-control-required-color);
+    }
+
+    /* Inline layout for toggle controls (checkbox / radio / switch):
+       control on the left, label on the right, messages below the label. */
+    &[layout='inline'] {
+      grid-template-columns: auto 1fr;
+      column-gap: var(--l-form-field-choice-gap);
+      align-items: center;
+
+      & > :is(input, select, textarea) {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      & > label {
+        grid-column: 2;
+        grid-row: 1;
+        cursor: pointer;
+      }
+
+      & > :is(.l-hint, .l-error) {
+        grid-column: 2;
+      }
+    }
+  }
+
+  .l-hint {
+    display: block;
+    margin: 0;
+    color: var(--l-form-control-hint-color);
+    font-size: var(--l-text-sm);
+  }
+
+  .l-error {
+    display: block;
+    margin: 0;
+    color: var(--l-form-control-error-color);
+    font-size: var(--l-text-sm);
+  }
+
+  .l-error[hidden] {
+    display: none;
+  }
+}

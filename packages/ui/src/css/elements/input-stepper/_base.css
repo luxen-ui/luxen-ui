@@ -30,8 +30,8 @@
 
     :scope {
       --_button-size: var(--l-size-control-md);
-      --border-color: var(--l-color-border);
-      --border-radius: var(--l-radius-md);
+      --border-color: var(--l-form-control-border-color);
+      --border-radius: var(--l-form-control-border-radius);
       --_button-bg-hover: var(--l-color-bg-fill-neutral-soft);
       --_button-bg-active: var(--l-color-bg-fill-neutral-subtle);
 
@@ -197,6 +197,12 @@
 
     :scope:has(input:disabled) {
       color: var(--l-color-text-disabled);
+    }
+
+    /* Invalid — mirror the shared form control invalid border (set by
+       `l-form-field` via `aria-invalid`, or authored directly). */
+    :scope:has(input[aria-invalid='true']) {
+      --border-color: var(--l-form-control-border-color-invalid);
     }
   }
 
