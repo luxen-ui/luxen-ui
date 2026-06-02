@@ -9,7 +9,7 @@
     button {
       border: 1px solid var(--border-color);
       border-radius: var(--l-radius-full);
-      background-color: var(--l-color-surface);
+      background-color: var(--l-form-control-background-color);
     }
 
     @media (hover: hover) {

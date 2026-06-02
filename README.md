@@ -36,6 +36,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Button         | `<button>`           | ⏣ Native HTML Element                   |
 | Carousel       | `<l-carousel>`       | ⬢ Custom HTML Element (with Shadow DOM) |
 | Carousel Item  | `<l-carousel-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
+| Checkbox       | `<input>`            | ⏣ Native HTML Element                   |
 | Close Button   | `<button>`           | ⏣ Native HTML Element                   |
 | Dialog         | `<l-dialog>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Disclosure     | `<details>`          | ⏣ Native HTML Element                   |
@@ -43,6 +44,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Drawer         | `<l-drawer>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Dropdown       | `<l-dropdown>`       | ⬢ Custom HTML Element (with Shadow DOM) |
 | Dropdown Item  | `<l-dropdown-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
+| Form Field     | `<l-form-field>`     | ⬡ Progressive Custom HTML Element       |
 | Icon           | `<l-icon>`           | ⬢ Custom HTML Element (with Shadow DOM) |
 | Input OTP      | `<l-input-otp>`      | ⬡ Progressive Custom HTML Element       |
 | Input Stepper  | `<l-input-stepper>`  | ⬡ Progressive Custom HTML Element       |

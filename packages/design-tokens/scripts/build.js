@@ -48,6 +48,7 @@ function renderValue(value, dictionary) {
 function tokenSubset(token, subset) {
   if (subset === 'primitives') return /[\\/]1-primitives[\\/]/.test(token.filePath);
   if (subset === 'aliases') return /[\\/]2-aliases[\\/]/.test(token.filePath);
+  if (subset === 'components') return /[\\/]3-components[\\/]/.test(token.filePath);
   return true;
 }
 
@@ -376,6 +377,8 @@ StyleDictionary.registerFormat({
 function categorize(token) {
   const path = token.path;
   const [head] = path;
+  // Form component tokens (form.control.*, form.field.*) get their own bucket.
+  if (head === 'form') return 'form';
   // Spacing primitives are exposed in the design-tokens docs as their own
   // section — they're scale-y and useful to reference directly.
   if (head === 'spacing' || head.startsWith('spacing-')) return 'spacing';
@@ -421,7 +424,11 @@ StyleDictionary.registerFormat({
   },
 });
 
-const sources = ['src/tokens/1-primitives/**/*.@(js|json)', 'src/tokens/2-aliases/default.json'];
+const sources = [
+  'src/tokens/1-primitives/**/*.@(js|json)',
+  'src/tokens/2-aliases/default.json',
+  'src/tokens/3-components/**/*.@(js|json)',
+];
 
 const sd = new StyleDictionary({
   usesDtcg: true,
@@ -435,6 +442,7 @@ const sd = new StyleDictionary({
     filters: {
       primitives: (token) => /[\\/]1-primitives[\\/]/.test(token.filePath),
       aliases: (token) => /[\\/]2-aliases[\\/]/.test(token.filePath),
+      components: (token) => /[\\/]3-components[\\/]/.test(token.filePath),
     },
   },
   platforms: {
@@ -466,6 +474,15 @@ const sd = new StyleDictionary({
             subset: 'palette-extended',
             header:
               '/* Luxen design-tokens — extended palette.\n   The 21 Tailwind families not used by Luxen aliases, opt-in via\n   `@import "luxen-ui/css/tokens/palette"` for consumers who want the full set. */\n\n',
+          },
+        },
+        {
+          destination: 'forms.css',
+          format: 'css/luxen',
+          options: {
+            subset: 'components',
+            header:
+              '/* Luxen design-tokens — form component tokens.\n   Opt-in via `@import "luxen-ui/css/tokens/forms"` (already bundled in the\n   Luxen preset). Reference semantic aliases, so dark mode is inherited. */\n\n',
           },
         },
         {

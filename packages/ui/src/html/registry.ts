@@ -9,6 +9,7 @@ export type ElementBaseName =
   | 'drawer'
   | 'dropdown'
   | 'dropdown-item'
+  | 'form-field'
   | 'icon'
   | 'input-otp'
   | 'input-stepper'

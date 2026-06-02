@@ -1,0 +1,7 @@
+/* Luxen form component tokens — --l-form-control-* (control appearance) and
+   --l-form-field-* (field layout). Each references a semantic alias, so dark
+   mode and theming are inherited. Consumed by the form control CSS
+   (checkbox, radio, switch, input, …) and the `l-form-field` wrapper.
+*/
+
+@import '@luxen-ui/design-tokens/css/forms';

@@ -44,6 +44,15 @@
       "subItemOf": "carousel"
     },
     {
+      "name": "checkbox",
+      "displayName": "Checkbox",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-checkbox"
+    },
+    {
       "name": "close-button",
       "displayName": "Close button",
       "kind": "native",
@@ -101,6 +110,14 @@
       "inSkill": false,
       "inMockups": true,
       "subItemOf": "dropdown"
+    },
+    {
+      "name": "form-field",
+      "displayName": "Form field",
+      "kind": "element",
+      "type": "progressive",
+      "inSkill": true,
+      "inMockups": true
     },
     {
       "name": "icon",

@@ -7,3 +7,6 @@
 */
 
 @import '@luxen-ui/design-tokens/css';
+
+/* Form component tokens (--l-form-control-*, --l-form-field-*). */
+@import '@luxen-ui/design-tokens/css/forms';

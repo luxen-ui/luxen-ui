@@ -25,6 +25,10 @@
       "style": "./dist/css/palette.css",
       "import": "./dist/css/palette.css"
     },
+    "./css/forms": {
+      "style": "./dist/css/forms.css",
+      "import": "./dist/css/forms.css"
+    },
     "./tailwind": {
       "style": "./dist/tailwind/theme.css",
       "import": "./dist/tailwind/theme.css"

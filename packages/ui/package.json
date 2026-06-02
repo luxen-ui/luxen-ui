@@ -77,6 +77,10 @@
       "style": "./dist/css/tokens/palette.css",
       "import": "./dist/css/tokens/palette.css"
     },
+    "./css/tokens/forms": {
+      "style": "./dist/css/tokens/forms.css",
+      "import": "./dist/css/tokens/forms.css"
+    },
     "./tailwind/preset": {
       "style": "./dist/css/tailwind/preset.css",
       "import": "./dist/css/tailwind/preset.css"
