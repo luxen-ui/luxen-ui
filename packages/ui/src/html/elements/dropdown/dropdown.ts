@@ -63,6 +63,16 @@ export class Dropdown extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   accessor disabled = false;
 
+  /**
+   * Floor the panel's width at the trigger's width. Set to `trigger` so the
+   * panel is never narrower than the trigger; it still grows with its content.
+   * Useful for select-like triggers (a date-range or filter button) where the
+   * panel should line up with the control. Re-applies if the trigger resizes
+   * while open.
+   */
+  @property({ attribute: 'min-width' })
+  accessor minWidth: 'trigger' | undefined;
+
   private get _triggerEl(): HTMLElement | null {
     const slot = this.shadowRoot!.querySelector<HTMLSlotElement>('.trigger slot');
     return (slot?.assignedElements()[0] as HTMLElement) ?? null;
@@ -124,7 +134,11 @@ export class Dropdown extends LuxenElement {
     const panel = this._panelEl;
     if (!panel) return;
 
-    const posOpts = { placement: this.placement, distance: this.distance };
+    const posOpts = {
+      placement: this.placement,
+      distance: this.distance,
+      minWidth: this.minWidth,
+    };
 
     if (this.open) {
       panel.showPopover();

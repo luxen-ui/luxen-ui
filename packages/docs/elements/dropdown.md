@@ -7,6 +7,7 @@ import dropdownBasic from '../.vitepress/examples/dropdown/DropdownBasic.html?ra
 import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabledItem.html?raw'
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
+import dropdownMinWidth from '../.vitepress/examples/dropdown/DropdownMinWidth.html?raw'
 import dropdownDisabled from '../.vitepress/examples/dropdown/DropdownDisabled.html?raw'
 import dropdownAccountMenu from '../.vitepress/examples/dropdown/DropdownAccountMenu.html?raw'
 </script>
@@ -61,6 +62,17 @@ Set `placement` to control position. Default is `bottom-start`.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownPlacement.html [HTML]
+:::
+
+### Min width
+
+Set `min-width="trigger"` to floor the panel at the trigger's width — useful for select-like triggers (a date-range or filter button). The panel still grows with its content and stays matched if the trigger resizes while open.
+
+<ComponentWrapper :html="dropdownMinWidth" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownMinWidth.html [HTML]
 :::
 
 ### Disabled

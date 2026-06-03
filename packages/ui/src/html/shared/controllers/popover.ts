@@ -6,6 +6,7 @@ import {
   flip,
   shift,
   arrow,
+  size,
   type Placement,
 } from '@floating-ui/dom';
 
@@ -230,6 +231,8 @@ export interface PositionOptions {
   placement: Placement;
   distance: number;
   fullWidth?: boolean;
+  /** Floor the floating element's width at the trigger's width (`'trigger'`). */
+  minWidth?: 'trigger';
 }
 
 type TriggerHandlers = {
@@ -278,6 +281,16 @@ export class PopoverController implements ReactiveController {
 
     const middleware = [
       offset(options.distance),
+      // Size before flip/shift so the adopted floor feeds collision detection.
+      ...(options.minWidth === 'trigger'
+        ? [
+            size({
+              apply({ rects, elements }) {
+                elements.floating.style.minWidth = `${rects.reference.width}px`;
+              },
+            }),
+          ]
+        : []),
       flip(),
       shift(),
       ...(arrowEl ? [arrow({ element: arrowEl, padding: 8 })] : []),
@@ -295,6 +308,9 @@ export class PopoverController implements ReactiveController {
       top: `${y}px`,
       width: options.fullWidth ? '100vw' : '',
     });
+
+    // The `size` middleware (above) sets minWidth when syncing; clear it otherwise.
+    if (options.minWidth !== 'trigger') floating.style.minWidth = '';
 
     if (placement !== this._currentPlacement) {
       this._currentPlacement = placement;

@@ -20,7 +20,6 @@
   overflow: visible;
   box-sizing: border-box;
   width: max-content;
-  min-width: anchor-size(width);
   padding: var(--padding);
   margin: 0;
   border: 1px solid var(--l-color-border-overlay, light-dark(#e5e7eb, #374151));
