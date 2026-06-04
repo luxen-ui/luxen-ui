@@ -44,6 +44,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Drawer         | `<l-drawer>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Dropdown       | `<l-dropdown>`       | ⬢ Custom HTML Element (with Shadow DOM) |
 | Dropdown Item  | `<l-dropdown-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
+| Dropdown Label | `<l-dropdown-label>` | ⬢ Custom HTML Element (with Shadow DOM) |
 | Form Field     | `<l-form-field>`     | ⬡ Progressive Custom HTML Element       |
 | Icon           | `<l-icon>`           | ⬢ Custom HTML Element (with Shadow DOM) |
 | Input OTP      | `<l-input-otp>`      | ⬡ Progressive Custom HTML Element       |

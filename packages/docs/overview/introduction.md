@@ -160,6 +160,7 @@ Elements in <a class="luxen-tag"><code>bold</code></a> are styled or extended by
 <a class="luxen-tag" href="/elements/icon"><code>&lt;l-icon&gt;</code></a>
 <a class="luxen-tag" href="/elements/dropdown"><code>&lt;l-dropdown&gt;</code></a>
 <a class="luxen-tag"><code>&lt;l-dropdown-item&gt;</code></a>
+<a class="luxen-tag"><code>&lt;l-dropdown-label&gt;</code></a>
 <a class="luxen-tag" href="/elements/form-field"><code>&lt;l-form-field&gt;</code></a>
 <a class="luxen-tag" href="/elements/input-otp"><code>&lt;l-input-otp&gt;</code></a>
 <a class="luxen-tag" href="/elements/input-stepper"><code>&lt;l-input-stepper&gt;</code></a>
