@@ -39,6 +39,7 @@ export default {
       void import('luxen-ui/drawer');
       void import('luxen-ui/dropdown');
       void import('luxen-ui/dropdown-item');
+      void import('luxen-ui/dropdown-label');
       void import('luxen-ui/tabs');
       void import('luxen-ui/form-field');
       void import('luxen-ui/tree');

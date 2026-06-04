@@ -15,7 +15,7 @@ const styles = unsafeCSS(rawStyles);
  *
  * @slot trigger - The element that triggers the dropdown.
  * @slot header - Optional content rendered above the menu items (e.g. a user profile row). Use an `<l-divider>` (or `<hr>`) after it to separate from items.
- * @slot - Menu content (`l-dropdown-item` elements). Drop an `<l-divider>` (or `<hr>`) between items to render a section separator.
+ * @slot - Menu content (`l-dropdown-item` elements). Drop an `<l-divider>` (or `<hr>`) between items to render a section separator, or an `<l-dropdown-label>` to caption a group of items.
  * @slot footer - Optional content rendered below the menu items (e.g. a version label or shortcut row). Use an `<l-divider>` (or `<hr>`) before it to separate from items.
  *
  * @csspart panel - The floating menu container.

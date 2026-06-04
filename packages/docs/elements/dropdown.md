@@ -6,6 +6,7 @@ outline: deep
 import dropdownBasic from '../.vitepress/examples/dropdown/DropdownBasic.html?raw'
 import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabledItem.html?raw'
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
+import dropdownSections from '../.vitepress/examples/dropdown/DropdownSections.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
 import dropdownMinWidth from '../.vitepress/examples/dropdown/DropdownMinWidth.html?raw'
 import dropdownDisabled from '../.vitepress/examples/dropdown/DropdownDisabled.html?raw'
@@ -51,6 +52,17 @@ Set `type="checkbox"` for toggleable items. The dropdown stays open when checkin
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownCheckbox.html [HTML]
+:::
+
+### Section labels
+
+Add `<l-dropdown-label>` to caption a group of items. It is non-interactive — keyboard navigation and typeahead skip it. Use `<l-divider>` between sections.
+
+<ComponentWrapper :html="dropdownSections" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownSections.html [HTML]
 :::
 
 ### Placement
@@ -138,6 +150,7 @@ Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-
 ```js [JS]
 import 'luxen-ui/dropdown';
 import 'luxen-ui/dropdown-item';
+import 'luxen-ui/dropdown-label';
 ```
 
 :::
@@ -169,3 +182,11 @@ import 'luxen-ui/dropdown-item';
 ### `dropdown-item` Slots
 
 <ApiTable element="dropdown-item" section="slots" />
+
+### `dropdown-label` Slots
+
+<ApiTable element="dropdown-label" section="slots" />
+
+### `dropdown-label` CSS custom properties
+
+<ApiTable element="dropdown-label" section="cssProperties" />

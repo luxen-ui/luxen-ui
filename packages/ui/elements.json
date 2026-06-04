@@ -112,6 +112,15 @@
       "subItemOf": "dropdown"
     },
     {
+      "name": "dropdown-label",
+      "displayName": "Dropdown label",
+      "kind": "element",
+      "type": "custom",
+      "inSkill": false,
+      "inMockups": true,
+      "subItemOf": "dropdown"
+    },
+    {
       "name": "form-field",
       "displayName": "Form field",
       "kind": "element",
