@@ -362,7 +362,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       ]);
       const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this._emojiPicker = new Picker({
-        parent: document.body,
+        parent: this._topLayerContainer(),
         data,
         theme: dark ? 'dark' : 'light',
         onEmojiSelect: ({ native }: { native: string }) => {
@@ -375,9 +375,45 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           }
         },
       }) as unknown as HTMLElement;
-      Object.assign(this._emojiPicker.style, { position: 'absolute', zIndex: '999' });
+      // A popover promotes the picker into the top-layer, so it paints above a
+      // modal <l-dialog> and escapes any ancestor overflow clipping. Top-layer
+      // alone isn't enough inside a modal: showModal() makes everything outside
+      // the dialog's flat-tree subtree inert (visible but unclickable), so the
+      // picker is parented to the nearest open <dialog> — see _topLayerContainer.
+      // Neutralize the UA popover box; Floating UI drives the position below.
+      this._emojiPicker.setAttribute('popover', 'manual');
+      Object.assign(this._emojiPicker.style, {
+        position: 'fixed',
+        inset: 'auto',
+        margin: '0',
+        padding: '0',
+        border: '0',
+        background: 'transparent',
+      });
     }
     this._emojiPickerActive = !this._emojiPickerActive;
+  }
+
+  /**
+   * The element the emoji picker is appended to. Inside a modal `<l-dialog>` the
+   * picker must live within the dialog's flat-tree subtree, otherwise the modal's
+   * inertness makes it unclickable. Walk the flat tree (crossing shadow
+   * boundaries via `assignedSlot`) to the nearest open `<dialog>`; fall back to
+   * `<body>` when the editor is not inside a modal.
+   */
+  private _topLayerContainer(): HTMLElement {
+    let node: Node | null = this;
+    while (node) {
+      if (node instanceof HTMLDialogElement && node.open) return node;
+      if (node instanceof Element && node.assignedSlot) {
+        node = node.assignedSlot;
+      } else if (node instanceof ShadowRoot) {
+        node = node.host;
+      } else {
+        node = node.parentNode;
+      }
+    }
+    return document.body;
   }
 
   private get _emojiButton(): HTMLElement | null {
@@ -388,22 +424,22 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     const button = this._emojiButton;
     if (!button || !this._emojiPicker) return;
 
+    const picker = this._emojiPicker;
     if (!this._emojiPickerActive) {
-      Object.assign(this._emojiPicker.style, { visibility: 'hidden', pointerEvents: 'none' });
+      if (picker.matches(':popover-open')) picker.hidePopover();
       return;
     }
 
-    const { x, y, strategy } = await computePosition(button, this._emojiPicker, {
+    // Show first so the picker is laid out (and in the top-layer) before we
+    // measure it; a closed popover is display:none and would size to 0.
+    if (!picker.matches(':popover-open')) picker.showPopover();
+
+    const { x, y } = await computePosition(button, picker, {
+      strategy: 'fixed',
       placement: 'bottom',
       middleware: [offset(4), flip(), shift({ padding: 8 })],
     });
-    Object.assign(this._emojiPicker.style, {
-      position: strategy,
-      left: `${x}px`,
-      top: `${y}px`,
-      visibility: 'visible',
-      pointerEvents: 'auto',
-    });
+    Object.assign(picker.style, { left: `${x}px`, top: `${y}px` });
   }
 
   // --- Rendering ---
