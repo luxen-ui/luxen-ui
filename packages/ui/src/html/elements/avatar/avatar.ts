@@ -25,25 +25,33 @@ const defaultIcon = svg`<svg class="icon" viewBox="0 0 24 24" fill="currentColor
  * @customElement l-avatar
  *
  * @cssproperty --color - Background fill color for initials and the default icon.
+ * @cssproperty --text-color - Initials/icon color over `--color`. Defaults to an auto-derived readable color; set it to enforce a specific brand color (overrides the automatic choice).
  * @cssproperty --appearance - Set to `circle` for a fully circular avatar (default is a rounded square).
+ *
+ * @csspart base - The avatar container that paints `--color`; style it (e.g. `color`) to override the auto-derived text color.
  *
  * @cssClass .l-avatar-group - Flex wrapper that overlaps a row of stacked avatars.
  */
 export class Avatar extends LuxenElement {
   static styles = [hostStyles, styles];
 
+  /** Image URL. Falls back to initials (then the default icon) if it fails to load. */
   @property()
   src = '';
 
+  /** Name used as the accessible label and to derive the initials fallback. */
   @property()
   name = '';
 
+  /** Avatar size: `xs`, `sm`, `md` (default), `lg`, or `xl`. */
   @property({ reflect: true })
   size = 'md';
 
+  /** Count shown in the corner badge. `0` hides the badge. */
   @property({ type: Number })
   badge = 0;
 
+  /** Render as a `<button>` with focus ring and hover states. */
   @property({ type: Boolean, reflect: true })
   interactive = false;
 
@@ -88,7 +96,7 @@ export class Avatar extends LuxenElement {
           : html`<slot>${defaultIcon}</slot>`;
 
     return staticHtml`
-      <${this._tag} class="base" type=${this.interactive ? 'button' : nothing}>
+      <${this._tag} class="base" part="base" type=${this.interactive ? 'button' : nothing}>
         ${content}
       </${this._tag}>
       ${

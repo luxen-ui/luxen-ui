@@ -45,7 +45,7 @@ Set `name` to auto-extract initials, or slot custom text content.
 
 ### Custom colors
 
-Set `--color` to a base color. Text is auto-derived via relative color syntax.
+Set `--color` to a base color. The text color is auto-derived from its luminance, staying readable on both pastel and saturated backgrounds.
 
 <ComponentWrapper :html="avatarColors" />
 
@@ -156,4 +156,8 @@ import 'luxen-ui/avatar';
 
 ### CSS custom properties
 
-<ApiTable element="avatar" section="properties" />
+<ApiTable element="avatar" section="cssProperties" />
+
+### CSS parts
+
+<ApiTable element="avatar" section="cssParts" />

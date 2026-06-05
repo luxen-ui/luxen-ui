@@ -7,7 +7,7 @@
   position: relative;
   width: var(--_size);
   height: var(--_size);
-  border-radius: calc(var(--_size) * 0.2);
+  border-radius: calc(var(--_size) * 0.15);
   isolation: isolate;
   vertical-align: middle;
   flex-shrink: 0;
@@ -91,11 +91,33 @@ img {
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: calc(var(--_size) * 0.2);
+  border-radius: calc(var(--_size) * 0.15);
   background-color: var(--color, var(--l-color-bg-fill-neutral-soft));
-  color: oklch(
-    from var(--color) calc(0.65 - 0.2 * sign(l - 0.5)) calc(c * (1.75 + 0.25 * sign(l - 0.5))) h
+  /*
+   * Text over --color, decided by the background's own luminance — never the
+   * document mode, since --color is consumer-set and ignores light/dark.
+   * The contrast-color() block below is the primary path (Baseline 2026); this
+   * --_on calc() is the fallback for browsers predating it (Chrome ≤146,
+   * Safari <26, Firefox <146). It approximates WCAG relative luminance with
+   * squared sRGB channels (a cheap linearization, Rec. 709 weights) and flips at
+   * 0.2, just above the black/white crossover (~0.179) to offset squaring
+   * underestimating mid-tones — holding AA across saturated brand colors where an
+   * OKLCH-lightness threshold collapses to ≈1:1 (OKLCH L tracks hue, not
+   * luminance: a mid red reads "light" yet needs white text). --text-color lets
+   * consumers force a specific brand text color, overriding both paths.
+   */
+  --_on: calc(
+    255 *
+      (
+        1 -
+          sign(
+            0.2126 * (r / 255) * (r / 255) + 0.7152 * (g / 255) * (g / 255) + 0.0722 * (b / 255) *
+              (b / 255) - 0.2
+          )
+      ) /
+      2
   );
+  color: var(--text-color, rgb(from var(--color) var(--_on) var(--_on) var(--_on)));
   font-size: var(--_font-size);
   font-weight: 500;
   line-height: 1;
@@ -104,13 +126,18 @@ img {
   cursor: inherit;
 }
 
-@supports (color: contrast-color(red vs black, white)) {
+/* Primary path: native, guaranteed-contrast black/white. contrast-color() is
+ * Baseline Newly Available (2026) — Safari 26+, Firefox 146+, Chrome/Edge 147+ —
+ * and supersedes the luminance approximation above where supported. @supports (not
+ * declaration order) is required: the value contains var(), so a non-supporting
+ * browser would treat contrast-color() as invalid-at-computed-value-time and reset
+ * to `inherit` rather than falling back to the calc() line. No bg fallback inside,
+ * so a bare avatar (no --color) keeps inheriting --l-color-text-secondary.
+ * --text-color still wins here, overriding contrast-color()'s choice.
+ * (The earlier `… vs black, white to AA` extended syntax was dropped from the spec.) */
+@supports (color: contrast-color(red)) {
   .base {
-    color: contrast-color(
-      var(--color, var(--l-color-bg-fill-neutral-soft)) vs
-        oklch(from var(--color) 0.45 calc(c * 2) h),
-      oklch(from var(--color) 0.85 calc(c * 1.5) h) to AA
-    );
+    color: var(--text-color, contrast-color(var(--color)));
   }
 }
 

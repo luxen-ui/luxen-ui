@@ -98,24 +98,48 @@ All components must support dark mode. Global design tokens in `_tokens.css` use
 
 When a property like `background-color` is driven by a consumer-controlled custom property (e.g. `--color`), the matching text/foreground color must **not** be switched via `light-dark()` or `@media (prefers-color-scheme: dark)`. Both signals are decoupled from the actual background — the consumer's `--color` doesn't change with the document mode, but the mode-based rule will still flip the text and break contrast.
 
-Decide on the **luminance of the actual background** instead. Two options:
+Decide on the **luminance of the actual background** instead. Prefer native
+`contrast-color()` — Baseline Newly Available (2026): Safari 26+, Firefox 146+,
+Chrome/Edge 147+ — which returns the guaranteed-contrast black/white. Keep a
+luminance fallback for browsers predating it, and gate the native path behind
+`@supports`, **not** declaration order: the value contains `var()`, so a
+non-supporting browser treats `contrast-color()` as invalid-at-computed-value-time
+and resets to `inherit` instead of falling back to the previous line.
+
+For the fallback, pick black/white from an approximate relative luminance — not
+from OKLCH lightness, which tracks hue rather than luminance (a saturated mid red
+has high OKLCH `l` yet low luminance, so an `l`-threshold mis-picks dark text and
+contrast collapses to ≈1:1). Square the sRGB channels for a cheap linearization
+and flip just above the WCAG black/white crossover (~0.179):
 
 ```css
-/* Default: luminance-based switch via sign() — Baseline since 2023 everywhere */
-color: oklch(
-  from var(--color) calc(0.65 - 0.2 * sign(l - 0.5)) calc(c * (1.75 + 0.25 * sign(l - 0.5))) h
+/* Fallback for pre-Baseline browsers (Chrome ≤146, Safari <26, Firefox <146):
+ * luminance-thresholded black/white. sign()/calc() require whitespace around + and -. */
+--_on: calc(
+  255 *
+    (
+      1 -
+        sign(
+          0.2126 * (r / 255) * (r / 255) + 0.7152 * (g / 255) * (g / 255) + 0.0722 * (b / 255) *
+            (b / 255) - 0.2
+        )
+    ) /
+    2
 );
+color: rgb(from var(--color) var(--_on) var(--_on) var(--_on));
 
-/* Enhancement: contrast-color() once supported (test the extended syntax) */
-@supports (color: contrast-color(red vs black, white)) {
-  color: contrast-color(
-    var(--color) vs oklch(from var(--color) 0.45 calc(c * 2) h),
-    oklch(from var(--color) 0.85 calc(c * 1.5) h) to AA
-  );
+/* Primary: native guaranteed-contrast choice. No bg fallback inside var(--color),
+ * so a bare element keeps inheriting its default text color. */
+@supports (color: contrast-color(red)) {
+  color: contrast-color(var(--color));
 }
 ```
 
 Reference implementation: `<l-avatar>` — `src/html/elements/avatar/avatar.css`.
+Measured WCAG contrast of the fallback across 27 saturated + pastel backgrounds:
+25/27 reach AA (4.5:1), all 27 clear the 3:1 large-text floor (worst case 4.48);
+`contrast-color()` reaches the per-color optimum where supported. An
+OKLCH-lightness threshold reaches only ~7/27.
 
 ## Design Tokens
 
