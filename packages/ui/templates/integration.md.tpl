@@ -35,7 +35,7 @@ A badge:
 
 ```html
 <l-badge>Default</l-badge>
-<l-badge style="--variant: success">Success</l-badge>
+<l-badge variant="success">Success</l-badge>
 ```
 
 A dialog:
