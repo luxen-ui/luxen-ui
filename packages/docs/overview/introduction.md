@@ -323,7 +323,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <code>&lt;i&gt;</code>
 <code>&lt;iframe&gt;</code>
 <code>&lt;img&gt;</code>
-<a class="luxen-tag" data-type="progressive" href="/elements/input-otp"><code>&lt;input&gt;</code></a>
+<a class="luxen-tag" data-type="native" href="/elements/input"><code>&lt;input&gt;</code></a>
 <code>&lt;ins&gt;</code>
 <a class="luxen-tag" data-type="native" href="/elements/kbd"><code>&lt;kbd&gt;</code></a>
 <code>&lt;label&gt;</code>
@@ -398,6 +398,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="shadow"><code>&lt;l-dropdown-item&gt;</code></a>
 <a class="luxen-tag" data-type="shadow"><code>&lt;l-dropdown-label&gt;</code></a>
 <a class="luxen-tag" data-type="progressive" href="/elements/form-field"><code>&lt;l-form-field&gt;</code></a>
+<a class="luxen-tag" data-type="progressive" href="/elements/input"><code>&lt;l-input-group&gt;</code></a>
 <a class="luxen-tag" data-type="progressive" href="/elements/input-otp"><code>&lt;l-input-otp&gt;</code></a>
 <a class="luxen-tag" data-type="progressive" href="/elements/input-stepper"><code>&lt;l-input-stepper&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/popover"><code>&lt;l-popover&gt;</code></a>

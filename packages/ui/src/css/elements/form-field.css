@@ -14,6 +14,8 @@
 
     & > label {
       color: var(--l-form-control-label-color);
+      font-size: var(--l-text-sm);
+      font-weight: var(--l-font-weight-medium);
     }
 
     /* Required marker on the label. */

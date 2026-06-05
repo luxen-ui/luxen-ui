@@ -1,0 +1,34 @@
+<div class="grid gap-4 max-w-sm">
+  <l-form-field>
+    <label>Default</label>
+    <input
+      type="text"
+      placeholder="Placeholder text"
+    />
+  </l-form-field>
+  <l-form-field>
+    <label>Read-only</label>
+    <input
+      type="text"
+      value="Read-only value"
+      readonly
+    />
+  </l-form-field>
+  <l-form-field>
+    <label>Disabled</label>
+    <input
+      type="text"
+      value="Disabled value"
+      disabled
+    />
+  </l-form-field>
+  <l-form-field>
+    <label>Invalid</label>
+    <input
+      type="email"
+      value="not-an-email"
+      aria-invalid="true"
+    />
+    <p class="l-error">Enter a valid email address.</p>
+  </l-form-field>
+</div>

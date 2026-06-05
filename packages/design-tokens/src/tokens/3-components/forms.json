@@ -52,6 +52,21 @@
         "$value": "{color.bg.fill.danger.strong}",
         "$description": "Control border color when invalid."
       },
+      "disabled-background": {
+        "$type": "color",
+        "$value": "{color.bg.disabled}",
+        "$description": "Background of a disabled text control — a subtle grey fill (reinforces non-interactivity, instead of fading the whole control with opacity)."
+      },
+      "disabled-border": {
+        "$type": "color",
+        "$value": "{color.border-disabled}",
+        "$description": "Border color of a disabled text control."
+      },
+      "disabled-color": {
+        "$type": "color",
+        "$value": "{color.text.disabled}",
+        "$description": "Value/placeholder text color of a disabled text control."
+      },
       "toggle-size": {
         "$type": "dimension",
         "$value": "1.25em",
@@ -96,8 +111,8 @@
     "field": {
       "gap": {
         "$type": "dimension",
-        "$value": "{spacing-2}",
-        "$description": "Vertical gap between label, control, and messages in a stacked field."
+        "$value": "{spacing-1}",
+        "$description": "Vertical gap between label, control, and messages in a stacked field. Tight, so the label and helper text sit close to the control."
       },
       "choice-gap": {
         "$type": "dimension",

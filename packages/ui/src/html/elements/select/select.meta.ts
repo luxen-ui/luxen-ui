@@ -11,6 +11,7 @@
  * @nativeElement select
  * @selector .l-select
  *
+ * @attribute data-size - xs | sm | md | lg | xl — Control height on the shared `--l-size-control-*` scale (default `md`).
  * @attribute disabled - Disables the select.
  * @attribute required - Marks the field as required.
  * @attribute multiple - Allows multiple selections.
@@ -21,6 +22,7 @@
  * @cssClass .l-select - Base select element with `appearance: base-select`.
  * @cssClass .l-select-item - Option styling with checkmark indicator.
  *
+ * @cssproperty [--height=var(--l-form-control-height)] - Control height (set via `data-size` or directly).
  * @cssproperty [--border-radius=4px] - Border radius.
  * @cssproperty --border-color - Border color (adapts to light/dark).
  *

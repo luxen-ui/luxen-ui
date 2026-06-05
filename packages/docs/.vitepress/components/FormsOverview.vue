@@ -7,6 +7,12 @@ const required = ref(false);
 const disabled = ref(false);
 const invalid = ref(false);
 
+// Control size — drives every control's height via `data-size` (native) / `size`
+// (custom), all mapping the shared `--l-size-control-*` scale. Not part of
+// `stateKey`: it's a pure CSS attribute, so it updates without a remount.
+const size = ref('md');
+const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+
 // `l-form-field` wires its children once on connect, so we remount the whole
 // form (via :key) whenever a toggle changes — each field then re-wires with the
 // new attributes.
@@ -49,12 +55,141 @@ const attr = (on) => (on ? '' : null);
         />
         Error
       </label>
+
+      <div
+        class="forms-overview__sizes"
+        role="group"
+        aria-label="Control size"
+      >
+        <button
+          v-for="s in sizes"
+          :key="s"
+          type="button"
+          :data-active="size === s"
+          @click="size = s"
+        >
+          {{ s }}
+        </button>
+      </div>
     </div>
 
     <form
       :key="stateKey"
       class="forms-overview__form"
     >
+      <!-- Each input below mirrors the element's reference page. Error feeds a
+           genuinely invalid value (typeMismatch / patternMismatch / range*) so
+           `l-form-field` flags it via `aria-invalid` — never a decorative-only
+           state. `l-input-group` adornments react through `:has()`. -->
+
+      <!-- Text — a trailing slot inside l-input-group. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input text</label>
+        <l-input-group :size="size">
+          <input
+            type="text"
+            placeholder="Placeholder text"
+            pattern="[A-Za-z ]+"
+            title="Letters and spaces only"
+            :value="invalid ? 'Jane123' : 'Jane Cooper'"
+            :required="required"
+            :disabled="disabled"
+          />
+          <span>slot end</span>
+        </l-input-group>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Search — native clear button. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input search</label>
+        <input
+          type="search"
+          :data-size="size"
+          pattern="[A-Za-z ]+"
+          title="Letters and spaces only"
+          :value="invalid ? 'foo@bar' : 'This a value'"
+          :required="required"
+          :disabled="disabled"
+        />
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Number — a unit suffix inside l-input-group. Error tightens max so the
+           value (170) overflows, like the stepper. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input number</label>
+        <l-input-group :size="size">
+          <input
+            type="number"
+            placeholder="Placeholder text"
+            min="0"
+            :max="invalid ? 100 : 300"
+            value="170"
+            :required="required"
+            :disabled="disabled"
+          />
+          <span>cm</span>
+        </l-input-group>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Password — l-input-group injects the show/hide toggle. Error feeds a
+           too-short value (the `.{8,}` pattern fails). -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input password</label>
+        <l-input-group
+          password-toggle
+          :size="size"
+        >
+          <input
+            type="password"
+            autocomplete="current-password"
+            pattern=".{8,}"
+            title="At least 8 characters"
+            :value="invalid ? 'abc' : 'supersecret'"
+            :required="required"
+            :disabled="disabled"
+          />
+        </l-input-group>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Date — custom calendar picker icon. Error feeds a date past max. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input date</label>
+        <input
+          type="date"
+          :data-size="size"
+          max="2025-12-31"
+          :value="invalid ? '2026-06-13' : '2025-06-13'"
+          :required="required"
+          :disabled="disabled"
+        />
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Time — custom clock picker icon. Error feeds a time before min. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Input time</label>
+        <input
+          type="time"
+          :data-size="size"
+          min="09:00"
+          max="18:00"
+          :value="invalid ? '07:30' : '14:30'"
+          :required="required"
+          :disabled="disabled"
+        />
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
       <!-- Checkbox -->
       <l-form-field :invalid="attr(invalid)">
         <label>Subscribe to the newsletter</label>
@@ -72,7 +207,7 @@ const attr = (on) => (on ? '' : null);
            invalid (rangeOverflow), toggling only the styling, not the value. -->
       <l-form-field :invalid="attr(invalid)">
         <label>Quantity</label>
-        <l-input-stepper>
+        <l-input-stepper :size="size">
           <input
             type="number"
             min="0"
@@ -86,7 +221,7 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
-      <!-- TODO: add select, radio, switch, input, textarea here as they ship —
+      <!-- TODO: add select, radio, switch, textarea here as they ship —
            they reuse the same l-form-field wiring and --l-form-control-* tokens. -->
     </form>
   </div>
@@ -113,6 +248,34 @@ const attr = (on) => (on ? '' : null);
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+}
+
+/* Segmented control to swap the shared control size live. */
+.forms-overview__sizes {
+  display: inline-flex;
+  gap: 2px;
+  margin-inline-start: auto;
+  padding: 2px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 0.4rem;
+  background-color: var(--vp-c-bg);
+}
+
+.forms-overview__sizes button {
+  padding: 2px 9px;
+  border-radius: 0.3rem;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.78rem;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.forms-overview__sizes button[data-active='true'] {
+  background-color: var(--vp-c-brand-1);
+  color: #fff;
 }
 
 .forms-overview__form {

@@ -145,6 +145,24 @@
       "inMockups": true
     },
     {
+      "name": "input",
+      "displayName": "Input",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-input"
+    },
+    {
+      "name": "input-group",
+      "displayName": "Input group",
+      "kind": "element",
+      "type": "progressive",
+      "inSkill": false,
+      "inMockups": true,
+      "subItemOf": "input"
+    },
+    {
       "name": "input-otp",
       "displayName": "Input OTP",
       "kind": "element",

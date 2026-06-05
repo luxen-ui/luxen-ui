@@ -13,6 +13,8 @@ const fr: LuxenTranslation = {
   toggleFullscreen: 'Basculer en plein écran',
   goToSlide: (n) => `Aller à la diapositive ${n}`,
 
+  showPassword: 'Afficher le mot de passe',
+
   increaseValue: 'Augmenter la valeur',
   decreaseValue: 'Diminuer la valeur',
 

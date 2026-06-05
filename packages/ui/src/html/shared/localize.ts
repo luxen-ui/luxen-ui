@@ -49,6 +49,9 @@ export interface LuxenTranslation {
   toggleFullscreen: string;
   goToSlide: (n: number) => string;
 
+  // input-group
+  showPassword?: string;
+
   // input-stepper
   increaseValue: string;
   decreaseValue: string;
@@ -115,7 +118,11 @@ export function resolveTerm<K extends TermKey>(
 ): string {
   const translation = getTranslation(lang);
   const value = (translation[key] ?? en[key]) as LuxenTranslation[K];
-  return typeof value === 'function' ? (value as (...a: unknown[]) => string)(...args) : value;
+  // `?? ''` only triggers if English itself omits an optional term — a bug, but
+  // an empty label degrades better than a runtime `undefined`.
+  return typeof value === 'function'
+    ? (value as (...a: unknown[]) => string)(...args)
+    : (value ?? '');
 }
 
 // --- DOM controller (browser only) -----------------------------------------

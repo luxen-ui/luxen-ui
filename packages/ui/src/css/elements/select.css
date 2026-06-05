@@ -1,7 +1,35 @@
 @layer components {
   .l-select {
+    /* Height on the shared control scale; `data-size` swaps it (default `md`).
+       Only the height changes — label and hint/error are unaffected. */
+    --height: var(--l-form-control-height);
     --border-radius: 4px;
     --border-color: light-dark(var(--l-color-gray-200), var(--l-color-gray-800));
+
+    min-block-size: var(--height);
+
+    &[data-size='xs'] {
+      --height: var(--l-size-control-xs);
+    }
+    &[data-size='sm'] {
+      --height: var(--l-size-control-sm);
+    }
+    &[data-size='md'] {
+      --height: var(--l-size-control-md);
+    }
+    &[data-size='lg'] {
+      --height: var(--l-size-control-lg);
+    }
+    &[data-size='xl'] {
+      --height: var(--l-size-control-xl);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: var(--l-form-control-disabled-border);
+      background-color: var(--l-form-control-disabled-background);
+      color: var(--l-form-control-disabled-color);
+    }
 
     &,
     &::picker(select) {
