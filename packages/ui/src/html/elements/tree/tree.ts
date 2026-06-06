@@ -13,6 +13,9 @@ export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
 /**
  * A hierarchical tree view composed of `<l-tree-item>` children.
  *
+ * The host carries `role="tree"`, so give it an accessible name with
+ * `aria-label` or `aria-labelledby` (e.g. `<l-tree aria-label="Files">`).
+ *
  * @slot - One or more `l-tree-item` elements.
  *
  * @csspart base - The root tree container.
@@ -33,6 +36,7 @@ export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
 export class Tree extends LuxenElement {
   static override styles = [hostStyles, styles];
 
+  private _internals = this.attachInternals();
   private _mutationObserver?: MutationObserver;
   private _lastFocusedItem: TreeItem | null = null;
 
@@ -56,6 +60,12 @@ export class Tree extends LuxenElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this._internals.role = 'tree';
+    // Mirror the role to a DOM attribute too. The ElementInternals role alone is
+    // not `[role]`-selectable (CSS, querySelector, Cypress/Playwright CSS), which
+    // silently breaks consumers migrating from libraries that expose an attribute
+    // role. Respect an author-provided role if one is already set.
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'tree');
     this._mutationObserver = new MutationObserver(() => this._syncAll());
     this._mutationObserver.observe(this, { childList: true, subtree: true });
     this.addEventListener('l-tree-item-toggle', this._onItemToggle as EventListener);
@@ -71,6 +81,9 @@ export class Tree extends LuxenElement {
   }
 
   override updated(changed: PropertyValues<this>) {
+    if (changed.has('selection')) {
+      this._internals.ariaMultiSelectable = this.selection === 'multiple' ? 'true' : 'false';
+    }
     if (changed.has('selection') || changed.has('independent')) {
       this._syncAll();
     }
@@ -121,20 +134,26 @@ export class Tree extends LuxenElement {
     }
 
     const showCheckbox = this.selection === 'multiple';
-    for (const root of roots) {
-      this._syncSubtree(root, 0, showCheckbox);
-    }
+    this._syncLevel(roots, 0, showCheckbox);
     this._updateBranchStates();
     // Ensure at least one item is tabbable.
     this._ensureTabStop();
   }
 
-  private _syncSubtree(item: TreeItem, depth: number, showCheckbox: boolean) {
-    item.depth = depth;
-    item.showCheckbox = showCheckbox && this._canShowCheckboxOn(item);
-    for (const child of item.getChildrenItems()) {
-      this._syncSubtree(child, depth + 1, showCheckbox);
-    }
+  /**
+   * Sync depth, checkbox visibility and ARIA position for a sibling group, then
+   * recurse. `aria-level`/`aria-setsize`/`aria-posinset` let screen readers
+   * announce "level N, M of K" — valuable here because `lazy` items mean the
+   * full set isn't always in the DOM (see WAI-ARIA Tree View pattern).
+   */
+  private _syncLevel(items: TreeItem[], depth: number, showCheckbox: boolean) {
+    const setSize = items.length;
+    items.forEach((item, index) => {
+      item.depth = depth;
+      item.showCheckbox = showCheckbox && this._canShowCheckboxOn(item);
+      item.setPosition(depth + 1, index + 1, setSize);
+      this._syncLevel(item.getChildrenItems(), depth + 1, showCheckbox);
+    });
   }
 
   private _canShowCheckboxOn(_item: TreeItem): boolean {
@@ -424,8 +443,6 @@ export class Tree extends LuxenElement {
       <div
         class="tree"
         part="base"
-        role="tree"
-        aria-multiselectable=${this.selection === 'multiple' ? 'true' : 'false'}
         @click=${this._onClick}
         @keydown=${this._onKeyDown}
         @focusin=${this._onFocusIn}

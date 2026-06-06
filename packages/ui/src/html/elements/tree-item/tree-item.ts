@@ -86,6 +86,18 @@ export class TreeItem extends LuxenElement {
   }
   private _depth = 0;
 
+  /**
+   * Set by `<l-tree>`: ARIA position within the tree. `level` is 1-based depth,
+   * `posInSet`/`setSize` describe the item's rank among its siblings. These let
+   * screen readers announce "level 2, 3 of 5" even when `lazy` children keep the
+   * full set out of the DOM.
+   */
+  setPosition(level: number, posInSet: number, setSize: number) {
+    this._internals.ariaLevel = String(level);
+    this._internals.ariaPosInSet = String(posInSet);
+    this._internals.ariaSetSize = String(setSize);
+  }
+
   /** Whether this item has nested tree-item children. */
   get hasChildren(): boolean {
     return this._hasChildren;
@@ -119,6 +131,12 @@ export class TreeItem extends LuxenElement {
   override connectedCallback() {
     super.connectedCallback();
     this._internals.role = 'treeitem';
+    // Mirror the role to a DOM attribute too, so `[role="treeitem"]` selectors
+    // (CSS, querySelector, Cypress/Playwright CSS) keep matching — the
+    // ElementInternals role alone is not attribute-selectable. Dynamic ARIA
+    // states (aria-expanded/selected/…) stay on ElementInternals; select those
+    // via the reflected `expanded`/`selected`/`disabled` attributes instead.
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'treeitem');
     this._childObserver = new MutationObserver(() => this._syncChildren());
     this._childObserver.observe(this, { childList: true });
     this._syncChildren();
@@ -141,6 +159,10 @@ export class TreeItem extends LuxenElement {
 
     if (changed.has('disabled')) {
       this._internals.ariaDisabled = this.disabled ? 'true' : null;
+    }
+
+    if (changed.has('loading')) {
+      this._internals.ariaBusy = this.loading ? 'true' : null;
     }
   }
 
@@ -243,6 +265,7 @@ export class TreeItem extends LuxenElement {
           part="checkbox"
           type="checkbox"
           tabindex="-1"
+          aria-hidden="true"
           .checked=${this.selected}
           .indeterminate=${this.indeterminate}
           ?disabled=${this.disabled}

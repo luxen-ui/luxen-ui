@@ -167,6 +167,27 @@ A roadmap of phases and tasks, where collapsing folds away phase details for a h
   { Key: '*', Description: 'Expands all sibling branches of the focused item' },
 ]" />
 
+### Selectors & testing
+
+Roles and ARIA states are applied via `ElementInternals`. The **role** is also mirrored to a DOM attribute, so `[role="tree"]` and `[role="treeitem"]` keep matching. But ARIA **states** (`aria-expanded`, `aria-selected`, `aria-disabled`, `aria-level`, `aria-setsize`, `aria-posinset`) live only on the accessibility tree — `[aria-*]` CSS and query selectors never match them.
+
+Target the reflected boolean attributes, the tag, or the accessible role instead:
+
+```js
+document.querySelectorAll('[role="treeitem"]'); // ✅ role is mirrored to an attribute
+tree.querySelectorAll('l-tree-item[selected]'); // ✅ state via reflected attribute
+tree.querySelectorAll('l-tree-item[expanded]'); // ✅ (also: [disabled], [indeterminate])
+screen.getByRole('treeitem', { selected: true }); // ✅ name/state via the a11y tree
+document.querySelector('[aria-selected="true"]'); // ❌ no match — state is on ElementInternals
+```
+
+```css
+/* Style by the reflected state attribute, not [aria-*]. */
+l-tree-item[selected]::part(base) {
+  background: var(--l-color-bg-fill-brand-subtle);
+}
+```
+
 ## API reference
 
 ### Importing
