@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+  Interaction test — emoji picker dismissal inside a modal <l-dialog>.
+
+  Reproduces the RFC "prose-editor emoji dismiss" scenario: the editor lives in
+  a modal dialog, wrapped by an element that calls stopPropagation() on bubbling
+  clicks (as modals, ProseMirror and framework delegation routinely do). That is
+  what broke emoji-mart's document-level click listener. The fix moves dismissal
+  to a native popover="auto" (light-dismiss + Escape), which the swallowed bubble
+  can't defeat.
+
+  Manual:    cd packages/ui && python3 -m http.server 8080 && open http://localhost:8080/tests/cdn/prose-editor-emoji.html
+  Automated: cd packages/ui && pnpm test:e2e
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/cdn/styles/preset.css" />
+    <script type="module">
+      Promise.all([
+        import('/cdn/elements/dialog/index.js'),
+        import('/cdn/elements/prose-editor/index.js'),
+      ])
+        .then(() => (document.getElementById('status').textContent = '✅ loaded'))
+        .catch((err) => (document.getElementById('status').textContent = '❌ ' + err.message));
+    </script>
+    <script>
+      // Swallow bubbling clicks the way a modal / rich editor / framework
+      // delegation does — the exact condition that defeated emoji-mart's own
+      // document click listener.
+      addEventListener('DOMContentLoaded', () => {
+        for (const id of ['stopwrap', 'stopwrap-page']) {
+          document
+            .getElementById(id)
+            .addEventListener('click', (event) => event.stopPropagation());
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <p id="status">⌛ loading…</p>
+
+    <button
+      type="button"
+      class="l-button"
+      command="--show"
+      commandfor="notes-dialog"
+    >
+      Open dialog
+    </button>
+
+    <l-dialog
+      id="notes-dialog"
+      title="Notes"
+    >
+      <div
+        id="stopwrap"
+        style="padding: 8px"
+      >
+        <l-prose-editor
+          id="editor"
+          placeholder="Write a note…"
+          style="--content-min-height: 14rem"
+        ></l-prose-editor>
+      </div>
+      <menu slot="footer">
+        <button
+          type="button"
+          class="l-button"
+          command="--hide"
+          commandfor="notes-dialog"
+        >
+          Close
+        </button>
+      </menu>
+    </l-dialog>
+
+    <!-- Non-modal editor: its picker parents to <body> instead of a dialog. -->
+    <div
+      id="stopwrap-page"
+      style="padding: 8px"
+    >
+      <l-prose-editor
+        id="editor-page"
+        placeholder="Write a note…"
+        style="--content-min-height: 14rem"
+      ></l-prose-editor>
+    </div>
+  </body>
+</html>
