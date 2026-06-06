@@ -128,7 +128,9 @@
     "manifest": "cem analyze",
     "metadata": "pnpm run manifest && node scripts/normalize-metadata.mjs && node scripts/check-metadata.mjs",
     "preview": "vp preview",
-    "test": "vp test run --passWithNoTests",
+    "test": "vp test run --passWithNoTests && vp test run --config vitest.browser.config.ts",
+    "test:unit": "vp test run --passWithNoTests",
+    "test:components": "vp test run --config vitest.browser.config.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

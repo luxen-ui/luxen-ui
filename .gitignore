@@ -12,6 +12,7 @@ cache
 __screenshots__
 test-results
 playwright-report
+.vitest-attachments
 
 # System Files
 .DS_Store

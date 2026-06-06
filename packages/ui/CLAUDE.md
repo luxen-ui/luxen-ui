@@ -56,6 +56,22 @@ Keep the `.meta.ts` in sync with the element's `.css` file (the CSS custom prope
 
 Every element has an entry in `elements.json` with a `type` field (`native` | `progressive` | `custom` | `shadow`) — add it for new elements; it drives metadata extraction and the `<ElementSpec>` banner.
 
+## Testing
+
+Two runners, two jobs:
+
+- **Node unit tests** — flat `tests/*.test.ts` (`vitest.config.ts`). For non-DOM logic only (CLI, PostCSS).
+- **Component tests** — `tests/elements/*.browser.test.ts` (`vitest.browser.config.ts`, real Chromium via Playwright). **Required** for anything touching ARIA via `ElementInternals`, `getByRole`, `:state()`, `showModal`/popover — jsdom/happy-dom can't observe these. CDN-bundle smoke tests stay in Playwright (`tests/cdn/browser/*.spec.ts`, `pnpm test:e2e`).
+
+Run: `vp run test` (both) · `pnpm test:unit` · `pnpm test:components`.
+
+How to write component tests:
+
+- **User-oriented, never theatre.** Drive the element like a person (click rows, press keys via a real `KeyboardEvent`) then assert what a user, their screen reader, or their CSS observes — focus, selection, the accessibility tree, selector targetability. Don't assert internal wiring or re-test the framework.
+- **`describe`/`it` read like a book's table of contents.** `describe` = a capability or persona scenario ("A keyboard user can move through the tree"); `it` = one observable outcome ("jumps to the first and last item with Home and End"). The verbose reporter should read as prose.
+- **Assert via `getByRole`** (name + state filters `{ selected, expanded, level, disabled }`) — these match because roles/states are mirrored to DOM attributes alongside `ElementInternals`. For ARIA with no role filter (`aria-posinset`/`setsize`/`busy`/`multiselectable`), assert the mirrored attribute. Avoid `expect.element` (untyped under `vp check`) — use `locator.elements()`/`.query()` after settling.
+- **Settle Lit updates** before asserting: `await el.updateComplete` + a macrotask (`setTimeout(…, 0)`), since the tree syncs on a microtask + MutationObserver.
+
 ## Element Styles (Shadow DOM)
 
 Shadow-DOM elements load their styles from real `.css` files imported via Vite's `?inline` query, not from Lit `css\`...\``templates. This lets the consumer's`luxen-ui/vite-plugin`rewrite`--l-\*` tokens at build time — there is no runtime token-prefix mechanism.
