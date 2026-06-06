@@ -1,5 +1,13 @@
 # luxen-ui
 
+## 0.9.1
+
+### Patch Changes
+
+- 5321e79: `<l-button>` now shows a pointer cursor on hover for enabled buttons, matching common design-system conventions. Disabled buttons keep the `not-allowed` cursor.
+- a6412b2: Fixed custom `cssPrefix` builds silently breaking Shadow-DOM component defaults. Shadow-DOM CSS reads canonical `--l-*` design tokens, but a custom prefix only emitted `--{prefix}-*`, so selected/hover backgrounds, borders, and focus rings resolved to nothing (the focus ring even fell back to the OS `Highlight` color). The Vite plugin now appends an automatic `:root` bridge (`--l-*: var(--{prefix}-*)`) to your imported tokens, so every Shadow-DOM token resolves with no extra setup. Default `l` builds are unchanged. The `<l-tree>` focus ring also dropped its `Highlight` fallback so it matches every other component, and `<l-tree-item>` no longer paints a second (browser-default) outline around the whole subtree when a row is focused — only the brand ring on the focused row shows.
+- a7c2966: Fix the `<l-prose-editor>` emoji picker being hard to dismiss — clicking outside it or clicking the emoji toolbar button again often left it open, especially inside a modal `<l-dialog>` or any rich-editor/framework context that stops click propagation. The picker now uses the platform's native popover light-dismiss, so outside-clicks and re-clicking the toolbar button close it reliably, and `Escape` dismisses only the picker (leaving the dialog open).
+
 ## 0.9.0
 
 ### Minor Changes
