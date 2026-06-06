@@ -19,6 +19,7 @@
   line-height: 1.5;
   color: var(--l-color-text-primary, CanvasText);
   white-space: nowrap;
+  text-align: start;
 }
 
 .item:focus-visible {
