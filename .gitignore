@@ -23,6 +23,7 @@ Thumbs.db
 .superset
 
 # AI Files
+.github/RFC-*.md
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 .claude/plans
