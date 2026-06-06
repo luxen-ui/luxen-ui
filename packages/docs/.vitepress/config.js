@@ -111,6 +111,7 @@ export default defineConfig({
           el('Badge', 'l-badge', 'badge'),
           el('Carousel', 'l-carousel', 'carousel'),
           el('Button', 'button', 'button'),
+          el('Button group', 'l-button-group', 'button-group'),
           el('Close button', 'button', 'close-button'),
           el('Dialog', 'l-dialog', 'dialog'),
           el('Divider', 'l-divider', 'divider'),

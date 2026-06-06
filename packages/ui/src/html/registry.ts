@@ -2,6 +2,7 @@
 export type ElementBaseName =
   | 'avatar'
   | 'badge'
+  | 'button-group'
   | 'carousel'
   | 'carousel-item'
   | 'dialog'

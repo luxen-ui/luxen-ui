@@ -1,0 +1,88 @@
+@layer components {
+  /**
+   * Visually joins a set of `.l-button` elements into a single segmented
+   * control. Pure CSS: it targets direct `.l-button` children and buttons
+   * nested one level inside a wrapper (e.g. an `l-dropdown` trigger, for split
+   * buttons), so it works without JavaScript. `<l-button-group>` only adds the
+   * `role="group"` / `aria-orientation` semantics on top.
+   *
+   * - https://webawesome.com/docs/components/button-group/
+   * - https://ui.shadcn.com/docs/components/button-group
+   */
+
+  l-button-group {
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  l-button-group[orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* Segments overlap their neighbour's border, so raise the interacted one to
+     keep its border and focus ring from being clipped. */
+  l-button-group .l-button {
+    position: relative;
+  }
+
+  l-button-group .l-button:hover,
+  l-button-group .l-button:active {
+    z-index: 1;
+  }
+
+  l-button-group .l-button:focus-visible {
+    z-index: 2;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Horizontal (default): collapse the inline (start ↔ end) seams
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-button-group:not([orientation='vertical']) {
+    /* Overlap the shared 1px border. Margin sits on the flex item — either the
+       button itself or the wrapper around it. */
+    & > *:not(:first-child):is(.l-button, :has(.l-button)) {
+      margin-inline-start: -1px;
+    }
+
+    /* Non-first segment: square off the leading (start) corners. */
+    & > .l-button:not(:first-child),
+    & > *:not(:first-child) .l-button {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    /* Non-last segment: square off the trailing (end) corners. */
+    & > .l-button:not(:last-child),
+    & > *:not(:last-child) .l-button {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Vertical: collapse the block (top ↔ bottom) seams
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-button-group[orientation='vertical'] {
+    & > *:not(:first-child):is(.l-button, :has(.l-button)) {
+      margin-block-start: -1px;
+    }
+
+    & > .l-button:not(:first-child),
+    & > *:not(:first-child) .l-button {
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+
+    & > .l-button:not(:last-child),
+    & > *:not(:last-child) .l-button {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+}

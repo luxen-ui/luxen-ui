@@ -20,6 +20,7 @@ export default {
     if (!import.meta.env.SSR) {
       void import('luxen-ui/avatar');
       void import('luxen-ui/badge');
+      void import('luxen-ui/button-group');
       void import('luxen-ui/carousel');
       void import('luxen-ui/carousel-item');
       void import('luxen-ui/skeleton');

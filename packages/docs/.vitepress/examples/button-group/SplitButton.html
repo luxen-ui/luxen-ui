@@ -1,0 +1,21 @@
+<l-button-group label="Save options">
+  <button
+    class="l-button"
+    data-variant="primary"
+  >
+    Save
+  </button>
+  <l-dropdown>
+    <button
+      slot="trigger"
+      class="l-button"
+      data-variant="primary"
+      data-icon-only
+      aria-label="More save options"
+    >
+      <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+    </button>
+    <l-dropdown-item value="draft">Save as draft</l-dropdown-item>
+    <l-dropdown-item value="template">Save as template</l-dropdown-item>
+  </l-dropdown>
+</l-button-group>

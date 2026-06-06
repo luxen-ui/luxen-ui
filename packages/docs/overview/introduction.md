@@ -153,6 +153,7 @@ Elements in <a class="luxen-tag"><code>bold</code></a> are styled or extended by
 ·
 <a class="luxen-tag" href="/elements/avatar"><code>&lt;l-avatar&gt;</code></a>
 <a class="luxen-tag" href="/elements/badge"><code>&lt;l-badge&gt;</code></a>
+<a class="luxen-tag" href="/elements/button-group"><code>&lt;l-button-group&gt;</code></a>
 <a class="luxen-tag" href="/elements/carousel"><code>&lt;l-carousel&gt;</code></a>
 <a class="luxen-tag"><code>&lt;l-carousel-item&gt;</code></a>
 <a class="luxen-tag" href="/elements/dialog"><code>&lt;l-dialog&gt;</code></a>

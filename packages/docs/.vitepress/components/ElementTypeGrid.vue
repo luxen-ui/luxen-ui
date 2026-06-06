@@ -10,6 +10,7 @@ const elements = [
   { name: 'Avatar', tag: 'l-avatar', type: 'shadow', link: '/elements/avatar' },
   { name: 'Badge', tag: 'l-badge', type: 'custom', link: '/elements/badge' },
   { name: 'Button', tag: 'button', type: 'native', link: '/elements/button' },
+  { name: 'Button Group', tag: 'l-button-group', type: 'custom', link: '/elements/button-group' },
   { name: 'Carousel', tag: 'l-carousel', type: 'shadow', link: '/elements/carousel' },
   { name: 'Checkbox', tag: 'input', type: 'native', link: '/elements/checkbox' },
   { name: 'Close Button', tag: 'button', type: 'native', link: '/elements/close-button' },

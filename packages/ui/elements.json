@@ -27,6 +27,14 @@
       "inMockups": false
     },
     {
+      "name": "button-group",
+      "displayName": "Button group",
+      "kind": "element",
+      "type": "custom",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
       "name": "carousel",
       "displayName": "Carousel",
       "kind": "element",

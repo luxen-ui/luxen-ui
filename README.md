@@ -34,6 +34,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Avatar         | `<l-avatar>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Badge          | `<l-badge>`          | ◇ Custom HTML Element (no Shadow DOM)   |
 | Button         | `<button>`           | ⏣ Native HTML Element                   |
+| Button Group   | `<l-button-group>`   | ◇ Custom HTML Element (no Shadow DOM)   |
 | Carousel       | `<l-carousel>`       | ⬢ Custom HTML Element (with Shadow DOM) |
 | Carousel Item  | `<l-carousel-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
 | Checkbox       | `<input>`            | ⏣ Native HTML Element                   |
