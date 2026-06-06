@@ -169,21 +169,18 @@ A roadmap of phases and tasks, where collapsing folds away phase details for a h
 
 ### Selectors & testing
 
-Roles and ARIA states are applied via `ElementInternals`. The **role** is also mirrored to a DOM attribute, so `[role="tree"]` and `[role="treeitem"]` keep matching. But ARIA **states** (`aria-expanded`, `aria-selected`, `aria-disabled`, `aria-level`, `aria-setsize`, `aria-posinset`) live only on the accessibility tree — `[aria-*]` CSS and query selectors never match them.
-
-Target the reflected boolean attributes, the tag, or the accessible role instead:
+Roles and ARIA states are set on `ElementInternals` (the accessibility-tree source) **and** mirrored to DOM attributes, so both `[role]` and `[aria-*]` selectors keep matching in CSS, `querySelector`, and Cypress/Playwright. Selection state is additionally exposed as the reflected `selected`/`expanded`/`disabled`/`indeterminate` boolean attributes (the component's own API).
 
 ```js
 document.querySelectorAll('[role="treeitem"]'); // ✅ role is mirrored to an attribute
-tree.querySelectorAll('l-tree-item[selected]'); // ✅ state via reflected attribute
-tree.querySelectorAll('l-tree-item[expanded]'); // ✅ (also: [disabled], [indeterminate])
-screen.getByRole('treeitem', { selected: true }); // ✅ name/state via the a11y tree
-document.querySelector('[aria-selected="true"]'); // ❌ no match — state is on ElementInternals
+document.querySelectorAll('[aria-selected="true"]'); // ✅ ARIA state is mirrored too
+tree.querySelectorAll('l-tree-item[selected]'); // ✅ reflected boolean attribute
+screen.getByRole('treeitem', { selected: true, expanded: true }); // ✅ name + state
 ```
 
 ```css
-/* Style by the reflected state attribute, not [aria-*]. */
-l-tree-item[selected]::part(base) {
+/* Style by ARIA state or the reflected boolean attribute — both work. */
+l-tree-item[aria-selected='true']::part(base) {
   background: var(--l-color-bg-fill-brand-subtle);
 }
 ```

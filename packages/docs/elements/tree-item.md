@@ -6,7 +6,7 @@ outline: deep
 
 A single node inside [`<l-tree>`](/elements/tree). Nested `<l-tree-item>` children become sub-nodes. See [Tree](/elements/tree) for examples, selection modes, and keyboard behaviour.
 
-The `role` is exposed as a DOM attribute (`[role="treeitem"]` matches), but ARIA states are set via `ElementInternals` — select by the reflected `selected`/`expanded`/`disabled` attributes, not `[aria-*]`. See [Tree › Selectors & testing](/elements/tree#selectors-testing).
+Roles and ARIA states are set on `ElementInternals` and mirrored to DOM attributes, so both `[role="treeitem"]` and `[aria-selected]`/`[aria-expanded]`/`[aria-disabled]` selectors match. See [Tree › Selectors & testing](/elements/tree#selectors-testing).
 
 <ElementSpec element="tree-item" />
 

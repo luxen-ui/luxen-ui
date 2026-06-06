@@ -93,9 +93,9 @@ export class TreeItem extends LuxenElement {
    * full set out of the DOM.
    */
   setPosition(level: number, posInSet: number, setSize: number) {
-    this._internals.ariaLevel = String(level);
-    this._internals.ariaPosInSet = String(posInSet);
-    this._internals.ariaSetSize = String(setSize);
+    this._aria('ariaLevel', 'aria-level', String(level));
+    this._aria('ariaPosInSet', 'aria-posinset', String(posInSet));
+    this._aria('ariaSetSize', 'aria-setsize', String(setSize));
   }
 
   /** Whether this item has nested tree-item children. */
@@ -133,9 +133,8 @@ export class TreeItem extends LuxenElement {
     this._internals.role = 'treeitem';
     // Mirror the role to a DOM attribute too, so `[role="treeitem"]` selectors
     // (CSS, querySelector, Cypress/Playwright CSS) keep matching — the
-    // ElementInternals role alone is not attribute-selectable. Dynamic ARIA
-    // states (aria-expanded/selected/…) stay on ElementInternals; select those
-    // via the reflected `expanded`/`selected`/`disabled` attributes instead.
+    // ElementInternals role alone is not attribute-selectable. ARIA states are
+    // mirrored the same way in `_aria()` (aria-expanded/selected/disabled/…).
     if (!this.hasAttribute('role')) this.setAttribute('role', 'treeitem');
     this._childObserver = new MutationObserver(() => this._syncChildren());
     this._childObserver.observe(this, { childList: true });
@@ -149,21 +148,43 @@ export class TreeItem extends LuxenElement {
 
   override updated(changed: PropertyValues<this>) {
     if (changed.has('expanded')) {
-      this._internals.ariaExpanded = this.isLeaf() ? null : String(this.expanded);
+      this._reflectExpanded();
+      // Emit lazy-load for ANY transition to expanded (keyboard, chevron,
+      // `expandAll()`…), not just `toggle()` — otherwise keyboard users expand a
+      // lazy branch with no children and no fetch. Fires while still `lazy`; the
+      // consumer appends children and clears `lazy`, so it won't re-fire.
+      if (this.expanded && this.lazy) this.emit('lazy-load');
       this.emit(this.expanded ? 'expand' : 'collapse');
     }
 
     if (changed.has('selected')) {
-      this._internals.ariaSelected = String(this.selected);
+      this._aria('ariaSelected', 'aria-selected', String(this.selected));
     }
 
     if (changed.has('disabled')) {
-      this._internals.ariaDisabled = this.disabled ? 'true' : null;
+      this._aria('ariaDisabled', 'aria-disabled', this.disabled ? 'true' : null);
     }
 
     if (changed.has('loading')) {
-      this._internals.ariaBusy = this.loading ? 'true' : null;
+      this._aria('ariaBusy', 'aria-busy', this.loading ? 'true' : null);
     }
+  }
+
+  /** Leaf items omit `aria-expanded` entirely; branches reflect their state. */
+  private _reflectExpanded() {
+    this._aria('ariaExpanded', 'aria-expanded', this.isLeaf() ? null : String(this.expanded));
+  }
+
+  /**
+   * Write an ARIA state to BOTH ElementInternals (the semantic source, in the
+   * accessibility tree) and a content attribute (so `[aria-*]` CSS / query / test
+   * selectors keep matching — same belt-and-suspenders as the mirrored `role`).
+   * A `null` value clears both.
+   */
+  private _aria(key: keyof ElementInternals, attr: string, value: string | null) {
+    (this._internals as unknown as Record<string, string | null>)[key] = value;
+    if (value === null) this.removeAttribute(attr);
+    else this.setAttribute(attr, value);
   }
 
   private _setState(name: string, on: boolean) {
@@ -188,17 +209,14 @@ export class TreeItem extends LuxenElement {
     if (!this._hasChildren && !this.lazy && this.expanded) {
       this.expanded = false;
     }
-    this._internals.ariaExpanded = this.isLeaf() ? null : String(this.expanded);
+    this._reflectExpanded();
   }
 
-  /** Toggle expand state. Emits `lazy-load` the first time a lazy item opens. */
+  /** Toggle expand state. Opening a `lazy` item emits `lazy-load` (via `updated`). */
   toggle() {
     if (this.isLeaf() && !this.lazy) return;
-    const next = !this.expanded;
-    if (next && this.lazy) {
-      this.emit('lazy-load');
-    }
-    this.expanded = next;
+    // lazy-load is emitted centrally from `updated()` on the expand transition.
+    this.expanded = !this.expanded;
   }
 
   private _onCheckboxChange = (event: Event) => {

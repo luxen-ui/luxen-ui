@@ -82,7 +82,11 @@ export class Tree extends LuxenElement {
 
   override updated(changed: PropertyValues<this>) {
     if (changed.has('selection')) {
-      this._internals.ariaMultiSelectable = this.selection === 'multiple' ? 'true' : 'false';
+      // Mirror to ElementInternals (a11y tree) and a content attribute, so
+      // `[aria-multiselectable]` selectors keep matching — see tree-item `_aria`.
+      const multiselectable = this.selection === 'multiple' ? 'true' : 'false';
+      this._internals.ariaMultiSelectable = multiselectable;
+      this.setAttribute('aria-multiselectable', multiselectable);
     }
     if (changed.has('selection') || changed.has('independent')) {
       this._syncAll();
@@ -204,6 +208,9 @@ export class Tree extends LuxenElement {
     switch (this.selection) {
       case 'single':
         this._setSingleSelection(item);
+        // Mirror the row-click behaviour: activating a branch also toggles it,
+        // so keyboard users expand lazy branches (and trigger their fetch) too.
+        if (!item.isLeaf()) item.toggle();
         break;
       case 'leaf':
         if (item.isLeaf()) this._setSingleSelection(item);
