@@ -312,3 +312,22 @@ describe('Roles and states stay targetable by CSS and test selectors', () => {
     expect(host.querySelector('l-tree')!.getAttribute('aria-multiselectable')).toBe('true');
   });
 });
+
+describe('A row action in the default slot keeps its hover/focus decoration', () => {
+  // The label box still truncates long text, but it uses `overflow: clip` with a
+  // clip margin so a slotted control's focus ring / hover background isn't cut on
+  // the label edges (RFC-tree-item-label-clips-row-actions).
+  it('clips the label without hard-clipping slotted decorations', async () => {
+    await mount(
+      `<l-tree aria-label="F"><l-tree-item id="a"><button>x</button>Label</l-tree-item></l-tree>`,
+    );
+    const label = item('a').shadowRoot!.querySelector<HTMLElement>('[part="label"]')!;
+    const style = getComputedStyle(label);
+    // `clip`, not `hidden` — `overflow-clip-margin` only applies to `clip`.
+    expect(style.overflow).toBe('clip');
+    expect(parseFloat(style.overflowClipMargin)).toBeGreaterThan(0);
+    // Text truncation is preserved.
+    expect(style.textOverflow).toBe('ellipsis');
+    expect(style.whiteSpace).toBe('nowrap');
+  });
+});

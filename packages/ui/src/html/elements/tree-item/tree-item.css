@@ -86,7 +86,13 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  overflow: hidden;
+  /* `clip` (not `hidden`) so the label still truncates long text to an ellipsis
+     while `overflow-clip-margin` lets a slotted interactive control's hover/focus
+     decoration (a row-action button, an `<l-dropdown>` trigger) bleed past the
+     row-height label box instead of being cut on its top/bottom/left edges. The
+     margin is kept small so the bleed stays imperceptible for text. */
+  overflow: clip;
+  overflow-clip-margin: 0.375rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
