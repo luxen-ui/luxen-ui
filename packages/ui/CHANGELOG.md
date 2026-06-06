@@ -1,5 +1,23 @@
 # luxen-ui
 
+## 0.9.2
+
+### Patch Changes
+
+- b597b7c: `<l-dropdown-item>` labels now stay left-aligned regardless of the surrounding `text-align`. Previously, placing a dropdown inside a right-aligned container (such as an actions column in a data grid) pushed each menu item's text to the right, away from its prefix icon. The item's internal layout is now pinned to `text-align: start`.
+- 23c7cc9: Improve `<l-tree>` / `<l-tree-item>` accessibility. The tree host now carries
+  `role="tree"` (give it an accessible name via `aria-label`), items expose
+  `aria-level`/`aria-setsize`/`aria-posinset` and `aria-busy` while loading, and
+  the decorative checkbox is hidden from assistive tech. Roles and ARIA states are
+  also mirrored to DOM attributes, so `[role]` and `[aria-*]` selectors (CSS,
+  `querySelector`, Cypress/Playwright) and `getByRole` state filters keep matching.
+- ea38046: Fix `<l-tree-item lazy>` not requesting its children when expanded with the
+  keyboard. The `lazy-load` event is now emitted on any expand (arrow keys,
+  `expandAll()`, the `*` shortcut), not only when toggled by pointer, and
+  activating a branch with Enter/Space in single-selection mode now expands it
+  too — so keyboard users no longer end up with an open lazy branch that never
+  loads.
+
 ## 0.9.1
 
 ### Patch Changes
