@@ -1,5 +1,31 @@
 # luxen-ui
 
+## 0.9.0
+
+### Minor Changes
+
+- a9bb18f: Fix `<l-avatar>` initials/icon contrast on saturated `--color` values. The text color (black or white) is now chosen from the background's luminance instead of its hue, so initials stay legible on vivid brand reds, greens, and blues — not just pastels. Browsers with the Baseline `contrast-color()` function get the guaranteed-contrast choice natively; older browsers use a luminance-based fallback. New `--text-color` CSS custom property and `base` CSS part let consumers override the auto-derived text color when a brand mandates a specific one. The default corner radius is also slightly reduced.
+- 8bd5e63: Add `<l-button-group>` to join related `.l-button` elements into a single segmented control with shared borders. Set `label` for an accessible group name (`role="group"` + `aria-label`) and `orientation="vertical"` to stack the buttons. The joined appearance is pure CSS, so it also works for a button wrapped in `<l-dropdown>` — e.g. a split button — and the focused button's ring is raised above its neighbours so it is never clipped.
+- db662c4: Add a checkbox and the foundation of the form system. New `.l-checkbox` class styles a native `<input type="checkbox">`, a progressive `l-form-field` wrapper wires accessibility (label, `aria-describedby`, `aria-invalid`, required marker) and layout, with `.l-hint` and `.l-error` message classes. New form design tokens (`--l-form-control-*`, `--l-form-field-*`) — including a form-wide accent via `--l-form-control-activated-color` — are shared across form controls. `l-input-stepper` now adopts these tokens too and shows an invalid border when its input is `aria-invalid`. Import per element (`luxen-ui/css/checkbox`, `luxen-ui/css/form-field`) or get the tokens via the preset.
+- a94cedd: Add `<l-dropdown-label>`, a non-interactive section label for grouping items inside `<l-dropdown>`. It pairs with `<l-divider>` to caption groups of `<l-dropdown-item>`s, and keyboard navigation, typeahead, and `Home`/`End` skip it automatically. The host carries `role="presentation"` so it never reads as a menu item, and its text color is themeable via the `--color` custom property. Import with `luxen-ui/dropdown-label`.
+- a26acf0: Add `min-width="trigger"` to `<l-dropdown>`. The panel's width is floored at the trigger's width — never narrower, but still grows with its content — which lines the menu up with select-like triggers (a date-range or filter button). It re-applies automatically if the trigger resizes while the panel is open. The previously dead `min-width: anchor-size(width)` rule (a no-op under floating-ui positioning) has been removed.
+- 497b4df: Harden `luxen-ui generate-skill` output. Fixes a correctness bug where CSS classes inside `class="…"` attributes were rebranded with the element prefix instead of the css prefix — so a skill generated with asymmetric prefixes (e.g. `elementPrefix: po`, `cssPrefix: p`) emitted copyable `class="po-button"` examples that didn't match the compiled CSS. Classes now correctly use the css prefix while tags keep the element prefix. The hand-written badge quick-pattern also now uses the `variant=` attribute to match the generated per-element reference.
+
+  The generated `SKILL.md` gains a `## Conventions` section (JS vs CSS imports, per-appearance sub-imports, the invoker pattern, per-element attribute conventions), a stronger "ALWAYS read the per-element reference before emitting an element" directive, and a `compatibility` frontmatter field. A new `references/tokens.md` is emitted from the shipped token CSS — the semantic `--*` custom properties (with descriptions) plus the `text-*` / `bg-*` / `border-*` utility classes — so agents use real design tokens instead of arbitrary values.
+
+- 497b4df: Broaden the default Agent Skill `description` emitted by `luxen-ui generate-skill` so the skill auto-triggers across the full UI lifecycle — not just greenfield generation. It now mentions building, editing, refactoring, reviewing, and migrating from another component library to Luxen, which fixes the skill silently failing to load on migration and refactor tasks.
+
+### Patch Changes
+
+- 2b281f7: Keep the button label at 14px across all sizes. Previously `data-size="lg"` and `data-size="xl"` also bumped the label to 16px/18px, so picking a taller button purely for height made the text look oversized. Now only height and padding scale with `data-size` — a taller button reads as a larger touch target, not a louder label. To opt into a larger label, override the `--font-size` custom property.
+- 8bd5e63: Fix horizontal centering of icon-only buttons (`data-icon-only`). `.l-button` relied on `place-items: center`, whose `justify-items` half is ignored in a flex container, so the icon was offset instead of centered. Added `justify-content: center`.
+- 0406198: Fix issues in `<l-tree>` / `<l-tree-item>` and align its multi-selection checkbox with the Luxen checkbox:
+  - Leaf items no longer render an expand/collapse chevron. The CSS hide rule was targeting `.expand > svg`, but the fallback SVG lives inside a `<slot>`, so the rule never matched. Selector is now `.expand > slot > svg`. Slotted icons (e.g. avatars) on leaves stay visible.
+  - `<l-tree>` no longer throws `item.getChildrenItems is not a function` when its first render runs before `<l-tree-item>` is upgraded (e.g. when modules are imported in async chunks). `_syncAll` now force-upgrades pending descendants and retries via `whenDefined` if needed.
+  - In `selection="multiple"`, tree-item checkboxes now use the shared `.l-checkbox` appearance (matching the standalone Luxen checkbox) instead of a bare `accent-color` native checkbox.
+
+- 61bf140: Fix the `<l-prose-editor>` emoji picker not appearing (and being unclickable) when the editor is used inside a modal `<l-dialog>`. The picker now opens in the top layer and stays interactive within the dialog.
+
 ## 0.8.0
 
 ### Minor Changes
