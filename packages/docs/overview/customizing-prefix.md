@@ -58,6 +58,20 @@ import 'luxen-ui/dropdown';
 
 The same `luxen.config.mjs` is read by the [`luxen-ui generate-skill` CLI](../resources/agent-skills.md), so the AI skill stays in sync with your dev build automatically.
 
+### Shadow-DOM tokens stay wired up
+
+Each element bakes its Shadow-DOM CSS into the element JS, built once with the default `l` prefix — that CSS never passes through your build's PostCSS, so it keeps reading `var(--l-focus-ring)`, `var(--l-color-bg-state-selected)`, and the rest. To keep those defaults alive under a custom prefix, the plugin appends a one-time bridge to your imported tokens:
+
+```css
+:root {
+  --l-focus-ring: var(--p-focus-ring);
+  --l-color-bg-state-selected: var(--p-color-bg-state-selected);
+  /* …every token, generated automatically… */
+}
+```
+
+You theme through your own `--{cssPrefix}-*` names as before — the bridge just lets Shadow-DOM components resolve their canonical defaults against them. It's emitted only when `cssPrefix` differs from `l`, and rides along with whichever token file you import (the preset, `tokens`, or `tokens/aliases`), so no extra import is needed.
+
 ### Default behavior
 
 When no prefix is configured, everything stays on `l-` — no Vite plugin, no setup required.

@@ -3,6 +3,10 @@
   color: var(--l-color-text-primary, CanvasText);
   font-size: 0.875rem;
   line-height: 1.5;
+  /* The host is the roving-tabindex focus target, but the visible ring is drawn
+     on the inner `.item` row. Suppress the host's UA outline so it doesn't paint
+     a second ring around the whole subtree (row + children). */
+  outline: none;
 }
 
 :host([disabled]) {
@@ -31,7 +35,7 @@
 
 .item:focus-visible,
 :host(:focus-visible) .item {
-  outline: 2px solid var(--l-focus-ring, Highlight);
+  outline: 2px solid var(--l-focus-ring);
   outline-offset: 1px;
 }
 
