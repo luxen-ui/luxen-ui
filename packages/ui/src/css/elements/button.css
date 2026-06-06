@@ -157,15 +157,19 @@
     --font-size: var(--l-text-sm);
   }
 
+  /*
+   * Font-size stays at --l-text-sm (14px) across md/lg/xl: only height and
+   * padding scale with the control size, so a taller button reads as a larger
+   * touch target, not a louder label. Consumers who want a bigger label can
+   * still override the --font-size knob. See RFC-button-font-size-lg-xl.
+   */
   .l-button[data-size='lg'] {
     --height: var(--_button-size-lg);
     --padding-inline: 0.75rem;
-    --font-size: var(--l-text-base);
   }
 
   .l-button[data-size='xl'] {
     --height: var(--_button-size-xl);
     --padding-inline: 0.875rem;
-    --font-size: var(--l-text-lg);
   }
 }

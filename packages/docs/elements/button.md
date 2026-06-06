@@ -26,7 +26,7 @@ Buttons are used to trigger actions such as submitting forms, confirming dialogs
 
 ### Sizes
 
-Add `data-size="sm"`, `data-size="lg"`, or `data-size="xl"`. Default is md.
+Add `data-size="sm"`, `data-size="lg"`, or `data-size="xl"`. Default is md. Only height and padding scale — the label stays 14px so a taller button reads as a larger touch target, not a louder label. For a larger label, override `--font-size`.
 
 <ComponentWrapper :html="buttonVariant" />
 

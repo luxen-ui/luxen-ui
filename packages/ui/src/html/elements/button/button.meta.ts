@@ -33,7 +33,7 @@
  * @cssproperty --text-color-hover - Text color on hover.
  * @cssproperty --border-color - Border color.
  * @cssproperty --border-color-hover - Border color on hover.
- * @cssproperty --font-size - Font size.
+ * @cssproperty [--font-size=0.875rem] - Label font size. Stays 14px across all sizes; override to opt into a larger label.
  *
  * @example Primary
  * <button class="l-button" data-variant="primary">Save</button>
