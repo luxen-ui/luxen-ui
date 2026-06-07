@@ -4,7 +4,7 @@ import { staticTag } from '../../static-tag.js';
 import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { map } from 'lit/directives/map.js';
-import { computePosition, flip, offset, shift } from '@floating-ui/dom';
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 import { Editor, type JSONContent } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
@@ -140,10 +140,19 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   @property()
   accessor placeholder = '';
 
+  /**
+   * URL the emoji picker fetches its data from. Point this at a locally served
+   * `emojibase-data` JSON to run fully offline (no CDN). Defaults to the
+   * picker's bundled CDN source.
+   */
+  @property({ attribute: 'emoji-data-source' })
+  accessor emojiDataSource = '';
+
   private _editorRoot?: HTMLDivElement;
   private _emojiPicker?: HTMLElement;
   private _emojiPickerPromise?: Promise<HTMLElement>;
   private _emojiOpenAtPointerDown = false;
+  private _emojiAutoUpdateCleanup?: () => void;
 
   override get validationTarget(): HTMLElement | undefined {
     return this._editorRoot;
@@ -183,6 +192,15 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     // `stopPropagation()`, and only needs the event to propagate — not its
     // default action.
     document.addEventListener('keydown', this._onKeyDown, true);
+    // Outside-click dismissal does NOT rely on native popover light-dismiss:
+    // at least one shipping Chromium skips light-dismiss when the underlying
+    // `pointerdown`'s default action is prevented — which ProseMirror does for
+    // every click inside the editor (it drives its own selection). A
+    // capture-phase `document` listener runs before any descendant
+    // `preventDefault()`/`stopPropagation()` and doesn't depend on the default
+    // action, so it dismisses on every browser, real or synthetic input, modal
+    // or page. Native light-dismiss then becomes a redundant enhancement.
+    document.addEventListener('pointerdown', this._onDocumentPointerDown, true);
     this._syncValue();
     this.requestUpdate();
   }
@@ -197,6 +215,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     super.disconnectedCallback();
     this.removeEventListener('focus', this._onFocus);
     document.removeEventListener('keydown', this._onKeyDown, true);
+    document.removeEventListener('pointerdown', this._onDocumentPointerDown, true);
+    this._stopEmojiAutoUpdate();
     this.editor?.destroy();
     this._editorRoot?.remove();
     this._emojiPicker?.remove();
@@ -358,26 +378,44 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     event.stopPropagation();
   };
 
+  /**
+   * Capture-phase outside-click dismissal — the robust fallback the platform's
+   * native light-dismiss can't be trusted to provide (see `firstUpdated`).
+   * Dismiss when the picker is open and the pointer landed on neither the
+   * picker nor the emoji toolbar button (re-clicking the button is handled by
+   * the toggle in `_onEmojiButtonClick`). `composedPath()` crosses shadow
+   * boundaries, so a click inside the picker's shadow tree still resolves to
+   * the host element here.
+   */
+  private _onDocumentPointerDown = (event: PointerEvent) => {
+    const picker = this._emojiPicker;
+    if (!picker?.matches(':popover-open')) return;
+    const path = event.composedPath();
+    if (path.includes(picker) || (this._emojiButton && path.includes(this._emojiButton))) return;
+    picker.hidePopover();
+  };
+
   // --- Emoji picker (lazy-loaded) ---
 
   /**
-   * The picker is a `popover="auto"`, so the platform owns outside-click
-   * dismissal: native light-dismiss in the top layer, which survives
-   * `stopPropagation()` from an ancestor (modal `<l-dialog>`, ProseMirror, Vue
-   * delegation), unlike emoji-mart's `document` click listener. (`Escape` is
-   * handled by `_onKeyDown` instead — ProseMirror `preventDefault()`s it, which
-   * would cancel the native close.)
+   * The picker is a `popover="auto"` parented into the top layer; outside-click
+   * dismissal is owned by `_onDocumentPointerDown` (capture phase), which
+   * survives `stopPropagation()`/`preventDefault()` from an ancestor (modal
+   * `<l-dialog>`, ProseMirror, Vue delegation). (`Escape` is handled by
+   * `_onKeyDown` instead — ProseMirror `preventDefault()`s it, which would
+   * cancel the native close.)
    *
    * We can't wire the button as a native popover invoker (`popoverTargetElement`
    * / `popovertarget`) because the picker is parented into another shadow tree
    * (the open `<dialog>` — see `_topLayerContainer`) while the button lives in
    * this element's shadow root; a cross-tree invoker reference doesn't resolve.
    * So the toggle is hand-rolled here. The catch: a pointer click on the button
-   * is "outside" the popover, so native light-dismiss has already closed an open
-   * picker by the time this `click` fires (light-dismiss runs on `pointerup`).
-   * We therefore read the open state captured at `pointerdown` to know whether
-   * this click should re-open or stay closed. Keyboard activation (`detail === 0`)
-   * has no pointer light-dismiss, so it reads the live state and toggles directly.
+   * is "outside" the popover, so native light-dismiss (where it works) has
+   * already closed an open picker by the time this `click` fires (light-dismiss
+   * runs on `pointerup`). We therefore read the open state captured at
+   * `pointerdown` to know whether this click should re-open or stay closed.
+   * Keyboard activation (`detail === 0`) has no pointer light-dismiss, so it
+   * reads the live state and toggles directly.
    */
   private _onEmojiButtonPointerDown = () => {
     this._emojiOpenAtPointerDown = !!this._emojiPicker?.matches(':popover-open');
@@ -397,28 +435,32 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   private _ensureEmojiPicker(): Promise<HTMLElement> {
     if (this._emojiPicker) return Promise.resolve(this._emojiPicker);
     return (this._emojiPickerPromise ??= (async () => {
-      const [{ Picker }, { default: data }] = await Promise.all([
-        import('emoji-mart'),
-        import('@emoji-mart/data'),
-      ]);
-      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const picker = new Picker({
-        parent: this._topLayerContainer(),
-        data,
-        theme: dark ? 'dark' : 'light',
-        onEmojiSelect: ({ native }: { native: string }) => {
-          this.editor.chain().focus().insertContent(native).run();
-          picker.hidePopover();
-        },
-      }) as unknown as HTMLElement;
+      // `emoji-picker-element` is a framework-agnostic web component with no
+      // `document`-level click listener of its own to fight the platform.
+      // Importing it registers <emoji-picker> and gives us the constructor.
+      const { default: Picker } = await import('emoji-picker-element/picker.js');
+      const picker = new Picker(
+        this.emojiDataSource ? { dataSource: this.emojiDataSource } : undefined,
+      ) as unknown as HTMLElement;
+      // Theme follows the system color scheme automatically (the element ships
+      // a `prefers-color-scheme` media query); a `.light`/`.dark` class would
+      // only be needed to override that.
+      picker.addEventListener('emoji-click', (event) => {
+        const unicode = (event as CustomEvent<{ unicode?: string }>).detail.unicode;
+        if (!unicode) return;
+        this.editor.chain().focus().insertContent(unicode).run();
+        picker.hidePopover();
+      });
+      this._topLayerContainer().append(picker);
       // A popover="auto" promotes the picker into the top-layer (so it paints
-      // above a modal <l-dialog> and escapes ancestor overflow clipping) and
-      // hands outside-click dismissal to the platform's native light-dismiss.
-      // Top-layer alone isn't enough inside a modal: showModal()
-      // makes everything outside the dialog's flat-tree subtree inert (visible
-      // but unclickable), so the picker is parented to the nearest open <dialog>
-      // — see _topLayerContainer. Neutralize the UA popover box; Floating UI
-      // drives the position in _positionEmojiPicker.
+      // above a modal <l-dialog> and escapes ancestor overflow clipping). Outside
+      // -click dismissal is driven by `_onDocumentPointerDown`, with native
+      // light-dismiss as a redundant enhancement. Top-layer alone isn't enough
+      // inside a modal: showModal() makes everything outside the dialog's
+      // flat-tree subtree inert (visible but unclickable), so the picker is
+      // parented to the nearest open <dialog> — see _topLayerContainer.
+      // Neutralize the UA popover box (the picker draws its own card in its
+      // shadow root); Floating UI drives the position in _positionEmojiPicker.
       picker.setAttribute('popover', 'auto');
       Object.assign(picker.style, {
         position: 'fixed',
@@ -427,9 +469,20 @@ export class ProseEditor extends LuxenFormAssociatedElement {
         padding: '0',
         border: '0',
         background: 'transparent',
+        // emoji-picker-element ships `:host { display: flex }` (author origin),
+        // which overrides the UA `[popover]:not(:popover-open) { display: none }`
+        // rule — so a *closed* popover would otherwise stay laid out and visible.
+        // Drive `display` from the popover state via inline style (which beats the
+        // shadow `:host` rule) so the picker is truly hidden when closed, on every
+        // dismissal path (light-dismiss, Escape, re-click, select).
+        display: 'none',
       });
+      picker.style.setProperty('--border-radius', '0.5rem');
       picker.addEventListener('toggle', (event) => {
-        if (event.newState === 'open') void this._positionEmojiPicker();
+        const open = event.newState === 'open';
+        picker.style.display = open ? 'flex' : 'none';
+        if (open) this._startEmojiAutoUpdate();
+        else this._stopEmojiAutoUpdate();
       });
       this._emojiPicker = picker;
       return picker;
@@ -462,11 +515,36 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     return this.shadowRoot?.querySelector('[data-command="emoji"]') ?? null;
   }
 
+  /**
+   * Keep the picker pinned to the emoji button while it is open. Floating UI's
+   * `autoUpdate` re-runs `_positionEmojiPicker` on scroll (including ancestor
+   * scroll), resize, and layout shifts, so the picker stays anchored to the
+   * button — the cross-tree equivalent of CSS anchor positioning, which can't be
+   * used here because the button lives in this element's shadow root while the
+   * picker is parented to the top-layer container (a different tree scope).
+   */
+  private _startEmojiAutoUpdate() {
+    const button = this._emojiButton;
+    const picker = this._emojiPicker;
+    if (!button || !picker) return;
+    this._stopEmojiAutoUpdate();
+    this._emojiAutoUpdateCleanup = autoUpdate(
+      button,
+      picker,
+      () => void this._positionEmojiPicker(),
+    );
+  }
+
+  private _stopEmojiAutoUpdate() {
+    this._emojiAutoUpdateCleanup?.();
+    this._emojiAutoUpdateCleanup = undefined;
+  }
+
   private async _positionEmojiPicker() {
     const button = this._emojiButton;
     const picker = this._emojiPicker;
-    // Runs from the picker's `toggle` event once it is open, so it is already
-    // laid out in the top-layer and can be measured.
+    // Driven by `autoUpdate` while the picker is open, so it is already laid out
+    // in the top-layer and can be measured.
     if (!button || !picker || !picker.matches(':popover-open')) return;
 
     const { x, y } = await computePosition(button, picker, {

@@ -134,7 +134,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@emoji-mart/data": "catalog:",
     "@floating-ui/dom": "catalog:",
     "@tiptap/core": "catalog:",
     "@tiptap/extension-highlight": "catalog:",
@@ -143,7 +142,7 @@
     "@tiptap/starter-kit": "catalog:",
     "embla-carousel": "catalog:",
     "embla-carousel-autoplay": "catalog:",
-    "emoji-mart": "catalog:",
+    "emoji-picker-element": "catalog:",
     "iconify-icon": "catalog:",
     "lit": "catalog:"
   },
