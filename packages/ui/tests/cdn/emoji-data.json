@@ -1,0 +1,82 @@
+[
+  {
+    "annotation": "grinning face",
+    "emoji": "😀",
+    "group": 0,
+    "hexcode": "1F600",
+    "order": 1,
+    "tags": ["face", "grin"],
+    "shortcodes": ["grinning"],
+    "version": 1
+  },
+  {
+    "annotation": "smiling face with heart-eyes",
+    "emoji": "😍",
+    "group": 0,
+    "hexcode": "1F60D",
+    "order": 2,
+    "tags": ["love", "smile"],
+    "shortcodes": ["heart_eyes"],
+    "version": 1
+  },
+  {
+    "annotation": "red heart",
+    "emoji": "❤️",
+    "group": 0,
+    "hexcode": "2764-FE0F",
+    "order": 3,
+    "tags": ["heart", "love"],
+    "shortcodes": ["heart"],
+    "version": 1
+  },
+  {
+    "annotation": "thumbs up",
+    "emoji": "👍",
+    "group": 1,
+    "hexcode": "1F44D",
+    "order": 4,
+    "tags": ["thumb", "approve", "ok"],
+    "shortcodes": ["thumbsup", "+1"],
+    "version": 1
+  },
+  {
+    "annotation": "thumbs down",
+    "emoji": "👎",
+    "group": 1,
+    "hexcode": "1F44E",
+    "order": 5,
+    "tags": ["thumb", "disapprove"],
+    "shortcodes": ["thumbsdown", "-1"],
+    "version": 1
+  },
+  {
+    "annotation": "waving hand",
+    "emoji": "👋",
+    "group": 1,
+    "hexcode": "1F44B",
+    "order": 6,
+    "tags": ["hand", "hello", "wave"],
+    "shortcodes": ["wave"],
+    "version": 1
+  },
+  {
+    "annotation": "party popper",
+    "emoji": "🎉",
+    "group": 6,
+    "hexcode": "1F389",
+    "order": 7,
+    "tags": ["celebration", "party", "tada"],
+    "shortcodes": ["tada"],
+    "version": 1
+  },
+  {
+    "annotation": "rocket",
+    "emoji": "🚀",
+    "group": 5,
+    "hexcode": "1F680",
+    "order": 8,
+    "tags": ["launch", "space"],
+    "shortcodes": ["rocket"],
+    "version": 1
+  }
+]

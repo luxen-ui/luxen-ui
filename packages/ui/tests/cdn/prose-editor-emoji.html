@@ -4,10 +4,12 @@
 
   Reproduces the RFC "prose-editor emoji dismiss" scenario: the editor lives in
   a modal dialog, wrapped by an element that calls stopPropagation() on bubbling
-  clicks (as modals, ProseMirror and framework delegation routinely do). That is
-  what broke emoji-mart's document-level click listener. The fix moves dismissal
-  to a native popover="auto" (light-dismiss + Escape), which the swallowed bubble
-  can't defeat.
+  clicks (as modals, ProseMirror and framework delegation routinely do). The fix
+  moves dismissal to a capture-phase document pointerdown listener (plus native
+  popover="auto" light-dismiss + Escape), which the swallowed bubble can't defeat.
+
+  `emoji-data-source` points the picker at a small local emojibase fixture so the
+  test runs fully offline (no CDN) — also exercising the offline data source path.
 
   Manual:    cd packages/ui && python3 -m http.server 8080 && open http://localhost:8080/tests/cdn/prose-editor-emoji.html
   Automated: cd packages/ui && pnpm test:e2e
@@ -60,6 +62,7 @@
         <l-prose-editor
           id="editor"
           placeholder="Write a note…"
+          emoji-data-source="/tests/cdn/emoji-data.json"
           style="--content-min-height: 14rem"
         ></l-prose-editor>
       </div>
@@ -83,7 +86,8 @@
       <l-prose-editor
         id="editor-page"
         placeholder="Write a note…"
-        style="--content-min-height: 14rem"
+        emoji-data-source="/tests/cdn/emoji-data.json"
+        style="--content-min-height: 40rem"
       ></l-prose-editor>
     </div>
   </body>

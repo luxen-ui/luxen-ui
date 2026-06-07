@@ -74,6 +74,14 @@ Set `toolbar-placement="bottom"` to move the toolbar below the content.
 <<< @/.vitepress/examples/prose-editor/ProseEditorPlacement.html [HTML]
 :::
 
+### Emoji picker data
+
+The `emoji` toolbar button opens a picker that loads its emoji data from a CDN by default. For an offline or behind-auth app, serve an [`emojibase-data`](https://www.npmjs.com/package/emojibase-data) JSON locally and point `emoji-data-source` at it.
+
+```html
+<l-prose-editor emoji-data-source="/emoji/en/data.json"></l-prose-editor>
+```
+
 ## Examples
 
 ### Form integration
