@@ -1,5 +1,15 @@
 # luxen-ui
 
+## 0.10.0
+
+### Minor Changes
+
+- bcf6094: `<l-prose-editor>`: replace the emoji picker with the lightweight, framework-agnostic `emoji-picker-element` and make the picker dismiss reliably. Clicking outside the picker — including directly in the editor content — now always closes it, even on browsers where native popover light-dismiss was suppressed by the editor's own pointer handling. A new `emoji-data-source` attribute lets you serve the emoji data locally for offline or behind-auth apps instead of fetching it from a CDN.
+
+### Patch Changes
+
+- d554cd2: Add a public `--size` custom property to `<l-avatar>` for arbitrary pixel sizing. Set `--size` to any length to render an avatar at a custom size beyond the `xs`–`xl` token scale; the font scales proportionally and the radius (rounded square or circle) follows. The named `size` tokens are unchanged.
+
 ## 0.9.3
 
 ### Patch Changes
