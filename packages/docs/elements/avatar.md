@@ -6,6 +6,7 @@ outline: deep
 import avatarImage from '../.vitepress/examples/avatar/AvatarImage.html?raw'
 import avatarInitials from '../.vitepress/examples/avatar/AvatarInitials.html?raw'
 import avatarSizes from '../.vitepress/examples/avatar/AvatarSizes.html?raw'
+import avatarCustomSize from '../.vitepress/examples/avatar/AvatarCustomSize.html?raw'
 import avatarBadge from '../.vitepress/examples/avatar/AvatarBadge.html?raw'
 import avatarCircle from '../.vitepress/examples/avatar/AvatarCircle.html?raw'
 import avatarInteractive from '../.vitepress/examples/avatar/AvatarInteractive.html?raw'
@@ -63,6 +64,17 @@ Add the `size` attribute: `xs`, `sm`, `md` (default), `lg`, or `xl`.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/avatar/AvatarSizes.html [HTML]
+:::
+
+### Custom size
+
+Set `--size` to any length for an arbitrary pixel size. It overrides the `size` scale and the font follows proportionally. Use it alone — not combined with a `size` token.
+
+<ComponentWrapper :html="avatarCustomSize" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/avatar/AvatarCustomSize.html [HTML]
 :::
 
 ### Circle

@@ -24,6 +24,7 @@ const defaultIcon = svg`<svg class="icon" viewBox="0 0 24 24" fill="currentColor
  * @summary An avatar component for displaying user images, initials, or a default icon.
  * @customElement l-avatar
  *
+ * @cssproperty [--size=40px] - Box size (any length). Set it inline (e.g. `style="--size: 20px"`) for an arbitrary size beyond the `size` token scale; the font then follows proportionally. The `size` attribute sets it to the matching token.
  * @cssproperty --color - Background fill color for initials and the default icon.
  * @cssproperty --text-color - Initials/icon color over `--color`. Defaults to an auto-derived readable color; set it to enforce a specific brand color (overrides the automatic choice).
  * @cssproperty --appearance - Set to `circle` for a fully circular avatar (default is a rounded square).

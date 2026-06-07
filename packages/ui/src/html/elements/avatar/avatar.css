@@ -1,13 +1,13 @@
 :host {
-  --_size: 40px;
-  --_font-size: 1rem;
+  --size: 40px;
+  --_font-size: calc(var(--size) * 0.4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: var(--_size);
-  height: var(--_size);
-  border-radius: calc(var(--_size) * 0.15);
+  width: var(--size);
+  height: var(--size);
+  border-radius: calc(var(--size) * 0.15);
   isolation: isolate;
   vertical-align: middle;
   flex-shrink: 0;
@@ -15,19 +15,19 @@
 }
 
 :host([size='xs']) {
-  --_size: 24px;
+  --size: 24px;
   --_font-size: 0.75rem;
 }
 :host([size='sm']) {
-  --_size: 32px;
+  --size: 32px;
   --_font-size: 0.875rem;
 }
 :host([size='lg']) {
-  --_size: 48px;
+  --size: 48px;
   --_font-size: 1.25rem;
 }
 :host([size='xl']) {
-  --_size: 56px;
+  --size: 56px;
   --_font-size: 1.25rem;
 }
 
@@ -91,7 +91,7 @@ img {
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: calc(var(--_size) * 0.15);
+  border-radius: calc(var(--size) * 0.15);
   background-color: var(--color, var(--l-color-bg-fill-neutral-soft));
   /*
    * Text over --color, decided by the background's own luminance — never the
