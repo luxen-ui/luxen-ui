@@ -39,7 +39,7 @@
       "displayName": "Carousel",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -83,7 +83,7 @@
       "displayName": "Disclosure",
       "kind": "native",
       "type": "native",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": false
     },
     {
@@ -91,7 +91,7 @@
       "displayName": "Divider",
       "kind": "element",
       "type": "custom",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -107,7 +107,7 @@
       "displayName": "Dropdown",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -141,7 +141,7 @@
       "displayName": "Icon",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -149,7 +149,7 @@
       "displayName": "Input OTP",
       "kind": "element",
       "type": "progressive",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -157,7 +157,7 @@
       "displayName": "Input stepper",
       "kind": "element",
       "type": "progressive",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true,
       "appearances": ["default", "rounded"]
     },
@@ -166,7 +166,7 @@
       "displayName": "Kbd",
       "kind": "native",
       "type": "native",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": false
     },
     {
@@ -174,7 +174,7 @@
       "displayName": "Popover",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -198,7 +198,7 @@
       "displayName": "Rating",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -214,7 +214,7 @@
       "displayName": "Skeleton",
       "kind": "element",
       "type": "custom",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -222,7 +222,7 @@
       "displayName": "Spinner",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -238,7 +238,7 @@
       "displayName": "Stories",
       "kind": "element",
       "type": "custom",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": false,
       "status": "experimental"
     },
@@ -247,7 +247,7 @@
       "displayName": "Stories viewer",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": false,
       "status": "experimental",
       "subItemOf": "stories"
@@ -257,7 +257,7 @@
       "displayName": "Story",
       "kind": "element",
       "type": "custom",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": false,
       "status": "experimental",
       "subItemOf": "stories"
@@ -267,7 +267,7 @@
       "displayName": "Tabs",
       "kind": "element",
       "type": "progressive",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true,
       "appearances": ["line", "enclosed"]
     },
@@ -284,7 +284,7 @@
       "displayName": "Tooltip",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true
     },
     {
@@ -300,7 +300,7 @@
       "displayName": "Tree item",
       "kind": "element",
       "type": "shadow",
-      "inSkill": false,
+      "inSkill": true,
       "inMockups": true,
       "subItemOf": "tree"
     }
