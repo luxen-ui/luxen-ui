@@ -1,5 +1,15 @@
 # luxen-ui
 
+## 0.11.0
+
+### Minor Changes
+
+- a75955b: Add a dedicated `--l-tooltip-background-color` token for `<l-tooltip>` and stop the tooltip from borrowing the brand fill. Previously the tooltip's background defaulted to `--l-color-bg-fill-brand` — the same token as primary buttons — so re-theming the brand color (e.g. a green primary button) unintentionally recolored every tooltip. Tooltips now read a neutral inverse surface token instead; the default appearance is unchanged, and you can override `--l-tooltip-background-color` globally to re-skin all tooltips or `--background-color` per instance.
+
+### Patch Changes
+
+- f744252: The generated AI skill now ships a reference page for every documented element — including divider, dropdown, popover, tooltip, carousel, tabs, rating, icon, kbd, disclosure, tree-item and the stories family — instead of a hand-curated subset. Consumers running `luxen-ui generate-skill` now get complete component coverage.
+
 ## 0.10.0
 
 ### Minor Changes
