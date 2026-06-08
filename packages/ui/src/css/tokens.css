@@ -10,3 +10,6 @@
 
 /* Form component tokens (--l-form-control-*, --l-form-field-*). */
 @import '@luxen-ui/design-tokens/css/forms';
+
+/* Tooltip component token (--l-tooltip-background-color). */
+@import '@luxen-ui/design-tokens/css/tooltip';

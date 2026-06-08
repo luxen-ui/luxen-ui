@@ -96,6 +96,11 @@ StyleDictionary.registerFormat({
     const selector = options?.selector ?? ':root';
     const header = options?.header ?? '';
     const subset = options?.subset ?? 'all';
+    // Optional source-file narrowing: when set, only tokens whose source file
+    // path contains this substring are emitted. Lets several files share the
+    // `components` subset while still producing one CSS file per component
+    // (forms.css, tooltip.css, …).
+    const fileMatch = options?.fileMatch ?? null;
     // Color emission policy:
     //   subset='primitives': keep only colors referenced by aliases (core 5 families)
     //   subset='palette-extended': emit ONLY the colors NOT in the core (21 families)
@@ -113,6 +118,7 @@ StyleDictionary.registerFormat({
         if (core.has(token.name)) continue;
       } else {
         if (!tokenSubset(token, subset)) continue;
+        if (fileMatch && !token.filePath.includes(fileMatch)) continue;
         if (core && token.path[0] === 'color' && !core.has(token.name)) continue;
       }
       const v = renderValue(token.original.$value, dictionary);
@@ -379,6 +385,8 @@ function categorize(token) {
   const [head] = path;
   // Form component tokens (form.control.*, form.field.*) get their own bucket.
   if (head === 'form') return 'form';
+  // Tooltip component token — a floating surface.
+  if (head === 'tooltip') return 'surface';
   // Spacing primitives are exposed in the design-tokens docs as their own
   // section — they're scale-y and useful to reference directly.
   if (head === 'spacing' || head.startsWith('spacing-')) return 'spacing';
@@ -481,8 +489,19 @@ const sd = new StyleDictionary({
           format: 'css/luxen',
           options: {
             subset: 'components',
+            fileMatch: 'forms',
             header:
               '/* Luxen design-tokens — form component tokens.\n   Opt-in via `@import "luxen-ui/css/tokens/forms"` (already bundled in the\n   Luxen preset). Reference semantic aliases, so dark mode is inherited. */\n\n',
+          },
+        },
+        {
+          destination: 'tooltip.css',
+          format: 'css/luxen',
+          options: {
+            subset: 'components',
+            fileMatch: 'tooltip',
+            header:
+              '/* Luxen design-tokens — tooltip component token.\n   Bundled in the Luxen preset via `luxen-ui/css/tokens`. A neutral inverse\n   surface, decoupled from the brand fill so re-theming primary does not\n   recolor tooltips. */\n\n',
           },
         },
         {

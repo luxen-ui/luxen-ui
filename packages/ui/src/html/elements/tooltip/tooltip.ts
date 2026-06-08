@@ -18,7 +18,7 @@ const styles = unsafeCSS(rawStyles);
  * @csspart body - The tooltip popover container.
  * @csspart arrow - The directional arrow element.
  *
- * @cssproperty --background-color - Background color. Default: dark in light mode, light in dark mode.
+ * @cssproperty --background-color - Background color for this tooltip instance. Defaults to the global `--l-tooltip-background-color` token (a neutral inverse surface, dark in light mode / light in dark mode) — override that token to re-skin every tooltip at once.
  * @cssproperty --text-color - Text color. If unset, auto-derived from `--background-color` luminance.
  * @cssproperty --border-radius - Border radius. Default `4px`.
  * @cssproperty --max-width - Maximum width. Default `180px`.
