@@ -23,6 +23,11 @@ export type TabsOrientation = 'horizontal' | 'vertical';
  *
  * @event change - Fired when the active tab changes. Detail: `{ index: number, name: string | null }`.
  *
+ * @cssproperty [--indicator-color=var(--l-color-text-primary)] - `line` variant: color of the active underline that slides under the selected tab.
+ * @cssproperty [--indicator-thickness=2px] - `line` variant: thickness of the active underline.
+ * @cssproperty [--track-color=var(--l-color-border)] - `line` variant: color of the static bottom border the tabs sit on.
+ * @cssproperty [--track-thickness=1px] - `line` variant: thickness of the static bottom border.
+ *
  * @customElement l-tabs
  */
 export class Tabs extends LuxenElement {

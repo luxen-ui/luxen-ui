@@ -7,6 +7,7 @@ import tabsEnclosed from '../.vitepress/examples/tabs/TabsEnclosed.html?raw'
 import tabsLine from '../.vitepress/examples/tabs/TabsLine.html?raw'
 import tabsFullWidth from '../.vitepress/examples/tabs/TabsFullWidth.html?raw'
 import tabsDefaultValue from '../.vitepress/examples/tabs/TabsDefaultValue.html?raw'
+import tabsLineColors from '../.vitepress/examples/tabs/TabsLineColors.html?raw'
 </script>
 
 # Tabs <Badge type="tip">&lt;l-tabs&gt;</Badge>
@@ -37,6 +38,15 @@ Add `variant="line"` for a tablist with a sliding underline indicator.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/tabs/TabsLine.html [HTML]
+:::
+
+Restyle the active underline and the static bottom border with `--indicator-color`, `--indicator-thickness`, `--track-color` and `--track-thickness`.
+
+<ComponentWrapper :html="tabsLineColors" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tabs/TabsLineColors.html [HTML]
 :::
 
 ### Full width
@@ -117,3 +127,7 @@ import 'luxen-ui/tabs';
 ### Events
 
 <ApiTable element="tabs" section="events" />
+
+### CSS custom properties
+
+<ApiTable element="tabs" section="cssProperties" />

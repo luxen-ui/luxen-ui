@@ -10,13 +10,13 @@
 
   l-tabs[variant='line'] {
     & [role='tablist'] {
-      border-bottom: 1px solid var(--l-color-border);
+      border-bottom: var(--track-thickness, 1px) solid var(--track-color, var(--l-color-border));
       gap: 0;
 
       &::before {
-        bottom: -1px;
-        height: 2px;
-        background: var(--l-color-text-primary);
+        bottom: calc(-1 * var(--track-thickness, 1px));
+        height: var(--indicator-thickness, 2px);
+        background: var(--indicator-color, var(--l-color-text-primary));
         border-radius: var(--l-radius-full);
       }
     }
