@@ -78,3 +78,17 @@ describe('l-input-stepper does not initialize after an immediate disconnect', ()
     expect(stepper.querySelectorAll('button')).toHaveLength(0);
   });
 });
+
+describe('l-input-stepper icon security', () => {
+  it('treats a hostile icon name as data, not markup', async () => {
+    await mount(`
+      <l-input-stepper decrement-icon='x"><img src=x onerror="window.__pwned = true">'>
+        <input type="number" min="0" max="10" value="5" />
+      </l-input-stepper>
+    `);
+    expect(host.querySelector('img')).toBeNull();
+    expect((window as any).__pwned).toBeUndefined();
+    // The hostile string ends up inert, as the icon element's name attribute.
+    expect(host.querySelector('l-icon, [name]')?.tagName.toLowerCase()).toContain('icon');
+  });
+});

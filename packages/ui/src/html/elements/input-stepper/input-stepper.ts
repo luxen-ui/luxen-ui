@@ -187,8 +187,9 @@ export class InputStepper extends LuxenElement {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.setAttribute('aria-label', label);
-    const iconTag = tagName('icon');
-    btn.innerHTML = `<${iconTag} name="${icon}"></${iconTag}>`;
+    const iconEl = document.createElement(tagName('icon'));
+    iconEl.setAttribute('name', icon);
+    btn.append(iconEl);
     return btn;
   }
 
