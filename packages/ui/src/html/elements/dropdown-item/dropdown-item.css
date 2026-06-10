@@ -11,6 +11,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  box-sizing: border-box;
+  min-block-size: 36px;
   padding: 0.375rem 0.5rem;
   cursor: pointer;
   outline: none;
