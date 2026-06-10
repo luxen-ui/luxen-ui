@@ -150,7 +150,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
 
   private _editorRoot?: HTMLDivElement;
   private _emojiPicker?: HTMLElement;
-  private _emojiPickerPromise?: Promise<HTMLElement>;
+  private _emojiPickerPromise?: Promise<HTMLElement | null>;
   private _emojiOpenAtPointerDown = false;
   private _emojiAutoUpdateCleanup?: () => void;
 
@@ -220,6 +220,11 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     this.editor?.destroy();
     this._editorRoot?.remove();
     this._emojiPicker?.remove();
+    // The picker is parented to a top-layer container chosen from the element's
+    // ancestry at build time; after a remount that ancestry may differ, so drop
+    // the cache and let the next click rebuild in the right container.
+    this._emojiPicker = undefined;
+    this._emojiPickerPromise = undefined;
   }
 
   // --- Public API ---
@@ -423,6 +428,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
 
   private async _onEmojiButtonClick(event: MouseEvent) {
     const picker = await this._ensureEmojiPicker();
+    if (!picker) return;
     const wasOpen =
       event.detail === 0 ? picker.matches(':popover-open') : this._emojiOpenAtPointerDown;
     if (wasOpen) {
@@ -432,13 +438,20 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     }
   }
 
-  private _ensureEmojiPicker(): Promise<HTMLElement> {
+  private _ensureEmojiPicker(): Promise<HTMLElement | null> {
     if (this._emojiPicker) return Promise.resolve(this._emojiPicker);
     return (this._emojiPickerPromise ??= (async () => {
       // `emoji-picker-element` is a framework-agnostic web component with no
       // `document`-level click listener of its own to fight the platform.
       // Importing it registers <emoji-picker> and gives us the constructor.
       const { default: Picker } = await import('emoji-picker-element/picker.js');
+      // If the element was removed while the import was in flight, bail now —
+      // the container chosen for the picker may no longer be correct, and
+      // appending to a detached node would orphan it with live listeners.
+      if (!this.isConnected) {
+        this._emojiPickerPromise = undefined;
+        return null;
+      }
       const picker = new Picker(
         this.emojiDataSource ? { dataSource: this.emojiDataSource } : undefined,
       ) as unknown as HTMLElement;
