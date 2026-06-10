@@ -35,6 +35,8 @@ export class Tabs extends LuxenElement {
     return this;
   }
 
+  private _initialized = false;
+  private _setupTimer = 0;
   private _instanceId = uniqueId('tabs');
   private _tablistEl: HTMLElement | null = null;
   private _tabs: HTMLButtonElement[] = [];
@@ -60,13 +62,26 @@ export class Tabs extends LuxenElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    // Defer setup to let light DOM children parse
-    requestAnimationFrame(() => this._setup());
+    // Children may not be parsed yet when the element upgrades mid-parse: try
+    // synchronously, then retry once on a macrotask. setTimeout, not rAF — rAF
+    // is suspended in hidden documents, so the element would stay inert there.
+    if (!this._trySetup()) {
+      this._setupTimer = window.setTimeout(() => this._trySetup(), 0);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    clearTimeout(this._setupTimer);
     this._teardown();
+  }
+
+  /** @returns true when setup ran or was already done; false to schedule a retry. */
+  private _trySetup(): boolean {
+    if (this._initialized || !this.isConnected) return true;
+    if (this.children.length < 2) return false;
+    this._setup();
+    return true;
   }
 
   override updated(changed: Map<string, unknown>) {
@@ -83,6 +98,7 @@ export class Tabs extends LuxenElement {
   private _setup() {
     const children = Array.from(this.children) as HTMLElement[];
     if (children.length < 2) return;
+    this._initialized = true;
 
     // First child is the tablist container
     this._tablistEl = children[0];
@@ -135,6 +151,7 @@ export class Tabs extends LuxenElement {
   private _teardown() {
     this._tablistEl?.removeEventListener('click', this._onClick);
     this._tablistEl?.removeEventListener('keydown', this._onKeyDown);
+    this._initialized = false;
   }
 
   // --- Tab selection ---

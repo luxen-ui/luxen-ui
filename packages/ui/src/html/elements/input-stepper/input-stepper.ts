@@ -57,6 +57,8 @@ export class InputStepper extends LuxenElement {
   @property({ attribute: 'increment-icon' })
   incrementIcon = 'lucide:plus';
 
+  private _initialized = false;
+  private _setupTimer = 0;
   private _input: HTMLInputElement | null = null;
   private _decrementBtn: HTMLButtonElement | null = null;
   private _incrementBtn: HTMLButtonElement | null = null;
@@ -68,12 +70,26 @@ export class InputStepper extends LuxenElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    requestAnimationFrame(() => this._setup());
+    // Children may not be parsed yet when the element upgrades mid-parse: try
+    // synchronously, then retry once on a macrotask. setTimeout, not rAF — rAF
+    // is suspended in hidden documents, so the element would stay inert there.
+    if (!this._trySetup()) {
+      this._setupTimer = window.setTimeout(() => this._trySetup(), 0);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    clearTimeout(this._setupTimer);
     this._teardown();
+  }
+
+  /** @returns true when setup ran or was already done; false to schedule a retry. */
+  private _trySetup(): boolean {
+    if (this._initialized || !this.isConnected) return true;
+    if (!this.querySelector('input[type="number"]')) return false;
+    this._setup();
+    return true;
   }
 
   override updated(changed: Map<string, unknown>) {
@@ -106,6 +122,7 @@ export class InputStepper extends LuxenElement {
   private _setup() {
     this._input = this.querySelector('input[type="number"]');
     if (!this._input) return;
+    this._initialized = true;
 
     this._input.inputMode = 'numeric';
 
@@ -161,6 +178,7 @@ export class InputStepper extends LuxenElement {
     this._trackDisplay = null;
     this._track = null;
     this._observer = null;
+    this._initialized = false;
   }
 
   // --- DOM helpers ---

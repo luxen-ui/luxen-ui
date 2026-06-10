@@ -35,15 +35,30 @@ export class InputOtp extends LuxenElement {
   private _cells: HTMLDivElement[] = [];
   private _separatorEl: HTMLSpanElement | null = null;
   private _initialized = false;
+  private _setupTimer = 0;
 
   override connectedCallback() {
     super.connectedCallback();
-    requestAnimationFrame(() => this._setup());
+    // Children may not be parsed yet when the element upgrades mid-parse: try
+    // synchronously, then retry once on a macrotask. setTimeout, not rAF — rAF
+    // is suspended in hidden documents, so the element would stay inert there.
+    if (!this._trySetup()) {
+      this._setupTimer = window.setTimeout(() => this._trySetup(), 0);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    clearTimeout(this._setupTimer);
     this._teardown();
+  }
+
+  /** @returns true when setup ran or was already done; false to schedule a retry. */
+  private _trySetup(): boolean {
+    if (this._initialized || !this.isConnected) return true;
+    if (!this.querySelector('input')) return false;
+    this._setup();
+    return true;
   }
 
   // --- Setup / Teardown ---
