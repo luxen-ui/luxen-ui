@@ -1,5 +1,14 @@
 # luxen-ui
 
+## 0.11.1
+
+### Patch Changes
+
+- e386aba: `l-dropdown-item` now has a minimum height of 36px, giving menu items a more comfortable click/tap target (up from 33px).
+- c21e325: `<l-tabs variant="line">` now exposes four CSS custom properties to restyle the
+  indicator and track: `--indicator-color`, `--indicator-thickness`,
+  `--track-color` and `--track-thickness`.
+
 ## 0.11.0
 
 ### Minor Changes
