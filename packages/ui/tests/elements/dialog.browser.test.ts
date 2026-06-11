@@ -297,17 +297,44 @@ describe('Invoker commands open and close the dialog', () => {
 
 describe('Accessibility', () => {
   describe('Roles and accessible names (WCAG 4.1.2 / RGAA 7.1)', () => {
-    it('exposes the dialog role while open', async () => {
+    it('names the dialog from the title property (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(FIXTURE);
       const afterShowP = waitForEvent(dialog(), 'after-show');
       dialog().open = true;
       await settle();
       await afterShowP;
-      // NOTE: The native <dialog> in l-dialog's shadow root has no aria-labelledby/
-      // aria-label wiring — getByRole('dialog', { name: 'Hello' }) does not match.
-      // This is a source gap: the dialog has no programmatic accessible name linking
-      // the title heading. Asserting without name filter.
-      expect(page.getByRole('dialog').elements().length).toBeGreaterThan(0);
+      expect(page.getByRole('dialog', { name: 'Hello' }).elements().length).toBeGreaterThan(0);
+    });
+
+    it('names the dialog from a slotted heading (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(
+        `<l-dialog id="dlg" style="--show-duration: 0ms; --hide-duration: 0ms">
+          <h2 slot="title">Slotted name</h2>
+          <p>Body</p>
+        </l-dialog>`,
+      );
+      const afterShowP = waitForEvent(dialog(), 'after-show');
+      dialog().open = true;
+      await settle();
+      await afterShowP;
+      expect(page.getByRole('dialog', { name: 'Slotted name' }).elements().length).toBeGreaterThan(
+        0,
+      );
+    });
+
+    it('names the dialog from title when without-header is set (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(
+        `<l-dialog id="dlg" title="Hidden header" without-header style="--show-duration: 0ms; --hide-duration: 0ms">
+          <p>Body without header</p>
+        </l-dialog>`,
+      );
+      const afterShowP = waitForEvent(dialog(), 'after-show');
+      dialog().open = true;
+      await settle();
+      await afterShowP;
+      expect(page.getByRole('dialog', { name: 'Hidden header' }).elements().length).toBeGreaterThan(
+        0,
+      );
     });
 
     it('renders the title as a heading (WCAG 4.1.2 / RGAA 7.1)', async () => {

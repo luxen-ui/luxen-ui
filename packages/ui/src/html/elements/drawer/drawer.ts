@@ -14,6 +14,7 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * Invoker commands). Always opens as modal.
  *
  * @slot - Body content.
+ * @slot title - Custom heading element. Overrides the default `<h2>` rendered from the `title` property. Also provides the dialog's accessible name.
  * @slot close - Close button (typically `<button class="l-close">`).
  * @slot footer - Footer actions.
  *

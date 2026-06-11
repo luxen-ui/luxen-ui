@@ -40,7 +40,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * Invoker commands). There are no public `show()` / `close()` methods.
  *
  * @slot - Body content.
- * @slot title - Custom heading element. Overrides the default `<h2>` rendered from the `title` property.
+ * @slot title - Custom heading element. Overrides the default `<h2>` rendered from the `title` property. Also provides the dialog's accessible name.
  * @slot close - Close button (typically `<button class="l-close">`).
  * @slot footer - Footer actions.
  *
@@ -71,7 +71,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
 export class Dialog extends LuxenElement {
   static styles = [hostStyles, styles];
 
-  /** Dialog title rendered in the header. */
+  /** Dialog title rendered in the header and used as the dialog's accessible name. */
   @property()
   title = '';
 
@@ -231,12 +231,17 @@ export class Dialog extends LuxenElement {
       <dialog
         part="dialog"
         closedby=${closedby}
+        aria-labelledby=${this.withoutHeader ? nothing : 'title-area'}
+        aria-label=${this.title || nothing}
       >
         ${this.withoutHeader
           ? nothing
           : html`
               <header part="header">
-                <slot name="title">
+                <slot
+                  name="title"
+                  id="title-area"
+                >
                   ${this.title ? html`<h2 part="title">${this.title}</h2>` : nothing}
                 </slot>
                 <slot name="close"></slot>

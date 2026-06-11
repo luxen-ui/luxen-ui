@@ -149,16 +149,13 @@ describe('Drawer inherits dialog events', () => {
 
 describe('Accessibility', () => {
   describe('Roles and accessible names (WCAG 4.1.2 / RGAA 7.1)', () => {
-    it('exposes the dialog role while open', async () => {
+    it('names the dialog from the title property (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(FIXTURE);
       const afterShowP = waitForEvent(drawer(), 'after-show');
       drawer().open = true;
       await settle();
       await afterShowP;
-      // NOTE: Like l-dialog, the native <dialog> in l-drawer's shadow root has no
-      // aria-labelledby/aria-label wiring — getByRole('dialog', { name: 'Navigation' })
-      // does not match. Asserting without name filter (source gap, not patched here).
-      expect(page.getByRole('dialog').elements().length).toBeGreaterThan(0);
+      expect(page.getByRole('dialog', { name: 'Navigation' }).elements().length).toBeGreaterThan(0);
     });
   });
 
