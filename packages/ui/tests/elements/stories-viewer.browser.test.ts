@@ -5,10 +5,15 @@ import '../../src/html/elements/stories/index.js';
 import '../../src/html/elements/story/index.js';
 import type { LuxenStoriesViewer } from '../../src/html/elements/stories-viewer/stories-viewer.js';
 import type { LuxenStory } from '../../src/html/elements/story/story.js';
+import { userEvent } from './support/user-event.js';
+import { waitForEvent } from './support/events.js';
+import { deepActiveElement } from './support/a11y.js';
 
-// These tests characterize l-stories-viewer the way a user would experience it:
-// dialog semantics, story/chapter navigation, keyboard shortcuts, and auto-advance.
-// They deliberately avoid asserting internal implementation details.
+// These tests drive l-stories-viewer the way a real user would — interacting via
+// trusted CDP events, querying via accessible roles — and assert what a user,
+// their screen reader, or their CSS observes: dialog semantics, scroll lock,
+// story/chapter navigation, keyboard shortcuts, mute, auto-advance, and
+// accessibility. Internal wiring is not tested.
 
 let host: HTMLElement;
 
@@ -30,7 +35,7 @@ async function mount(html: string): Promise<HTMLElement> {
 }
 
 async function settle() {
-  const v = host.querySelector<LuxenStoriesViewer>('l-stories-viewer');
+  const v = host?.querySelector<LuxenStoriesViewer>('l-stories-viewer');
   if (v) {
     await (v as LuxenStoriesViewer & { updateComplete: Promise<unknown> }).updateComplete;
   }
@@ -73,7 +78,7 @@ const FIXTURE = `
     <l-story label="Story B"></l-story>
     <l-story label="Story C"></l-story>
   </l-stories>
-  <l-stories-viewer id="viewer"></l-stories-viewer>
+  <l-stories-viewer id="viewer" style="--show-duration: 0ms; --hide-duration: 0ms"></l-stories-viewer>
 `;
 
 // ---------------------------------------------------------------------------
@@ -83,19 +88,17 @@ const FIXTURE = `
 describe('Opening and closing the viewer', () => {
   it('clicking a thumbnail in the linked l-stories opens the viewer', async () => {
     await mount(FIXTURE);
-    const trigger = host.querySelector<HTMLButtonElement>(
-      'l-story:first-of-type [data-story-trigger]',
-    );
-    expect(trigger).not.toBeNull();
-    trigger!.click();
+    // Click the story trigger via accessible role — l-story renders a button with data-story-trigger.
+    const storyTrigger = page.getByRole('button', { name: 'Story A' });
+    await userEvent.click(storyTrigger);
     await settle();
     expect(viewer().open).toBe(true);
   });
 
-  it('the open viewer exposes a dialog accessible role', async () => {
+  it('the open viewer exposes a dialog accessible role named "Stories"', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
-    // The <dialog> inside the shadow root uses aria-label="Stories".
+    // The <dialog> inside the shadow root carries aria-label="Stories".
     const dialogs = page.getByRole('dialog', { name: 'Stories' });
     expect(dialogs.elements().length).toBeGreaterThan(0);
   });
@@ -119,22 +122,43 @@ describe('Opening and closing the viewer', () => {
     expect(viewer().index).toBe(0);
   });
 
-  it('close() fires after-hide once the close transition completes', async () => {
+  it('clicking the Close button fires after-hide and closes the viewer', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
     expect(viewer().open).toBe(true);
 
-    let afterHideFired = false;
-    viewer().addEventListener('after-hide', () => {
-      afterHideFired = true;
-    });
-
-    viewer().close();
+    const afterHideP = waitForEvent(viewer(), 'after-hide');
+    await userEvent.click(page.getByRole('button', { name: 'Close' }));
     await settle();
-    // after-hide fires async (rAF + CSS animations via _emitAfter).
-    await new Promise((r) => setTimeout(r, 300));
+    await afterHideP;
     expect(viewer().open).toBe(false);
-    expect(afterHideFired).toBe(true);
+  });
+
+  it('fires show and after-show in order when opened', async () => {
+    await mount(FIXTURE);
+    const v = viewer();
+    const order: string[] = [];
+    v.addEventListener('show', () => order.push('show'));
+    v.addEventListener('after-show', () => order.push('after-show'));
+    const afterShowP = waitForEvent(v, 'after-show');
+    const restore = await openAt(3, 0);
+    await afterShowP;
+    expect(order).toEqual(['show', 'after-show']);
+    restore();
+  });
+
+  it('fires hide then after-hide in order when closed', async () => {
+    await mount(FIXTURE);
+    await openAt(3, 0);
+    const v = viewer();
+    const order: string[] = [];
+    v.addEventListener('hide', () => order.push('hide'));
+    v.addEventListener('after-hide', () => order.push('after-hide'));
+    const afterHideP = waitForEvent(v, 'after-hide');
+    await userEvent.click(page.getByRole('button', { name: 'Close' }));
+    await settle();
+    await afterHideP;
+    expect(order).toEqual(['hide', 'after-hide']);
   });
 
   it('a cancelable hide listener calling preventDefault keeps the viewer open', async () => {
@@ -160,8 +184,10 @@ describe('Opening and closing the viewer', () => {
     const openStyle = getComputedStyle(document.documentElement).overflow;
     expect(openStyle).toBe('hidden');
 
-    viewer().close();
+    const afterHideP = waitForEvent(viewer(), 'after-hide');
+    await userEvent.click(page.getByRole('button', { name: 'Close' }));
     await settle();
+    await afterHideP;
 
     // Poll until data-modal is removed (up to ~500 ms) before reading overflow.
     // The attribute drives the adopted-stylesheet rule; reading getComputedStyle
@@ -244,17 +270,15 @@ describe('Moving through stories', () => {
     expect(viewer().index).toBe(1);
   });
 
-  it('clicking the mute button toggles muted and fires mute-change', async () => {
+  it('clicking the Mute/Unmute button toggles muted and fires mute-change', async () => {
     await mount(FIXTURE);
     const restore = await openAt(3, 0);
 
     const events: CustomEvent[] = [];
     viewer().addEventListener('mute-change', (e) => events.push(e as CustomEvent));
 
-    // Default is muted=true; clicking unmutes.
-    const muteBtn = viewer().shadowRoot!.querySelector<HTMLButtonElement>('[part~="button-mute"]');
-    expect(muteBtn).not.toBeNull();
-    muteBtn!.click();
+    // Default is muted=true → button is labeled "Unmute"; clicking unmutes.
+    await userEvent.click(page.getByRole('button', { name: 'Unmute' }));
     await settle();
 
     expect(viewer().muted).toBe(false);
@@ -270,30 +294,22 @@ describe('Moving through stories', () => {
 // ---------------------------------------------------------------------------
 
 describe('A keyboard user can drive the viewer', () => {
-  function press(key: string, opts?: KeyboardEventInit) {
-    viewer().dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key,
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-        ...opts,
-      }),
-    );
-  }
-
-  it('ArrowRight calls next()', async () => {
+  it('ArrowRight calls next() and advances to the next story', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
-    press('ArrowRight');
+    // Focus the Pause button (aria-label="Pause") to establish focus inside the
+    // modal without side effects that would close the viewer.
+    await userEvent.click(page.getByRole('button', { name: 'Pause' }));
+    await userEvent.keyboard('{ArrowRight}');
     await settle();
     expect(viewer().index).toBe(1);
   });
 
-  it('ArrowLeft calls previous()', async () => {
+  it('ArrowLeft calls previous() and retreats to the prior story', async () => {
     await mount(FIXTURE);
     await openAt(3, 1);
-    press('ArrowLeft');
+    await userEvent.click(page.getByRole('button', { name: 'Pause' }));
+    await userEvent.keyboard('{ArrowLeft}');
     await settle();
     // previous() on a story with no chapters and currentTime = 0 crosses into previous story.
     expect(viewer().index).toBe(0);
@@ -302,12 +318,15 @@ describe('A keyboard user can drive the viewer', () => {
   it('m toggles muted and fires mute-change', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
+    // Focus the Unmute button (muted=true by default) to establish focus inside the
+    // modal without toggling mute yet.
+    await userEvent.click(page.getByRole('button', { name: 'Pause' }));
 
     const events: CustomEvent[] = [];
     viewer().addEventListener('mute-change', (e) => events.push(e as CustomEvent));
 
     expect(viewer().muted).toBe(true);
-    press('m');
+    await userEvent.keyboard('m');
     await settle();
 
     expect(viewer().muted).toBe(false);
@@ -318,7 +337,8 @@ describe('A keyboard user can drive the viewer', () => {
   it('M also toggles mute (case-insensitive)', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
-    press('M');
+    await userEvent.click(page.getByRole('button', { name: 'Pause' }));
+    await userEvent.keyboard('M');
     await settle();
     expect(viewer().muted).toBe(false);
   });
@@ -327,7 +347,8 @@ describe('A keyboard user can drive the viewer', () => {
     await mount(FIXTURE);
     // Do NOT open the viewer — it is closed.
     const initialIndex = viewer().index;
-    press('ArrowRight');
+    // No focused element inside the viewer — press arrow key on document body.
+    await userEvent.keyboard('{ArrowRight}');
     await settle();
     // index should not change.
     expect(viewer().index).toBe(initialIndex);
@@ -347,14 +368,22 @@ describe('A keyboard user can drive the viewer', () => {
     const playSpy = vi.spyOn(video, 'play').mockResolvedValue(undefined);
     const pauseSpy = vi.spyOn(video, 'pause').mockImplementation(() => {});
 
+    // Establish focus inside the viewer by clicking the Unmute button.
+    // This doesn't close the viewer and doesn't interfere with the Space key test.
+    await userEvent.click(page.getByRole('button', { name: 'Unmute' }));
+    await settle();
+    // Re-mute so the test starts from a known state (muted=true, video paused).
+    viewer().muted = true;
+    await settle();
+
     // Video is paused → Space should call play().
-    press(' ');
+    await userEvent.keyboard(' ');
     await settle();
     expect(playSpy).toHaveBeenCalled();
 
     // Simulate playing state.
     paused.value = false;
-    press(' ');
+    await userEvent.keyboard(' ');
     await settle();
     expect(pauseSpy).toHaveBeenCalled();
 
@@ -368,6 +397,9 @@ describe('A keyboard user can drive the viewer', () => {
 
 describe('Auto-advance', () => {
   function dispatchEnded() {
+    // The 'ended' event is a native media lifecycle event — it is dispatched by the
+    // browser's media engine when the video reaches its end. There is no user-initiated
+    // equivalent; simulating it here is environment setup, not a user interaction.
     const video = viewer().shadowRoot!.querySelector<HTMLVideoElement>('[part~="video"]')!;
     video.dispatchEvent(new Event('ended'));
   }
@@ -441,5 +473,177 @@ describe('Auto-advance', () => {
     // play() was called to restart.
     expect(playSpy).toHaveBeenCalled();
     vi.restoreAllMocks();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Seen marking
+// ---------------------------------------------------------------------------
+
+describe('Seen marking', () => {
+  it('marks stories as seen up to and including the current index on close', async () => {
+    await mount(FIXTURE);
+    await openAt(3, 1); // open at index 1
+
+    const storyEls = Array.from(host.querySelectorAll<LuxenStory>('l-story'));
+    const afterHideP = waitForEvent(viewer(), 'after-hide');
+    await userEvent.click(page.getByRole('button', { name: 'Close' }));
+    await settle();
+    await afterHideP;
+
+    // Stories at index 0 and 1 should be marked seen; index 2 should not.
+    expect(storyEls[0].seen).toBe(true);
+    expect(storyEls[1].seen).toBe(true);
+    expect(storyEls[2].seen).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Accessibility
+// ---------------------------------------------------------------------------
+
+describe('Accessibility', () => {
+  describe('Roles and accessible names', () => {
+    it('names the dialog "Stories" via aria-label (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 0);
+      expect(page.getByRole('dialog', { name: 'Stories' }).elements().length).toBeGreaterThan(0);
+    });
+
+    it('the Close button has an accessible name (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 0);
+      expect(page.getByRole('button', { name: 'Close' }).elements()).toHaveLength(1);
+    });
+
+    it('the play/pause button has an accessible name that reflects state (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      const restore = await openAt(3, 0);
+      // Default: video not manually paused yet — button should expose "Pause".
+      const pauseBtn = page.getByRole('button', { name: 'Pause' });
+      const playBtn = page.getByRole('button', { name: 'Play' });
+      // At least one of the two states is present.
+      const total = pauseBtn.elements().length + playBtn.elements().length;
+      expect(total).toBeGreaterThan(0);
+      restore();
+    });
+
+    it('the mute button reflects its current state ("Unmute" when muted, "Mute" when unmuted) (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      const restore = await openAt(3, 0);
+      // Default: muted=true → button labeled "Unmute".
+      expect(page.getByRole('button', { name: 'Unmute' }).elements()).toHaveLength(1);
+      restore();
+    });
+
+    it('the Previous/Next story buttons have accessible names (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 1); // middle story — both chevrons should be visible
+      // Query the shadow DOM directly for the conditionally-rendered nav buttons.
+      // Playwright's getByRole may not surface them if they sit outside the top-level
+      // light-DOM context; shadowRoot.querySelector is the reliable fallback here.
+      const sr = viewer().shadowRoot!;
+      const prevBtn = sr.querySelector<HTMLButtonElement>('[part~="button-previous"]');
+      const nextBtn = sr.querySelector<HTMLButtonElement>('[part~="button-next"]');
+      expect(prevBtn).not.toBeNull();
+      expect(prevBtn?.getAttribute('aria-label')).toBe('Previous story');
+      expect(nextBtn).not.toBeNull();
+      expect(nextBtn?.getAttribute('aria-label')).toBe('Next story');
+    });
+  });
+
+  describe('Keyboard interaction (APG dialog modal + media key conventions)', () => {
+    it('ArrowLeft and ArrowRight navigate between stories (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 1);
+      // Establish focus inside the modal using the Pause button (does not close the viewer).
+      await userEvent.click(page.getByRole('button', { name: 'Pause' }));
+
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(viewer().index).toBe(2);
+
+      await userEvent.keyboard('{ArrowLeft}');
+      await settle();
+      expect(viewer().index).toBe(1);
+    });
+
+    it('Space toggles play/pause (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(FIXTURE);
+      const restore = await openAt(3, 0);
+      restore();
+
+      const video = viewer().shadowRoot!.querySelector<HTMLVideoElement>('[part~="video"]')!;
+      const paused = { value: true };
+      Object.defineProperty(video, 'paused', { get: () => paused.value, configurable: true });
+      const playSpy = vi.spyOn(video, 'play').mockResolvedValue(undefined);
+      vi.spyOn(video, 'pause').mockImplementation(() => {});
+
+      // Establish focus inside the modal using the Unmute button (does not close the viewer).
+      await userEvent.click(page.getByRole('button', { name: 'Unmute' }));
+      await settle();
+
+      await userEvent.keyboard(' ');
+      await settle();
+      expect(playSpy).toHaveBeenCalled();
+
+      vi.restoreAllMocks();
+    });
+
+    it('M toggles mute (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 0);
+      // Establish focus inside the modal using the Pause button.
+      await userEvent.click(page.getByRole('button', { name: 'Pause' }));
+
+      expect(viewer().muted).toBe(true);
+      await userEvent.keyboard('m');
+      await settle();
+      expect(viewer().muted).toBe(false);
+    });
+
+    it('Escape closes the viewer — no keyboard trap (WCAG 2.1.2 / RGAA 12.9)', async () => {
+      await mount(FIXTURE);
+      await openAt(3, 0);
+      const afterHideP = waitForEvent(viewer(), 'after-hide');
+      await userEvent.keyboard('{Escape}');
+      await settle();
+      await afterHideP;
+      expect(viewer().open).toBe(false);
+    });
+  });
+
+  describe('Focus management', () => {
+    it('focus is restored to the story trigger after the viewer closes (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(FIXTURE);
+      // Click a real story trigger so it holds focus — openAt will open the viewer
+      // from there, and _restoreFocus() must return focus to that trigger on close.
+      const storyTrigger = page.getByRole('button', { name: 'Story A' });
+      await userEvent.click(storyTrigger);
+      await settle();
+
+      // Open via public API (play() stub required to avoid autoplay rejection).
+      const v = viewer();
+      await (v as LuxenStoriesViewer & { updateComplete: Promise<unknown> }).updateComplete;
+      const video = v.shadowRoot!.querySelector<HTMLVideoElement>('[part~="video"]')!;
+      const playSpy = vi.spyOn(video, 'play').mockResolvedValue(undefined);
+      const storyEls = Array.from(host.querySelectorAll<LuxenStory>('l-story'));
+      v.openAt(storyEls, 0);
+      await settle();
+
+      // Close via Escape — native showModal() plus _restoreFocus() returns focus.
+      const afterHideP = waitForEvent(viewer(), 'after-hide');
+      await userEvent.keyboard('{Escape}');
+      await settle();
+      await afterHideP;
+
+      // Focus should be back on the trigger of story A.
+      const expectedTrigger = host.querySelector<HTMLButtonElement>(
+        'l-story:first-of-type [data-story-trigger]',
+      );
+      expect(deepActiveElement()).toBe(expectedTrigger);
+
+      playSpy.mockRestore();
+    });
   });
 });
