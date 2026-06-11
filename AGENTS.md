@@ -21,7 +21,7 @@ If you're an AI assistant composing page mockups (e.g. in a Claude.ai artifact) 
 
 ## Monorepo Structure
 
-The repository contains two packages under `packages/`:
+The repository contains three packages under `packages/` and demo apps under `demos/`:
 
 1. **`luxen-ui`** (`packages/ui`) - Unified CSS + web components package
    - CSS source in `src/css/` — design tokens, base styles, per-element CSS (flat files or appearance directories)
@@ -40,6 +40,13 @@ The repository contains two packages under `packages/`:
    - Depends on `luxen-ui` via workspace protocol
    - Configuration: `packages/docs/.vitepress/config.js`
    - Content in `packages/docs/` (markdown files)
+
+3. **`@luxen-ui/design-tokens`** (`packages/design-tokens`) - Standalone design-token distribution
+   - CSS primitives, semantic aliases, palette, and an optional Tailwind bridge
+   - Ships JSON and JS token formats alongside CSS custom properties
+   - Consumed by `luxen-ui` as a workspace devDependency (tokens are inlined at build time, not shipped as a runtime dependency)
+
+**Demo apps** live under `demos/` (e.g. `demos/nuxt` — a Nuxt integration example). They are included in the workspace glob but are not published packages.
 
 ## Common Commands
 
