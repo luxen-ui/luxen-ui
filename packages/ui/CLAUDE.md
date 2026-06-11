@@ -104,6 +104,14 @@ How to write component tests:
 - **Focus assertions across shadow roots** use `deepActiveElement()` from
   `tests/elements/support/a11y.ts`. Reference suite:
   `tests/elements/dropdown.browser.test.ts`.
+- **Shared vs local test helpers.** `userEvent` and `waitForEvent` live in
+  `tests/elements/support/` — import them, never re-declare them. But
+  **`mount()` and `settle()` stay local to each suite**: each `settle()`
+  encodes that element's real synchronization contract (e.g. dialog/
+  stories-viewer need two macrotasks because `dialog.close()` schedules a
+  second Lit cycle; tree awaits all `l-tree-item`s). Do not unify them into a
+  shared helper — a one-size `settle()` either over-waits everywhere (masking
+  scheduling regressions) or needs so many options it earns nothing.
 
 ## Element Styles (Shadow DOM)
 
