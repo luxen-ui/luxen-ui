@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vp run -r --cache build",
+    "test": "vp run -r test",
     "lint": "vp lint",
     "format": "vp fmt",
     "format:check": "vp fmt --check",
