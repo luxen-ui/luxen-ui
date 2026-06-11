@@ -75,7 +75,7 @@ Override the `--cell-*` properties to retheme. Set `--cell-focus-ring` to a full
 
 ### Not defined
 
-Before JS loads (`:not(:defined)`), CSS reserves the exact box the cells will occupy — a single soft-tinted rectangle, not per-cell artwork. Width tracks `--digits`, `--cell-size`, and `--cell-gap` so layout doesn't shift on hydration, and the tint follows `--cell-bg-color` so custom themes carry over.
+Before JS loads (`:not(:defined)`), the real `<input>` stays visible and usable as a single field styled with the cell tokens — the code can be entered even without JavaScript. Width tracks `--digits`, `--cell-size`, and `--cell-gap` so layout doesn't shift on hydration, and the field uses `--cell-bg-color` so custom themes carry over.
 
 <NotDefinedPreview :css="notDefinedCss" direction="column" :height="240" html='<l-input-otp size="sm"><input /></l-input-otp><l-input-otp><input /></l-input-otp><l-input-otp size="lg"><input /></l-input-otp>' />
 
@@ -127,9 +127,9 @@ Native `disabled` attribute.
   { Key: 'Ctrl + V / Cmd + V', Description: 'Pastes a full code from clipboard' },
 ]" />
 
-### Why light DOM?
-
-The native `<input>` lives in the light DOM so it stays directly accessible for `<label>` association, form participation, and external CSS. The visual cells are purely decorative (`aria-hidden="true"`) — screen readers only see the real input.
+::: info Why light DOM?
+The native `<input>` stays a real form control — built-in validation, form submission, and `one-time-code` autofill work without JavaScript, and it's usable before the element upgrades. The visual cells are decorative (`aria-hidden="true"`).
+:::
 
 ## API reference
 

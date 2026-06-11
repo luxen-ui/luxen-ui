@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { computed } from 'vue';
 import { useData } from 'vitepress';
+import tokensCss from 'luxen-ui/css/tokens?raw';
 
 const props = defineProps({
   css: { type: String, required: true },
@@ -10,44 +11,20 @@ const props = defineProps({
 });
 
 const { isDark } = useData();
-const tokens = ref('');
 
-const VARS = [
-  '--l-color-border',
-  '--l-color-border-disabled',
-  '--l-color-surface',
-  '--l-color-text-primary',
-  '--l-color-text-disabled',
-  '--l-color-bg-fill-neutral-soft',
-  '--l-color-bg-fill-neutral-subtle',
-  '--l-color-bg-disabled',
-  '--l-focus-ring',
-  '--l-size-control-xs',
-  '--l-size-control-sm',
-  '--l-size-control-md',
-  '--l-size-control-lg',
-  '--l-size-control-xl',
-  '--radius-md',
-  '--radius-full',
-];
-
-const readTokens = () => {
-  const root = getComputedStyle(document.documentElement);
-  tokens.value = VARS.map((v) => `${v}: ${root.getPropertyValue(v).trim()};`).join('\n  ');
-};
-
-onMounted(readTokens);
-watch(isDark, () => nextTick(readTokens));
-
+// Inline the full Luxen token sheet so every --l-* custom property resolves
+// inside the isolated iframe (an iframe srcdoc does not inherit the parent's
+// CSS variables). Dark mode is driven by `color-scheme` + the tokens' own
+// light-dark() values, so no hand-maintained variable list is needed.
 const srcdoc = computed(
   () => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <style>
+${tokensCss}
 :root {
   color-scheme: ${isDark.value ? 'dark' : 'light'};
-  ${tokens.value}
 }
 ${props.css}
 html, body {

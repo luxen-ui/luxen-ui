@@ -21,6 +21,9 @@
     --cell-border-radius: var(--l-radius-md);
     --cell-focus-color: var(--l-focus-ring);
     --cell-focus-ring: 0 0 0 1px var(--cell-focus-color);
+    --_cell-font:
+      ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+      monospace;
 
     display: inline-block;
     position: relative;
@@ -54,9 +57,7 @@
     border: 1px solid var(--cell-border-color);
     border-radius: var(--cell-border-radius);
     background: var(--cell-bg-color);
-    font-family:
-      ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
-      monospace;
+    font-family: var(--_cell-font);
     font-size: calc(var(--cell-size) * 0.45);
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -175,10 +176,10 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
    🅿🆁🅾🅶🆁🅴🆂🆂🅸🆅🅴 🅴🅽🅷🅰🅽🅲🅴🅼🅴🅽🆃 🅵🅰🅻🅻🅱🅰🅲🅺
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-  Pre-upgrade reserves the exact box the cells will occupy — width scales
-  with --digits / --cell-size / --cell-gap so layout doesn't shift on hydration.
-  Single soft-tinted rectangle (not per-cell): matches any custom appearance
-  cleanly since it doesn't pretend to redraw the cell layout.
+  Pre-upgrade, the real <input> stays visible and usable with no JS — styled as
+  a single field with the cell tokens. The host still reserves the exact box the
+  cells will occupy (width scales with --digits / --cell-size / --cell-gap) so
+  layout doesn't shift on hydration.
   */
 
   l-input-otp:not(:defined) {
@@ -188,11 +189,28 @@
       var(--cell-size) * var(--digits) + var(--cell-gap, 0.5rem) * (var(--digits) - 1)
     );
     block-size: var(--cell-size);
-    background: var(--cell-bg-color);
-    border-radius: var(--cell-border-radius);
   }
 
   l-input-otp:not(:defined) > input {
-    display: none;
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 100%;
+    padding-inline: calc(var(--cell-size) * 0.3);
+    border: 0;
+    border-radius: var(--cell-border-radius);
+    background: var(--cell-bg-color);
+    color: var(--l-color-text-primary);
+    font-family: var(--_cell-font);
+    font-size: calc(var(--cell-size) * 0.45);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.25em;
+    text-align: center;
+  }
+
+  /* Swap the UA focus ring for the Luxen outline ring. Inset (like input-stepper)
+     so the filled field's ring is never clipped by a tight container. */
+  l-input-otp:not(:defined) > input:focus-visible {
+    outline: 2px solid var(--l-focus-ring);
+    outline-offset: -2px;
   }
 }
