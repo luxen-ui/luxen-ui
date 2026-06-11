@@ -64,6 +64,18 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
 
 /**
  * @summary A rich text editor built on Tiptap (ProseMirror). Form-associated: its value is the editor HTML.
+ *
+ * ### Keyboard — APG Toolbar pattern
+ * The generated toolbar buttons follow the
+ * [APG Toolbar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/):
+ * exactly one button holds `tabindex="0"` at a time (roving tabindex).
+ * **ArrowRight** / **ArrowLeft** move focus to the next / previous button,
+ * wrapping around. **Home** / **End** jump to the first / last button.
+ * A single Tab enters and leaves the toolbar without stepping through every
+ * button. Slotted `toolbar-start` / `toolbar-end` focusables are excluded
+ * from roving management — they are consumer-controlled content and their
+ * tab order is handled by the consumer.
+ *
  * @customElement l-prose-editor
  *
  * @slot toolbar-start - Content placed before the generated toolbar buttons.
@@ -153,6 +165,21 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   private _emojiPickerPromise?: Promise<HTMLElement | null>;
   private _emojiOpenAtPointerDown = false;
   private _emojiAutoUpdateCleanup?: () => void;
+
+  /**
+   * Index (within the generated button list) that currently holds tabindex="0".
+   * Initialised to 0 (first button). Survives Lit re-renders because tabindex
+   * is computed from this field inside `_renderButton`; no post-hoc DOM patching
+   * needed (which re-render would overwrite).
+   */
+  private _rovingIndex = 0;
+
+  /**
+   * Set to `true` while the toolbar is driving focus via arrow-key navigation.
+   * `_onFocus` checks this flag and skips its redirect-to-editor logic so that
+   * focus stays on the toolbar button the user navigated to.
+   */
+  private _rovingFocusActive = false;
 
   override get validationTarget(): HTMLElement | undefined {
     return this._editorRoot;
@@ -380,9 +407,89 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   }
 
   private _onFocus = () => {
+    // During roving-tabindex arrow navigation the toolbar is deliberately moving
+    // focus to a button; skip the redirect-to-editor logic so focus stays there.
+    if (this._rovingFocusActive) return;
+    // When a toolbar button has focus (user clicked or tabbed to it), respect
+    // that focus — do not redirect to the editor. The button's click handler will
+    // run the command and return focus to the editor on its own.
+    const shadowActive = this.shadowRoot?.activeElement;
+    if (shadowActive?.part?.contains('toolbar-button')) return;
     if (!this.disabled && document.activeElement !== this.editor?.view.dom) {
       this.focus();
     }
+  };
+
+  /**
+   * Delegated click handler on the toolbar container — updates the roving
+   * tabindex owner when a generated button is clicked so that subsequent
+   * Tab-in / Tab-out cycles return to the last-interacted button.
+   */
+  private _onToolbarClick = (event: MouseEvent) => {
+    const buttons = Array.from(
+      this.shadowRoot?.querySelectorAll<HTMLElement>('[part="toolbar-button"]') ?? [],
+    );
+    // Walk composedPath to find the first button in the generated set.
+    const clicked = event.composedPath().find((el) => buttons.includes(el as HTMLElement)) as
+      | HTMLElement
+      | undefined;
+    if (!clicked) return;
+    const idx = buttons.indexOf(clicked);
+    if (idx !== -1) {
+      this._rovingIndex = idx;
+      // Plain field — Lit won't notice the change; request a re-render so the
+      // tabindex attributes update even when Tiptap doesn't fire a transaction.
+      this.requestUpdate();
+    }
+  };
+
+  /**
+   * APG Toolbar keyboard handler — roving tabindex navigation.
+   * Targets only the generated [part="toolbar-button"] set; slotted
+   * toolbar-start / toolbar-end focusables are left to the consumer.
+   */
+  private _onToolbarKeyDown = (event: KeyboardEvent) => {
+    const buttons = Array.from(
+      this.shadowRoot?.querySelectorAll<HTMLElement>('[part="toolbar-button"]') ?? [],
+    );
+    if (buttons.length === 0) return;
+
+    // `document.activeElement` stops at the shadow host; drill into the shadow
+    // root to find which button actually has focus.
+    const shadowActive = this.shadowRoot?.activeElement as HTMLElement | null;
+    const current = buttons.indexOf(shadowActive as HTMLElement);
+    // Only act when one of the generated buttons is focused.
+    if (current === -1) return;
+
+    let next = -1;
+    switch (event.key) {
+      case 'ArrowRight':
+        next = (current + 1) % buttons.length;
+        break;
+      case 'ArrowLeft':
+        next = (current - 1 + buttons.length) % buttons.length;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = buttons.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    this._rovingIndex = next;
+    // Guard against _onFocus stealing focus back to the editor while we are
+    // intentionally moving focus between toolbar buttons.
+    this._rovingFocusActive = true;
+    buttons[next]?.focus();
+    // Clear the guard after all synchronous focus-event callbacks have run.
+    queueMicrotask(() => {
+      this._rovingFocusActive = false;
+    });
+    this.requestUpdate();
   };
 
   private _onKeyDown = (event: KeyboardEvent) => {
@@ -587,6 +694,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     onClick: (event: MouseEvent) => void,
     active = false,
     onPointerDown?: (event: PointerEvent) => void,
+    tabIndex = -1,
   ): TemplateResult {
     const iconTag = staticTag('icon');
     return html`
@@ -598,6 +706,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
         aria-label=${label}
         aria-pressed=${active}
         title=${label}
+        tabindex=${tabIndex}
         @pointerdown=${onPointerDown}
         @click=${onClick}
       >
@@ -606,8 +715,9 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     `;
   }
 
-  private _renderToolbarItem(command: ToolbarCommandName) {
+  private _renderToolbarItem(command: ToolbarCommandName, buttonIndex: number) {
     const editor = this.editor;
+    const tabIndex = buttonIndex === this._rovingIndex ? 0 : -1;
     switch (command) {
       case 'divider':
         return html`<span
@@ -621,6 +731,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:h-1',
           () => this.toggleHeading(1),
           editor.isActive('heading', { level: 1 }),
+          undefined,
+          tabIndex,
         );
       case 'heading-2':
         return this._renderButton(
@@ -629,6 +741,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:h-2',
           () => this.toggleHeading(2),
           editor.isActive('heading', { level: 2 }),
+          undefined,
+          tabIndex,
         );
       case 'heading-3':
         return this._renderButton(
@@ -637,6 +751,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:h-3',
           () => this.toggleHeading(3),
           editor.isActive('heading', { level: 3 }),
+          undefined,
+          tabIndex,
         );
       case 'bold':
         return this._renderButton(
@@ -645,6 +761,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:bold',
           () => this.toggleBold(),
           editor.isActive('bold'),
+          undefined,
+          tabIndex,
         );
       case 'italic':
         return this._renderButton(
@@ -653,6 +771,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:italic',
           () => this.toggleItalic(),
           editor.isActive('italic'),
+          undefined,
+          tabIndex,
         );
       case 'underline':
         return this._renderButton(
@@ -661,6 +781,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:underline',
           () => this.toggleUnderline(),
           editor.isActive('underline'),
+          undefined,
+          tabIndex,
         );
       case 'strike':
         return this._renderButton(
@@ -669,6 +791,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:strikethrough',
           () => this.toggleStrike(),
           editor.isActive('strike'),
+          undefined,
+          tabIndex,
         );
       case 'highlight':
         return this._renderButton(
@@ -677,6 +801,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:mark-pen-line',
           () => this.toggleHighlight(),
           editor.isActive('highlight'),
+          undefined,
+          tabIndex,
         );
       case 'bulletlist':
         return this._renderButton(
@@ -685,6 +811,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:list-unordered',
           () => this.toggleBulletList(),
           editor.isActive('bulletList'),
+          undefined,
+          tabIndex,
         );
       case 'orderedlist':
         return this._renderButton(
@@ -693,6 +821,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:list-ordered',
           () => this.toggleOrderedList(),
           editor.isActive('orderedList'),
+          undefined,
+          tabIndex,
         );
       case 'blockquote':
         return this._renderButton(
@@ -701,6 +831,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:double-quotes-l',
           () => this.toggleBlockquote(),
           editor.isActive('blockquote'),
+          undefined,
+          tabIndex,
         );
       case 'code-block':
         return this._renderButton(
@@ -709,10 +841,18 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:code-box-line',
           () => this.toggleCodeBlock(),
           editor.isActive('codeBlock'),
+          undefined,
+          tabIndex,
         );
       case 'horizontal-rule':
-        return this._renderButton('horizontal-rule', 'Horizontal rule', 'ri:separator', () =>
-          this.setHorizontalRule(),
+        return this._renderButton(
+          'horizontal-rule',
+          'Horizontal rule',
+          'ri:separator',
+          () => this.setHorizontalRule(),
+          false,
+          undefined,
+          tabIndex,
         );
       case 'link':
         return this._renderButton(
@@ -721,6 +861,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'ri:link',
           () => this.toggleLink(),
           editor.isActive('link'),
+          undefined,
+          tabIndex,
         );
       case 'emoji':
         return this._renderButton(
@@ -730,21 +872,54 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           (event) => void this._onEmojiButtonClick(event),
           false,
           this._onEmojiButtonPointerDown,
+          tabIndex,
         );
       case 'attachment':
-        return this._renderButton('attachment', 'Attach file', 'ri:attachment-2', () =>
-          this.emit('add-file'),
+        return this._renderButton(
+          'attachment',
+          'Attach file',
+          'ri:attachment-2',
+          () => this.emit('add-file'),
+          false,
+          undefined,
+          tabIndex,
         );
       case 'undo':
-        return this._renderButton('undo', 'Undo', 'ri:arrow-go-back-line', () => this.undo());
+        return this._renderButton(
+          'undo',
+          'Undo',
+          'ri:arrow-go-back-line',
+          () => this.undo(),
+          false,
+          undefined,
+          tabIndex,
+        );
       case 'redo':
-        return this._renderButton('redo', 'Redo', 'ri:arrow-go-forward-line', () => this.redo());
+        return this._renderButton(
+          'redo',
+          'Redo',
+          'ri:arrow-go-forward-line',
+          () => this.redo(),
+          false,
+          undefined,
+          tabIndex,
+        );
       default:
         return null;
     }
   }
 
   override render() {
+    // Assign button indices only to actual buttons (not dividers) so _rovingIndex
+    // maps 1-to-1 with the querySelectorAll('[part="toolbar-button"]') NodeList.
+    let buttonIndex = 0;
+    const toolbarItems = this.editor
+      ? map(this._toolbar, (command) => {
+          const idx = command === 'divider' ? -1 : buttonIndex++;
+          return this._renderToolbarItem(command, idx);
+        })
+      : null;
+
     return html`
       <div
         class="wrapper"
@@ -755,9 +930,11 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           part="toolbar"
           role="toolbar"
           aria-label="Formatting"
+          @keydown=${this._onToolbarKeyDown}
+          @click=${this._onToolbarClick}
         >
           <slot name="toolbar-start"></slot>
-          ${this.editor ? map(this._toolbar, (command) => this._renderToolbarItem(command)) : null}
+          ${toolbarItems}
           <slot name="toolbar-end"></slot>
         </div>
         <div

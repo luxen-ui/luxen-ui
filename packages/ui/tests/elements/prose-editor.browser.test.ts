@@ -21,7 +21,7 @@ import { deepActiveElement } from './support/a11y.js';
 //   emoji picker        — opened/closed via the toolbar "Emoji" button;
 //                         dismissed by Escape (capture, document) and outside
 //                         pointerdown (capture, document).
-//   APG arrow-nav       — NOT implemented (see NOTES / backlog).
+//   APG arrow-nav       — ArrowLeft/Right with wrap-around, Home/End (APG toolbar pattern).
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _userEvent: UserEvent = userEvent as unknown as UserEvent;
@@ -443,6 +443,72 @@ describe('Accessibility', () => {
       expect(page.getByRole('button', { name: 'Bold', pressed: true }).elements()).toHaveLength(1);
     });
 
+    it('ArrowRight moves focus from the first toolbar button to the second (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      // minimal preset has 3 buttons: Bold, Italic, Underline.
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      // Tab into the toolbar: the first focusable element on the page is the
+      // toolbar-entry button (tabindex="0" on Bold). Tab doesn't trigger a
+      // command, so focus stays on the button — unlike a click which redirects
+      // focus to the editor via editor.chain().focus().
+      await _userEvent.tab();
+      await settleEl(el);
+      // Send ArrowRight — should move focus to Italic.
+      await _userEvent.keyboard('{ArrowRight}');
+      await settleEl(el);
+      const active = el.shadowRoot?.activeElement;
+      expect(active?.getAttribute('aria-label')).toBe('Italic');
+    });
+
+    it('ArrowLeft moves focus back to the first toolbar button (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      await _userEvent.tab();
+      await settleEl(el);
+      await _userEvent.keyboard('{ArrowRight}');
+      await settleEl(el);
+      // Italic is focused — ArrowLeft should go back to Bold.
+      await _userEvent.keyboard('{ArrowLeft}');
+      await settleEl(el);
+      const active = el.shadowRoot?.activeElement;
+      expect(active?.getAttribute('aria-label')).toBe('Bold');
+    });
+
+    it('ArrowLeft on the first toolbar button wraps to the last (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      // Tab to land focus on the first toolbar button (Bold).
+      await _userEvent.tab();
+      await settleEl(el);
+      // ArrowLeft from the first button should wrap to the last (Underline).
+      await _userEvent.keyboard('{ArrowLeft}');
+      await settleEl(el);
+      const active = el.shadowRoot?.activeElement;
+      expect(active?.getAttribute('aria-label')).toBe('Underline');
+    });
+
+    it('Home jumps focus to the first toolbar button (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      // Tab to land on the toolbar entry, then arrow to move away from Bold.
+      await _userEvent.tab();
+      await settleEl(el);
+      await _userEvent.keyboard('{ArrowRight}');
+      await settleEl(el);
+      // Home from Italic should jump back to Bold (first).
+      await _userEvent.keyboard('{Home}');
+      await settleEl(el);
+      const active = el.shadowRoot?.activeElement;
+      expect(active?.getAttribute('aria-label')).toBe('Bold');
+    });
+
+    it('End jumps focus to the last toolbar button (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      // Tab to land on the toolbar entry (Bold), then press End.
+      await _userEvent.tab();
+      await settleEl(el);
+      await _userEvent.keyboard('{End}');
+      await settleEl(el);
+      const active = el.shadowRoot?.activeElement;
+      expect(active?.getAttribute('aria-label')).toBe('Underline');
+    });
+
     it('Escape dismisses an open emoji picker without closing a host dialog (WCAG 2.1.2 / RGAA 12.9)', async () => {
       const editorEl = await mount(
         `<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>`,
@@ -480,6 +546,33 @@ describe('Accessibility', () => {
       await settleEl(el);
       const active = deepActiveElement();
       expect(active).toBe(editorArea(el));
+    });
+
+    it('exactly one toolbar button has tabindex="0" initially (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      const buttons = Array.from(
+        el.shadowRoot!.querySelectorAll<HTMLElement>('[part="toolbar-button"]'),
+      );
+      const tabZeroButtons = buttons.filter((b) => b.getAttribute('tabindex') === '0');
+      expect(tabZeroButtons).toHaveLength(1);
+      // The first button should hold the initial tabindex="0".
+      expect(tabZeroButtons[0].getAttribute('aria-label')).toBe('Bold');
+    });
+
+    it('exactly one toolbar button has tabindex="0" after ArrowRight navigation (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      // Tab into the toolbar so arrow keys reach the toolbar keydown handler.
+      await _userEvent.tab();
+      await settleEl(el);
+      await _userEvent.keyboard('{ArrowRight}');
+      await settleEl(el);
+      const buttons = Array.from(
+        el.shadowRoot!.querySelectorAll<HTMLElement>('[part="toolbar-button"]'),
+      );
+      const tabZeroButtons = buttons.filter((b) => b.getAttribute('tabindex') === '0');
+      // Still exactly one tabindex="0" — now on the second button (Italic).
+      expect(tabZeroButtons).toHaveLength(1);
+      expect(tabZeroButtons[0].getAttribute('aria-label')).toBe('Italic');
     });
   });
 });
