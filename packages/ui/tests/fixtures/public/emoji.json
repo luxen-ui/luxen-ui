@@ -1,0 +1,20 @@
+[
+  {
+    "annotation": "grinning face",
+    "emoji": "😀",
+    "group": 0,
+    "order": 1,
+    "shortcodes": ["grinning_face", "grinning"],
+    "tags": ["face", "grin"],
+    "version": 1
+  },
+  {
+    "annotation": "thumbs up",
+    "emoji": "👍",
+    "group": 1,
+    "order": 280,
+    "shortcodes": ["thumbsup", "+1"],
+    "tags": ["+1", "hand", "thumb", "up"],
+    "version": 0.6
+  }
+]

@@ -5,6 +5,10 @@ import { playwright } from 'vite-plus/test/browser-playwright';
 // ElementInternals, getByRole, :state(), showModal/popover, etc. — none of which
 // work under jsdom/happy-dom. Run with: vp test run --config vitest.browser.config.ts
 export default defineConfig({
+  // Serve test fixture assets (e.g. /emoji.json) from a directory scoped to this
+  // config only — never from the package root's public/ which would leak into
+  // the CSS/CDN build outputs.
+  publicDir: 'tests/fixtures/public',
   test: {
     include: ['tests/elements/**/*.test.ts'],
     browser: {
