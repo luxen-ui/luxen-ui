@@ -71,6 +71,39 @@ How to write component tests:
 - **`describe`/`it` read like a book's table of contents.** `describe` = a capability or persona scenario ("A keyboard user can move through the tree"); `it` = one observable outcome ("jumps to the first and last item with Home and End"). The verbose reporter should read as prose.
 - **Assert via `getByRole`** (name + state filters `{ selected, expanded, level, disabled }`) — these match because roles/states are mirrored to DOM attributes alongside `ElementInternals`. For ARIA with no role filter (`aria-posinset`/`setsize`/`busy`/`multiselectable`), assert the mirrored attribute. Avoid `expect.element` (untyped under `vp check`) — use `locator.elements()`/`.query()` after settling.
 - **Settle Lit updates** before asserting: `await el.updateComplete` + a macrotask (`setTimeout(…, 0)`), since the tree syncs on a microtask + MutationObserver.
+- **Simulate a real user — `userEvent` only.** All interactions go through
+  `userEvent` from `vite-plus/test/browser/context` — `click()`,
+  `keyboard('{ArrowDown}')`, `tab()`, `type()`, `hover()`. These send trusted
+  CDP events and exercise native behaviors (popover light-dismiss, focus
+  delegation) that synthetic events can't. Never use `dispatchEvent`, DOM
+  `.click()`, or manual `.focus()` in a test. `userEvent.keyboard` targets the
+  focused element: establish focus the way a user would (`userEvent.tab()` or
+  a click), never with `.focus()`. vite-plus 0.1.22 packaging gap: a static
+  `import { userEvent }` fails at runtime (typed but not exported by the
+  virtual module) — obtain it via
+  `const userEvent: UserEvent = ((await import('vite-plus/test/browser/context')) as any).createUserEvent();`
+  as in the reference suite, and drop this workaround once vite-plus exports
+  the singleton.
+- **Query like assistive tech.** `page.getByRole(role, { name, ...states })`
+  is the default query — it pierces open shadow DOM and proves the accessible
+  name/state is actually exposed. `getByLabelText` for form controls. Get
+  handles with `locator.element()` / `.query()` / `.elements()` after settling.
+- **Systematic `describe('Accessibility', …)` block.** Every component test
+  file ends with one, containing three sub-describes whose cases come from the
+  matching [WAI-ARIA APG pattern](https://www.w3.org/WAI/ARIA/apg/patterns/)
+  (menu button, dialog modal, tabs, tree…):
+  1. `Roles and accessible names` — what `getByRole` exposes (roles, names,
+     `aria-*` states).
+  2. `Keyboard interaction (APG <pattern>)` — every key the pattern mandates.
+  3. `Focus management` — tab order, roving tabindex, focus return/trap.
+     Where a test maps to a WCAG/RGAA success criterion, reference it in the
+     title: `it('… (WCAG 2.1.1 / RGAA 7.3)')`. Common mappings: keyboard
+     operability → WCAG 2.1.1 / RGAA 7.3 · no keyboard trap → WCAG 2.1.2 /
+     RGAA 12.9 · focus order → WCAG 2.4.3 / RGAA 12.8 · name, role, value →
+     WCAG 4.1.2 / RGAA 7.1.
+- **Focus assertions across shadow roots** use `deepActiveElement()` from
+  `tests/elements/support/a11y.ts`. Reference suite:
+  `tests/elements/dropdown.browser.test.ts`.
 
 ## Element Styles (Shadow DOM)
 
