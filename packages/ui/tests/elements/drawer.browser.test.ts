@@ -1,13 +1,9 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
-import type { UserEvent } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/drawer/index.js';
 import type { Drawer } from '../../src/html/elements/drawer/drawer.js';
-
-// createUserEvent is exported at runtime but absent from vite-plus@0.1.22 type declarations.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ctx = (await import('vite-plus/test/browser/context')) as any;
-const userEvent: UserEvent = ctx.createUserEvent();
+import { userEvent } from './support/user-event.js';
+import { waitForEvent } from './support/events.js';
 
 // These tests drive l-drawer the way a real user would — interacting via
 // trusted CDP events, querying via accessible roles — and assert what a user,
@@ -45,24 +41,6 @@ async function settle() {
   if (el) {
     await el.updateComplete;
   }
-}
-
-/** Resolve a promise when `eventName` fires on `target`, or reject after `timeout` ms. */
-function waitForEvent(target: EventTarget, eventName: string, timeout = 1000): Promise<Event> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`Timed out waiting for "${eventName}" event`)),
-      timeout,
-    );
-    target.addEventListener(
-      eventName,
-      (e) => {
-        clearTimeout(timer);
-        resolve(e);
-      },
-      { once: true },
-    );
-  });
 }
 
 const drawer = () => host.querySelector<Drawer>('l-drawer')!;

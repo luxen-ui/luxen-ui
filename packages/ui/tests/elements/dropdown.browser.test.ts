@@ -1,24 +1,19 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
-import type { UserEvent } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/dropdown/index.js';
 import '../../src/html/elements/dropdown-item/index.js';
 import '../../src/html/elements/dropdown-label/index.js';
 import type { Dropdown } from '../../src/html/elements/dropdown/dropdown.js';
 import type { DropdownItem } from '../../src/html/elements/dropdown-item/dropdown-item.js';
 import { deepActiveElement } from './support/a11y.js';
+import { userEvent } from './support/user-event.js';
+import { waitForEvent } from './support/events.js';
 
 // These tests drive l-dropdown the way a person would — clicking the trigger,
 // pressing keys, clicking items — and assert what a user (or their screen
 // reader, or their CSS) observes: open state, aria-expanded, focus, selection
 // events, and checkbox state. All interactions use userEvent (trusted CDP
 // events) so native behaviors like popover light-dismiss are exercised.
-
-// createUserEvent is exported at runtime but absent from vite-plus@0.1.22 type declarations.
-// Cast the module to access it; the UserEvent annotation restores full type-safety at call sites.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ctx = (await import('vite-plus/test/browser/context')) as any;
-const userEvent: UserEvent = ctx.createUserEvent();
 
 let host: HTMLElement;
 
@@ -46,21 +41,6 @@ async function settle() {
     await dd.updateComplete;
   }
   await new Promise((r) => setTimeout(r, 0));
-}
-
-/** Wait for an event on el with a timeout (returns true if fired, false if timed out). */
-function waitForEvent(el: EventTarget, name: string, timeout = 1000): Promise<boolean> {
-  return new Promise((resolve) => {
-    const timer = setTimeout(() => resolve(false), timeout);
-    el.addEventListener(
-      name,
-      () => {
-        clearTimeout(timer);
-        resolve(true);
-      },
-      { once: true },
-    );
-  });
 }
 
 /** Wait for rAF + macrotask — gives the element time to schedule initial focus after keyboard open. */
