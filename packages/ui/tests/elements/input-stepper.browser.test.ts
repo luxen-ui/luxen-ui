@@ -31,10 +31,11 @@ async function settle() {
 
 const el = () => host.querySelector('l-input-stepper')!;
 
-// l-input-stepper wraps the native <input type="number"> in a value div and
-// may also render an aria-hidden track overlay. The spinbutton may not be
-// accessible by role if the input is visually hidden; locate it structurally.
-// NOTE: this is a recorded a11y finding — see Accessibility > Roles block.
+// l-input-stepper keeps the native <input type="number"> in the light DOM with
+// background:transparent and no aria-hidden — it stays in the a11y tree and is
+// reachable via role. Use getByRole as the primary query; fall back to the
+// structural selector only for attribute mutations (value, disabled).
+const spinbutton = () => page.getByRole('spinbutton');
 const stepperInput = () => el().querySelector<HTMLInputElement>('input[type=number]')!;
 
 const incrementBtn = () => page.getByRole('button', { name: 'Increase value' });
@@ -228,18 +229,41 @@ describe('Accessibility', () => {
       expect(track?.getAttribute('aria-hidden')).toBe('true');
     });
 
-    it('page.getByRole("spinbutton") may return no elements — the native input is wrapped in a value div and may not be visible; AT users interact via the two named buttons', async () => {
-      // RECORDED A11Y FINDING: l-input-stepper exposes no live spinbutton
-      // semantics in its visible layer. The native <input type="number"> is
-      // hidden behind the .l-input-stepper-value wrapper and is not announced
-      // by role by Playwright's getByRole. AT users get two named buttons
-      // ("Decrease value" / "Increase value") but there is no role=spinbutton
-      // element announcing the current value live. This limits screen-reader
-      // UX: the current numeric value is not surfaced to AT automatically.
+    it('page.getByRole("spinbutton") matches the native input — it is never display:none / visibility:hidden / aria-hidden (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      // Verified empirically: the input[type=number] has background:transparent
+      // inside .l-input-stepper-value but is NOT removed from the a11y tree.
+      // getByRole('spinbutton') locates it in both default and with-roller modes.
       await mount(STEPPER);
-      // Both button roles are properly exposed:
+      // Spinbutton role is exposed and aria-valuemin/max are reflected natively.
+      expect(spinbutton().elements()).toHaveLength(1);
+      expect(spinbutton().element()?.getAttribute('min')).toBe('0');
+      expect(spinbutton().element()?.getAttribute('max')).toBe('10');
+      // Both named buttons are also properly exposed:
       expect(incrementBtn().elements()).toHaveLength(1);
       expect(decrementBtn().elements()).toHaveLength(1);
+    });
+
+    it('page.getByRole("spinbutton") matches the input even in with-roller mode while unfocused (overlay covers visually but not the a11y tree)', async () => {
+      await mount(`
+        <l-input-stepper with-roller>
+          <input type="number" min="0" max="10" value="5" />
+        </l-input-stepper>
+      `);
+      // The roller overlay uses visibility:hidden on focus-within and display:none
+      // without [with-roller] — it never applies aria-hidden to the input itself.
+      expect(spinbutton().elements()).toHaveLength(1);
+    });
+
+    it('page.getByRole("spinbutton") matches the input in with-roller mode after clicking into the field (overlay hides on :focus-within)', async () => {
+      await mount(`
+        <l-input-stepper with-roller>
+          <input type="number" min="0" max="10" value="5" />
+        </l-input-stepper>
+      `);
+      await userEvent.click(spinbutton());
+      await settle();
+      // Still exactly one spinbutton — the overlay hiding changes nothing in the a11y tree.
+      expect(spinbutton().elements()).toHaveLength(1);
     });
   });
 
