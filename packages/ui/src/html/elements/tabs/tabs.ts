@@ -41,6 +41,7 @@ export class Tabs extends LuxenElement {
   private _tablistEl: HTMLElement | null = null;
   private _tabs: HTMLButtonElement[] = [];
   private _panels: HTMLElement[] = [];
+  private _resizeObserver: ResizeObserver | null = null;
 
   /** Visual variant. */
   @property({ reflect: true })
@@ -144,13 +145,20 @@ export class Tabs extends LuxenElement {
     this._tablistEl.addEventListener('click', this._onClick);
     this._tablistEl.addEventListener('keydown', this._onKeyDown);
 
-    // Initial indicator position
-    requestAnimationFrame(() => this._updateIndicator());
+    // Initial indicator position. Synchronous first (offset reads force
+    // layout), then a ResizeObserver keeps it correct across hidden→visible
+    // transitions and size changes — rAF is suspended in hidden documents,
+    // so it must not be the only scheduling mechanism here.
+    this._updateIndicator();
+    this._resizeObserver = new ResizeObserver(() => this._updateIndicator());
+    this._resizeObserver.observe(this._tablistEl);
   }
 
   private _teardown() {
     this._tablistEl?.removeEventListener('click', this._onClick);
     this._tablistEl?.removeEventListener('keydown', this._onKeyDown);
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
     this._initialized = false;
   }
 

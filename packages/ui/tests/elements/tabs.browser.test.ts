@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import '../../src/html/elements/tabs/index.js';
 
 // Tests drive l-tabs the way a person would and assert what a user
@@ -70,6 +70,53 @@ describe('l-tabs survives being moved in the DOM', () => {
     document.body.append(tabs);
     await settle();
     expect(tabs.querySelectorAll('[role="tab"]')).toHaveLength(2);
+  });
+});
+
+describe('l-tabs positions its indicator without animation frames', () => {
+  it('sets --_indicator-width on the tablist after mount in a visible document', async () => {
+    await mount(TABS);
+    const tablist = el().querySelector<HTMLElement>('[role="tablist"]')!;
+    expect(tablist.style.getPropertyValue('--_indicator-width')).not.toBe('');
+  });
+
+  it('recovers and sets --_indicator-width when the element starts hidden and becomes visible', async () => {
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'none';
+    wrapper.innerHTML = TABS;
+    document.body.append(wrapper);
+    host = wrapper;
+    await customElements.whenDefined('l-tabs');
+    await settle();
+
+    // Still hidden — indicator may be '' or '0px'
+    const tablist = wrapper.querySelector<HTMLElement>('[role="tablist"]')!;
+
+    // Make visible — ResizeObserver fires when box size transitions from 0
+    wrapper.style.display = '';
+
+    // Wait for ResizeObserver to fire (poll up to ~10 macrotasks)
+    await vi.waitFor(
+      () => {
+        const width = tablist.style.getPropertyValue('--_indicator-width');
+        if (!width || width === '0px') throw new Error(`indicator not set yet: "${width}"`);
+      },
+      { timeout: 500 },
+    );
+
+    const width = tablist.style.getPropertyValue('--_indicator-width');
+    expect(width).not.toBe('');
+    expect(width).not.toBe('0px');
+  });
+
+  it('moves --_indicator-left when the second tab is clicked', async () => {
+    await mount(TABS);
+    const tablist = el().querySelector<HTMLElement>('[role="tablist"]')!;
+    const secondTab = el().querySelectorAll<HTMLButtonElement>('[role="tab"]')[1];
+    secondTab.click();
+    await settle();
+    const left = parseFloat(tablist.style.getPropertyValue('--_indicator-left'));
+    expect(left).toBeGreaterThan(0);
   });
 });
 
