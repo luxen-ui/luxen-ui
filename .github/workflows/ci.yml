@@ -81,4 +81,17 @@ jobs:
           cache: true
 
       - run: vp install
-      - run: vp dlx @changesets/cli status --since=origin/main
+      - name: Require a changeset for release PR types only
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          type="${PR_TITLE%%[(:]*}"
+          case "$type" in
+            feat|fix)
+              echo "release type '$type' — checking for a changeset"
+              vp dlx @changesets/cli status --since=origin/main
+              ;;
+            *)
+              echo "non-release PR type '$type' — changeset not required"
+              ;;
+          esac
