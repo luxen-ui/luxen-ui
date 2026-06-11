@@ -140,7 +140,11 @@ export class Dialog extends LuxenElement {
     } else if (!this.open && this.dialog.open) {
       // Closing — cancelable. Revert the property if consumer prevents.
       if (!this.emit('hide', { cancelable: true })) {
-        this.open = true;
+        // Defer the revert so it lands outside the current update cycle and
+        // doesn't schedule a new update from inside updated().
+        queueMicrotask(() => {
+          this.open = true;
+        });
         return;
       }
       this.dialog.close();

@@ -163,6 +163,16 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   }
 
   override firstUpdated() {
+    // Defer initialization out of the first update cycle: the tiptap Editor
+    // constructor dispatches its initial transaction synchronously (firing
+    // onTransaction → requestUpdate), and the trailing requestUpdate() that
+    // reveals the toolbar would likewise schedule an update from inside the
+    // cycle Lit just completed.
+    queueMicrotask(() => this._initEditor());
+  }
+
+  private _initEditor() {
+    if (!this.isConnected) return; // disconnect raced the microtask
     this.editor = new Editor({
       element: this._createEditorRoot(),
       editorProps: {
