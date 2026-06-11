@@ -158,17 +158,35 @@ export class LuxenStoriesViewer extends LuxenElement {
     this._video.addEventListener('timeupdate', () => this._maybePrefetchNext());
   }
 
+  override willUpdate(changed: PropertyValues<this>) {
+    // Reset chapter state synchronously so it folds into the same update cycle —
+    // avoids writing reactive props from updated() which would schedule a second update.
+    const openBecoming = changed.has('open') && this.open;
+    const indexChanged = changed.has('index');
+    if (openBecoming || indexChanged) {
+      const story = this.stories[this.index];
+      if (story) {
+        this._chapterStarts = story.getChapterStarts();
+        this.chapter = 0;
+      }
+    }
+  }
+
   override updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
       if (this.open && !this._dialog.open) {
         this.emit('show');
         this.toggleAttribute('data-modal', true);
         this._dialog.showModal();
-        this._loadCurrent();
+        queueMicrotask(() => this._loadCurrent());
         void this._emitAfter('after-show');
       } else if (!this.open && this._dialog.open) {
         if (!this.emit('hide', { cancelable: true })) {
-          this.open = true;
+          // Defer the revert so it lands outside the current update cycle and
+          // doesn't schedule a new update from inside updated().
+          queueMicrotask(() => {
+            this.open = true;
+          });
           return;
         }
         this._dialog.close();
@@ -177,7 +195,7 @@ export class LuxenStoriesViewer extends LuxenElement {
 
     // Story change → reload current story (refreshes chapters, segments, slots, video).
     if (changed.has('index') && this.open) {
-      this._loadCurrent();
+      queueMicrotask(() => this._loadCurrent());
       const story = this.stories[this.index];
       if (story) this.emit('story-change', { detail: { index: this.index, story } });
     }
@@ -313,14 +331,15 @@ export class LuxenStoriesViewer extends LuxenElement {
   }
 
   private _loadCurrent() {
+    // Guard against a close racing the microtask: if the viewer is no longer
+    // open, don't restart the video with stale state.
+    if (!this.open || !this._dialog.open) return;
     const story = this.stories[this.index];
     if (!story) return;
     cancelAnimationFrame(this._raf);
     // Reset the prefetch tracker when the active story changes — the next
     // candidate has shifted and may need its own preload hint.
     this._prefetchedSrc = null;
-    this._chapterStarts = story.getChapterStarts();
-    this.chapter = 0;
     this._syncSlots(story);
     this._video.muted = this.muted;
     this._video.loop = this.loop;
