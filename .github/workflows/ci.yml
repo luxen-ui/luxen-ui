@@ -24,6 +24,24 @@ jobs:
           cache: true
 
       - run: vp install
+
+      # Resolve the installed Playwright version to key the browser cache on.
+      # Run from packages/ui — pnpm does not hoist `playwright` to the repo root.
+      - name: Read the resolved playwright version
+        id: pwv
+        working-directory: packages/ui
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      # Cache the downloaded browser binaries (keyed on the Playwright version,
+      # NOT the lockfile hash — the binary only changes when Playwright bumps).
+      # On a warm cache the install step below skips the download and only runs
+      # the cheap apt `--with-deps` portion.
+      - name: Cache the playwright browser download
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.pwv.outputs.version }}
+
       - run: vp run --filter 'luxen-ui...' build
       - run: vp check
       # Install the browser before any browser-backed run: luxen-ui#test now
