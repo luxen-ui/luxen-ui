@@ -125,7 +125,7 @@
   "scripts": {
     "dev": "WATCH=true DEV=true vp build --config vite.config.css.ts",
     "dev:elements": "vp dev",
-    "build": "vp build --config vite.config.css.ts && tsc && tsc -p tsconfig.tooling.json && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/normalize-metadata.mjs && node scripts/check-metadata.mjs && node scripts/copy-cdn-assets.mjs && node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts && node scripts/prepare-skill-templates.mjs",
+    "build": "vp build --config vite.config.css.ts && tsc && tsc -p tsconfig.tooling.json && node scripts/copy-styles.mjs && vp build && pnpm run manifest && node scripts/normalize-metadata.mjs && node scripts/check-metadata.mjs && node scripts/generate-readme-tables.mjs --check && node scripts/copy-cdn-assets.mjs && node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts && node scripts/prepare-skill-templates.mjs",
     "build:css": "vp build --config vite.config.css.ts",
     "build:standalone": "node scripts/build-standalone.mjs && vp build --config vite.config.cdn-standalone.ts",
     "build:skill-templates": "node scripts/prepare-skill-templates.mjs",
