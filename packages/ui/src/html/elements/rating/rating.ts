@@ -1,4 +1,5 @@
 import { html, nothing, unsafeCSS } from 'lit';
+import type { PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -92,8 +93,14 @@ export class Rating extends LuxenFormAssociatedElement {
     this._syncFormValue(state);
   }
 
-  override firstUpdated() {
-    this.setLabelForValue(this.value);
+  override willUpdate(changed: PropertyValues<this>) {
+    // Derive the label inside the update cycle (Lit-sanctioned) instead of
+    // requestUpdate()-ing from firstUpdated — see PRs #39/#45 for the pattern.
+    // Only sync from `value` when not previewing, so hover/focus previews win.
+    if ((changed.has('value') || changed.has('labels')) && !this.previewedValue) {
+      const v = this.value;
+      this.currentLabel = v ? (this.labels?.[v - 1] ?? '') : '';
+    }
   }
 
   private setLabelForValue(value: number | string) {
