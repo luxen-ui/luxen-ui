@@ -6,7 +6,7 @@ export type ButtonGroupOrientation = 'horizontal' | 'vertical';
 /**
  * @summary Visually joins related `.l-button` elements into a single segmented
  * control. The joined appearance is pure CSS; this element adds the group
- * semantics (`role="group"`, `aria-label`, `aria-orientation`).
+ * semantics (`role="group"`, `aria-label`).
  *
  * @example
  * ```html
@@ -28,7 +28,11 @@ export class ButtonGroup extends LuxenElement {
   @property({ reflect: true })
   label?: string;
 
-  /** Layout direction of the buttons. */
+  /**
+   * Layout direction of the buttons. Visual only (drives the CSS via the
+   * reflected attribute): ARIA 1.2 does not allow `aria-orientation` on
+   * `role="group"`, so no ARIA attribute is set.
+   */
   @property({ reflect: true })
   orientation: ButtonGroupOrientation = 'horizontal';
 
@@ -44,10 +48,6 @@ export class ButtonGroup extends LuxenElement {
       } else {
         this.removeAttribute('aria-label');
       }
-    }
-
-    if (changed.has('orientation')) {
-      this.setAttribute('aria-orientation', this.orientation);
     }
   }
 }

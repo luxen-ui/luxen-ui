@@ -22,9 +22,10 @@ async function mount(html: string): Promise<HTMLElement> {
 }
 
 // l-input-otp is a progressive light-DOM element: after _setup() the native
-// <input> lives inside .l-input-otp-cells but is still in the DOM. The cells
-// container is aria-hidden="true" and updates run synchronously on input/keyup
-// events, so one macrotask is sufficient for settling.
+// <input> lives inside .l-input-otp-cells but is still in the DOM. Each
+// decorative cell is aria-hidden="true" (the container is not — it holds the
+// focusable input) and updates run synchronously on input/keyup events, so one
+// macrotask is sufficient for settling.
 async function settle() {
   await new Promise((r) => setTimeout(r, 0));
 }
@@ -149,10 +150,17 @@ describe('Typing fills the digit cells', () => {
 
 describe('Accessibility', () => {
   describe('Roles and accessible names', () => {
-    it('the decorative cell container carries aria-hidden="true" — it is not exposed to AT (WCAG 4.1.2 / RGAA 7.1)', async () => {
+    it('each decorative cell carries aria-hidden="true", but the container holding the real <input> does not — the input must not sit in a hidden subtree (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(OTP);
-      const cells = el().querySelector('.l-input-otp-cells');
-      expect(cells?.getAttribute('aria-hidden')).toBe('true');
+      const cells = el().querySelectorAll('.l-input-otp-cell');
+      expect(cells.length).toBeGreaterThan(0);
+      for (const cell of cells) {
+        expect(cell.getAttribute('aria-hidden')).toBe('true');
+      }
+      // The wrapper contains the focusable input — hiding it would hide the input
+      // from AT (axe aria-hidden-focus).
+      expect(el().querySelector('.l-input-otp-cells')?.getAttribute('aria-hidden')).toBeNull();
+      expect(otpInput().closest('[aria-hidden="true"]')).toBeNull();
     });
 
     it('the real <input> exists in the DOM with inputmode="numeric" and a maxlength (WCAG 4.1.2 / RGAA 7.1)', async () => {
@@ -170,13 +178,13 @@ describe('Accessibility', () => {
       expect(otpInput().getAttribute('autocomplete')).toBe('one-time-code');
     });
 
-    it('page.getByRole("textbox") returns no elements because the input is visually hidden — AT exposure is via the input, not a visible textbox role', async () => {
+    it('the input is exposed as a textbox to AT — it no longer sits in an aria-hidden subtree (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(OTP);
-      // This is a recorded a11y finding: the accessible input is not locatable
-      // by getByRole because it is rendered off-screen behind the cell layer.
-      // AT users interact with the input directly via keyboard; the cell layer
-      // is aria-hidden and is purely decorative.
-      expect(page.getByRole('textbox').elements()).toHaveLength(0);
+      // Previously a recorded finding: the cells WRAPPER was aria-hidden, which
+      // hid the focusable input from the accessibility tree entirely. Now only
+      // the decorative cells are hidden, so the real input is queryable by role.
+      expect(page.getByRole('textbox').elements()).toHaveLength(1);
+      expect(page.getByRole('textbox').query()).toBe(otpInput());
     });
   });
 

@@ -139,12 +139,13 @@ export class Popover extends LuxenElement {
       await this._floating.animateShow(popover, this._getDuration('--show-duration'));
       this._floating.startPositioning(posOpts);
       this._trigger?.setAttribute('aria-expanded', 'true');
-      this._trigger?.setAttribute('aria-controls', this._popoverId);
+      // No aria-controls: the panel's id lives in this element's shadow root and
+      // IDREFs don't cross shadow boundaries, so the reference would never
+      // resolve (invalid per WCAG 4.1.2). aria-expanded alone conveys the state.
     } else {
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
       this._trigger?.setAttribute('aria-expanded', 'false');
-      this._trigger?.removeAttribute('aria-controls');
       await this._floating.animateHide(popover, this._getDuration('--hide-duration'));
       if (popover.matches(':popover-open')) popover.hidePopover();
     }

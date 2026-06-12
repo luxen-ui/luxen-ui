@@ -157,6 +157,7 @@
     "@playwright/test": "^1.60.0",
     "@types/node": "catalog:",
     "autoprefixer": "catalog:",
+    "axe-core": "^4.10.0",
     "css-extras": "catalog:",
     "http-server": "^14.1.1",
     "playwright": "^1.60.0",

@@ -66,14 +66,21 @@ export class Avatar extends LuxenElement {
 
   connectedCallback() {
     super.connectedCallback();
-    if (!this.hasAttribute('role')) {
+    if (!this.interactive && !this.hasAttribute('role')) {
       this.setAttribute('role', 'img');
     }
   }
 
   updated() {
-    if (this.name) {
-      this.setAttribute('aria-label', this.name);
+    // An interactive avatar renders a focusable <button>, and a role="img" node
+    // must stay a leaf in the accessibility tree — so the host carries no role
+    // or label and the inner button holds the accessible name (see render()).
+    if (this.interactive) {
+      if (this.getAttribute('role') === 'img') this.removeAttribute('role');
+      this.removeAttribute('aria-label');
+    } else {
+      if (!this.hasAttribute('role')) this.setAttribute('role', 'img');
+      if (this.name) this.setAttribute('aria-label', this.name);
     }
 
     const isCircle = getComputedStyle(this).getPropertyValue('--appearance').trim() === 'circle';
@@ -97,7 +104,12 @@ export class Avatar extends LuxenElement {
           : html`<slot>${defaultIcon}</slot>`;
 
     return staticHtml`
-      <${this._tag} class="base" part="base" type=${this.interactive ? 'button' : nothing}>
+      <${this._tag}
+        class="base"
+        part="base"
+        type=${this.interactive ? 'button' : nothing}
+        aria-label=${this.interactive && this.name ? this.name : nothing}
+      >
         ${content}
       </${this._tag}>
       ${

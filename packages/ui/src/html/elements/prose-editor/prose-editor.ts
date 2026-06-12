@@ -232,7 +232,15 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     this.editor = new Editor({
       element: this._createEditorRoot(),
       editorProps: {
-        attributes: { class: this.editorClass },
+        attributes: {
+          class: this.editorClass,
+          // The editable (role="textbox") needs its own accessible name: an
+          // aria-label on the host can't reach it across the shadow boundary.
+          // Forward the host's label, falling back to a built-in one (same
+          // precedent as the toolbar's hardcoded "Formatting"). Read once at
+          // init — tiptap doesn't re-render editorProps attributes.
+          'aria-label': this.getAttribute('aria-label') ?? 'Rich text editor',
+        },
       },
       extensions: [
         StarterKit.configure({ link: { openOnClick: false } }),
