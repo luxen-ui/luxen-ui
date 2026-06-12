@@ -5,10 +5,24 @@ import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { tagName } from '../../registry.js';
 import type { DropdownItem } from '../dropdown-item/dropdown-item.js';
+import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './dropdown.css?inline';
 
 const styles = unsafeCSS(rawStyles);
+
+/** Fired when a dropdown item is selected. Bubbles; not composed. */
+export class DropdownSelectEvent extends Event {
+  readonly item: DropdownItem;
+  constructor(item: DropdownItem) {
+    super('select', { bubbles: true, composed: false, cancelable: false });
+    this.item = item;
+  }
+}
+
+interface DropdownEventMap {
+  select: DropdownSelectEvent;
+}
 
 /**
  * A dropdown menu anchored to a trigger element.
@@ -31,10 +45,11 @@ const styles = unsafeCSS(rawStyles);
  * @event after-show - Fired after the open animation completes.
  * @event hide - Fired before the dropdown closes. Cancelable.
  * @event after-hide - Fired after the close animation completes.
- * @event select - Fired when an item is selected. Detail: `{ item: DropdownItem }`.
+ * @event select - Fired when an item is selected. Bubbles. Properties: `item: DropdownItem`.
  *
  * @customElement l-dropdown
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Dropdown extends LuxenElement {
   static override styles = [hostStyles, styles];
 
@@ -107,12 +122,12 @@ export class Dropdown extends LuxenElement {
 
   show() {
     if (this.open || this.disabled) return;
-    if (this.emit('show', { cancelable: true })) this.open = true;
+    if (this.dispatchEvent(new ShowEvent())) this.open = true;
   }
 
   hide() {
     if (!this.open) return;
-    if (this.emit('hide', { cancelable: true })) this.open = false;
+    if (this.dispatchEvent(new HideEvent())) this.open = false;
   }
 
   toggle() {
@@ -147,13 +162,13 @@ export class Dropdown extends LuxenElement {
       await this._floating.animateShow(panel, this._getDuration('--show-duration'));
       this._floating.startPositioning(posOpts);
       this._triggerEl?.setAttribute('aria-expanded', 'true');
-      this.emit('after-show');
+      this.dispatchEvent(new AfterShowEvent());
     } else {
       this._floating.stopPositioning();
       this._triggerEl?.setAttribute('aria-expanded', 'false');
       await this._floating.animateHide(panel, this._getDuration('--hide-duration'));
       if (panel.matches(':popover-open')) panel.hidePopover();
-      this.emit('after-hide');
+      this.dispatchEvent(new AfterHideEvent());
     }
   }
 
@@ -302,7 +317,7 @@ export class Dropdown extends LuxenElement {
     if (item.type === 'checkbox') {
       item.checked = !item.checked;
     }
-    this.emit('select', { detail: { item } });
+    this.dispatchEvent(new DropdownSelectEvent(item));
     if (item.type !== 'checkbox') {
       this.hide();
       this._triggerEl?.focus();
@@ -342,4 +357,30 @@ export class Dropdown extends LuxenElement {
       </div>
     `;
   }
+}
+
+// Types `addEventListener('select', …)` as `DropdownSelectEvent` on this element
+// (the global event map can't be augmented for the colliding name `select`).
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface Dropdown {
+  addEventListener<K extends keyof DropdownEventMap>(
+    type: K,
+    listener: (this: Dropdown, ev: DropdownEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof DropdownEventMap>(
+    type: K,
+    listener: (this: Dropdown, ev: DropdownEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

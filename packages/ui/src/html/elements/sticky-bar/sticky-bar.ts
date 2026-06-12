@@ -1,6 +1,7 @@
 import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { property } from 'lit/decorators.js';
+import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './sticky-bar.css?inline';
 
@@ -24,9 +25,9 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --offset - Distance from the active edge. Default `0px`. Use to clear a sticky header when `placement="top"`.
  *
  * @event show - Fired before the bar reveals. Cancelable.
- * @event after-show - Fired after the reveal animation completes.
+ * @event after-show - Fired after the reveal animation completes. Not cancelable.
  * @event hide - Fired before the bar hides. Cancelable.
- * @event after-hide - Fired after the hide animation completes.
+ * @event after-hide - Fired after the hide animation completes. Not cancelable.
  */
 export class StickyBar extends LuxenElement {
   static override styles = [hostStyles, styles];
@@ -76,17 +77,17 @@ export class StickyBar extends LuxenElement {
 
   private _show() {
     if (this.matches(':popover-open')) return;
-    if (this.emit('show', { cancelable: true })) this.showPopover();
+    if (this.dispatchEvent(new ShowEvent())) this.showPopover();
   }
 
   private _hide() {
     if (!this.matches(':popover-open')) return;
-    if (this.emit('hide', { cancelable: true })) this.hidePopover();
+    if (this.dispatchEvent(new HideEvent())) this.hidePopover();
   }
 
   private _onToggle = (e: Event) => {
     const ev = e as ToggleEvent;
-    this.emit(ev.newState === 'open' ? 'after-show' : 'after-hide');
+    this.dispatchEvent(ev.newState === 'open' ? new AfterShowEvent() : new AfterHideEvent());
   };
 
   private _setupObserver() {

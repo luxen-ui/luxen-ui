@@ -4,12 +4,62 @@ import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { staticTag } from '../../static-tag.js';
+import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import type { LuxenStories } from '../stories/stories.js';
 import type { LuxenStory } from '../story/story.js';
 import rawStyles from './stories-viewer.css?inline';
 
 const styles = unsafeCSS(rawStyles);
+
+/** Fired when the active story changes. */
+export class StoryChangeEvent extends Event {
+  readonly index: number;
+  readonly story: LuxenStory;
+  constructor(index: number, story: LuxenStory) {
+    super('story-change', { bubbles: false, composed: false, cancelable: false });
+    this.index = index;
+    this.story = story;
+  }
+}
+
+/** Fired when the active story finishes playback. */
+export class StoryEndEvent extends Event {
+  readonly index: number;
+  constructor(index: number) {
+    super('story-end', { bubbles: false, composed: false, cancelable: false });
+    this.index = index;
+  }
+}
+
+/** Fired when the active chapter (within a story) changes. */
+export class ChapterChangeEvent extends Event {
+  readonly chapter: number;
+  readonly story: LuxenStory;
+  constructor(chapter: number, story: LuxenStory) {
+    super('chapter-change', { bubbles: false, composed: false, cancelable: false });
+    this.chapter = chapter;
+    this.story = story;
+  }
+}
+
+/** Fired when the mute state changes. */
+export class MuteChangeEvent extends Event {
+  readonly muted: boolean;
+  constructor(muted: boolean) {
+    super('mute-change', { bubbles: false, composed: false, cancelable: false });
+    this.muted = muted;
+  }
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'story-change': StoryChangeEvent;
+    'story-end': StoryEndEvent;
+    'chapter-change': ChapterChangeEvent;
+    'mute-change': MuteChangeEvent;
+  }
+}
 
 const SCROLL_LOCK_SHEET = Symbol.for('luxen-stories-viewer-scroll-lock');
 if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
@@ -58,14 +108,14 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
  * @cssproperty --backdrop - Backdrop color. Default `var(--l-backdrop-strong)` — darker than `--l-backdrop` to focus attention on the immersive frame, but still translucent so the page stays perceptible.
  *
- * @event show - Fired when the viewer opens.
- * @event after-show - Fired after the open transition completes.
+ * @event show - Fired when the viewer is about to open. Cancelable — call `event.preventDefault()` to keep it closed.
+ * @event after-show - Fired after the open transition completes. Not cancelable.
  * @event hide - Fired when the viewer is about to close. Cancelable.
- * @event after-hide - Fired after the close transition completes.
- * @event story-change - Fired when the active story changes. Detail: `{ index: number, story: LuxenStory }`.
- * @event story-end - Fired when the active story finishes playback. Detail: `{ index: number }`.
- * @event chapter-change - Fired when the active chapter (within a story) changes. Detail: `{ chapter: number, story: LuxenStory }`.
- * @event mute-change - Fired when the mute state changes. Detail: `{ muted: boolean }`.
+ * @event after-hide - Fired after the close transition completes. Not cancelable.
+ * @event story-change - Fired when the active story changes. Properties: `index: number`, `story: LuxenStory`.
+ * @event story-end - Fired when the active story finishes playback. Properties: `index: number`.
+ * @event chapter-change - Fired when the active chapter (within a story) changes. Properties: `chapter: number`, `story: LuxenStory`.
+ * @event mute-change - Fired when the mute state changes. Properties: `muted: boolean`.
  *
  * @customElement l-stories-viewer
  */
@@ -175,13 +225,20 @@ export class LuxenStoriesViewer extends LuxenElement {
   override updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
       if (this.open && !this._dialog.open) {
-        this.emit('show');
+        if (!this.dispatchEvent(new ShowEvent())) {
+          // Defer the revert so it lands outside the current update cycle and
+          // doesn't schedule a new update from inside updated().
+          queueMicrotask(() => {
+            this.open = false;
+          });
+          return;
+        }
         this.toggleAttribute('data-modal', true);
         this._dialog.showModal();
         queueMicrotask(() => this._loadCurrent());
         void this._emitAfter('after-show');
       } else if (!this.open && this._dialog.open) {
-        if (!this.emit('hide', { cancelable: true })) {
+        if (!this.dispatchEvent(new HideEvent())) {
           // Defer the revert so it lands outside the current update cycle and
           // doesn't schedule a new update from inside updated().
           queueMicrotask(() => {
@@ -197,7 +254,7 @@ export class LuxenStoriesViewer extends LuxenElement {
     if (changed.has('index') && this.open) {
       queueMicrotask(() => this._loadCurrent());
       const story = this.stories[this.index];
-      if (story) this.emit('story-change', { detail: { index: this.index, story } });
+      if (story) this.dispatchEvent(new StoryChangeEvent(this.index, story));
     }
 
     // Chapter change within the current story → seek + refresh segment fills.
@@ -213,7 +270,7 @@ export class LuxenStoriesViewer extends LuxenElement {
   // --- Dialog event handlers ---
 
   private _onCancel(e: Event) {
-    if (!this.emit('hide', { cancelable: true })) {
+    if (!this.dispatchEvent(new HideEvent())) {
       e.preventDefault();
     }
   }
@@ -264,7 +321,7 @@ export class LuxenStoriesViewer extends LuxenElement {
       case 'M':
         e.preventDefault();
         this.muted = !this.muted;
-        this.emit('mute-change', { detail: { muted: this.muted } });
+        this.dispatchEvent(new MuteChangeEvent(this.muted));
         break;
     }
   };
@@ -394,7 +451,7 @@ export class LuxenStoriesViewer extends LuxenElement {
     this._video.currentTime = target;
     this._resetSegmentFills();
     const story = this.stories[this.index];
-    if (story) this.emit('chapter-change', { detail: { chapter: this.chapter, story } });
+    if (story) this.dispatchEvent(new ChapterChangeEvent(this.chapter, story));
   }
 
   private get _lastChapter() {
@@ -440,7 +497,7 @@ export class LuxenStoriesViewer extends LuxenElement {
   private _onEnded() {
     // Last chapter of the current story finished.
     const story = this.stories[this.index];
-    if (story) this.emit('story-end', { detail: { index: this.index } });
+    if (story) this.dispatchEvent(new StoryEndEvent(this.index));
     if (this.loop) {
       this._video.currentTime = this._chapterStarts[0] ?? 0;
       this.chapter = 0;
@@ -546,7 +603,7 @@ export class LuxenStoriesViewer extends LuxenElement {
     const anims = this._dialog.getAnimations({ subtree: false });
     await Promise.all(anims.map((a) => a.finished.catch(() => {})));
     if ((name === 'after-show') !== this.open) return;
-    this.emit(name);
+    this.dispatchEvent(name === 'after-show' ? new AfterShowEvent() : new AfterHideEvent());
     if (name === 'after-show') {
       this._raf = requestAnimationFrame(this._tick);
     }
@@ -674,7 +731,7 @@ export class LuxenStoriesViewer extends LuxenElement {
               aria-pressed=${this.muted ? 'false' : 'true'}
               @click=${() => {
                 this.muted = !this.muted;
-                this.emit('mute-change', { detail: { muted: this.muted } });
+                this.dispatchEvent(new MuteChangeEvent(this.muted));
               }}
             >
               <${iconTag} name=${this.muted ? 'mdi:volume-off' : 'mdi:volume-high'}></${iconTag}>

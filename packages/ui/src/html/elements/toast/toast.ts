@@ -4,6 +4,7 @@
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { property } from 'lit/decorators.js';
 import { tagName, cls, uniqueId } from '../../registry.js';
+import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 
 declare global {
   interface Element {
@@ -52,14 +53,57 @@ interface TimerState {
   paused: boolean;
 }
 
+/** Fired when a toast begins to show. Cancelable. `toast` is the toast item. */
+export class ToastShowEvent extends ShowEvent {
+  readonly toast: HTMLElement;
+  constructor(toast: HTMLElement) {
+    super();
+    this.toast = toast;
+  }
+}
+
+/** Fired after a toast's show animation completes. `toast` is the toast item. */
+export class ToastAfterShowEvent extends AfterShowEvent {
+  readonly toast: HTMLElement;
+  constructor(toast: HTMLElement) {
+    super();
+    this.toast = toast;
+  }
+}
+
+/** Fired when a toast begins to hide. Cancelable. `toast` is the toast item. */
+export class ToastHideEvent extends HideEvent {
+  readonly toast: HTMLElement;
+  constructor(toast: HTMLElement) {
+    super();
+    this.toast = toast;
+  }
+}
+
+/** Fired after a toast's hide animation completes and it is removed. `toast` is the toast item. */
+export class ToastAfterHideEvent extends AfterHideEvent {
+  readonly toast: HTMLElement;
+  constructor(toast: HTMLElement) {
+    super();
+    this.toast = toast;
+  }
+}
+
+interface ToastEventMap {
+  show: ToastShowEvent;
+  'after-show': ToastAfterShowEvent;
+  hide: ToastHideEvent;
+  'after-hide': ToastAfterHideEvent;
+}
+
 /**
  * @summary A toast notification container that generates toast items internally.
  * @customElement l-toast
  *
- * @event show - Emitted when a toast begins to show. Cancelable.
- * @event after-show - Emitted after the show animation completes.
- * @event hide - Emitted when a toast begins to hide. Cancelable.
- * @event after-hide - Emitted after the hide animation completes and toast is removed.
+ * @event show - Emitted when a toast begins to show. Cancelable. Properties: `toast`.
+ * @event after-show - Emitted after the show animation completes. Not cancelable. Properties: `toast`.
+ * @event hide - Emitted when a toast begins to hide. Cancelable. Properties: `toast`.
+ * @event after-hide - Emitted after the hide animation completes and toast is removed. Properties: `toast`.
  *
  * @cssproperty --gap - Gap between stacked toast items.
  * @cssproperty --width - Width of the toast stack.
@@ -71,6 +115,7 @@ interface TimerState {
  * @cssClass .l-toast-content - The content column wrapping the heading and message.
  * @cssClass .l-toast-timer - The countdown progress bar (for timed toasts).
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Toast extends LuxenElement {
   /** Use light DOM — no Shadow DOM. */
   override createRenderRoot() {
@@ -194,7 +239,7 @@ export class Toast extends LuxenElement {
     }
 
     // Dispatch show
-    if (!this.emit('show', { cancelable: true, detail: { toast } })) {
+    if (!this.dispatchEvent(new ToastShowEvent(toast))) {
       toast.remove();
       return toast;
     }
@@ -207,7 +252,7 @@ export class Toast extends LuxenElement {
       const onShown = (e: TransitionEvent) => {
         if (e.target !== toast) return;
         toast.removeEventListener('transitionend', onShown);
-        this.emit('after-show', { detail: { toast } });
+        this.dispatchEvent(new ToastAfterShowEvent(toast));
       };
       toast.addEventListener('transitionend', onShown);
     });
@@ -338,7 +383,7 @@ export class Toast extends LuxenElement {
     if (!toast.hasAttribute('showing')) return;
 
     // Dispatch hide
-    if (!this.emit('hide', { cancelable: true, detail: { toast } })) return;
+    if (!this.dispatchEvent(new ToastHideEvent(toast))) return;
 
     this._capturePositions();
 
@@ -349,7 +394,7 @@ export class Toast extends LuxenElement {
       toast.remove();
       this._animatePositions();
 
-      this.emit('after-hide', { detail: { toast } });
+      this.dispatchEvent(new ToastAfterHideEvent(toast));
 
       // Close popover if no toasts remain
       const remaining = this.querySelectorAll(`:scope > ${tagName('toast-item')}`);
@@ -446,4 +491,30 @@ function _getDefault(): Toast {
 /** Show a toast notification. Auto-creates `<l-toast>` if none exists in the DOM. */
 export function toast(options: ToastOptions): HTMLElement {
   return _getDefault().toast(options);
+}
+
+// Narrows the (globally-typed) `show`/`hide`/`after-*` listeners to this
+// element's `Toast*Event` subclasses, which carry the extra `toast` property.
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface Toast {
+  addEventListener<K extends keyof ToastEventMap>(
+    type: K,
+    listener: (this: Toast, ev: ToastEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof ToastEventMap>(
+    type: K,
+    listener: (this: Toast, ev: ToastEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

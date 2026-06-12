@@ -6,6 +6,30 @@ import rawStyles from './rating.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
+/** Fired when the rating value changes in edit mode. Bubbles; not composed. */
+export class RatingChangeEvent extends Event {
+  readonly name: string | undefined;
+  readonly value: string;
+  readonly checked: boolean;
+  readonly sourceEvent: Event;
+  constructor(detail: {
+    name: string | undefined;
+    value: string;
+    checked: boolean;
+    sourceEvent: Event;
+  }) {
+    super('change', { bubbles: true, composed: false, cancelable: false });
+    this.name = detail.name;
+    this.value = detail.value;
+    this.checked = detail.checked;
+    this.sourceEvent = detail.sourceEvent;
+  }
+}
+
+interface RatingEventMap {
+  change: RatingChangeEvent;
+}
+
 /**
  * A star rating component using CSS mask-image.
  *
@@ -19,10 +43,11 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --spacing - The spacing between icons. Defaults to `0px`.
  * @cssproperty --icon - Custom SVG shape as a `url()`. Defaults to a 5-pointed star.
  *
- * @event {{ name: string, value: string, checked: boolean, sourceEvent: Event }} change - Emitted when the rating value changes in edit mode.
+ * @event change - Emitted when the rating value changes in edit mode. Bubbles. Properties: `name: string`, `value: string`, `checked: boolean`, `sourceEvent: Event`.
  *
  * @customElement l-rating
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Rating extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];
 
@@ -171,13 +196,39 @@ export class Rating extends LuxenFormAssociatedElement {
     this.hasInteracted = true;
     this._syncFormValue(String(this.value));
 
-    this.emit('change', {
-      detail: {
+    this.dispatchEvent(
+      new RatingChangeEvent({
         name: this.name,
         value: String(this.value),
         checked: this.value > 0,
         sourceEvent: event,
-      },
-    });
+      }),
+    );
   };
+}
+
+// Types `addEventListener('change', …)` as `RatingChangeEvent` on this element
+// (the global event map can't be augmented for the colliding name `change`).
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface Rating {
+  addEventListener<K extends keyof RatingEventMap>(
+    type: K,
+    listener: (this: Rating, ev: RatingEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof RatingEventMap>(
+    type: K,
+    listener: (this: Rating, ev: RatingEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

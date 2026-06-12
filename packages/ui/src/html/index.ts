@@ -1,5 +1,6 @@
 export { LuxenElement } from './shared/luxen-element.js';
 export { LuxenFormAssociatedElement } from './shared/luxen-form-associated-element.js';
+export * from './events/index.js';
 export { define } from './define.js';
 export { setPrefix, getPrefix, tagName, cls } from './registry.js';
 export type { ElementBaseName } from './registry.js';

@@ -4,6 +4,23 @@ import type { LuxenStory } from '../story/story.js';
 
 export type StoriesAppearance = 'rounded' | 'squared' | 'portrait' | 'landscape';
 
+/** Fired when the linked stories viewer opens. */
+export class StoryOpenEvent extends Event {
+  readonly index: number;
+  readonly story: LuxenStory;
+  constructor(index: number, story: LuxenStory) {
+    super('story-open', { bubbles: false, composed: false, cancelable: false });
+    this.index = index;
+    this.story = story;
+  }
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'story-open': StoryOpenEvent;
+  }
+}
+
 /**
  * @summary A horizontal row of `<l-story>` thumbnails. Click opens the linked
  * `<l-stories-viewer>` (matched by `for` → `id`). If `for` is omitted and no
@@ -18,7 +35,7 @@ export type StoriesAppearance = 'rounded' | 'squared' | 'portrait' | 'landscape'
  * <l-stories-viewer id="brand"></l-stories-viewer>
  * ```
  *
- * @event story-open - Fired when the viewer opens. Detail: `{ index: number, story: LuxenStory }`.
+ * @event story-open - Fired when the viewer opens. Properties: `index: number`, `story: LuxenStory`.
  *
  * @cssproperty --size - Thumbnail size (width). Default per appearance.
  * @cssproperty --radius - Thumbnail border radius. Default per appearance (`--radius-full` for rounded, `1rem` for portrait).
@@ -66,7 +83,7 @@ export class LuxenStories extends LuxenElement {
     viewer.source = this;
     viewer.index = Math.max(0, Math.min(index, stories.length - 1));
     viewer.open = true;
-    this.emit('story-open', { detail: { index, story: stories[index] } });
+    this.dispatchEvent(new StoryOpenEvent(index, stories[index]));
   }
 
   /** All `<l-story>` children. */

@@ -3,6 +3,7 @@ import { page } from 'vite-plus/test/browser/context';
 import type { UserEvent } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/prose-editor/index.js';
 import type { ProseEditor } from '../../src/html/elements/prose-editor/prose-editor.js';
+import { EditorChangeEvent } from '../../src/html/elements/prose-editor/prose-editor.js';
 import { userEvent } from './support/user-event.js';
 import { deepActiveElement } from './support/a11y.js';
 
@@ -143,15 +144,14 @@ describe('Authoring content', () => {
 
   it('emits a change event with html and json when content changes', async () => {
     const el = await mount(`<l-prose-editor></l-prose-editor>`);
-    const events: CustomEvent[] = [];
-    el.addEventListener('change', (e) => events.push(e as CustomEvent));
+    const events: EditorChangeEvent[] = [];
+    el.addEventListener('change', (e) => events.push(e));
     // Arrange via public API so the change event fires.
     el.editor.commands.insertContent('hello');
     await settleEl(el);
     expect(events.length).toBeGreaterThan(0);
-    const detail = events[0].detail as { html: string; json: unknown };
-    expect(typeof detail.html).toBe('string');
-    expect(detail.json).toBeDefined();
+    expect(typeof events[0].html).toBe('string');
+    expect(events[0].json).toBeDefined();
   });
 });
 

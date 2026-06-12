@@ -4,6 +4,11 @@ import '../../src/html/elements/stories-viewer/index.js';
 import '../../src/html/elements/stories/index.js';
 import '../../src/html/elements/story/index.js';
 import type { LuxenStoriesViewer } from '../../src/html/elements/stories-viewer/stories-viewer.js';
+import {
+  StoryChangeEvent,
+  StoryEndEvent,
+  MuteChangeEvent,
+} from '../../src/html/elements/stories-viewer/stories-viewer.js';
 import type { LuxenStory } from '../../src/html/elements/story/story.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
@@ -176,6 +181,23 @@ describe('Opening and closing the viewer', () => {
     viewer().removeEventListener('hide', cancel);
   });
 
+  it('a cancelable show listener calling preventDefault keeps the viewer closed', async () => {
+    await mount(FIXTURE);
+    const v = viewer();
+    await (v as LuxenStoriesViewer & { updateComplete: Promise<unknown> }).updateComplete;
+    const video = v.shadowRoot!.querySelector<HTMLVideoElement>('[part~="video"]')!;
+    vi.spyOn(video, 'play').mockResolvedValue(undefined);
+
+    v.addEventListener('show', (e) => e.preventDefault(), { once: true });
+    const storyEls = Array.from(host.querySelectorAll<LuxenStory>('l-story'));
+    v.openAt(storyEls.slice(0, 3), 0);
+    await settle();
+
+    // The show event was cancelled — `open` reverts and the dialog stays closed.
+    expect(v.open).toBe(false);
+    expect(v.hasAttribute('data-modal')).toBe(false);
+  });
+
   it('scroll is locked while the viewer is open and restored after close', async () => {
     await mount(FIXTURE);
     await openAt(3, 0);
@@ -219,16 +241,16 @@ describe('Moving through stories', () => {
     await mount(FIXTURE);
     await openAt(3, 0);
 
-    const events: CustomEvent[] = [];
-    viewer().addEventListener('story-change', (e) => events.push(e as CustomEvent));
+    const events: Event[] = [];
+    viewer().addEventListener('story-change', (e) => events.push(e));
 
     viewer().nextStory();
     await settle();
 
     expect(viewer().index).toBe(1);
     expect(events).toHaveLength(1);
-    expect(events[0].detail.index).toBe(1);
-    expect(events[0].detail.story).toBeTruthy();
+    expect((events[0] as StoryChangeEvent).index).toBe(1);
+    expect((events[0] as StoryChangeEvent).story).toBeTruthy();
   });
 
   it('nextStory() on the last story closes the viewer', async () => {
@@ -274,8 +296,8 @@ describe('Moving through stories', () => {
     await mount(FIXTURE);
     const restore = await openAt(3, 0);
 
-    const events: CustomEvent[] = [];
-    viewer().addEventListener('mute-change', (e) => events.push(e as CustomEvent));
+    const events: Event[] = [];
+    viewer().addEventListener('mute-change', (e) => events.push(e));
 
     // Default is muted=true → button is labeled "Unmute"; clicking unmutes.
     await userEvent.click(page.getByRole('button', { name: 'Unmute' }));
@@ -283,7 +305,7 @@ describe('Moving through stories', () => {
 
     expect(viewer().muted).toBe(false);
     expect(events).toHaveLength(1);
-    expect(events[0].detail.muted).toBe(false);
+    expect((events[0] as MuteChangeEvent).muted).toBe(false);
 
     restore();
   });
@@ -322,8 +344,8 @@ describe('A keyboard user can drive the viewer', () => {
     // modal without toggling mute yet.
     await userEvent.click(page.getByRole('button', { name: 'Pause' }));
 
-    const events: CustomEvent[] = [];
-    viewer().addEventListener('mute-change', (e) => events.push(e as CustomEvent));
+    const events: Event[] = [];
+    viewer().addEventListener('mute-change', (e) => events.push(e));
 
     expect(viewer().muted).toBe(true);
     await userEvent.keyboard('m');
@@ -331,7 +353,7 @@ describe('A keyboard user can drive the viewer', () => {
 
     expect(viewer().muted).toBe(false);
     expect(events).toHaveLength(1);
-    expect(events[0].detail.muted).toBe(false);
+    expect((events[0] as MuteChangeEvent).muted).toBe(false);
   });
 
   it('M also toggles mute (case-insensitive)', async () => {
@@ -408,14 +430,14 @@ describe('Auto-advance', () => {
     await mount(FIXTURE);
     await openAt(3, 0);
 
-    const events: CustomEvent[] = [];
-    viewer().addEventListener('story-end', (e) => events.push(e as CustomEvent));
+    const events: Event[] = [];
+    viewer().addEventListener('story-end', (e) => events.push(e));
 
     dispatchEnded();
     await settle();
 
     expect(events).toHaveLength(1);
-    expect(events[0].detail.index).toBe(0);
+    expect((events[0] as StoryEndEvent).index).toBe(0);
   });
 
   it('advances to the next story on ended (auto-advance default)', async () => {
