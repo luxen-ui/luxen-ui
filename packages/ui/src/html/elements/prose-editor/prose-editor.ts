@@ -10,6 +10,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import { Placeholder } from '@tiptap/extensions';
 import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
+import { LocalizeController, type TermKey } from '../../shared/localize.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import '../icon/index.js';
 import rawStyles from './prose-editor.css?inline';
@@ -64,6 +65,28 @@ type ToolbarCommandName =
   | 'undo'
   | 'redo'
   | 'divider';
+
+/** Maps each toolbar command to its localization term key (dividers have no label). */
+const TOOLBAR_TERMS: Record<Exclude<ToolbarCommandName, 'divider'>, TermKey> = {
+  'heading-1': 'heading1',
+  'heading-2': 'heading2',
+  'heading-3': 'heading3',
+  bold: 'bold',
+  italic: 'italic',
+  underline: 'underline',
+  strike: 'strikethrough',
+  highlight: 'highlight',
+  bulletlist: 'bulletList',
+  orderedlist: 'orderedList',
+  blockquote: 'blockquote',
+  'code-block': 'codeBlock',
+  'horizontal-rule': 'horizontalRule',
+  link: 'link',
+  emoji: 'emoji',
+  attachment: 'attachFile',
+  undo: 'undo',
+  redo: 'redo',
+};
 
 const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
   minimal: ['bold', 'italic', 'underline'],
@@ -140,6 +163,8 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class ProseEditor extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];
+
+  private _localize = new LocalizeController(this);
 
   /** The Tiptap editor instance. Available after the first render. */
   editor!: Editor;
@@ -239,7 +264,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           // Forward the host's label, falling back to a built-in one (same
           // precedent as the toolbar's hardcoded "Formatting"). Read once at
           // init — tiptap doesn't re-render editorProps attributes.
-          'aria-label': this.getAttribute('aria-label') ?? 'Rich text editor',
+          'aria-label': this.getAttribute('aria-label') ?? this._localize.term('richTextEditor'),
         },
       },
       extensions: [
@@ -282,6 +307,20 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   override updated(changed: PropertyValues<this>) {
     if (changed.has('disabled') && this.editor) {
       this.editor.setEditable(!this.disabled);
+    }
+    // The editable's aria-label is applied once via tiptap's editorProps (which
+    // don't re-render). Re-apply it so it tracks a language change (the localize
+    // controller calls requestUpdate). A consumer-supplied host aria-label wins.
+    //
+    // `updated()` also fires on every editor transaction (onTransaction →
+    // requestUpdate), and on the destroy path the editor stays truthy while its
+    // ProseMirror view tears down — accessing `editor.view` then throws
+    // ("view is not available"). Guard with `isDestroyed`, and only touch the
+    // DOM when the label actually changed (avoids per-keystroke churn).
+    if (this.editor && !this.editor.isDestroyed && !this.hasAttribute('aria-label')) {
+      const label = this._localize.term('richTextEditor');
+      const dom = this.editor.view.dom;
+      if (dom.getAttribute('aria-label') !== label) dom.setAttribute('aria-label', label);
     }
   }
 
@@ -725,8 +764,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   // --- Rendering ---
 
   private _renderButton(
-    command: ToolbarCommandName,
-    label: string,
+    command: Exclude<ToolbarCommandName, 'divider'>,
     icon: string,
     onClick: (event: MouseEvent) => void,
     active = false,
@@ -734,6 +772,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     tabIndex = -1,
   ): TemplateResult {
     const iconTag = staticTag('icon');
+    const label = this._localize.term(TOOLBAR_TERMS[command]);
     return html`
       <button
         type="button"
@@ -764,7 +803,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'heading-1':
         return this._renderButton(
           'heading-1',
-          'Heading 1',
           'ri:h-1',
           () => this.toggleHeading(1),
           editor.isActive('heading', { level: 1 }),
@@ -774,7 +812,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'heading-2':
         return this._renderButton(
           'heading-2',
-          'Heading 2',
           'ri:h-2',
           () => this.toggleHeading(2),
           editor.isActive('heading', { level: 2 }),
@@ -784,7 +821,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'heading-3':
         return this._renderButton(
           'heading-3',
-          'Heading 3',
           'ri:h-3',
           () => this.toggleHeading(3),
           editor.isActive('heading', { level: 3 }),
@@ -794,7 +830,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'bold':
         return this._renderButton(
           'bold',
-          'Bold',
           'ri:bold',
           () => this.toggleBold(),
           editor.isActive('bold'),
@@ -804,7 +839,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'italic':
         return this._renderButton(
           'italic',
-          'Italic',
           'ri:italic',
           () => this.toggleItalic(),
           editor.isActive('italic'),
@@ -814,7 +848,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'underline':
         return this._renderButton(
           'underline',
-          'Underline',
           'ri:underline',
           () => this.toggleUnderline(),
           editor.isActive('underline'),
@@ -824,7 +857,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'strike':
         return this._renderButton(
           'strike',
-          'Strikethrough',
           'ri:strikethrough',
           () => this.toggleStrike(),
           editor.isActive('strike'),
@@ -834,7 +866,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'highlight':
         return this._renderButton(
           'highlight',
-          'Highlight',
           'ri:mark-pen-line',
           () => this.toggleHighlight(),
           editor.isActive('highlight'),
@@ -844,7 +875,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'bulletlist':
         return this._renderButton(
           'bulletlist',
-          'Bullet list',
           'ri:list-unordered',
           () => this.toggleBulletList(),
           editor.isActive('bulletList'),
@@ -854,7 +884,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'orderedlist':
         return this._renderButton(
           'orderedlist',
-          'Ordered list',
           'ri:list-ordered',
           () => this.toggleOrderedList(),
           editor.isActive('orderedList'),
@@ -864,7 +893,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'blockquote':
         return this._renderButton(
           'blockquote',
-          'Blockquote',
           'ri:double-quotes-l',
           () => this.toggleBlockquote(),
           editor.isActive('blockquote'),
@@ -874,7 +902,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'code-block':
         return this._renderButton(
           'code-block',
-          'Code block',
           'ri:code-box-line',
           () => this.toggleCodeBlock(),
           editor.isActive('codeBlock'),
@@ -884,7 +911,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'horizontal-rule':
         return this._renderButton(
           'horizontal-rule',
-          'Horizontal rule',
           'ri:separator',
           () => this.setHorizontalRule(),
           false,
@@ -894,7 +920,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'link':
         return this._renderButton(
           'link',
-          'Link',
           'ri:link',
           () => this.toggleLink(),
           editor.isActive('link'),
@@ -904,7 +929,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'emoji':
         return this._renderButton(
           'emoji',
-          'Emoji',
           'ri:emotion-line',
           (event) => void this._onEmojiButtonClick(event),
           false,
@@ -914,7 +938,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'attachment':
         return this._renderButton(
           'attachment',
-          'Attach file',
           'ri:attachment-2',
           () => this.dispatchEvent(new AddFileEvent()),
           false,
@@ -924,7 +947,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'undo':
         return this._renderButton(
           'undo',
-          'Undo',
           'ri:arrow-go-back-line',
           () => this.undo(),
           false,
@@ -934,7 +956,6 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       case 'redo':
         return this._renderButton(
           'redo',
-          'Redo',
           'ri:arrow-go-forward-line',
           () => this.redo(),
           false,
@@ -966,7 +987,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           class="toolbar"
           part="toolbar"
           role="toolbar"
-          aria-label="Formatting"
+          aria-label=${this._localize.term('formatting')}
           @keydown=${this._onToolbarKeyDown}
           @click=${this._onToolbarClick}
         >

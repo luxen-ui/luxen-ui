@@ -1,5 +1,6 @@
 import { html, unsafeCSS } from 'lit';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { LocalizeController } from '../../shared/localize.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './spinner.css?inline';
 
@@ -18,12 +19,14 @@ const styles = unsafeCSS(rawStyles);
 export class Spinner extends LuxenElement {
   static override styles = [hostStyles, styles];
 
+  private _localize = new LocalizeController(this);
+
   override render() {
     return html`
       <svg
         part="base"
         role="progressbar"
-        aria-label="Loading"
+        aria-label=${this._localize.term('loading')}
         viewBox="0 0 24 24"
       >
         <path

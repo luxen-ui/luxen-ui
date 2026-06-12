@@ -113,6 +113,14 @@
       "types": "./dist/shared/luxen-form-associated-element.d.ts",
       "import": "./dist/shared/luxen-form-associated-element.js"
     },
+    "./localize": {
+      "types": "./dist/shared/localize.d.ts",
+      "import": "./dist/shared/localize.js"
+    },
+    "./translations/*": {
+      "types": "./dist/translations/*.d.ts",
+      "import": "./dist/translations/*.js"
+    },
     "./*": {
       "types": "./dist/elements/*/index.d.ts",
       "import": "./dist/elements/*/index.js"
