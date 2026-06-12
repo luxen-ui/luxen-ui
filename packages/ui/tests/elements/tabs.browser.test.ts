@@ -201,7 +201,7 @@ describe('Clicking a tab selects it', () => {
     await mount(TABS);
     let detail: { index: number; name: string | null } | null = null;
     el().addEventListener('change', (e) => {
-      detail = (e as CustomEvent<{ index: number; name: string | null }>).detail;
+      detail = { index: e.index, name: e.name };
     });
     await userEvent.click(tab('Tab 2'));
     await settle();
@@ -443,7 +443,7 @@ describe('Accessibility', () => {
       await settle();
       const events: Array<{ index: number; name: string | null }> = [];
       el().addEventListener('change', (e) => {
-        events.push((e as CustomEvent<{ index: number; name: string | null }>).detail);
+        events.push({ index: e.index, name: e.name });
       });
       const changed = waitForEvent(el(), 'change');
       await userEvent.keyboard('{ArrowRight}');

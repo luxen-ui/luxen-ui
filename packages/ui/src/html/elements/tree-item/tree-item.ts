@@ -8,6 +8,50 @@ import rawStyles from './tree-item.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
+/** Fired when a tree item is expanded. Bubbles; not composed. */
+export class ExpandEvent extends Event {
+  constructor() {
+    super('expand', { bubbles: true, composed: false, cancelable: false });
+  }
+}
+
+/** Fired when a tree item is collapsed. Bubbles; not composed. */
+export class CollapseEvent extends Event {
+  constructor() {
+    super('collapse', { bubbles: true, composed: false, cancelable: false });
+  }
+}
+
+/** Fired when a lazy item is expanded for the first time. Bubbles; not composed. */
+export class LazyLoadEvent extends Event {
+  constructor() {
+    super('lazy-load', { bubbles: true, composed: false, cancelable: false });
+  }
+}
+
+/**
+ * Internal contract: a tree-item's checkbox toggle, bubbling to its `<l-tree>`.
+ * Not part of the public API — consumers listen on `<l-tree>` for
+ * `selection-change` instead.
+ */
+export class TreeItemSelectionToggleEvent extends Event {
+  readonly item: TreeItem;
+  readonly checked: boolean;
+  constructor(item: TreeItem, checked: boolean) {
+    super('selection-toggle', { bubbles: true, composed: false, cancelable: false });
+    this.item = item;
+    this.checked = checked;
+  }
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    expand: ExpandEvent;
+    collapse: CollapseEvent;
+    'lazy-load': LazyLoadEvent;
+  }
+}
+
 /**
  * A node inside `<l-tree>`. Nested `<l-tree-item>` children become sub-nodes.
  *
@@ -153,8 +197,8 @@ export class TreeItem extends LuxenElement {
       // `expandAll()`…), not just `toggle()` — otherwise keyboard users expand a
       // lazy branch with no children and no fetch. Fires while still `lazy`; the
       // consumer appends children and clears `lazy`, so it won't re-fire.
-      if (this.expanded && this.lazy) this.emit('lazy-load');
-      this.emit(this.expanded ? 'expand' : 'collapse');
+      if (this.expanded && this.lazy) this.dispatchEvent(new LazyLoadEvent());
+      this.dispatchEvent(this.expanded ? new ExpandEvent() : new CollapseEvent());
     }
 
     if (changed.has('selected')) {
@@ -222,13 +266,7 @@ export class TreeItem extends LuxenElement {
   private _onCheckboxChange = (event: Event) => {
     event.stopPropagation();
     const input = event.target as HTMLInputElement;
-    this.dispatchEvent(
-      new CustomEvent('l-tree-item-toggle', {
-        bubbles: true,
-        composed: true,
-        detail: { item: this, checked: input.checked },
-      }),
-    );
+    this.dispatchEvent(new TreeItemSelectionToggleEvent(this, input.checked));
   };
 
   override render() {

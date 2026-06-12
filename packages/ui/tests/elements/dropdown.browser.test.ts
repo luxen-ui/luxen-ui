@@ -4,6 +4,7 @@ import '../../src/html/elements/dropdown/index.js';
 import '../../src/html/elements/dropdown-item/index.js';
 import '../../src/html/elements/dropdown-label/index.js';
 import type { Dropdown } from '../../src/html/elements/dropdown/dropdown.js';
+import { DropdownSelectEvent } from '../../src/html/elements/dropdown/dropdown.js';
 import type { DropdownItem } from '../../src/html/elements/dropdown-item/dropdown-item.js';
 import { deepActiveElement } from './support/a11y.js';
 import { userEvent } from './support/user-event.js';
@@ -248,7 +249,7 @@ describe('Selecting items', () => {
 
     let selectedItem: DropdownItem | null = null;
     el().addEventListener('select', (e: Event) => {
-      selectedItem = (e as CustomEvent<{ item: DropdownItem }>).detail.item;
+      selectedItem = (e as DropdownSelectEvent).item;
     });
 
     const hidden = waitForEvent(el(), 'after-hide');
@@ -271,7 +272,7 @@ describe('Selecting items', () => {
 
     let selectedItem: DropdownItem | null = null;
     el().addEventListener('select', (e: Event) => {
-      selectedItem = (e as CustomEvent<{ item: DropdownItem }>).detail.item;
+      selectedItem = (e as DropdownSelectEvent).item;
     });
 
     const hidden = waitForEvent(el(), 'after-hide');
@@ -292,7 +293,7 @@ describe('Selecting items', () => {
 
     let selectedItem: DropdownItem | null = null;
     el().addEventListener('select', (e: Event) => {
-      selectedItem = (e as CustomEvent<{ item: DropdownItem }>).detail.item;
+      selectedItem = (e as DropdownSelectEvent).item;
     });
 
     await userEvent.click(checkboxItem('Notifications'));

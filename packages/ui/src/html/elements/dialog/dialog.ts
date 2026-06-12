@@ -2,6 +2,7 @@ import { html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { HasSlotController } from '../../shared/controllers/has-slot-controller.js';
+import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import styles from './dialog.styles.js';
 
@@ -58,10 +59,10 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @cssproperty --backdrop - Backdrop color.
  * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length). `0` means no blur; set e.g. `4px` for a subtle frost.
  *
- * @event show - Fired when the dialog opens. Not cancelable.
- * @event after-show - Fired after the open animation completes.
+ * @event show - Fired when the dialog is about to open. Cancelable — call `event.preventDefault()` to keep it closed.
+ * @event after-show - Fired after the open animation completes. Not cancelable.
  * @event hide - Fired when the dialog is about to close. Cancelable — call `event.preventDefault()` to keep it open.
- * @event after-hide - Fired after the close animation completes.
+ * @event after-hide - Fired after the close animation completes. Not cancelable.
  *
  * @command --show - Sets `open = true`.
  * @command --hide - Sets `open = false`.
@@ -131,15 +132,22 @@ export class Dialog extends LuxenElement {
     if (!changed.has('open')) return;
 
     if (this.open && !this.dialog.open) {
-      // Opening — not cancelable.
-      this.emit('show');
+      // Opening — cancelable. Revert the property if consumer prevents.
+      if (!this.dispatchEvent(new ShowEvent())) {
+        // Defer the revert so it lands outside the current update cycle and
+        // doesn't schedule a new update from inside updated().
+        queueMicrotask(() => {
+          this.open = false;
+        });
+        return;
+      }
       this.setAttribute('data-modal', this._modalKind);
       this.dialog.showModal();
       this._focusAutofocusTarget();
       void this._emitAfter('after-show');
     } else if (!this.open && this.dialog.open) {
       // Closing — cancelable. Revert the property if consumer prevents.
-      if (!this.emit('hide', { cancelable: true })) {
+      if (!this.dispatchEvent(new HideEvent())) {
         // Defer the revert so it lands outside the current update cycle and
         // doesn't schedule a new update from inside updated().
         queueMicrotask(() => {
@@ -172,7 +180,7 @@ export class Dialog extends LuxenElement {
   // Does NOT fire when script calls `.close()`, so `updated()`'s cancelable
   // `hide` emit doesn't collide with this one.
   private _onCancel(e: Event) {
-    if (!this.emit('hide', { cancelable: true })) {
+    if (!this.dispatchEvent(new HideEvent())) {
       e.preventDefault();
     }
   }
@@ -219,7 +227,7 @@ export class Dialog extends LuxenElement {
     const anims = this.dialog.getAnimations({ subtree: false });
     await Promise.all(anims.map((a) => a.finished.catch(() => {})));
     if ((name === 'after-show') !== this.open) return;
-    this.emit(name);
+    this.dispatchEvent(name === 'after-show' ? new AfterShowEvent() : new AfterHideEvent());
   }
 
   // Firefox/Safari don't reliably resolve `[autofocus]` when `<dialog>`

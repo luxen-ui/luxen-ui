@@ -16,6 +16,34 @@ import rawStyles from './prose-editor.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
+/** Fired when the editor content changes. Bubbles; not composed. */
+export class EditorChangeEvent extends Event {
+  readonly html: string;
+  readonly json: JSONContent;
+  constructor(htmlValue: string, json: JSONContent) {
+    super('change', { bubbles: true, composed: false, cancelable: false });
+    this.html = htmlValue;
+    this.json = json;
+  }
+}
+
+/** Fired when the attachment toolbar button is clicked. */
+export class AddFileEvent extends Event {
+  constructor() {
+    super('add-file', { bubbles: false, composed: false, cancelable: false });
+  }
+}
+
+interface ProseEditorEventMap {
+  change: EditorChangeEvent;
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'add-file': AddFileEvent;
+  }
+}
+
 type ToolbarCommandName =
   | 'heading-1'
   | 'heading-2'
@@ -81,7 +109,7 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * @slot toolbar-start - Content placed before the generated toolbar buttons.
  * @slot toolbar-end - Content placed after the generated toolbar buttons.
  *
- * @event change - Fired when the content changes. `detail` is `{ html, json }`.
+ * @event change - Fired when the content changes. Bubbles. Properties: `html: string`, `json: JSONContent`.
  * @event add-file - Fired when the attachment toolbar button is clicked.
  *
  * @csspart wrapper - The editor frame wrapping the toolbar and content.
@@ -109,6 +137,7 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * @cssproperty --content-min-height - Minimum height of the editable content region. Default `8rem`.
  * @cssproperty --placeholder-color - Placeholder text color.
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class ProseEditor extends LuxenFormAssociatedElement {
   static override styles = [hostStyles, styles];
 
@@ -378,7 +407,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   private _emitChange() {
     const value = this._syncValue();
     if (value === undefined) return;
-    this.emit('change', { detail: { html: value, json: this.getJSON() } });
+    this.dispatchEvent(new EditorChangeEvent(value, this.getJSON()));
   }
 
   // --- Editor wiring ---
@@ -879,7 +908,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           'attachment',
           'Attach file',
           'ri:attachment-2',
-          () => this.emit('add-file'),
+          () => this.dispatchEvent(new AddFileEvent()),
           false,
           undefined,
           tabIndex,
@@ -946,4 +975,30 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       </div>
     `;
   }
+}
+
+// Types `addEventListener('change', …)` as `EditorChangeEvent` on this element
+// (the global event map can't be augmented for the colliding name `change`).
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface ProseEditor {
+  addEventListener<K extends keyof ProseEditorEventMap>(
+    type: K,
+    listener: (this: ProseEditor, ev: ProseEditorEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof ProseEditorEventMap>(
+    type: K,
+    listener: (this: ProseEditor, ev: ProseEditorEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

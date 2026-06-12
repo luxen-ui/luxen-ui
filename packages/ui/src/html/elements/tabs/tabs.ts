@@ -5,6 +5,21 @@ import { uniqueId } from '../../registry.js';
 export type TabsVariant = 'enclosed' | 'line';
 export type TabsOrientation = 'horizontal' | 'vertical';
 
+/** Fired when the active tab changes. Bubbles; not composed. */
+export class TabsChangeEvent extends Event {
+  readonly index: number;
+  readonly name: string | null;
+  constructor(index: number, name: string | null) {
+    super('change', { bubbles: true, composed: false, cancelable: false });
+    this.index = index;
+    this.name = name;
+  }
+}
+
+interface TabsEventMap {
+  change: TabsChangeEvent;
+}
+
 /**
  * @summary A tabs component that progressively enhances light DOM markup
  * with ARIA roles, keyboard navigation, and animated indicators.
@@ -21,7 +36,7 @@ export type TabsOrientation = 'horizontal' | 'vertical';
  * </l-tabs>
  * ```
  *
- * @event change - Fired when the active tab changes. Detail: `{ index: number, name: string | null }`.
+ * @event change - Fired when the active tab changes. Bubbles. Properties: `index: number`, `name: string | null`.
  *
  * @cssproperty [--indicator-color=var(--l-color-text-primary)] - `line` variant: color of the active underline that slides under the selected tab.
  * @cssproperty [--indicator-thickness=2px] - `line` variant: thickness of the active underline.
@@ -30,6 +45,7 @@ export type TabsOrientation = 'horizontal' | 'vertical';
  *
  * @customElement l-tabs
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Tabs extends LuxenElement {
   override createRenderRoot() {
     return this;
@@ -185,7 +201,7 @@ export class Tabs extends LuxenElement {
 
     if (emitEvent) {
       const name = this._tabs[index]?.getAttribute('name') ?? null;
-      this.emit('change', { detail: { index, name } });
+      this.dispatchEvent(new TabsChangeEvent(index, name));
     }
   }
 
@@ -254,4 +270,55 @@ export class Tabs extends LuxenElement {
         break;
     }
   };
+}
+
+// Type `addEventListener('change', …)` on this element so the listener receives
+// a `TabsChangeEvent` (with `.index`/`.name`) instead of a bare `Event`, with no
+// cast. This is the canonical reference for the pattern used across the library.
+//
+// Why a same-named interface and not a global augmentation: `change` already
+// exists in lib.dom's `GlobalEventHandlersEventMap` (typed `Event`), and TS
+// forbids re-declaring an existing key with a different type — so colliding
+// names (`change`, `select`, `input`, `toggle`) can't be typed globally. Merging
+// a same-named `interface Tabs` into the `class Tabs` adds these overloads to
+// the element's own type only. (Non-colliding names like `show`/`story-change`
+// ARE augmented globally in their event-class module — no per-element block.)
+//
+// In `(type: K, listener: (ev: TabsEventMap[K]) => void)`, K is pinned to the
+// string literal you pass, and `TabsEventMap[K]` indexes the event type from it
+// (`'change'` → `TabsChangeEvent`). `this: Tabs` is a fake parameter that types
+// `this` inside a non-arrow listener; it emits no runtime code.
+//
+// Three load-bearing details:
+//   1. The `(type: string, …)` fallback overloads are REQUIRED: declaring our
+//      own `addEventListener` hides ALL inherited `HTMLElement` overloads, so
+//      without them `addEventListener('click', …)` would stop compiling. The
+//      typed overload comes first so `'change'` resolves before the fallback.
+//   2. This interface sits AFTER the class: the CEM analyzer dedups on the first
+//      declaration of the name, so an interface before the class would shadow it
+//      and the manifest would extract nothing for this element.
+//   3. The merge is flagged by `no-unsafe-declaration-merging` (disabled on the
+//      class above) — safe here because we merge only method overloads, never
+//      uninitialized properties.
+export interface Tabs {
+  addEventListener<K extends keyof TabsEventMap>(
+    type: K,
+    listener: (this: Tabs, ev: TabsEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof TabsEventMap>(
+    type: K,
+    listener: (this: Tabs, ev: TabsEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

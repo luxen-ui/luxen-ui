@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/input-stepper/index.js';
+import { StepperChangeEvent } from '../../src/html/elements/input-stepper/input-stepper.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
 
@@ -142,9 +143,9 @@ describe('Clicking increment/decrement buttons changes the value and emits chang
     // Start before the click so the event listener is in place.
     const changed = waitForEvent(el(), 'change');
     await userEvent.click(incrementBtn());
-    const event = (await changed) as CustomEvent<{ value: number }>;
+    const event = (await changed) as StepperChangeEvent;
     await settle();
-    expect(event.detail.value).toBe(6);
+    expect(event.value).toBe(6);
     expect(stepperInput().value).toBe('6');
   });
 
@@ -152,9 +153,9 @@ describe('Clicking increment/decrement buttons changes the value and emits chang
     await mount(STEPPER);
     const changed = waitForEvent(el(), 'change');
     await userEvent.click(decrementBtn());
-    const event = (await changed) as CustomEvent<{ value: number }>;
+    const event = (await changed) as StepperChangeEvent;
     await settle();
-    expect(event.detail.value).toBe(4);
+    expect(event.value).toBe(4);
     expect(stepperInput().value).toBe('4');
   });
 
@@ -274,9 +275,9 @@ describe('Accessibility', () => {
       await settle();
       const changed = waitForEvent(el(), 'change');
       await userEvent.keyboard('{Enter}');
-      const event = (await changed) as CustomEvent<{ value: number }>;
+      const event = (await changed) as StepperChangeEvent;
       await settle();
-      expect(event.detail.value).toBe(7);
+      expect(event.value).toBe(7);
     });
 
     it('pressing Space on the decrement button decrements the value and fires change (WCAG 2.1.1 / RGAA 7.3)', async () => {
@@ -285,9 +286,9 @@ describe('Accessibility', () => {
       await settle();
       const changed = waitForEvent(el(), 'change');
       await userEvent.keyboard(' ');
-      const event = (await changed) as CustomEvent<{ value: number }>;
+      const event = (await changed) as StepperChangeEvent;
       await settle();
-      expect(event.detail.value).toBe(3);
+      expect(event.value).toBe(3);
     });
   });
 

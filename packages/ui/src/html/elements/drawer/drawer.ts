@@ -30,10 +30,10 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
  * @cssproperty --backdrop - Backdrop color.
  *
- * @event show - Fired when the drawer opens. Not cancelable.
- * @event after-show - Fired after the open animation completes.
+ * @event show - Fired when the drawer is about to open. Cancelable — call `event.preventDefault()` to keep it closed.
+ * @event after-show - Fired after the open animation completes. Not cancelable.
  * @event hide - Fired when the drawer is about to close. Cancelable — call `event.preventDefault()` to keep it open.
- * @event after-hide - Fired after the close animation completes.
+ * @event after-hide - Fired after the close animation completes. Not cancelable.
  *
  * @command --show - Sets `open = true`.
  * @command --hide - Sets `open = false`.

@@ -19,6 +19,42 @@ import rawStyles from './carousel.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
+/** Fired when the active slide changes. Bubbles; not composed. */
+export class CarouselSelectEvent extends Event {
+  readonly index: number;
+  constructor(index: number) {
+    super('select', { bubbles: true, composed: false, cancelable: false });
+    this.index = index;
+  }
+}
+
+/** Fired when the set of slides in view changes. */
+export class SlidesInViewEvent extends Event {
+  readonly indexes: number[];
+  constructor(indexes: number[]) {
+    super('slides-in-view', { bubbles: false, composed: false, cancelable: false });
+    this.indexes = indexes;
+  }
+}
+
+/** Fired when the fullscreen button is activated. */
+export class FullscreenToggleEvent extends Event {
+  constructor() {
+    super('fullscreen', { bubbles: false, composed: false, cancelable: false });
+  }
+}
+
+interface CarouselEventMap {
+  select: CarouselSelectEvent;
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'slides-in-view': SlidesInViewEvent;
+    fullscreen: FullscreenToggleEvent;
+  }
+}
+
 /**
  * Carousel custom element based on Embla Carousel.
  *
@@ -49,12 +85,13 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --dot-margin - Margin around dots container.
  * @cssproperty --dot-edge-scale - Scale factor applied to edge dots that signal more dots exist beyond the visible window (default `0.5`).
  *
- * @event select - Fired when the active slide changes. Detail: `{ index: number }`.
- * @event slides-in-view - Fired when the set of slides in view changes. Detail: `{ indexes: number[] }`.
+ * @event select - Fired when the active slide changes. Bubbles. Properties: `index: number`.
+ * @event slides-in-view - Fired when the set of slides in view changes. Properties: `indexes: number[]`.
  * @event fullscreen - Fired when the fullscreen button is activated.
  *
  * @customElement l-carousel
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Carousel extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
 
@@ -213,9 +250,7 @@ export class Carousel extends LuxenElement {
   }
 
   protected onSlidesInView = () => {
-    this.emit('slides-in-view', {
-      detail: { indexes: this.embla.slidesInView() },
-    });
+    this.dispatchEvent(new SlidesInViewEvent(this.embla.slidesInView()));
   };
 
   protected onInit = () => {
@@ -228,9 +263,7 @@ export class Carousel extends LuxenElement {
   };
 
   protected onSelect = () => {
-    this.emit('select', {
-      detail: { index: this.embla.selectedScrollSnap() },
-    });
+    this.dispatchEvent(new CarouselSelectEvent(this.embla.selectedScrollSnap()));
     this.updateNavigation();
   };
 
@@ -335,7 +368,7 @@ export class Carousel extends LuxenElement {
       type="button"
       part="button button-fullscreen"
       class="button button-fullscreen"
-      @click=${() => this.emit('fullscreen')}
+      @click=${() => this.dispatchEvent(new FullscreenToggleEvent())}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -457,4 +490,30 @@ export class Carousel extends LuxenElement {
       </div>
     `;
   }
+}
+
+// Types `addEventListener('select', …)` as `CarouselSelectEvent` on this element
+// (the global event map can't be augmented for the colliding name `select`).
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface Carousel {
+  addEventListener<K extends keyof CarouselEventMap>(
+    type: K,
+    listener: (this: Carousel, ev: CarouselEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof CarouselEventMap>(
+    type: K,
+    listener: (this: Carousel, ev: CarouselEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

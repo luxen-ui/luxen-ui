@@ -101,6 +101,10 @@
       "types": "./dist/elements/*/*.d.ts",
       "import": "./dist/elements/*/*.js"
     },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
+    },
     "./luxen-element": {
       "types": "./dist/shared/luxen-element.d.ts",
       "import": "./dist/shared/luxen-element.js"

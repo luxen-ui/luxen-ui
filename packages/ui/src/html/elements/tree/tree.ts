@@ -3,12 +3,28 @@ import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { tagName } from '../../registry.js';
 import type { TreeItem } from '../tree-item/tree-item.js';
+import type { TreeItemSelectionToggleEvent } from '../tree-item/tree-item.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './tree.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
 export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
+
+/** Fired when the tree's selected items change. */
+export class SelectionChangeEvent extends Event {
+  readonly selection: TreeItem[];
+  constructor(selection: TreeItem[]) {
+    super('selection-change', { bubbles: false, composed: false, cancelable: false });
+    this.selection = selection;
+  }
+}
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'selection-change': SelectionChangeEvent;
+  }
+}
 
 /**
  * A hierarchical tree view composed of `<l-tree-item>` children.
@@ -29,7 +45,7 @@ export type TreeSelection = 'single' | 'multiple' | 'leaf' | 'none';
  * @cssproperty --chevron-size - Size of the expand/collapse chevron box. Default `1.125rem`.
  * @cssproperty --item-gap - Horizontal gap between chevron, prefix, label and suffix on the row; also drives the content slot left indent. Default `0.375rem`.
  *
- * @event selection-change - Fired when the selected items change. Detail: `{ selection: TreeItem[] }`.
+ * @event selection-change - Fired when the selected items change. Properties: `selection: TreeItem[]`.
  *
  * @customElement l-tree
  */
@@ -68,7 +84,7 @@ export class Tree extends LuxenElement {
     if (!this.hasAttribute('role')) this.setAttribute('role', 'tree');
     this._mutationObserver = new MutationObserver(() => this._syncAll());
     this._mutationObserver.observe(this, { childList: true, subtree: true });
-    this.addEventListener('l-tree-item-toggle', this._onItemToggle as EventListener);
+    this.addEventListener('selection-toggle', this._onItemToggle as EventListener);
 
     // Defer sync to let light DOM upgrade.
     queueMicrotask(() => this._syncAll());
@@ -77,7 +93,7 @@ export class Tree extends LuxenElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this._mutationObserver?.disconnect();
-    this.removeEventListener('l-tree-item-toggle', this._onItemToggle as EventListener);
+    this.removeEventListener('selection-toggle', this._onItemToggle as EventListener);
   }
 
   override updated(changed: PropertyValues<this>) {
@@ -197,9 +213,8 @@ export class Tree extends LuxenElement {
 
   // --- Selection handling ---
 
-  private _onItemToggle = (event: CustomEvent<{ item: TreeItem; checked: boolean }>) => {
-    const { item, checked } = event.detail;
-    this._selectItem(item, checked);
+  private _onItemToggle = (event: TreeItemSelectionToggleEvent) => {
+    this._selectItem(event.item, event.checked);
   };
 
   private _handleRowActivate(item: TreeItem) {
@@ -287,7 +302,7 @@ export class Tree extends LuxenElement {
   }
 
   private _emitSelectionChange() {
-    this.emit('selection-change', { detail: { selection: this.getSelection() } });
+    this.dispatchEvent(new SelectionChangeEvent(this.getSelection()));
   }
 
   // --- Keyboard / focus ---

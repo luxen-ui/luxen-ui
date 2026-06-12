@@ -56,6 +56,60 @@ Keep the `.meta.ts` in sync with the element's `.css` file (the CSS custom prope
 
 Every element has an entry in `elements.json` with a `type` field (`native` | `progressive` | `custom` | `shadow`) — add it for new elements; it drives metadata extraction and the `<ElementSpec>` banner.
 
+## Events
+
+Elements dispatch **typed `Event` subclasses**, never `CustomEvent` and never a
+generic `emit()` helper. There is no `emit()` on `LuxenElement` —
+`dispatchEvent(new HideEvent())` already returns `false` when a cancelable event
+was prevented, which is all the call sites need.
+
+Conventions:
+
+- **Names are unprefixed and brand-neutral** (`show`, `hide`, `change`,
+  `select`…) — never `l-`-prefixed. This keeps events white-label by
+  construction (no prefix to rewrite). A future collision with a new platform
+  event is an accepted risk; the fix then is a rename + breaking change.
+- **Payload lives in direct `readonly` properties, not `detail`** — mirror the
+  platform (`ToggleEvent.newState`, `SubmitEvent.submitter`). e.g.
+  `event.index`, `event.story`, `event.toast`.
+- **One class per event semantic.** Shared overlay-lifecycle classes
+  (`ShowEvent`, `AfterShowEvent`, `HideEvent`, `AfterHideEvent`) live in
+  `src/html/events/` and are reused by dialog/drawer/dropdown/sticky-bar/
+  stories-viewer/toast (toast subclasses them to add `toast`). Element-specific
+  classes are defined and exported in the element's own `.ts` file.
+- **Propagation follows the platform** (set in the class constructor, not at the
+  call site, so it can't drift):
+  - Lifecycle (`show`/`hide`/`after-*`, `expand`/`collapse`): `bubbles: false,
+composed: false` — listen on the element itself (like `toggle`/`close`).
+  - Value/change (`change`, `select`): `bubbles: true, composed: false` — like
+    native `change` (bubbles, but does not cross shadow boundaries).
+  - Informational/media-like (`story-*`, `mute-change`, `slides-in-view`,
+    `selection-change`…): `bubbles: false, composed: false`.
+  - Internal parent↔child contracts (tree-item → tree `selection-toggle`):
+    `bubbles: true` so they reach the container; not part of the public API
+    (no `@event` tag).
+- **`show` and `hide` are cancelable everywhere.** A vetoed `show`/`hide` must
+  revert the driving property via `queueMicrotask`, never inside `updated()`
+  (avoids scheduling a Lit update from within an update — see the dialog/
+  stories-viewer pattern).
+- **TypeScript typing.** For names that do **not** collide with lib.dom
+  (`show`, `hide`, `after-*`, `expand`, `story-change`…), augment
+  `GlobalEventHandlersEventMap` in the event-class module so listeners are typed
+  everywhere. For names that **do** collide (`change`, `select`, `input`,
+  `toggle`), you cannot augment the global map — instead declaration-merge typed
+  `addEventListener`/`removeEventListener` overloads onto the element interface
+  (see `tabs.ts`). That interface merge must come **after** the class
+  declaration (CEM dedups on the first declaration of the name — an interface
+  before the class shadows it and the manifest extracts nothing), and carries an
+  `// oxlint-disable-next-line typescript/no-unsafe-declaration-merging` on the
+  class.
+- **Native passthrough stays native.** `l-select`'s `change`/`input` and
+  `l-disclosure`'s `toggle` are the platform's own events — do not wrap or
+  rename them.
+- Keep the `@event` JSDoc tag in sync (the word `Cancelable`/`Not cancelable` is
+  parsed into metadata; describe the payload as `Properties: …`, and note
+  `Bubbles.` when non-default).
+
 ## Testing
 
 Two runners, two jobs:

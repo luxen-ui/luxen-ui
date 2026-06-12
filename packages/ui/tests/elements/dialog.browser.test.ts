@@ -199,6 +199,29 @@ describe('A consumer can veto closing', () => {
   });
 });
 
+describe('A consumer can veto opening', () => {
+  it('preventDefault on show keeps the dialog closed; removing the listener lets it open', async () => {
+    await mount(FIXTURE);
+    const cancel = (e: Event) => e.preventDefault();
+    dialog().addEventListener('show', cancel);
+
+    dialog().open = true;
+    await settle();
+    // The show event was cancelled — `open` reverts and the native dialog stays closed.
+    expect(dialog().open).toBe(false);
+    expect(nativeDialog().open).toBe(false);
+
+    // Remove the veto and open again — should work.
+    dialog().removeEventListener('show', cancel);
+    const afterShowP = waitForEvent(dialog(), 'after-show');
+    dialog().open = true;
+    await settle();
+    await afterShowP;
+    expect(dialog().open).toBe(true);
+    expect(nativeDialog().open).toBe(true);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Header, slots, and focus
 // ---------------------------------------------------------------------------

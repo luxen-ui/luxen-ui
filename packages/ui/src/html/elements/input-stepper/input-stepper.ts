@@ -4,6 +4,19 @@ import { tagName } from '../../registry.js';
 
 export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
+/** Fired when the stepper value changes. Bubbles; not composed. */
+export class StepperChangeEvent extends Event {
+  readonly value: number;
+  constructor(value: number) {
+    super('change', { bubbles: true, composed: false, cancelable: false });
+    this.value = value;
+  }
+}
+
+interface InputStepperEventMap {
+  change: StepperChangeEvent;
+}
+
 /**
  * A stepper control that enhances a native `<input type="number">` with
  * decrement/increment buttons and an optional animated number track.
@@ -17,13 +30,14 @@ export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * </l-input-stepper>
  * ```
  *
- * @event change - Fired when the value changes. Detail: `{ value: number }`.
+ * @event change - Fired when the value changes. Bubbles. Properties: `value: number`.
  *
  * @cssproperty --border-color - Border color of the stepper container (default appearance) and of each button (rounded appearance). Defaults to `--l-color-border`.
  * @cssproperty --border-radius - Border radius of the stepper container (default appearance). Defaults to `--radius-md`.
  *
  * @customElement l-input-stepper
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class InputStepper extends LuxenElement {
   override createRenderRoot() {
     return this;
@@ -252,7 +266,7 @@ export class InputStepper extends LuxenElement {
     this._input.value = String(val);
     this._updateButtonStates();
     this._updateTrack();
-    this.emit('change', { detail: { value: val } });
+    this.dispatchEvent(new StepperChangeEvent(val));
   }
 
   // --- Track ---
@@ -292,8 +306,12 @@ export class InputStepper extends LuxenElement {
   private _onDecrement = () => this.decrement();
   private _onIncrement = () => this.increment();
 
-  private _onInputChange = () => {
+  private _onInputChange = (e: Event) => {
     if (!this._input) return;
+    // Swallow the inner <input>'s native `change` so the host emits a single,
+    // typed `change` (StepperChangeEvent) rather than two events — the native
+    // one bubbles through the light-DOM host alongside our own.
+    e.stopPropagation();
 
     const { min, max } = this._getConstraints();
     const clamped = Math.min(Math.max(this._input.valueAsNumber, min), max);
@@ -302,6 +320,32 @@ export class InputStepper extends LuxenElement {
     this._skipTransition = true;
     this._updateButtonStates();
     this._updateTrack();
-    this.emit('change', { detail: { value: clamped } });
+    this.dispatchEvent(new StepperChangeEvent(clamped));
   };
+}
+
+// Types `addEventListener('change', …)` as `StepperChangeEvent` on this element
+// (the global event map can't be augmented for the colliding name `change`).
+// See the Tabs interface in tabs.ts for the full rationale and the gotchas.
+export interface InputStepper {
+  addEventListener<K extends keyof InputStepperEventMap>(
+    type: K,
+    listener: (this: InputStepper, ev: InputStepperEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof InputStepperEventMap>(
+    type: K,
+    listener: (this: InputStepper, ev: InputStepperEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }
