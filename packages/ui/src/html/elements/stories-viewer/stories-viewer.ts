@@ -646,6 +646,7 @@ export class LuxenStoriesViewer extends LuxenElement {
             part="progress"
             class="progress"
             role="progressbar"
+            aria-label="Story progress"
             aria-valuenow=${this.chapter + 1}
             aria-valuemin="1"
             aria-valuemax=${chapterStarts.length || 1}

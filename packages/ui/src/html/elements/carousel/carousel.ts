@@ -368,6 +368,7 @@ export class Carousel extends LuxenElement {
       type="button"
       part="button button-fullscreen"
       class="button button-fullscreen"
+      aria-label="Toggle fullscreen"
       @click=${() => this.dispatchEvent(new FullscreenToggleEvent())}
     >
       <svg
@@ -392,6 +393,7 @@ export class Carousel extends LuxenElement {
         part="button button-previous"
         class="button button-previous"
         type="button"
+        aria-label="Previous slide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -409,6 +411,7 @@ export class Carousel extends LuxenElement {
         part="button button-next"
         class="button button-next"
         type="button"
+        aria-label="Next slide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

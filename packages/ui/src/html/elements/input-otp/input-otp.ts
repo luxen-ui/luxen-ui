@@ -86,14 +86,17 @@ export class InputOtp extends LuxenElement {
       }
     }
 
-    // Build visual cells container
+    // Build visual cells container. The real <input> is moved INTO this
+    // container (below), so the container itself must stay exposed to AT —
+    // aria-hidden goes on each decorative cell/separator, never on the wrapper
+    // (a focusable element inside an aria-hidden subtree violates WCAG 4.1.2).
     this._container = document.createElement('div');
     this._container.className = 'l-input-otp-cells';
-    this._container.setAttribute('aria-hidden', 'true');
 
     for (let i = 0; i < digits; i++) {
       const cell = document.createElement('div');
       cell.className = 'l-input-otp-cell';
+      cell.setAttribute('aria-hidden', 'true');
       cell.appendChild(document.createElement('span'));
       this._cells.push(cell);
       this._container.appendChild(cell);
@@ -102,6 +105,7 @@ export class InputOtp extends LuxenElement {
       if (this.separatorAfter && i === this.separatorAfter - 1 && i < digits - 1) {
         this._separatorEl = document.createElement('span');
         this._separatorEl.className = 'l-input-otp-separator';
+        this._separatorEl.setAttribute('aria-hidden', 'true');
         this._container.appendChild(this._separatorEl);
       }
     }
