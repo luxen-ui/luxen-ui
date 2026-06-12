@@ -128,12 +128,14 @@ Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;` or `role=&quot;menuitemcheckbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Role', Description: 'Trigger is a menu button (`aria-haspopup=&quot;menu&quot;`); panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;` or `role=&quot;menuitemcheckbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Accessible name', Description: 'Each `role=&quot;menu&quot;` panel is named — the root menu after its trigger, every submenu after its parent item', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Expanded state', Description: 'Trigger receives `aria-expanded` reflecting open state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Checked state', Description: 'Checkbox items use `aria-checked` to communicate toggle state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Submenu state', Description: 'Items with a submenu expose `aria-haspopup=&quot;menu&quot;` and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Submenu state', Description: 'Items with a submenu expose `aria-haspopup=&quot;menu&quot;`, `aria-controls`, and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Disabled state', Description: 'Disabled items use `aria-disabled`, remaining in the DOM for discoverability', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Focus moves into menu on open and returns to trigger on close', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus management', Description: 'Focus moves into menu on open and returns to trigger on close; Tab closes the menu', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus visible', Description: 'The focused item shows a focus ring distinct from the hover state', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
   { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
   'Use a `<button>` element for the trigger in the `trigger` slot',

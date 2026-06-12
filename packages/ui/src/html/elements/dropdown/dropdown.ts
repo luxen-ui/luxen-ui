@@ -216,10 +216,17 @@ export class Dropdown extends LuxenElement {
   private async _openSubmenu(item: DropdownItem, { focus = false } = {}) {
     // A pending hover timer may fire after the menu closed or unmounted
     if (!this.open || !this.isConnected) return;
-    // Only one submenu open per level
+    // Only one submenu open per level. If a sibling we're about to close holds
+    // the focus (keyboard focus inside it, mouse hovers another row), the panel
+    // would vanish under the focus and drop it to <body> — move focus to `item`
+    // first so the roving tabindex stays coherent.
+    let stealsFocus = false;
     for (const sibling of this._levelItemsOf(item)) {
-      if (sibling !== item) sibling.closeSubmenu();
+      if (sibling === item) continue;
+      if (sibling.contains(document.activeElement)) stealsFocus = true;
+      sibling.closeSubmenu();
     }
+    if (stealsFocus && !focus) this._setActiveItem(item);
     item.openSubmenu();
     if (focus) {
       await item.updateComplete;
@@ -264,6 +271,13 @@ export class Dropdown extends LuxenElement {
 
     itemEl.setAttribute('tabindex', '0');
     itemEl.focus();
+
+    // APG: moving focus within a level collapses any sibling's open submenu, so
+    // an unfocused parent never keeps aria-expanded="true". The active item's
+    // own submenu (one level down) is untouched — `item` is not its own sibling.
+    for (const sibling of this._levelItemsOf(item)) {
+      if (sibling !== item) sibling.closeSubmenu();
+    }
   }
 
   private _focusFirstItem(items = this._getItems()) {
@@ -316,6 +330,24 @@ export class Dropdown extends LuxenElement {
   }
 
   // --- Event handlers ---
+
+  /**
+   * Expose menu-button semantics on whatever element is slotted as the trigger,
+   * and give the root `role="menu"` panel an accessible name derived from it.
+   * Runs on initial assignment and on any runtime trigger swap.
+   */
+  private _onTriggerSlotChange = () => {
+    const trigger = this._triggerEl;
+    if (!trigger) return;
+    trigger.setAttribute('aria-haspopup', 'menu');
+    trigger.setAttribute('aria-expanded', String(this.open));
+
+    // Cross-shadow aria-labelledby to the trigger is impossible, so copy its
+    // accessible name onto the menu as a plain aria-label.
+    const name = trigger.getAttribute('aria-label') ?? trigger.textContent?.trim() ?? '';
+    const menu = this.shadowRoot?.querySelector<HTMLElement>('[role="menu"]');
+    if (menu && name) menu.setAttribute('aria-label', name);
+  };
 
   private _onTriggerClick = (e: MouseEvent) => {
     if (this.disabled) return;
@@ -389,6 +421,12 @@ export class Dropdown extends LuxenElement {
         }
         break;
       }
+      case 'Tab':
+        // APG: Tab closes the menu (and any open submenus, via the hide path)
+        // and lets focus move to the next tab-sequence element naturally — so
+        // no preventDefault and no focus return to the trigger.
+        this.hide();
+        break;
       case 'Enter':
       case ' ':
         e.preventDefault();
@@ -470,7 +508,10 @@ export class Dropdown extends LuxenElement {
         @click=${this._onTriggerClick}
         @keydown=${this._onTriggerKeyDown}
       >
-        <slot name="trigger"></slot>
+        <slot
+          name="trigger"
+          @slotchange=${this._onTriggerSlotChange}
+        ></slot>
       </div>
       <div
         popover="auto"

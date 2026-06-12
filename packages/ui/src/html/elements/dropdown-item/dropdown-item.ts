@@ -60,6 +60,16 @@ export class DropdownItem extends LuxenElement {
     return this._hasSubmenu;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    // The host is a generic wrapper between the `role="menu"` panel and the
+    // `role="menuitem"` row in its shadow root; `none` removes it from the
+    // accessibility tree so the menu owns its menuitems directly (ARIA
+    // required-owned-elements). The inner row keeps its menuitem role.
+    // Guard preserves a consumer-set role.
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'none');
+  }
+
   private get _submenuEl(): HTMLElement | null {
     return this.shadowRoot!.querySelector<HTMLElement>('.submenu');
   }
@@ -152,6 +162,7 @@ export class DropdownItem extends LuxenElement {
         aria-disabled=${this.disabled ? 'true' : nothing}
         aria-haspopup=${this._hasSubmenu ? 'menu' : nothing}
         aria-expanded=${this._hasSubmenu ? String(this.submenuOpen) : nothing}
+        aria-controls=${this._hasSubmenu ? 'submenu' : nothing}
         tabindex="-1"
       >
         ${isCheckbox
@@ -177,7 +188,11 @@ export class DropdownItem extends LuxenElement {
               </span>
             `
           : html` <slot name="prefix"></slot> `}
-        <span class="label"><slot></slot></span>
+        <span
+          class="label"
+          id="label"
+          ><slot></slot
+        ></span>
         <slot name="suffix"></slot>
         ${this._hasSubmenu
           ? html`<span
@@ -189,8 +204,10 @@ export class DropdownItem extends LuxenElement {
       <div
         class="submenu"
         part="submenu"
+        id="submenu"
         popover="manual"
         role="menu"
+        aria-labelledby="label"
       >
         <slot
           name="submenu"
