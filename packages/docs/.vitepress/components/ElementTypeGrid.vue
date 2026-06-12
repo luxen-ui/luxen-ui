@@ -1,4 +1,6 @@
 <script setup>
+import metadata from 'luxen-ui/metadata' with { type: 'json' };
+
 const TYPE_META = {
   native: { glyph: '⏣', label: 'Native HTML' },
   progressive: { glyph: '⬡', label: 'Progressive' },
@@ -6,43 +8,20 @@ const TYPE_META = {
   shadow: { glyph: '⬢', label: 'Shadow DOM' },
 };
 
-const elements = [
-  { name: 'Avatar', tag: 'l-avatar', type: 'shadow', link: '/elements/avatar' },
-  { name: 'Badge', tag: 'l-badge', type: 'custom', link: '/elements/badge' },
-  { name: 'Button', tag: 'button', type: 'native', link: '/elements/button' },
-  { name: 'Button Group', tag: 'l-button-group', type: 'custom', link: '/elements/button-group' },
-  { name: 'Carousel', tag: 'l-carousel', type: 'shadow', link: '/elements/carousel' },
-  { name: 'Checkbox', tag: 'input', type: 'native', link: '/elements/checkbox' },
-  { name: 'Close Button', tag: 'button', type: 'native', link: '/elements/close-button' },
-  { name: 'Dialog', tag: 'l-dialog', type: 'shadow', link: '/elements/dialog' },
-  { name: 'Disclosure', tag: 'details', type: 'native', link: '/elements/disclosure' },
-  { name: 'Divider', tag: 'l-divider', type: 'custom', link: '/elements/divider' },
-  { name: 'Drawer', tag: 'l-drawer', type: 'shadow', link: '/elements/drawer' },
-  { name: 'Dropdown', tag: 'l-dropdown', type: 'shadow', link: '/elements/dropdown' },
-  { name: 'Form Field', tag: 'l-form-field', type: 'progressive', link: '/elements/form-field' },
-  { name: 'Icon', tag: 'l-icon', type: 'shadow', link: '/elements/icon' },
-  { name: 'Input OTP', tag: 'l-input-otp', type: 'progressive', link: '/elements/input-otp' },
-  {
-    name: 'Input Stepper',
-    tag: 'l-input-stepper',
-    type: 'progressive',
-    link: '/elements/input-stepper',
-  },
-  { name: 'Kbd', tag: 'kbd', type: 'native', link: '/elements/kbd' },
-  { name: 'Popover', tag: 'l-popover', type: 'shadow', link: '/elements/popover' },
-  { name: 'Progress', tag: 'progress', type: 'native', link: '/elements/progress' },
-  { name: 'Prose Editor', tag: 'l-prose-editor', type: 'shadow', link: '/elements/prose-editor' },
-  { name: 'Rating', tag: 'l-rating', type: 'shadow', link: '/elements/rating' },
-  { name: 'Select', tag: 'select', type: 'native', link: '/elements/select' },
-  { name: 'Skeleton', tag: 'l-skeleton', type: 'custom', link: '/elements/skeleton' },
-  { name: 'Spinner', tag: 'l-spinner', type: 'shadow', link: '/elements/spinner' },
-  { name: 'Sticky Bar', tag: 'l-sticky-bar', type: 'shadow', link: '/elements/sticky-bar' },
-  { name: 'Stories', tag: 'l-stories', type: 'custom', link: '/elements/stories' },
-  { name: 'Tabs', tag: 'l-tabs', type: 'progressive', link: '/elements/tabs' },
-  { name: 'Toast', tag: 'l-toast', type: 'custom', link: '/elements/toast' },
-  { name: 'Tooltip', tag: 'l-tooltip', type: 'shadow', link: '/elements/tooltip' },
-  { name: 'Tree', tag: 'l-tree', type: 'shadow', link: '/elements/tree' },
-];
+// Derive the set of slugs that have a docs page under packages/docs/elements/
+const docPages = import.meta.glob('../../elements/*.md');
+const docSlugs = new Set(
+  Object.keys(docPages).map((p) => p.replace('../../elements/', '').replace('.md', '')),
+);
+
+const elements = metadata.elements
+  .filter((el) => docSlugs.has(el.name))
+  .map((el) => ({
+    name: el.displayName,
+    tag: el.tag ?? el.nativeTag ?? '',
+    type: el.type,
+    link: `/elements/${el.name}`,
+  }));
 </script>
 
 <template>
