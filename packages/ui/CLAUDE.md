@@ -201,7 +201,7 @@ Rule: never call `unsafeCSS()` at the consumption site for a shared CSS file. Al
 
 ## Dark Mode
 
-All components must support dark mode. Global design tokens in `_tokens.css` use the `light-dark()` CSS function to define both light and dark values. Components get dark mode for free by referencing these semantic tokens — never hardcode colors for a single mode.
+All components must support dark mode. Global design tokens (`@luxen-ui/design-tokens`) use the `light-dark()` CSS function to define both light and dark values. Components get dark mode for free by referencing these semantic tokens — never hardcode colors for a single mode.
 
 `light-dark()` does not reliably resolve nested relative color functions like `oklch(from ...)`. For complex color derivations, use `@media (prefers-color-scheme: dark)` instead.
 
@@ -260,15 +260,31 @@ Base tokens for colors, radius, spacing, transitions, etc. come from Tailwind CS
 
 ### Semantic tokens only
 
-Components must always reference semantic design tokens from `src/css/design-tokens/_tokens.css` — never use Tailwind palette colors (e.g. `var(--color-gray-700)`) directly. This ensures dark mode, theming, and future token changes propagate automatically.
+Components must always reference semantic design tokens (defined in `packages/design-tokens/src/tokens/`, shipped as CSS via `@luxen-ui/design-tokens` and re-exported as `luxen-ui/css/tokens`) — never use Tailwind palette colors (e.g. `var(--color-gray-700)`) directly. This ensures dark mode, theming, and future token changes propagate automatically.
+
+### Never write fallback values for `--l-*` tokens
+
+The design tokens stylesheet is a **required** dependency of every element — `luxen-ui/css/tokens` ships the primitives, semantic aliases, and component tokens together. So token references must be bare:
+
+```css
+/* Good */
+border: 1px solid var(--l-color-border-overlay);
+
+/* Avoid — the token always resolves; the fallback is dead code */
+border: 1px solid var(--l-color-border-overlay, light-dark(#e5e7eb, #374151));
+```
+
+A fallback is worse than dead code: it silently masks a typo'd or renamed token. (Dropdown and popover panels once referenced a non-existent `--l-color-bg-surface` and rendered with their `Canvas` fallback instead of the intended `--l-color-surface-overlay` — the bug was invisible until the fallbacks were removed.) When adding a token reference, verify the name exists in `@luxen-ui/design-tokens` rather than guarding it.
+
+Fallbacks remain correct for **public component variables**, which consumers may legitimately not set: `var(--padding, 0.25rem)`, `var(--border-radius, 6px)`.
 
 ### Naming convention
 
-| Scope                      | Prefix           | Example                                  | Where defined                       |
-| -------------------------- | ---------------- | ---------------------------------------- | ----------------------------------- |
-| Global semantic token      | `--l-`           | `--l-color-text-primary`, `--l-backdrop` | `src/css/design-tokens/_tokens.css` |
-| Private component variable | `--_`            | `--_ring-tickness`, `--_button-size-md`  | Element CSS file                    |
-| Public local variable      | `--` (no prefix) | `--width`, `--size`, `--icon-color`      | Element CSS file                    |
+| Scope                      | Prefix           | Example                                  | Where defined                                                |
+| -------------------------- | ---------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| Global semantic token      | `--l-`           | `--l-color-text-primary`, `--l-backdrop` | `packages/design-tokens` (via `@luxen-ui/design-tokens/css`) |
+| Private component variable | `--_`            | `--_ring-tickness`, `--_button-size-md`  | Element CSS file                                             |
+| Public local variable      | `--` (no prefix) | `--width`, `--size`, `--icon-color`      | Element CSS file                                             |
 
 ### Public local variable naming
 
@@ -281,7 +297,7 @@ The test: if a name reads like a CSS property, it's probably too low-level. Pref
 
 ### Token descriptions
 
-Every global token in `_tokens.css` must have a CSS comment above it describing its intended usage. The description should be comprehensive enough for an AI agent to decide when to use it.
+Every global token (`$description` in the `packages/design-tokens` JSON sources, emitted as a CSS comment) must describe its intended usage. The description should be comprehensive enough for an AI agent to decide when to use it.
 
 ## Internal CSS Class Naming
 

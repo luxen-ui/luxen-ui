@@ -339,6 +339,253 @@ describe('Clicking outside closes the menu', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Submenus
+// ---------------------------------------------------------------------------
+
+const SUBMENU_FIXTURE = `
+  <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+    <button slot="trigger">Menu</button>
+    <l-dropdown-item id="documents">
+      Documents
+      <l-dropdown-item id="pdf" slot="submenu" value="pdf">PDF</l-dropdown-item>
+      <l-dropdown-item id="word" slot="submenu" value="docx">Word Document</l-dropdown-item>
+      <l-dropdown-item id="formats" slot="submenu">
+        More Formats
+        <l-dropdown-item id="txt" slot="submenu" value="txt">Plain Text</l-dropdown-item>
+      </l-dropdown-item>
+    </l-dropdown-item>
+    <l-dropdown-item id="rename">Rename</l-dropdown-item>
+    <l-dropdown-item id="options">
+      Options
+      <l-dropdown-item id="compress" slot="submenu" type="checkbox" value="compress">Compress files</l-dropdown-item>
+    </l-dropdown-item>
+  </l-dropdown>
+`;
+
+const submenuPanel = (id: string) => item(id).shadowRoot!.querySelector<HTMLElement>('.submenu')!;
+const isSubmenuOpen = (id: string) => submenuPanel(id).matches(':popover-open');
+
+async function openMenu() {
+  const shown = waitForEvent(el(), 'after-show');
+  await userEvent.click(menuTrigger());
+  await shown;
+  await settle();
+}
+
+describe('Submenus', () => {
+  describe('Pointer interaction', () => {
+    it('clicking a parent item opens its submenu without selecting or closing the menu', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+
+      let selected = false;
+      el().addEventListener('select', () => (selected = true));
+
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+
+      expect(isOpen()).toBe(true);
+      expect(isSubmenuOpen('documents')).toBe(true);
+      expect(selected).toBe(false);
+      // Nested items are now exposed to the user
+      expect(menuItem('PDF').elements()).toHaveLength(1);
+    });
+
+    it('clicking the parent item again closes its submenu', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+    });
+
+    it('hovering a parent item opens its submenu; hovering a sibling closes it', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+
+      await userEvent.hover(menuItem('Documents'));
+      await new Promise((r) => setTimeout(r, 250));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      await userEvent.hover(menuItem('Rename'));
+      await new Promise((r) => setTimeout(r, 250));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+    });
+  });
+
+  describe('Selection', () => {
+    it('selecting a nested item fires select with that item and closes the whole menu', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+
+      let selectedItem: DropdownItem | null = null;
+      el().addEventListener('select', (e: Event) => {
+        selectedItem = (e as DropdownSelectEvent).item;
+      });
+
+      const hidden = waitForEvent(el(), 'after-hide');
+      await userEvent.click(menuItem('PDF'));
+      await hidden;
+      await settle();
+
+      expect(selectedItem).toBe(item('pdf'));
+      expect(isOpen()).toBe(false);
+      expect(isSubmenuOpen('documents')).toBe(false);
+    });
+
+    it('a checkbox item inside a submenu toggles, fires select, and keeps menu and submenu open', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Options'));
+      await settle();
+
+      let selectedItem: DropdownItem | null = null;
+      el().addEventListener('select', (e: Event) => {
+        selectedItem = (e as DropdownSelectEvent).item;
+      });
+
+      await userEvent.click(checkboxItem('Compress files'));
+      await settle();
+
+      expect(selectedItem).toBe(item('compress'));
+      expect(item('compress').checked).toBe(true);
+      expect(isOpen()).toBe(true);
+      expect(isSubmenuOpen('options')).toBe(true);
+    });
+  });
+
+  describe('Keyboard interaction (APG menu pattern)', () => {
+    it('ArrowRight on a parent item opens the submenu and moves focus to its first item (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      // Focus is on Documents — open its submenu
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+      expect(item('pdf').shadowRoot!.activeElement).not.toBeNull();
+    });
+
+    it('Enter on a parent item opens the submenu instead of selecting it (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+
+      let selected = false;
+      el().addEventListener('select', () => (selected = true));
+
+      await userEvent.keyboard('{Enter}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+      expect(selected).toBe(false);
+      expect(item('pdf').shadowRoot!.activeElement).not.toBeNull();
+    });
+
+    it('arrow keys navigate within the submenu level and wrap (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      // PDF → Word Document → More Formats → wraps to PDF
+      await userEvent.keyboard('{ArrowDown}');
+      await settle();
+      expect(item('word').shadowRoot!.activeElement).not.toBeNull();
+      await userEvent.keyboard('{ArrowDown}');
+      await settle();
+      expect(item('formats').shadowRoot!.activeElement).not.toBeNull();
+      await userEvent.keyboard('{ArrowDown}');
+      await settle();
+      expect(item('pdf').shadowRoot!.activeElement).not.toBeNull();
+    });
+
+    it('ArrowRight opens a nested second-level submenu (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}'); // open Documents submenu, focus PDF
+      await settle();
+      await userEvent.keyboard('{End}'); // jump to More Formats
+      await settle();
+      await userEvent.keyboard('{ArrowRight}'); // open nested submenu
+      await settle();
+      expect(isSubmenuOpen('formats')).toBe(true);
+      expect(item('txt').shadowRoot!.activeElement).not.toBeNull();
+    });
+
+    it('ArrowLeft closes the submenu and returns focus to the parent item (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      await userEvent.keyboard('{ArrowLeft}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(item('documents').shadowRoot!.activeElement).not.toBeNull();
+      expect(isOpen()).toBe(true);
+    });
+
+    it('Escape inside a submenu closes only that submenu, not the whole menu (WCAG 2.1.2 / RGAA 12.9)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+
+      await userEvent.keyboard('{Escape}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+      expect(item('documents').shadowRoot!.activeElement).not.toBeNull();
+    });
+  });
+
+  describe('Roles and accessible names', () => {
+    it('a parent item exposes aria-haspopup and reflects aria-expanded (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      const row = item('documents').shadowRoot!.querySelector<HTMLElement>('.item')!;
+      expect(row.getAttribute('aria-haspopup')).toBe('menu');
+      expect(row.getAttribute('aria-expanded')).toBe('false');
+
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(row.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('a leaf item exposes neither aria-haspopup nor aria-expanded (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      const row = item('rename').shadowRoot!.querySelector<HTMLElement>('.item')!;
+      expect(row.hasAttribute('aria-haspopup')).toBe(false);
+      expect(row.hasAttribute('aria-expanded')).toBe(false);
+    });
+
+    it('closing the whole menu also closes any open submenu', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      const hidden = waitForEvent(el(), 'after-hide');
+      await userEvent.keyboard('{Escape}');
+      await hidden;
+      await settle();
+      expect(isOpen()).toBe(false);
+      expect(isSubmenuOpen('documents')).toBe(false);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility
 // ---------------------------------------------------------------------------
 

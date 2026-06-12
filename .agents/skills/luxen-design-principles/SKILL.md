@@ -37,18 +37,19 @@ See [references/typescript-patterns.md](references/typescript-patterns.md) for i
 
 Three-tier naming convention:
 
-| Scope | Prefix | Example | Purpose |
-|-------|--------|---------|---------|
-| Global semantic | `--l-` | `--l-color-text-primary`, `--l-size-md` | Design tokens from `_tokens.css` |
-| Public component API | none | `--size`, `--width`, `--icon-color` | Consumers override these |
-| Private internal | `--_` | `--_button-size-md`, `--_ring-thickness` | Implementation details, not for consumers |
+| Scope                | Prefix | Example                                  | Purpose                                      |
+| -------------------- | ------ | ---------------------------------------- | -------------------------------------------- |
+| Global semantic      | `--l-` | `--l-color-text-primary`, `--l-size-md`  | Design tokens from `@luxen-ui/design-tokens` |
+| Public component API | none   | `--size`, `--width`, `--icon-color`      | Consumers override these                     |
+| Private internal     | `--_`  | `--_button-size-md`, `--_ring-thickness` | Implementation details, not for consumers    |
 
 Public variables use semantic names (`--size`, `--icon-color`, `--width`) rather than CSS-property-like names (`--padding-inline`, `--font-size`). The test: if a name reads like a CSS property, it's probably too low-level. Only expose what consumers genuinely need to adjust.
 
 ## 6. Design Token Usage
 
-Always use semantic tokens from `_tokens.css`. Never reference raw Tailwind palette values (like `var(--color-gray-700)`) directly in element CSS — those belong only inside `_tokens.css` definitions.
+Always use semantic tokens (defined in `packages/design-tokens`, shipped via `@luxen-ui/design-tokens` / `luxen-ui/css/tokens`). Never reference raw Tailwind palette values (like `var(--color-gray-700)`) directly in element CSS — those belong only inside the token definitions.
 
+- **No fallbacks on `--l-*` tokens**: the tokens stylesheet is a required dependency, so write `var(--l-color-border-overlay)`, never `var(--l-color-border-overlay, light-dark(...))`. A fallback is dead code that silently masks a typo'd or renamed token — verify the token name exists instead. Fallbacks stay correct for public component variables only (`var(--padding, 0.25rem)`).
 - **Theming**: Use `light-dark(light-value, dark-value)` on all semantic tokens. For complex color derivations (e.g., `oklch(from ...)`), use `@media (prefers-color-scheme: dark)` instead since `light-dark()` doesn't reliably resolve nested relative color functions.
 - **State colors**: Derive hover/active variants with `color-mix()` instead of defining separate tokens
 - **Contrast**: Use `contrast-color()` for automatic text color on colored backgrounds
@@ -59,6 +60,7 @@ See [references/css-patterns.md](references/css-patterns.md) for color derivatio
 ## 7. Progressive Enhancement CSS
 
 Cutting-edge CSS is encouraged when it degrades gracefully:
+
 - **Acceptable**: `corner-shape` → `border-radius`, `text-box` → ignored, `::picker(select)` → native select
 - **Problematic**: `if()` without `var()` fallback → property becomes `initial`
 
@@ -69,18 +71,31 @@ Always check: if the feature is unsupported, does the component still render and
 CSS-only elements use **`data-` attributes** for variants and sizes — not BEM modifier classes:
 
 ```css
-.l-button[data-variant='primary'] { --background-color: var(--l-color-bg-fill-brand); }
-.l-button[data-size='sm'] { --height: var(--_button-size-sm); }
-.l-button[data-icon-only] { width: var(--height); }
+.l-button[data-variant='primary'] {
+  --background-color: var(--l-color-bg-fill-brand);
+}
+.l-button[data-size='sm'] {
+  --height: var(--_button-size-sm);
+}
+.l-button[data-icon-only] {
+  width: var(--height);
+}
 ```
 
 ```html
-<button class="l-button" data-variant="primary" data-size="lg">Save</button>
+<button
+  class="l-button"
+  data-variant="primary"
+  data-size="lg"
+>
+  Save
+</button>
 ```
 
 For autonomous custom elements with JS, use reflected `@property` attributes (`variant="info"`, `size="lg"`). For autonomous custom elements without JS, use CSS `if(style(--variant: value))` conditionals driven by inline styles.
 
 **Appearance directories** — some elements have fundamentally different visual treatments:
+
 ```
 close-button/
   _base.css          ← structural CSS (layout, sizing, states)
@@ -91,10 +106,13 @@ close-button/
 Selected via `data-appearance` attribute. CSS pattern: `.l-close:not([data-appearance]), .l-close[data-appearance="ring"]` — applies both when attribute matches AND when no attribute is set (imported appearance acts as default).
 
 Size systems use private variables for predefined sizes and a public variable for the active size:
+
 ```css
 --_button-size-sm: var(--l-size-sm); /* references global size token */
---height: var(--_button-size-md);    /* public API */
-.l-button[data-size='sm'] { --height: var(--_button-size-sm); }
+--height: var(--_button-size-md); /* public API */
+.l-button[data-size='sm'] {
+  --height: var(--_button-size-sm);
+}
 ```
 
 Proportional border-radius scales with size: `border-radius: calc(var(--height) / 8)`.
@@ -122,6 +140,7 @@ See [references/css-patterns.md](references/css-patterns.md) for the entry/exit 
 All element styles must be wrapped in `@layer components { ... }`. This keeps specificity predictable across the cascade.
 
 Common structural patterns:
+
 - **Centering**: `display: grid; place-items: center;`
 - **Ring effects**: `box-shadow: 0 0 0 var(--thickness) var(--color)` (not `border`)
 - **Responsive sizing**: `max-inline-size: min(90vw, var(--width))`
@@ -145,6 +164,7 @@ See [references/css-patterns.md](references/css-patterns.md) for detailed exampl
 ### File Structure
 
 ShadowDOM elements use separate files for styles:
+
 ```
 elements/
   avatar/
@@ -158,6 +178,7 @@ Simpler elements (badge, divider, skeleton) have just `name.ts` + `index.ts`.
 ### Registration
 
 Use the `define()` utility from `src/html/define.ts` in `index.ts`:
+
 ```typescript
 import { define } from '../../define';
 import { Avatar } from './avatar';

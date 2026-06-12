@@ -230,6 +230,8 @@ export interface PopoverControllerConfig {
 export interface PositionOptions {
   placement: Placement;
   distance: number;
+  /** Offset along the cross axis, in pixels (e.g. to align a submenu's first item with its trigger). */
+  skidding?: number;
   fullWidth?: boolean;
   /** Floor the floating element's width at the trigger's width (`'trigger'`). */
   minWidth?: 'trigger';
@@ -280,7 +282,7 @@ export class PopoverController implements ReactiveController {
     if (!trigger || !floating) return;
 
     const middleware = [
-      offset(options.distance),
+      offset({ mainAxis: options.distance, crossAxis: options.skidding ?? 0 }),
       // Size before flip/shift so the adopted floor feeds collision detection.
       ...(options.minWidth === 'trigger'
         ? [

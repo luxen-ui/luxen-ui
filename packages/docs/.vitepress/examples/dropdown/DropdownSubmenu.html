@@ -1,0 +1,63 @@
+<l-dropdown>
+  <button
+    slot="trigger"
+    class="l-button"
+  >
+    Export
+  </button>
+
+  <l-dropdown-item>
+    Documents
+    <l-dropdown-item
+      slot="submenu"
+      value="pdf"
+      >PDF</l-dropdown-item
+    >
+    <l-dropdown-item
+      slot="submenu"
+      value="docx"
+      >Word Document</l-dropdown-item
+    >
+  </l-dropdown-item>
+
+  <l-dropdown-item>
+    Spreadsheets
+    <l-dropdown-item slot="submenu">
+      Excel Formats
+      <l-dropdown-item
+        slot="submenu"
+        value="xlsx"
+        >Excel (.xlsx)</l-dropdown-item
+      >
+      <l-dropdown-item
+        slot="submenu"
+        value="csv"
+        >CSV (.csv)</l-dropdown-item
+      >
+    </l-dropdown-item>
+    <l-dropdown-item
+      slot="submenu"
+      value="ods"
+      >OpenDocument (.ods)</l-dropdown-item
+    >
+  </l-dropdown-item>
+
+  <hr />
+
+  <l-dropdown-item>
+    Options
+    <l-dropdown-item
+      slot="submenu"
+      type="checkbox"
+      value="compress"
+      >Compress files</l-dropdown-item
+    >
+    <l-dropdown-item
+      slot="submenu"
+      type="checkbox"
+      checked
+      value="metadata"
+      >Include metadata</l-dropdown-item
+    >
+  </l-dropdown-item>
+</l-dropdown>

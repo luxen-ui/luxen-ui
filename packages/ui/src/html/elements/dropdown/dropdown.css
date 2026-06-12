@@ -1,7 +1,7 @@
 :host {
   --padding: 0.25rem;
 
-  --background: var(--l-color-bg-surface, Canvas);
+  --background: var(--l-color-surface-overlay);
   --border-radius: 6px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 6%);
   --show-duration: 150;
@@ -22,10 +22,10 @@
   width: max-content;
   padding: var(--padding);
   margin: 0;
-  border: 1px solid var(--l-color-border-overlay, light-dark(#e5e7eb, #374151));
+  border: 1px solid var(--l-color-border-overlay);
   border-radius: var(--border-radius);
   background: var(--background);
-  color: var(--l-color-text-primary, CanvasText);
+  color: var(--l-color-text-primary);
   box-shadow: var(--shadow);
   font-size: 0.875rem;
   line-height: 1.5;

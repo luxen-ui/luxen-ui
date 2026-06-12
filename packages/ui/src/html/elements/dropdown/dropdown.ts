@@ -29,7 +29,7 @@ interface DropdownEventMap {
  *
  * @slot trigger - The element that triggers the dropdown.
  * @slot header - Optional content rendered above the menu items (e.g. a user profile row). Use an `<l-divider>` (or `<hr>`) after it to separate from items.
- * @slot - Menu content (`l-dropdown-item` elements). Drop an `<l-divider>` (or `<hr>`) between items to render a section separator, or an `<l-dropdown-label>` to caption a group of items.
+ * @slot - Menu content (`l-dropdown-item` elements). Drop an `<l-divider>` (or `<hr>`) between items to render a section separator, or an `<l-dropdown-label>` to caption a group of items. Nest items with `slot="submenu"` inside an item to create a submenu.
  * @slot footer - Optional content rendered below the menu items (e.g. a version label or shortcut row). Use an `<l-divider>` (or `<hr>`) before it to separate from items.
  *
  * @csspart panel - The floating menu container.
@@ -45,7 +45,7 @@ interface DropdownEventMap {
  * @event after-show - Fired after the open animation completes.
  * @event hide - Fired before the dropdown closes. Cancelable.
  * @event after-hide - Fired after the close animation completes.
- * @event select - Fired when an item is selected. Bubbles. Properties: `item: DropdownItem`.
+ * @event select - Fired when an item is selected, including items nested in submenus. Bubbles. Properties: `item: DropdownItem`.
  *
  * @customElement l-dropdown
  */
@@ -113,6 +113,35 @@ export class Dropdown extends LuxenElement {
     );
   }
 
+  /** Every item in the menu tree, submenu items included (light-DOM descendants). */
+  private _getAllItemsDeep(): DropdownItem[] {
+    return [...this.querySelectorAll<DropdownItem>(tagName('dropdown-item'))];
+  }
+
+  /** The enabled items of the menu level `item` belongs to (its siblings, itself included). */
+  private _levelItemsOf(item: DropdownItem): DropdownItem[] {
+    const parent = item.parentElement;
+    if (parent && parent.tagName === tagName('dropdown-item').toUpperCase()) {
+      return (parent as DropdownItem).getSubmenuItems();
+    }
+    return this._getItems();
+  }
+
+  /** The parent item whose submenu contains `item`, or null at the root level. */
+  private _parentItemOf(item: DropdownItem | null): DropdownItem | null {
+    const parent = item?.parentElement;
+    if (parent && parent.tagName === tagName('dropdown-item').toUpperCase()) {
+      return parent as DropdownItem;
+    }
+    return null;
+  }
+
+  /** The enabled items of the level that currently holds focus (root level as fallback). */
+  private _currentLevelItems(): DropdownItem[] {
+    const current = this._getCurrentItem();
+    return current ? this._levelItemsOf(current) : this._getItems();
+  }
+
   private _getDuration(prop: '--show-duration' | '--hide-duration'): number {
     const parsed = parseFloat(getComputedStyle(this).getPropertyValue(prop));
     return Number.isNaN(parsed) ? 150 : parsed;
@@ -136,6 +165,12 @@ export class Dropdown extends LuxenElement {
   }
 
   // --- Lifecycle ---
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._hoverTimer);
+    this._hoverItem = null;
+  }
 
   override updated(changed: PropertyValues<this>) {
     if (changed.has('open')) {
@@ -165,11 +200,54 @@ export class Dropdown extends LuxenElement {
       this.dispatchEvent(new AfterShowEvent());
     } else {
       this._floating.stopPositioning();
+      this._closeAllSubmenus();
       this._triggerEl?.setAttribute('aria-expanded', 'false');
       await this._floating.animateHide(panel, this._getDuration('--hide-duration'));
       if (panel.matches(':popover-open')) panel.hidePopover();
       this.dispatchEvent(new AfterHideEvent());
     }
+  }
+
+  // --- Submenus ---
+
+  private _hoverTimer = 0;
+  private _hoverItem: DropdownItem | null = null;
+
+  private async _openSubmenu(item: DropdownItem, { focus = false } = {}) {
+    // A pending hover timer may fire after the menu closed or unmounted
+    if (!this.open || !this.isConnected) return;
+    // Only one submenu open per level
+    for (const sibling of this._levelItemsOf(item)) {
+      if (sibling !== item) sibling.closeSubmenu();
+    }
+    item.openSubmenu();
+    if (focus) {
+      await item.updateComplete;
+      const first = item.getSubmenuItems()[0];
+      if (first) this._setActiveItem(first);
+    }
+  }
+
+  private _closeAllSubmenus() {
+    clearTimeout(this._hoverTimer);
+    this._hoverItem = null;
+    for (const item of this._getAllItems()) item.closeSubmenu();
+  }
+
+  /**
+   * The item targeted by a pointer event, via the composed path. Returns null
+   * for hits inside an item's submenu panel that miss every nested item row
+   * (e.g. the panel padding) — those must not read as hits on the parent item.
+   */
+  private _itemFromEvent(e: Event): DropdownItem | null {
+    const path = e.composedPath();
+    const itemTag = tagName('dropdown-item').toUpperCase();
+    const item =
+      path.find((n): n is DropdownItem => n instanceof Element && n.tagName === itemTag) ?? null;
+    if (!item) return null;
+    const row = item.shadowRoot?.querySelector('.item');
+    if (row && !path.includes(row)) return null;
+    return item;
   }
 
   // --- Focus management ---
@@ -178,8 +256,8 @@ export class Dropdown extends LuxenElement {
     const itemEl = item.shadowRoot!.querySelector<HTMLElement>('.item');
     if (!itemEl) return;
 
-    // Reset all items
-    for (const i of this._getAllItems()) {
+    // Reset all items, submenu items included — one roving tabindex tree-wide
+    for (const i of this._getAllItemsDeep()) {
       const el = i.shadowRoot!.querySelector<HTMLElement>('.item');
       el?.setAttribute('tabindex', '-1');
     }
@@ -188,20 +266,17 @@ export class Dropdown extends LuxenElement {
     itemEl.focus();
   }
 
-  private _focusFirstItem() {
-    const items = this._getItems();
+  private _focusFirstItem(items = this._getItems()) {
     if (items.length) this._setActiveItem(items[0]);
   }
 
-  private _focusLastItem() {
-    const items = this._getItems();
+  private _focusLastItem(items = this._getItems()) {
     if (items.length) this._setActiveItem(items[items.length - 1]);
   }
 
   private _getCurrentItem(): DropdownItem | null {
-    const items = this._getItems();
     return (
-      items.find((item) => {
+      this._getAllItemsDeep().find((item) => {
         const el = item.shadowRoot!.querySelector<HTMLElement>('.item');
         return el?.getAttribute('tabindex') === '0' && item.shadowRoot!.activeElement === el;
       }) ?? null
@@ -209,7 +284,7 @@ export class Dropdown extends LuxenElement {
   }
 
   private _focusNextItem() {
-    const items = this._getItems();
+    const items = this._currentLevelItems();
     const current = this._getCurrentItem();
     const index = current ? items.indexOf(current) : -1;
     const next = items[(index + 1) % items.length];
@@ -217,7 +292,7 @@ export class Dropdown extends LuxenElement {
   }
 
   private _focusPreviousItem() {
-    const items = this._getItems();
+    const items = this._currentLevelItems();
     const current = this._getCurrentItem();
     const index = current ? items.indexOf(current) : 0;
     const prev = items[(index - 1 + items.length) % items.length];
@@ -233,7 +308,7 @@ export class Dropdown extends LuxenElement {
       this._typeaheadBuffer = '';
     }, 500);
 
-    const items = this._getItems();
+    const items = this._currentLevelItems();
     const match = items.find((item) =>
       item.getTextLabel().toLowerCase().startsWith(this._typeaheadBuffer),
     );
@@ -278,17 +353,42 @@ export class Dropdown extends LuxenElement {
         break;
       case 'Home':
         e.preventDefault();
-        this._focusFirstItem();
+        this._focusFirstItem(this._currentLevelItems());
         break;
       case 'End':
         e.preventDefault();
-        this._focusLastItem();
+        this._focusLastItem(this._currentLevelItems());
         break;
-      case 'Escape':
+      case 'ArrowRight': {
+        const current = this._getCurrentItem();
+        if (current?.hasSubmenu) {
+          e.preventDefault();
+          void this._openSubmenu(current, { focus: true });
+        }
+        break;
+      }
+      case 'ArrowLeft': {
+        const parentItem = this._parentItemOf(this._getCurrentItem());
+        if (parentItem) {
+          e.preventDefault();
+          parentItem.closeSubmenu();
+          this._setActiveItem(parentItem);
+        }
+        break;
+      }
+      case 'Escape': {
+        // Close one level at a time: a submenu first, the menu itself at the root
         e.preventDefault();
-        this.hide();
-        this._triggerEl?.focus();
+        const parentItem = this._parentItemOf(this._getCurrentItem());
+        if (parentItem) {
+          parentItem.closeSubmenu();
+          this._setActiveItem(parentItem);
+        } else {
+          this.hide();
+          this._triggerEl?.focus();
+        }
         break;
+      }
       case 'Enter':
       case ' ':
         e.preventDefault();
@@ -302,15 +402,45 @@ export class Dropdown extends LuxenElement {
   };
 
   private _onItemClick = (e: Event) => {
-    const item = (e.target as HTMLElement).closest<DropdownItem>(tagName('dropdown-item'));
-    if (item && !item.disabled) {
-      this._selectItem(item);
+    const item = this._itemFromEvent(e);
+    if (!item || item.disabled) return;
+    if (item.hasSubmenu) {
+      // A parent item toggles its submenu instead of selecting
+      if (item.submenuOpen) item.closeSubmenu();
+      else void this._openSubmenu(item);
+      return;
     }
+    this._selectItem(item);
+  };
+
+  /** Open submenus on hover after a short intent delay; hovering a sibling closes them. */
+  private _onPanelPointerOver = (e: PointerEvent) => {
+    // Touch taps fire pointerover too — they must only toggle via click,
+    // or the hover timer would reopen a submenu the tap just closed.
+    if (e.pointerType !== 'mouse') return;
+    const item = this._itemFromEvent(e);
+    if (item === this._hoverItem) return;
+    clearTimeout(this._hoverTimer);
+    this._hoverItem = item;
+    if (!item || item.disabled) return;
+    this._hoverTimer = window.setTimeout(() => {
+      void this._openSubmenu(item);
+    }, 100);
+  };
+
+  private _onPanelPointerOut = () => {
+    clearTimeout(this._hoverTimer);
+    this._hoverItem = null;
   };
 
   private _selectCurrentItem() {
     const current = this._getCurrentItem();
-    if (current) this._selectItem(current);
+    if (!current) return;
+    if (current.hasSubmenu) {
+      void this._openSubmenu(current, { focus: true });
+    } else {
+      this._selectItem(current);
+    }
   }
 
   private _selectItem(item: DropdownItem) {
@@ -347,6 +477,8 @@ export class Dropdown extends LuxenElement {
         part="panel"
         @keydown=${this._onPanelKeyDown}
         @click=${this._onItemClick}
+        @pointerover=${this._onPanelPointerOver}
+        @pointerout=${this._onPanelPointerOut}
         @toggle=${this._onToggle}
       >
         <slot name="header"></slot>
