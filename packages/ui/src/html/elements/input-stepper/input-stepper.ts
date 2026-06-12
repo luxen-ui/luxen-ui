@@ -1,5 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { LocalizeController } from '../../shared/localize.js';
 import { tagName } from '../../registry.js';
 
 export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -39,6 +40,8 @@ interface InputStepperEventMap {
  */
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class InputStepper extends LuxenElement {
+  private _localize = new LocalizeController(this);
+
   override createRenderRoot() {
     return this;
   }
@@ -113,6 +116,12 @@ export class InputStepper extends LuxenElement {
       this._syncConstraints();
       this._updateButtonStates();
     }
+
+    // Button labels are set imperatively in _setup() (outside any render), so
+    // re-apply them on every update to track a language change (the localize
+    // controller calls requestUpdate when <html lang> changes).
+    this._decrementBtn?.setAttribute('aria-label', this._localize.term('decreaseValue'));
+    this._incrementBtn?.setAttribute('aria-label', this._localize.term('increaseValue'));
   }
 
   /** Decrease the value by one step. */
@@ -152,8 +161,14 @@ export class InputStepper extends LuxenElement {
     }
 
     // Create buttons
-    this._decrementBtn = this._createButton(this.decrementIcon, 'Decrease value');
-    this._incrementBtn = this._createButton(this.incrementIcon, 'Increase value');
+    this._decrementBtn = this._createButton(
+      this.decrementIcon,
+      this._localize.term('decreaseValue'),
+    );
+    this._incrementBtn = this._createButton(
+      this.incrementIcon,
+      this._localize.term('increaseValue'),
+    );
 
     this._valueWrapper.before(this._decrementBtn);
     this._valueWrapper.after(this._incrementBtn);

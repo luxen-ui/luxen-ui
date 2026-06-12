@@ -3,6 +3,7 @@ import { html } from 'lit/static-html.js';
 import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { LocalizeController } from '../../shared/localize.js';
 import { staticTag } from '../../static-tag.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -121,6 +122,8 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  */
 export class LuxenStoriesViewer extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
+
+  private _localize = new LocalizeController(this);
 
   /** Whether the viewer is open. */
   @property({ type: Boolean, reflect: true })
@@ -633,7 +636,7 @@ export class LuxenStoriesViewer extends LuxenElement {
     return html`
       <dialog
         part="dialog"
-        aria-label="Stories"
+        aria-label=${this._localize.term('stories')}
       >
         <div
           part="frame"
@@ -646,7 +649,7 @@ export class LuxenStoriesViewer extends LuxenElement {
             part="progress"
             class="progress"
             role="progressbar"
-            aria-label="Story progress"
+            aria-label=${this._localize.term('storyProgress')}
             aria-valuenow=${this.chapter + 1}
             aria-valuemin="1"
             aria-valuemax=${chapterStarts.length || 1}
@@ -708,7 +711,7 @@ export class LuxenStoriesViewer extends LuxenElement {
                 type="button"
                 part="button-close"
                 class="btn btn-close"
-                aria-label="Close"
+                aria-label=${this._localize.term('close')}
                 @click=${() => this.close()}
               >
                 <${iconTag} name="mdi:close"></${iconTag}>
@@ -728,7 +731,7 @@ export class LuxenStoriesViewer extends LuxenElement {
               type="button"
               part="button-mute"
               class="btn btn-mute"
-              aria-label=${this.muted ? 'Unmute' : 'Mute'}
+              aria-label=${this.muted ? this._localize.term('unmute') : this._localize.term('mute')}
               aria-pressed=${this.muted ? 'false' : 'true'}
               @click=${() => {
                 this.muted = !this.muted;
@@ -750,7 +753,7 @@ export class LuxenStoriesViewer extends LuxenElement {
           <${spinnerTag}
             part="spinner"
             class="spinner"
-            aria-label="Loading"
+            aria-label=${this._localize.term('loading')}
             data-no-gesture
             data-state=${this._loading ? 'loading' : 'idle'}
           ></${spinnerTag}>
@@ -797,7 +800,7 @@ export class LuxenStoriesViewer extends LuxenElement {
               type="button"
               part="button-previous"
               class="btn btn-nav btn-previous"
-              aria-label="Previous story"
+              aria-label=${this._localize.term('previousStory')}
               @click=${() => this.previousStory()}
             >
               <${iconTag} name="mdi:chevron-left"></${iconTag}>
@@ -810,7 +813,7 @@ export class LuxenStoriesViewer extends LuxenElement {
               type="button"
               part="button-next"
               class="btn btn-nav btn-next"
-              aria-label="Next story"
+              aria-label=${this._localize.term('nextStory')}
               @click=${() => this.nextStory()}
             >
               <${iconTag} name="mdi:chevron-right"></${iconTag}>

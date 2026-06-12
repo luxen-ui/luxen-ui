@@ -14,6 +14,7 @@ import { html, nothing, unsafeCSS, type PropertyValues, type CSSResultGroup } fr
 import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { LocalizeController } from '../../shared/localize.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './carousel.css?inline';
 
@@ -94,6 +95,8 @@ declare global {
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Carousel extends LuxenElement {
   static override styles: CSSResultGroup = [hostStyles, styles];
+
+  private _localize = new LocalizeController(this);
 
   embla!: EmblaCarouselType;
 
@@ -368,7 +371,7 @@ export class Carousel extends LuxenElement {
       type="button"
       part="button button-fullscreen"
       class="button button-fullscreen"
-      aria-label="Toggle fullscreen"
+      aria-label=${this._localize.term('toggleFullscreen')}
       @click=${() => this.dispatchEvent(new FullscreenToggleEvent())}
     >
       <svg
@@ -393,7 +396,7 @@ export class Carousel extends LuxenElement {
         part="button button-previous"
         class="button button-previous"
         type="button"
-        aria-label="Previous slide"
+        aria-label=${this._localize.term('previousSlide')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -411,7 +414,7 @@ export class Carousel extends LuxenElement {
         part="button button-next"
         class="button button-next"
         type="button"
-        aria-label="Next slide"
+        aria-label=${this._localize.term('nextSlide')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -463,7 +466,7 @@ export class Carousel extends LuxenElement {
           type="button"
           role="tab"
           class="dot dot--${this.dotAppearance} ${isSelected ? 'dot--selected' : ''}"
-          aria-label="Go to slide ${index + 1}"
+          aria-label=${this._localize.term('goToSlide', index + 1)}
           aria-selected=${isSelected ? 'true' : nothing}
           data-index="${index}"
           data-edge=${isEdge ? '' : nothing}
