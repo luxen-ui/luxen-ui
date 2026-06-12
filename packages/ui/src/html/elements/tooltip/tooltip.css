@@ -1,5 +1,5 @@
 :host {
-  --background-color: var(--l-tooltip-background-color, light-dark(#1f2937, #f9fafb));
+  --background-color: var(--l-tooltip-background-color);
   --border-radius: 4px;
   --max-width: 180px;
   --arrow-size: 6px;

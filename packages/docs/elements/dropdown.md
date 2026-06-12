@@ -7,6 +7,7 @@ import dropdownBasic from '../.vitepress/examples/dropdown/DropdownBasic.html?ra
 import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabledItem.html?raw'
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
 import dropdownSections from '../.vitepress/examples/dropdown/DropdownSections.html?raw'
+import dropdownSubmenu from '../.vitepress/examples/dropdown/DropdownSubmenu.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
 import dropdownMinWidth from '../.vitepress/examples/dropdown/DropdownMinWidth.html?raw'
 import dropdownDisabled from '../.vitepress/examples/dropdown/DropdownDisabled.html?raw'
@@ -65,6 +66,17 @@ Add `<l-dropdown-label>` to caption a group of items. It is non-interactive — 
 <<< @/.vitepress/examples/dropdown/DropdownSections.html [HTML]
 :::
 
+### Submenus
+
+Nest `<l-dropdown-item slot="submenu">` elements inside an item to create a submenu — at any depth. A parent item shows a chevron, opens on hover, click, <kbd>Enter</kbd> or <kbd>ArrowRight</kbd>, and closes with <kbd>ArrowLeft</kbd> or <kbd>Escape</kbd>. Selecting a nested item fires the same `select` event on the dropdown and closes the whole menu (checkbox items keep it open). Use `<hr slot="submenu">` for separators inside a submenu.
+
+<ComponentWrapper :html="dropdownSubmenu" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownSubmenu.html [HTML]
+:::
+
 ### Placement
 
 Set `placement` to control position. Default is `bottom-start`.
@@ -119,6 +131,7 @@ Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-
   { Check: 'Role', Description: 'Panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;` or `role=&quot;menuitemcheckbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Expanded state', Description: 'Trigger receives `aria-expanded` reflecting open state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Checked state', Description: 'Checkbox items use `aria-checked` to communicate toggle state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Submenu state', Description: 'Items with a submenu expose `aria-haspopup=&quot;menu&quot;` and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Disabled state', Description: 'Disabled items use `aria-disabled`, remaining in the DOM for discoverability', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Focus management', Description: 'Focus moves into menu on open and returns to trigger on close', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
   { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
@@ -131,13 +144,15 @@ Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-
 ### Keyboard interactions
 
 <KeyboardTable :data="[
-  { Key: 'Enter', Description: 'Opens menu and focuses first item; or selects the focused item' },
-  { Key: 'Space', Description: 'Opens menu and focuses first item; or selects the focused item' },
-  { Key: 'ArrowDown', Description: 'Opens menu and focuses first item; or moves focus to the next item (wraps)' },
-  { Key: 'ArrowUp', Description: 'Opens menu and focuses last item; or moves focus to the previous item (wraps)' },
-  { Key: 'Home', Description: 'Moves focus to the first item' },
-  { Key: 'End', Description: 'Moves focus to the last item' },
-  { Key: 'Escape', Description: 'Closes menu and returns focus to the trigger' },
+  { Key: 'Enter', Description: 'Opens menu and focuses first item; selects the focused item; or opens the focused item\'s submenu' },
+  { Key: 'Space', Description: 'Opens menu and focuses first item; selects the focused item; or opens the focused item\'s submenu' },
+  { Key: 'ArrowDown', Description: 'Opens menu and focuses first item; or moves focus to the next item of the current level (wraps)' },
+  { Key: 'ArrowUp', Description: 'Opens menu and focuses last item; or moves focus to the previous item of the current level (wraps)' },
+  { Key: 'ArrowRight', Description: 'Opens the focused item\'s submenu and focuses its first item' },
+  { Key: 'ArrowLeft', Description: 'Closes the current submenu and returns focus to its parent item' },
+  { Key: 'Home', Description: 'Moves focus to the first item of the current level' },
+  { Key: 'End', Description: 'Moves focus to the last item of the current level' },
+  { Key: 'Escape', Description: 'Closes the current submenu; at the root level, closes the menu and returns focus to the trigger' },
   { Key: 'Tab', Description: 'Closes menu and moves focus to the next focusable element' },
 ]" />
 
