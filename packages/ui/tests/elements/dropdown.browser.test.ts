@@ -419,6 +419,25 @@ describe('Submenus', () => {
       expect(isSubmenuOpen('documents')).toBe(false);
       expect(isOpen()).toBe(true);
     });
+
+    it('keeps focus inside the menu when a hovered sibling closes the focused submenu (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      // Keyboard focus lands inside the Documents submenu (on PDF)…
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(item('pdf').shadowRoot!.activeElement).not.toBeNull();
+
+      // …then the mouse hovers a sibling, collapsing the focused panel.
+      await userEvent.hover(menuItem('Rename'));
+      await new Promise((r) => setTimeout(r, 250));
+      await settle();
+
+      expect(isSubmenuOpen('documents')).toBe(false);
+      // Focus must not have fallen to <body> — it rode to the hovered row.
+      expect(deepActiveElement()).not.toBe(document.body);
+      expect(deepActiveElement()).toBe(item('rename').shadowRoot!.querySelector('.item'));
+    });
   });
 
   describe('Selection', () => {
@@ -545,6 +564,23 @@ describe('Submenus', () => {
       expect(isOpen()).toBe(true);
       expect(item('documents').shadowRoot!.activeElement).not.toBeNull();
     });
+
+    it('roving to a sibling at the same level collapses an open submenu (APG)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}'); // focus Documents (root level)
+      // Open its submenu by click — focus stays on Documents, panel opens.
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      // ArrowDown roves to Rename → Documents' submenu must collapse.
+      await userEvent.keyboard('{ArrowDown}');
+      await settle();
+      expect(item('rename').shadowRoot!.activeElement).not.toBeNull();
+      expect(item('documents').submenuOpen).toBe(false);
+      const docRow = item('documents').shadowRoot!.querySelector<HTMLElement>('.item')!;
+      expect(docRow.getAttribute('aria-expanded')).toBe('false');
+    });
   });
 
   describe('Roles and accessible names', () => {
@@ -566,6 +602,34 @@ describe('Submenus', () => {
       const row = item('rename').shadowRoot!.querySelector<HTMLElement>('.item')!;
       expect(row.hasAttribute('aria-haspopup')).toBe(false);
       expect(row.hasAttribute('aria-expanded')).toBe(false);
+    });
+
+    it('a parent item points aria-controls at its submenu panel (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      const row = item('documents').shadowRoot!.querySelector<HTMLElement>('.item')!;
+      const controls = row.getAttribute('aria-controls');
+      expect(controls).toBeTruthy();
+      const controlled = item('documents').shadowRoot!.getElementById(controls!);
+      expect(controlled).toBe(submenuPanel('documents'));
+    });
+
+    it('a submenu panel takes its accessible name from the parent item (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      // The submenu role="menu" is named "Documents" via aria-labelledby.
+      expect(page.getByRole('menu', { name: 'Documents' }).elements().length).toBeGreaterThan(0);
+    });
+
+    it('item hosts carry role="none" so the menu owns its menuitems directly (WCAG 1.3.1 / RGAA 7.1)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      expect(item('documents').getAttribute('role')).toBe('none');
+      expect(item('rename').getAttribute('role')).toBe('none');
+      // The menuitem role still resolves on the inner row.
+      expect(menuItem('Rename').elements()).toHaveLength(1);
     });
 
     it('closing the whole menu also closes any open submenu', async () => {
@@ -631,6 +695,21 @@ describe('Accessibility', () => {
       expect(notifEl?.getAttribute('aria-checked')).toBe('true');
     });
 
+    it('marks the trigger as a menu button before any interaction (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      expect(trigger().getAttribute('aria-haspopup')).toBe('menu');
+      expect(trigger().getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('names the root menu after its trigger (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(FIXTURE);
+      const shown = waitForEvent(el(), 'after-show');
+      await userEvent.click(menuTrigger());
+      await shown;
+      await settle();
+      expect(page.getByRole('menu', { name: 'Menu' }).elements()).toHaveLength(1);
+    });
+
     it('reflects expanded state on the trigger button (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(FIXTURE);
       // Closed: expanded=false
@@ -692,6 +771,32 @@ describe('Accessibility', () => {
       await settle();
       expect(item('check').shadowRoot!.activeElement).not.toBeNull();
     });
+
+    it('Tab closes the menu and clears the trigger expanded state (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(FIXTURE);
+      await openViaKey('{ArrowDown}');
+      const hidden = waitForEvent(el(), 'after-hide');
+      await userEvent.tab();
+      await hidden;
+      await settle();
+      expect(isOpen()).toBe(false);
+      expect(trigger().getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('Tab from a submenu closes the whole menu, submenu included (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      const hidden = waitForEvent(el(), 'after-hide');
+      await userEvent.tab();
+      await hidden;
+      await settle();
+      expect(isOpen()).toBe(false);
+      expect(isSubmenuOpen('documents')).toBe(false);
+    });
   });
 
   describe('Focus management', () => {
@@ -717,6 +822,20 @@ describe('Accessibility', () => {
       await hidden;
       await settle();
       expect(deepActiveElement()).toBe(trigger());
+    });
+
+    it('the keyboard-focused item shows a visible focus ring (WCAG 2.4.7 / RGAA 10.7)', async () => {
+      await mount(FIXTURE);
+      // The tokens stylesheet isn't loaded in the bare test harness; supply the
+      // one token the ring reads (it inherits into the shadow DOM) so the
+      // `var(--l-focus-ring)` outline resolves the way it does in real usage.
+      host.style.setProperty('--l-focus-ring', '#d9461f');
+      await openViaKey('{ArrowDown}'); // focus Apple via keyboard (:focus-visible)
+      const row = item('apple').shadowRoot!.querySelector<HTMLElement>('.item')!;
+      expect(row.matches(':focus-visible')).toBe(true);
+      const cs = getComputedStyle(row);
+      expect(cs.outlineStyle).not.toBe('none');
+      expect(parseFloat(cs.outlineWidth)).toBeGreaterThan(0);
     });
   });
 });
