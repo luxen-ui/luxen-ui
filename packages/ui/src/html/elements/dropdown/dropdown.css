@@ -3,7 +3,7 @@
 
   --background: var(--l-color-surface-overlay);
   --border-radius: 6px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 6%);
+  --shadow: var(--l-shadow-md);
   --show-duration: 150;
   --hide-duration: 150;
 

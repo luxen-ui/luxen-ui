@@ -11,6 +11,7 @@ const CATEGORIES = {
   surface: 'Surface',
   border: 'Border',
   fill: 'Fill',
+  shadow: 'Shadow',
   sizing: 'Sizing',
   spacing: 'Spacing',
 };
@@ -40,6 +41,7 @@ function hasModes(t) {
  */
 function vizKind(t) {
   const p = t.path;
+  if (t.category === 'shadow') return 'shadow';
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
   if (t.category === 'text') return 'text';
@@ -381,6 +383,15 @@ function copy(name) {
                 />
                 <span class="viz-gap__box" />
               </div>
+              <div
+                v-else-if="vizKind(token) === 'shadow'"
+                class="viz-shadow"
+              >
+                <span
+                  class="viz-shadow__card"
+                  :style="{ boxShadow: token.value }"
+                />
+              </div>
               <!-- Alias-of-alias (e.g. border-overlay → border): show the resolved color as a flat swatch -->
               <div
                 v-else
@@ -522,6 +533,19 @@ function copy(name) {
 .viz-surface,
 .viz-swatch {
   block-size: 100%;
+}
+
+/* Elevated card on a plain surface so the box-shadow reads. The token value
+   embeds light-dark(), so the cast deepens automatically in dark mode. */
+.viz-shadow {
+  block-size: 100%;
+  background: var(--vp-c-bg);
+}
+.viz-shadow__card {
+  inline-size: 60%;
+  block-size: 1.5rem;
+  border-radius: 0.375rem;
+  background: var(--l-color-surface-overlay);
 }
 
 .viz-disabled {

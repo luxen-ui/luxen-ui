@@ -230,6 +230,24 @@
     "$description": "Stronger backdrop for immersive overlays where the underlying page should fade well into the background — media viewers (`<l-stories-viewer>`), lightboxes, and full-screen players. The page stays barely perceptible but visual focus is unambiguously on the foreground."
   },
 
+  "shadow": {
+    "sm": {
+      "$type": "shadow",
+      "$value": "0 1px 2px 0 light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 40%))",
+      "$description": "Subtle elevation for resting surfaces that lift only slightly off the page — cards, raised list items, sticky bars. The shadow color uses light-dark() so it deepens in dark mode, where a faint black shadow would otherwise vanish against a dark surface."
+    },
+    "md": {
+      "$type": "shadow",
+      "$value": "0 4px 6px -1px light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 40%)), 0 2px 4px -2px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 34%))",
+      "$description": "Medium elevation for floating overlays anchored to a trigger — popovers, dropdown menus, comboboxes. The shadow color uses light-dark() so it deepens in dark mode."
+    },
+    "lg": {
+      "$type": "shadow",
+      "$value": "0 10px 15px -3px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 50%)), 0 4px 6px -4px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 44%))",
+      "$description": "Large elevation for prominent detached surfaces that float free of any edge — inset drawers, floating panels, large menus. The shadow color uses light-dark() so it deepens in dark mode."
+    }
+  },
+
   "focus-ring": {
     "$type": "color",
     "$value": "#d9461f",

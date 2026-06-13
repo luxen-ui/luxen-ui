@@ -38,6 +38,12 @@ Three-tier status scale ordered by visual weight: **soft** (palest tint),
 
 <DesignTokens category="fill" />
 
+## Shadow
+
+Elevation scale for floating surfaces, ordered by how far they lift off the page: **sm** (resting cards), **md** (overlays anchored to a trigger), **lg** (detached floating panels). Each shadow's color uses `light-dark()` so it deepens in dark mode, where a faint black cast would otherwise disappear.
+
+<DesignTokens category="shadow" />
+
 ## Sizing
 
 Standard interactive control heights.

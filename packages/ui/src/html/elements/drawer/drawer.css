@@ -2,7 +2,7 @@
   --size: 320px;
   --border-radius: 0.375rem;
   --inset-gap: 1rem;
-  --shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  --shadow: var(--l-shadow-lg);
 }
 
 /* Override dialog's opacity fade with a slide from the inline-start edge. */
