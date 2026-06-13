@@ -181,9 +181,9 @@ const railTags = [
           <span class="accent">design&nbsp;system</span><span class="dot-pulse">.</span>
         </h1>
         <p class="lede">
-          Native HTML. Modern CSS. Progressive custom elements by default, Shadow DOM when it pays
-          off. Rename the <code class="prefix-inline">l-</code> prefix to ship a design system that
-          bears your name.
+          Native HTML. Modern CSS. Built-in accessibility. Progressive custom elements by default,
+          Shadow DOM only when it pays off. A foundation you rename and ship as your own — starting
+          with the <code class="prefix-inline">l-</code> prefix.
         </p>
 
         <div class="ctas">

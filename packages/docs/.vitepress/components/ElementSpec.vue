@@ -3,10 +3,10 @@ import { computed } from 'vue';
 import metadata from 'luxen-ui/metadata' with { type: 'json' };
 
 const TYPE_LABEL = {
-  native: 'Native HTML Element',
+  native: 'Native element',
   progressive: 'Progressive Custom Element',
-  custom: 'Custom Element (no Shadow DOM)',
-  shadow: 'Custom Element · Shadow DOM',
+  custom: 'Plain Custom Element',
+  shadow: 'Shadow-DOM Custom Element',
 };
 
 // Preferred: <ElementSpec element="dialog" /> — tag + type come from metadata.
@@ -48,7 +48,7 @@ const type = computed(() => entry.value?.type ?? props.type);
         :class="{ 'is-on': type === 'native' }"
       >
         <span class="glyph">⏣</span>
-        <span class="label">Native HTML</span>
+        <span class="label">Native</span>
       </div>
       <div
         class="element-spec-chip"
@@ -62,14 +62,14 @@ const type = computed(() => entry.value?.type ?? props.type);
         :class="{ 'is-on': type === 'custom' }"
       >
         <span class="glyph">◇</span>
-        <span class="label">Custom</span>
+        <span class="label">Plain</span>
       </div>
       <div
         class="element-spec-chip"
         :class="{ 'is-on': type === 'shadow' }"
       >
         <span class="glyph">⬢</span>
-        <span class="label">Shadow DOM</span>
+        <span class="label">Shadow-DOM</span>
       </div>
     </div>
 
@@ -116,28 +116,32 @@ const type = computed(() => entry.value?.type ?? props.type);
   --spec-accent-2: #34d399;
 }
 .element-spec[data-type='progressive'] {
-  --spec-accent: var(--vp-c-brand-1);
-  --spec-accent-2: var(--vp-c-brand-3);
+  --spec-accent: #2563eb;
+  --spec-accent-2: #60a5fa;
 }
 .element-spec[data-type='custom'] {
-  --spec-accent: #0d9488;
-  --spec-accent-2: #2dd4bf;
+  --spec-accent: #9333ea;
+  --spec-accent-2: #c084fc;
 }
 .element-spec[data-type='shadow'] {
-  --spec-accent: #d97706;
-  --spec-accent-2: #fbbf24;
+  --spec-accent: #dc2626;
+  --spec-accent-2: #f87171;
 }
 :global(.dark) .element-spec[data-type='native'] {
   --spec-accent: #34d399;
   --spec-accent-2: #6ee7b7;
 }
+:global(.dark) .element-spec[data-type='progressive'] {
+  --spec-accent: #60a5fa;
+  --spec-accent-2: #93c5fd;
+}
 :global(.dark) .element-spec[data-type='custom'] {
-  --spec-accent: #5eead4;
-  --spec-accent-2: #99f6e4;
+  --spec-accent: #c084fc;
+  --spec-accent-2: #d8b4fe;
 }
 :global(.dark) .element-spec[data-type='shadow'] {
-  --spec-accent: #fbbf24;
-  --spec-accent-2: #fcd34d;
+  --spec-accent: #f87171;
+  --spec-accent-2: #fca5a5;
 }
 
 .element-spec-glow {

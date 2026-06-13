@@ -2,10 +2,10 @@
 import metadata from 'luxen-ui/metadata' with { type: 'json' };
 
 const TYPE_META = {
-  native: { glyph: '⏣', label: 'Native HTML' },
+  native: { glyph: '⏣', label: 'Native' },
   progressive: { glyph: '⬡', label: 'Progressive' },
-  custom: { glyph: '◇', label: 'Custom' },
-  shadow: { glyph: '⬢', label: 'Shadow DOM' },
+  custom: { glyph: '◇', label: 'Plain' },
+  shadow: { glyph: '⬢', label: 'Shadow-DOM' },
 };
 
 // Derive the set of slugs that have a docs page under packages/docs/elements/
@@ -102,28 +102,32 @@ const elements = metadata.elements
   --accent-2: #34d399;
 }
 .element-type-card[data-type='progressive'] {
-  --accent: var(--vp-c-brand-1);
-  --accent-2: var(--vp-c-brand-3);
+  --accent: #2563eb;
+  --accent-2: #60a5fa;
 }
 .element-type-card[data-type='custom'] {
-  --accent: #0d9488;
-  --accent-2: #2dd4bf;
+  --accent: #9333ea;
+  --accent-2: #c084fc;
 }
 .element-type-card[data-type='shadow'] {
-  --accent: #d97706;
-  --accent-2: #fbbf24;
+  --accent: #dc2626;
+  --accent-2: #f87171;
 }
 :global(.dark) .element-type-card[data-type='native'] {
   --accent: #34d399;
   --accent-2: #6ee7b7;
 }
+:global(.dark) .element-type-card[data-type='progressive'] {
+  --accent: #60a5fa;
+  --accent-2: #93c5fd;
+}
 :global(.dark) .element-type-card[data-type='custom'] {
-  --accent: #5eead4;
-  --accent-2: #99f6e4;
+  --accent: #c084fc;
+  --accent-2: #d8b4fe;
 }
 :global(.dark) .element-type-card[data-type='shadow'] {
-  --accent: #fbbf24;
-  --accent-2: #fcd34d;
+  --accent: #f87171;
+  --accent-2: #fca5a5;
 }
 
 .glyph {
