@@ -2,6 +2,12 @@
 base = "."
 command = "pnpm install --frozen-lockfile && pnpm --filter 'luxen-ui...' run build && pnpm --filter @luxen-ui/docs run build:docs"
 publish = "packages/docs/.vitepress/dist"
+# Production deploys only on release, never on a plain push to main — so the live
+# docs always match the last published package. Cancel any production-context build
+# unless it was triggered by the release build hook (which sets INCOMING_HOOK_*).
+# Exit 0 cancels the build; non-zero lets it proceed. PR deploy previews are
+# "deploy-preview" context and keep building normally.
+ignore = '[ "$CONTEXT" = production ] && [ -z "$INCOMING_HOOK_TITLE" ]'
 
 [build.environment]
 NODE_VERSION = "24"
