@@ -114,6 +114,68 @@ describe('Drawer placement', () => {
     expect(drawer().getAttribute('placement')).toBe('end');
     expect(drawer().placement).toBe('end');
   });
+
+  it('placement="top" reflects as an attribute and as the property value', async () => {
+    await mount(
+      `<l-drawer title="Top drawer" placement="top" style="--show-duration: 0ms; --hide-duration: 0ms">
+        <p>Top side</p>
+      </l-drawer>`,
+    );
+    expect(drawer().getAttribute('placement')).toBe('top');
+    expect(drawer().placement).toBe('top');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Inset
+// ---------------------------------------------------------------------------
+
+describe('Drawer inset', () => {
+  it('inset reflects as an attribute and as the property value', async () => {
+    await mount(
+      `<l-drawer title="Inset drawer" inset style="--show-duration: 0ms; --hide-duration: 0ms">
+        <p>Floating</p>
+      </l-drawer>`,
+    );
+    expect(drawer().hasAttribute('inset')).toBe(true);
+    expect(drawer().inset).toBe(true);
+  });
+
+  it('floats the open panel away from the viewport edges by the gap', async () => {
+    await mount(
+      `<l-drawer title="Inset drawer" inset style="--inset-gap: 24px; --show-duration: 0ms; --hide-duration: 0ms">
+        <p>Floating</p>
+      </l-drawer>`,
+    );
+    const afterShowP = waitForEvent(drawer(), 'after-show');
+    drawer().open = true;
+    await settle();
+    await afterShowP;
+
+    // start placement: a 24px gap on the inline-start, top and bottom edges.
+    const rect = nativeDialog().getBoundingClientRect();
+    expect(rect.left).toBeCloseTo(24, 0);
+    expect(rect.top).toBeCloseTo(24, 0);
+    expect(window.innerHeight - rect.bottom).toBeCloseTo(24, 0);
+  });
+
+  it('floats a top-placed panel away from the inline and top edges by the gap', async () => {
+    await mount(
+      `<l-drawer title="Inset top" placement="top" inset style="--inset-gap: 24px; --show-duration: 0ms; --hide-duration: 0ms">
+        <p>Floating</p>
+      </l-drawer>`,
+    );
+    const afterShowP = waitForEvent(drawer(), 'after-show');
+    drawer().open = true;
+    await settle();
+    await afterShowP;
+
+    // top placement: a 24px gap on the top, inline-start and inline-end edges.
+    const rect = nativeDialog().getBoundingClientRect();
+    expect(rect.top).toBeCloseTo(24, 0);
+    expect(rect.left).toBeCloseTo(24, 0);
+    expect(window.innerWidth - rect.right).toBeCloseTo(24, 0);
+  });
 });
 
 // ---------------------------------------------------------------------------

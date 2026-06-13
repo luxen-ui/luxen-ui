@@ -3,9 +3,8 @@ outline: deep
 ---
 
 <script setup>
-import drawer from '../.vitepress/examples/drawer/Drawer.html?raw'
-import drawerEnd from '../.vitepress/examples/drawer/DrawerEnd.html?raw'
-import drawerBottom from '../.vitepress/examples/drawer/DrawerBottom.html?raw'
+import drawerPlacement from '../.vitepress/examples/drawer/DrawerPlacement.html?raw'
+import drawerInset from '../.vitepress/examples/drawer/DrawerInset.html?raw'
 import drawerLightDismiss from '../.vitepress/examples/drawer/DrawerLightDismiss.html?raw'
 import drawerNavigation from '../.vitepress/examples/drawer/DrawerNavigation.html?raw'
 import drawerFilters from '../.vitepress/examples/drawer/DrawerFilters.html?raw'
@@ -19,37 +18,85 @@ Drawers display supplementary content in a panel that slides in from a screen ed
 
 ## Options
 
-### Basic
-
-Open with `command="--show"` on a trigger button. Slides in from the left.
-
-<ComponentWrapper :html="drawer" />
-
-::: details Code
-::: code-group
-<<< @/.vitepress/examples/drawer/Drawer.html [HTML]
-:::
-
 ### Placement
 
-Set `placement` to control which edge the drawer slides from. Defaults to `start` (inline-start). Use `placement="end"` for the inline-end edge or `placement="bottom"` for the block-end edge.
+Set `placement` to the edge the drawer slides from — `start` (default, inline-start), `end` (inline-end), `top` (block-start), or `bottom` (block-end). Open with `command="--show"` on a trigger button; the buttons below open one drawer per edge.
 
-#### End
-
-<ComponentWrapper :html="drawerEnd" />
+<ComponentWrapper :html="drawerPlacement" />
 
 ::: details Code
 ::: code-group
-<<< @/.vitepress/examples/drawer/DrawerEnd.html [HTML]
+
+```html [HTML]
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="drawer-end"
+>
+  <l-icon name="lucide:panel-right"></l-icon>
+  End
+</button>
+
+<l-drawer
+  id="drawer-end"
+  title="Drawer"
+  placement="end"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-end"
+  ></button>
+  <p>This drawer slides in from the end.</p>
+</l-drawer>
+```
+
 :::
 
-#### Bottom
+### Inset
 
-<ComponentWrapper :html="drawerBottom" />
+Add `inset` to float the drawer away from the viewport edges with a uniform gap and rounded corners. Tune the gap with the `--inset-gap` CSS custom property. Works with every `placement` — the buttons below open one drawer per edge.
+
+<ComponentWrapper :html="drawerInset" />
 
 ::: details Code
 ::: code-group
-<<< @/.vitepress/examples/drawer/DrawerBottom.html [HTML]
+
+```html [HTML]
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="drawer-inset"
+>
+  <l-icon name="lucide:panel-right"></l-icon>
+  End
+</button>
+
+<l-drawer
+  id="drawer-inset"
+  title="Drawer"
+  placement="end"
+  inset
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-inset"
+  ></button>
+  <p>This drawer floats away from the edges with rounded corners.</p>
+</l-drawer>
+```
+
 :::
 
 ### Light dismiss
@@ -78,7 +125,7 @@ Mobile navigation menu with link items.
 
 ### Filters
 
-Right-side filter panel with a footer for actions.
+End-side filter panel with a footer for actions.
 
 <ComponentWrapper :html="drawerFilters" />
 
