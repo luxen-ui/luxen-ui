@@ -1,0 +1,105 @@
+<div class="flex flex-wrap gap-2">
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-start"
+  >
+    <l-icon name="lucide:panel-left"></l-icon>
+    Start
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-top"
+  >
+    <l-icon name="lucide:panel-top"></l-icon>
+    Top
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-bottom"
+  >
+    <l-icon name="lucide:panel-bottom"></l-icon>
+    Bottom
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-end"
+  >
+    <l-icon name="lucide:panel-right"></l-icon>
+    End
+  </button>
+</div>
+
+<l-drawer
+  id="drawer-start"
+  title="Drawer"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-start"
+  ></button>
+  <p>This drawer slides in from the start.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-top"
+  title="Drawer"
+  placement="top"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-top"
+  ></button>
+  <p>This drawer slides in from the top.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-bottom"
+  title="Drawer"
+  placement="bottom"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-bottom"
+  ></button>
+  <p>This drawer slides in from the bottom.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-end"
+  title="Drawer"
+  placement="end"
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-end"
+  ></button>
+  <p>This drawer slides in from the end.</p>
+</l-drawer>

@@ -1,0 +1,109 @@
+<div class="flex flex-wrap gap-2">
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-inset-start"
+  >
+    <l-icon name="lucide:panel-left"></l-icon>
+    Start
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-inset-top"
+  >
+    <l-icon name="lucide:panel-top"></l-icon>
+    Top
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-inset-bottom"
+  >
+    <l-icon name="lucide:panel-bottom"></l-icon>
+    Bottom
+  </button>
+  <button
+    type="button"
+    class="l-button"
+    command="--show"
+    commandfor="drawer-inset-end"
+  >
+    <l-icon name="lucide:panel-right"></l-icon>
+    End
+  </button>
+</div>
+
+<l-drawer
+  id="drawer-inset-start"
+  title="Drawer"
+  inset
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-inset-start"
+  ></button>
+  <p>This drawer floats away from the edges with rounded corners.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-inset-top"
+  title="Drawer"
+  placement="top"
+  inset
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-inset-top"
+  ></button>
+  <p>This drawer floats away from the edges with rounded corners.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-inset-bottom"
+  title="Drawer"
+  placement="bottom"
+  inset
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-inset-bottom"
+  ></button>
+  <p>This drawer floats away from the edges with rounded corners.</p>
+</l-drawer>
+
+<l-drawer
+  id="drawer-inset-end"
+  title="Drawer"
+  placement="end"
+  inset
+>
+  <button
+    slot="close"
+    type="button"
+    class="l-close"
+    data-appearance="ring"
+    aria-label="Close"
+    command="--hide"
+    commandfor="drawer-inset-end"
+  ></button>
+  <p>This drawer floats away from the edges with rounded corners.</p>
+</l-drawer>

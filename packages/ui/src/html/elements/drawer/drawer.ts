@@ -24,8 +24,10 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @csspart body - The body wrapper around the default slot.
  * @csspart footer - The footer wrapper around the footer slot.
  *
- * @cssproperty --size - Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `bottom`). Default `320px`.
- * @cssproperty --border-radius - Drawer border radius on the inner edges. Default `0.375rem`.
+ * @cssproperty --size - Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `top`/`bottom`). Default `320px`.
+ * @cssproperty --border-radius - Drawer border radius on the inner edges (all corners when `inset`). Default `0.375rem`.
+ * @cssproperty --inset-gap - Gap between the drawer and the viewport edges when `inset` is set. Default `1rem`.
+ * @cssproperty --shadow - Drop shadow applied to the floating panel when `inset` is set. Set to `none` to remove it.
  * @cssproperty --show-duration - Open transition duration. Default `200ms`.
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
  * @cssproperty --backdrop - Backdrop color.
@@ -49,5 +51,9 @@ export class Drawer extends Dialog {
 
   /** Edge the drawer slides in from. Defaults to the start (inline-start) edge. */
   @property({ reflect: true })
-  placement?: 'start' | 'end' | 'bottom';
+  placement?: 'start' | 'end' | 'top' | 'bottom';
+
+  /** Detach the drawer from the viewport edges, floating it with a uniform gap and rounded corners. */
+  @property({ type: Boolean, reflect: true })
+  inset = false;
 }

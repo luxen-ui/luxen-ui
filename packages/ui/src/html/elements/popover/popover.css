@@ -3,7 +3,7 @@
   --color: inherit;
   --border-radius: 6px;
   --max-width: 320px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 8%), 0 2px 4px -2px rgb(0 0 0 / 6%);
+  --shadow: var(--l-shadow-md);
   --arrow-size: 8px;
   --show-duration: 150ms;
   --hide-duration: 150ms;
