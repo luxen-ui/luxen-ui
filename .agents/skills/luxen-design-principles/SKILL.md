@@ -139,6 +139,39 @@ See [references/css-patterns.md](references/css-patterns.md) for the entry/exit 
 
 All element styles must be wrapped in `@layer components { ... }`. This keeps specificity predictable across the cascade.
 
+### Scoping light-DOM internals (`@scope` + reset guard)
+
+A light-DOM element that **builds its own subtree of generic tags** (`<button>`, `<input>`, `<div>`, `<span>`…) inherits the user-agent default chrome on those tags (button borders/backgrounds, input styling). Wrap such elements in the `@scope` + zero-specificity reset pattern (see `input-stepper`, `toast`, `input-otp`, `story` for live examples): `@scope` keeps the rules from leaking **out**, and the `all: unset` reset strips UA defaults off the generated internals so the component styles from a clean slate.
+
+```css
+@layer components {
+  @scope (l-name) {
+    /* :where() keeps the reset at (0,0,0) so the component rules below win over it.
+       Custom properties survive `all` — design tokens still cascade through. */
+    *:where(:not(img, svg, l-icon):not(svg *)),
+    *::before,
+    *::after {
+      all: unset;
+      display: revert;
+    }
+
+    :scope { /* host styles — :scope, never the bare `l-name` tag */ }
+    button { /* internal rules, re-applied above the reset */ }
+  }
+}
+```
+
+> **What this does NOT do — don't oversell it.** Because the block lives in `@layer components`, it shields internals from UA defaults and *lower-layer* rules only. *Unlayered* host-page rules (a CSS reset, Tailwind preflight, a naked `button {}`) outrank **every** cascade layer — they are checked before specificity and before `@scope` proximity — so they leak straight through this guard. Verified: the same hostile unlayered `button {}` breaks both a guarded and an unguarded element identically. The guard's real value is UA-default normalization + a clean styling slate, not isolation from a hostile host. Achieving the latter would require the reset to be **unlayered**, which conflicts with the "all element CSS in `@layer components`" rule — a deliberate trade-off, not an oversight.
+
+**Apply it when the element generates internal generic markup whose content it fully owns and re-styles.** Decision rule:
+
+- ✅ **Generates its own scaffolding and content** (`createElement` / Lit template into light DOM — `toast`, `input-otp`, `story`, and the `+`/`−` buttons + track of `input-stepper`) → add the guard. A wrapped native fallback it re-styles end-to-end (progressive, e.g. `input-stepper`'s `<input>`) is fine to include in the reset. The host selector becomes `:scope` / `:scope[attr]`; `@keyframes` and `::-webkit-*` pseudos stay **outside** `@scope` (Safari ignores spin-button rules nested in `@scope`).
+- ❌ **Single styled node** (e.g. `badge`, `divider`) → nothing to protect, skip it.
+- ❌ **Hosts author-provided content inside generic internals it does not fully restyle** — a form control whose native/shared styling must survive (`form-field`'s `input`/`select`/`textarea`), or tab buttons/panels carrying author markup (`tabs`) → **never** add it; `all: unset` would wipe the consumer's own styling. Isolate via targeted class selectors instead.
+- ❌ **Shadow DOM** element → native encapsulation already isolates it.
+
+**Exclusions from the reset** (the `:not(...)` list): keep out anything with intrinsic content/sizing or any self-contained styled sub-component nested in the tree — `img`, `svg`, `video`, `iconify-icon`/`l-icon`, and shared sub-components like `.l-close` (it paints its icon via `::after { mask }`, so exclude its pseudos too: `*:where(:not(.l-close))::before`).
+
 Common structural patterns:
 
 - **Centering**: `display: grid; place-items: center;`

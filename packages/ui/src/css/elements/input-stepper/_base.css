@@ -5,16 +5,20 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
   - https://www.nngroup.com/articles/input-steppers/
 
-  @scope prevents external styles from leaking into internal elements
-  (button, input, divs) — important when Luxen is used in uncontrolled environments.
+  @scope keeps these rules from leaking OUT, and the reset below strips UA default
+  chrome off the generated buttons / input / track divs so the component styles from
+  a clean slate. Caveat: this lives in @layer components, so it only shields the
+  internals from UA defaults and lower-layer rules — *unlayered* host-page rules (a
+  CSS reset, Tailwind preflight, naked `button {}`) still outrank every cascade layer
+  and are NOT neutralized here.
   */
 
   @scope (l-input-stepper) {
-    /* Reset — :where() keeps specificity at (0,0,0) so component rules always win.
-       Prevents global rules targeting `button`, `input`, `div` from breaking internals.
-       Custom properties are NOT affected by `all` — design tokens cascade through.
-       :scope is excluded — the host is a unique custom element name and gets its
-       styles from the base + appearance :scope blocks without interference. */
+    /* Reset — :where() keeps specificity at (0,0,0) so the component rules below win
+       over it. Strips UA default styling off the generated internals for a clean
+       slate. Custom properties are NOT affected by `all` — design tokens cascade
+       through. :scope is excluded — the host is a unique custom element name and gets
+       its styles from the base + appearance :scope blocks without interference. */
     *:where(:not(img, svg, l-icon):not(svg *)),
     *::before,
     *::after {

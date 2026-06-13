@@ -3,154 +3,189 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
    🆂🆃🅾🆁🆈  (a single thumbnail)
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  l-story renders its own light-DOM subtree (trigger button, thumbnail spans,
+  img/video, play icon, label). @scope keeps these rules from leaking OUT, and the
+  reset below strips UA default chrome off the generated button / spans so the
+  component styles from a clean slate. Caveat: this lives in @layer components, so it
+  only shields the internals from UA defaults and lower-layer rules — *unlayered*
+  host-page rules (a CSS reset, Tailwind preflight, naked `button {}`) still outrank
+  every cascade layer and are NOT neutralized here.
   */
 
-  l-story {
-    display: inline-flex;
-    flex: 0 0 auto;
-    scroll-snap-align: start;
+  @scope (l-story) {
+    /* Reset — :where() keeps specificity at (0,0,0) so the component rules below win
+       over it. Strips UA default styling off the generated internals for a clean
+       slate. Custom properties are NOT affected by `all` — design tokens cascade
+       through. img / video / l-icon are excluded — they carry their own intrinsic
+       sizing and are positioned by the component rules below; :scope is excluded too. */
+    *:where(:not(img, svg, video, l-icon):not(svg *)),
+    *::before,
+    *::after {
+      all: unset;
+      display: revert;
+    }
 
-    /* Inherit row tokens; these can also be set directly per-story. */
-    --size: inherit;
-    --aspect-ratio: inherit;
-    --radius: inherit;
-  }
+    :scope {
+      display: inline-flex;
+      flex: 0 0 auto;
+      scroll-snap-align: start;
 
-  /* Slot-marked children of l-story are data (cta, header) carried by the story for the viewer to pick up. They must not render in the row. */
-  l-story > [slot] {
-    display: none;
-  }
+      /* Inherit row tokens; these can also be set directly per-story. */
+      --size: inherit;
+      --aspect-ratio: inherit;
+      --radius: inherit;
+    }
 
-  .l-story-trigger {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    /* `--size` is the outer thumbnail diameter (image + ring + offset gap). The image inside is `--size − 2×(--ring-width + --ring-offset)`. Matches the convention of avatar/badge libraries: layout footprint stays fixed regardless of ring config. */
-    width: var(--size);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    text-align: center;
-    outline: none;
-  }
+    /* Slot-marked children of l-story are data (cta, header) carried by the story for the viewer to pick up. They must not render in the row. */
+    :scope > [slot] {
+      display: none;
+    }
 
-  .l-story-thumb {
-    position: relative;
-    display: block;
-    width: 100%;
-    aspect-ratio: var(--aspect-ratio);
-    border-radius: var(--radius);
-    /* Multi-layer background composition (no pseudo-element):
-       - border-box layer: ring color (solid, linear-gradient, conic-gradient, image…)
-       - padding-box layer: gap color (a `linear-gradient` wrapper on the offset color so it's a valid background-image and works in non-final layers)
-       The image fills content-box and covers the inner area. */
-    border: var(--ring-width) solid transparent;
-    padding: var(--ring-offset);
-    box-sizing: border-box;
-    background:
-      linear-gradient(var(--ring-offset-color), var(--ring-offset-color)) padding-box,
-      var(--ring-color) border-box;
-    transition: transform 150ms cubic-bezier(0.44, 0.36, 0.04, 1);
-    isolation: isolate;
-  }
+    .l-story-trigger {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      /* `--size` is the outer thumbnail diameter (image + ring + offset gap). The image inside is `--size − 2×(--ring-width + --ring-offset)`. Matches the convention of avatar/badge libraries: layout footprint stays fixed regardless of ring config. */
+      width: var(--size);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      text-align: center;
+      outline: none;
+    }
 
-  l-story[seen] .l-story-thumb {
-    --ring-color: var(--ring-color-seen);
-  }
+    .l-story-thumb {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: var(--aspect-ratio);
+      border-radius: var(--radius);
+      /* Multi-layer background composition (no pseudo-element):
+         - border-box layer: ring color (solid, linear-gradient, conic-gradient, image…)
+         - padding-box layer: gap color (a `linear-gradient` wrapper on the offset color so it's a valid background-image and works in non-final layers)
+         The image fills content-box and covers the inner area. */
+      border: var(--ring-width) solid transparent;
+      padding: var(--ring-offset);
+      box-sizing: border-box;
+      background:
+        linear-gradient(var(--ring-offset-color), var(--ring-offset-color)) padding-box,
+        var(--ring-color) border-box;
+      transition: transform 150ms cubic-bezier(0.44, 0.36, 0.04, 1);
+      isolation: isolate;
+    }
 
-  /* Focus ring hugs the thumbnail shape (circle, portrait, etc.) — label stays outside the ring. */
-  .l-story-trigger:focus-visible .l-story-thumb {
-    outline: 2px solid var(--l-focus-ring);
-    outline-offset: 3px;
-  }
+    :scope[seen] .l-story-thumb {
+      --ring-color: var(--ring-color-seen);
+    }
 
-  .l-story-trigger:hover .l-story-thumb {
-    transform: scale(1.03);
-  }
+    /* Focus ring hugs the thumbnail shape (circle, portrait, etc.) — label stays outside the ring. */
+    .l-story-trigger:focus-visible .l-story-thumb {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: 3px;
+    }
 
-  .l-story-thumb img,
-  .l-story-thumb video {
-    position: absolute;
-    /* Inset by the offset to position the image in the thumb's content-box, leaving the padding visible as the gap. */
-    inset: var(--ring-offset);
-    width: calc(100% - 2 * var(--ring-offset));
-    height: calc(100% - 2 * var(--ring-offset));
-    object-fit: cover;
-    border-radius: inherit;
-  }
+    .l-story-trigger:hover .l-story-thumb {
+      transform: scale(1.03);
+    }
 
-  .l-story-play {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    display: grid;
-    place-items: center;
+    .l-story-thumb img,
+    .l-story-thumb video {
+      position: absolute;
+      /* Inset by the offset to position the image in the thumb's content-box, leaving the padding visible as the gap. */
+      inset: var(--ring-offset);
+      width: calc(100% - 2 * var(--ring-offset));
+      height: calc(100% - 2 * var(--ring-offset));
+      object-fit: cover;
+      border-radius: inherit;
+    }
 
-    & l-icon {
+    .l-story-play {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
       display: grid;
       place-items: center;
-      width: clamp(28px, 32%, 40px);
-      aspect-ratio: 1;
-      border-radius: 999px;
-      background: rgb(0 0 0 / 35%);
-      color: white;
-      font-size: clamp(16px, 22%, 26px);
+
+      & l-icon {
+        display: grid;
+        place-items: center;
+        width: clamp(28px, 32%, 40px);
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: rgb(0 0 0 / 35%);
+        color: white;
+        font-size: clamp(16px, 22%, 26px);
+      }
     }
-  }
 
-  .l-story-label {
-    display: block;
-    width: 100%;
-    color: var(--label-color);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.2;
-    /* Wrap onto multiple lines, centered. `text-wrap: balance` evens out the line lengths (e.g. "Questions / fréquentes" instead of "Questions fréquentes / "). */
-    text-align: center;
-    text-wrap: balance;
-  }
+    .l-story-label {
+      display: block;
+      width: 100%;
+      color: var(--label-color);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      line-height: 1.2;
+      /* Wrap onto multiple lines, centered. `text-wrap: balance` evens out the line lengths (e.g. "Questions / fréquentes" instead of "Questions fréquentes / "). */
+      text-align: center;
+      text-wrap: balance;
+    }
 
-  /*
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-   🅿🆄🅻🆂🅴  (attention halo + occasional thumb tap)
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-  */
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅿🆄🅻🆂🅴  (attention halo + occasional thumb tap)
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
 
-  l-story[pulse] {
-    /* Local pulse customization knobs. */
-    --pulse-color: var(--ring-color);
-    --pulse-scale: 1.2;
-    --pulse-duration: 1.6s;
-  }
+    :scope[pulse] {
+      /* Local pulse customization knobs. */
+      --pulse-color: var(--ring-color);
+      --pulse-scale: 1.2;
+      --pulse-duration: 1.6s;
+    }
 
-  /* Halo is a scaled clone of the thumb shape backed by `--pulse-color` (defaults to `--ring-color`, so gradient/image rings pulse in their own paint). It sits behind the thumb in the trigger's normal flow — the thumb's opaque background hides the part still inside the original bounds, leaving only the portion that scales beyond visible. */
-  l-story[pulse] .l-story-trigger::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    aspect-ratio: var(--aspect-ratio);
-    border-radius: var(--radius);
-    background: var(--pulse-color);
-    pointer-events: none;
-    animation: l-story-pulse-halo var(--pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+    /* Halo is a scaled clone of the thumb shape backed by `--pulse-color` (defaults to `--ring-color`, so gradient/image rings pulse in their own paint). It sits behind the thumb in the trigger's normal flow — the thumb's opaque background hides the part still inside the original bounds, leaving only the portion that scales beyond visible. */
+    :scope[pulse] .l-story-trigger::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      aspect-ratio: var(--aspect-ratio);
+      border-radius: var(--radius);
+      background: var(--pulse-color);
+      pointer-events: none;
+      animation: l-story-pulse-halo var(--pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
 
-  /* Subtle "tap" on the thumb every 3s — the motion happens in the first 0.6s of the cycle (10% in, 10% out), then the thumb sits still for 2.4s before the next tap. Slower than the halo so the two don't feel locked in lockstep. */
-  l-story[pulse] .l-story-thumb {
-    animation: l-story-pulse-thumb 3s 1.3s linear infinite both;
-  }
+    /* Subtle "tap" on the thumb every 3s — the motion happens in the first 0.6s of the cycle (10% in, 10% out), then the thumb sits still for 2.4s before the next tap. Slower than the halo so the two don't feel locked in lockstep. */
+    :scope[pulse] .l-story-thumb {
+      animation: l-story-pulse-thumb 3s 1.3s linear infinite both;
+    }
 
-  /* On hover, kill both pulse animations so the regular hover scale takes over without compounding. */
-  l-story[pulse] .l-story-trigger:hover::before,
-  l-story[pulse] .l-story-trigger:hover .l-story-thumb {
-    animation: none;
+    /* On hover, kill both pulse animations so the regular hover scale takes over without compounding. */
+    :scope[pulse] .l-story-trigger:hover::before,
+    :scope[pulse] .l-story-trigger:hover .l-story-thumb {
+      animation: none;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .l-story-thumb {
+        transition: none;
+      }
+      .l-story-trigger:hover .l-story-thumb {
+        transform: none;
+      }
+      :scope[pulse] .l-story-trigger::before,
+      :scope[pulse] .l-story-thumb {
+        animation: none;
+      }
+    }
   }
 
   @keyframes l-story-pulse-halo {
@@ -173,20 +208,6 @@
     }
     10% {
       transform: scale(0.95);
-    }
-  }
-
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .l-story-thumb {
-      transition: none;
-    }
-    .l-story-trigger:hover .l-story-thumb {
-      transform: none;
-    }
-    l-story[pulse] .l-story-trigger::before,
-    l-story[pulse] .l-story-thumb {
-      animation: none;
     }
   }
 }
