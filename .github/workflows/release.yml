@@ -30,6 +30,7 @@ jobs:
       # `publish` invokes `vp run release` which runs `pnpm publish -r`,
       # ensuring `catalog:` and `workspace:` protocols are resolved in the tarball.
       - name: Create Release PR or publish to npm
+        id: changesets
         uses: changesets/action@v1
         with:
           version: vp run version
@@ -44,3 +45,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+
+      # Deploy the docs site to production only when a publish actually happened,
+      # so luxen-ui.com always reflects the last released package (not bare main).
+      # Triggers the Netlify build hook, which builds main's HEAD (= the version-
+      # bumped release commit). No-op until NETLIFY_BUILD_HOOK_URL is configured.
+      - name: Deploy docs to production
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          if [ -n "$NETLIFY_BUILD_HOOK_URL" ]; then
+            curl -fsSL -X POST -d '{"trigger_title":"release"}' "$NETLIFY_BUILD_HOOK_URL"
+            echo "Triggered Netlify production deploy."
+          else
+            echo "NETLIFY_BUILD_HOOK_URL not set — skipping docs deploy."
+          fi
