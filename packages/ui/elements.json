@@ -212,6 +212,15 @@
       "inMockups": true
     },
     {
+      "name": "radio",
+      "displayName": "Radio",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-radio"
+    },
+    {
       "name": "rating",
       "displayName": "Rating",
       "kind": "element",
