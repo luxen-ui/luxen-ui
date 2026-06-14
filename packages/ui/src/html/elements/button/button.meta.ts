@@ -24,7 +24,7 @@
  * @attribute data-icon-only - Icon-only mode (square button, width equals height). Auto-detected for a single icon child.
  * @attribute data-press-effect - Press effect (scale + translate on active).
  *
- * @cssproperty [--height=32px] - Button height (md size).
+ * @cssproperty [--height=36px] - Button height (md size).
  * @cssproperty [--padding-inline=0.625rem] - Horizontal padding.
  * @cssproperty --background-color - Background color.
  * @cssproperty --background-color-hover - Background color on hover.
