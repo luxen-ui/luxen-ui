@@ -41,6 +41,8 @@ Visit https://luxen-ui.com to explore the documentation.
 | Dropdown label | `<l-dropdown-label>` | ⬢ Custom HTML Element (with Shadow DOM) |
 | Form field     | `<l-form-field>`     | ⬡ Progressive Custom HTML Element       |
 | Icon           | `<l-icon>`           | ⬢ Custom HTML Element (with Shadow DOM) |
+| Input          | `<input>`            | ⏣ Native HTML Element                   |
+| Input group    | `<l-input-group>`    | ⬡ Progressive Custom HTML Element       |
 | Input OTP      | `<l-input-otp>`      | ⬡ Progressive Custom HTML Element       |
 | Input stepper  | `<l-input-stepper>`  | ⬡ Progressive Custom HTML Element       |
 | Kbd            | `<kbd>`              | ⏣ Native HTML Element                   |

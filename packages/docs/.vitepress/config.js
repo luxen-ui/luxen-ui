@@ -35,7 +35,8 @@ export default defineConfig({
     // happy-eyeballs hits the half-bound socket → NS_ERROR_NET_RESET.
     server: {
       host: '127.0.0.1',
-      port: 5273,
+      // Override with DOCS_PORT to run multiple worktrees side by side.
+      port: Number(process.env.DOCS_PORT) || 5273,
       strictPort: true,
     },
     build: {
@@ -152,6 +153,7 @@ export default defineConfig({
           { text: 'Overview', link: '/forms/overview' },
           el('Form field', 'l-form-field', 'form-field'),
           el('Checkbox', 'input', 'checkbox'),
+          el('Input', 'input', 'input'),
           el('Input OTP', 'l-input-otp', 'input-otp'),
           el('Input stepper', 'l-input-stepper', 'input-stepper'),
           el('Select', 'select', 'select'),

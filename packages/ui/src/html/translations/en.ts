@@ -13,6 +13,8 @@ const en: LuxenTranslation = {
   toggleFullscreen: 'Toggle fullscreen',
   goToSlide: (n) => `Go to slide ${n}`,
 
+  showPassword: 'Show password',
+
   increaseValue: 'Increase value',
   decreaseValue: 'Decrease value',
 

@@ -13,6 +13,7 @@ export type ElementBaseName =
   | 'dropdown-label'
   | 'form-field'
   | 'icon'
+  | 'input-group'
   | 'input-otp'
   | 'input-stepper'
   | 'popover'

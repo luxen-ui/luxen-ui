@@ -31,6 +31,7 @@ export default {
       void import('luxen-ui/stories-viewer');
       void import('luxen-ui/popover');
       void import('luxen-ui/tooltip');
+      void import('luxen-ui/input-group');
       void import('luxen-ui/input-otp');
       void import('luxen-ui/input-stepper');
       void import('luxen-ui/divider');
