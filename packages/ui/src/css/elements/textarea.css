@@ -1,0 +1,156 @@
+/* Textarea — `.l-textarea` on a native `<textarea>` for multi-line text.
+
+   The single-line sibling of `.l-input`: same chrome, tokens and states, but
+   it grows vertically. Like the input, the class is the canonical primitive and
+   a bare `<textarea>` inside `:where(l-form-field:not([unstyled]))` is
+   auto-styled with no class needed.
+
+   There is no input-group equivalent — adornments are a single-line concern.
+   Height is driven by the native `rows` attribute; `data-resize` controls the
+   user resize handle, with `data-resize="auto"` opting into `field-sizing`
+   (the box grows with its content, no scrollbar). `field-sizing` is a
+   progressive enhancement: where unsupported the textarea simply keeps its
+   `rows` height. */
+
+@layer components {
+  .l-textarea,
+  :where(l-form-field:not([unstyled])) > textarea {
+    /* Public knobs */
+    --height: var(--l-form-control-height);
+    --border-radius: var(--l-form-control-border-radius);
+
+    box-sizing: border-box;
+    inline-size: 100%;
+    /* One line never shorter than a matching input; `rows` grows it from here. */
+    min-block-size: var(--height);
+    margin: 0;
+    /* Vertically center a single line to the control height, with a comfortable
+       floor so multi-line content keeps breathing room at small sizes. */
+    padding-block: max(
+      calc((var(--height) - 1lh) / 2 - var(--l-form-control-border-width)),
+      0.375rem
+    );
+    padding-inline: var(--l-form-control-padding-inline);
+    appearance: none;
+    border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--l-form-control-background-color);
+    color: var(--l-form-control-value-color);
+    font: inherit;
+    line-height: 1.5;
+    /* Default to a vertical handle only — horizontal resize breaks layouts. */
+    resize: vertical;
+    transition-property: border-color, box-shadow, background-color;
+    transition-duration: 150ms;
+
+    &::placeholder {
+      color: var(--l-form-control-placeholder-color);
+      opacity: 1; /* Firefox dims placeholders by default */
+    }
+
+    /* `:where()` keeps the disabled guard at zero specificity so the focus and
+       invalid rules below (equal specificity, later in source) win over hover. */
+    @media (hover: hover) {
+      &:hover:where(:not(:disabled)) {
+        border-color: var(--l-form-control-border-color-hover);
+      }
+    }
+
+    /* Focus: the border takes the focus-ring color; the soft halo lives in the
+       rule below. The transparent outline keeps a visible indicator under
+       forced colors. */
+    &:focus-visible {
+      border-color: var(--l-focus-ring);
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
+
+    /* Invalid: red border + a faint danger wash. After interaction
+       (`:user-invalid`) or forced via `aria-invalid` (set by `l-form-field` /
+       server-side validation). Ordered after `:focus-visible` so the red border
+       wins when a field is both focused and invalid. */
+    &:user-invalid,
+    &[aria-invalid='true'] {
+      border-color: var(--l-form-control-border-color-invalid);
+      background-color: color-mix(
+        in oklab,
+        var(--l-form-control-border-color-invalid) 6%,
+        var(--l-form-control-background-color)
+      );
+    }
+
+    /* Disabled: a solid greyed-out fill (shadcn-style) rather than fading the
+       whole control with opacity. `-webkit-text-fill-color` overrides WebKit's
+       forced grey on disabled controls so the token color actually applies. */
+    &:disabled {
+      cursor: not-allowed;
+      resize: none;
+      border-color: var(--l-form-control-disabled-border);
+      background-color: var(--l-form-control-disabled-background);
+      color: var(--l-form-control-disabled-color);
+      -webkit-text-fill-color: var(--l-form-control-disabled-color);
+    }
+
+    &:disabled::placeholder {
+      color: var(--l-form-control-disabled-color);
+    }
+  }
+
+  /* Soft focus halo. */
+  :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+  }
+
+  :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):is(
+      :user-invalid,
+      [aria-invalid='true']
+    ):focus-visible {
+    box-shadow: 0 0 0 3px
+      color-mix(in oklab, var(--l-form-control-border-color-invalid) 22%, transparent);
+  }
+
+  :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea) {
+    /* Size — `data-size` maps the single-line min-height to the shared
+       `--l-size-control-*` scale (default `md`); the padding scales with it. */
+    &[data-size='xs'] {
+      --height: var(--l-size-control-xs);
+    }
+    &[data-size='sm'] {
+      --height: var(--l-size-control-sm);
+    }
+    &[data-size='md'] {
+      --height: var(--l-size-control-md);
+    }
+    &[data-size='lg'] {
+      --height: var(--l-size-control-lg);
+    }
+    &[data-size='xl'] {
+      --height: var(--l-size-control-xl);
+    }
+
+    /* Resize handle — `data-resize` overrides the vertical default. */
+    &[data-resize='none'] {
+      resize: none;
+    }
+    &[data-resize='both'] {
+      resize: both;
+    }
+    &[data-resize='vertical'] {
+      resize: vertical;
+    }
+
+    /* Auto-grow with content (no manual handle, no scrollbar). Progressive:
+       browsers without `field-sizing` keep the `rows` height. */
+    &[data-resize='auto'] {
+      resize: none;
+      field-sizing: content;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .l-textarea,
+    :where(l-form-field:not([unstyled])) > textarea {
+      transition-duration: 0ms;
+    }
+  }
+}

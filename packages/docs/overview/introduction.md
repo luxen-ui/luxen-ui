@@ -373,7 +373,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <code>&lt;tbody&gt;</code>
 <code>&lt;td&gt;</code>
 <code>&lt;template&gt;</code>
-<code>&lt;textarea&gt;</code>
+<a class="luxen-tag" data-type="native" href="/elements/textarea"><code>&lt;textarea&gt;</code></a>
 <code>&lt;tfoot&gt;</code>
 <code>&lt;th&gt;</code>
 <code>&lt;thead&gt;</code>

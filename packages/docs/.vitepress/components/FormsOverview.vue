@@ -190,6 +190,23 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
+      <!-- Textarea — auto-styled bare control. Error empties a required field so
+           it is genuinely invalid (valueMissing), like the checkbox. `tooShort`
+           can't be used — it never applies to a programmatic default value. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Message</label>
+        <textarea
+          rows="3"
+          :data-size="size"
+          placeholder="Placeholder text"
+          :required="required || invalid"
+          :disabled="disabled"
+          >{{ invalid ? '' : 'This is a longer message.' }}</textarea
+        >
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
       <!-- Checkbox -->
       <l-form-field :invalid="attr(invalid)">
         <label>Subscribe to the newsletter</label>
@@ -269,8 +286,8 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
-      <!-- TODO: add select, radio, switch, textarea here as they ship —
-           they reuse the same l-form-field wiring and --l-form-control-* tokens. -->
+      <!-- TODO: add select, radio, switch here as they ship — they reuse the
+           same l-form-field wiring and --l-form-control-* tokens. -->
     </form>
   </div>
 </template>

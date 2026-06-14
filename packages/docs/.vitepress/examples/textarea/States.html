@@ -1,0 +1,37 @@
+<div class="grid gap-4 max-w-sm">
+  <l-form-field>
+    <label>Default</label>
+    <textarea
+      rows="3"
+      placeholder="Placeholder text"
+    ></textarea>
+  </l-form-field>
+  <l-form-field>
+    <label>Read-only</label>
+    <textarea
+      rows="3"
+      readonly
+    >
+Read-only value</textarea
+    >
+  </l-form-field>
+  <l-form-field>
+    <label>Disabled</label>
+    <textarea
+      rows="3"
+      disabled
+    >
+Disabled value</textarea
+    >
+  </l-form-field>
+  <l-form-field>
+    <label>Invalid</label>
+    <textarea
+      rows="3"
+      required
+      aria-invalid="true"
+      placeholder="Placeholder text"
+    ></textarea>
+    <p class="l-error">Please enter a message.</p>
+  </l-form-field>
+</div>

@@ -299,6 +299,15 @@
       "appearances": ["line", "enclosed"]
     },
     {
+      "name": "textarea",
+      "displayName": "Textarea",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-textarea"
+    },
+    {
       "name": "toast",
       "displayName": "Toast",
       "kind": "element",
