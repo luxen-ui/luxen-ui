@@ -1,5 +1,92 @@
 # luxen-ui
 
+## 0.12.0
+
+### Minor Changes
+
+- 3624b69: `<l-drawer>` gains a `top` placement and an `inset` attribute. `inset` detaches the drawer from the viewport edges, floating it with a uniform gap (`--inset-gap`, default `1rem`), rounded corners on every side, and a drop shadow (`--shadow`). Both work with every `placement` (`start`, `end`, `top`, `bottom`).
+- 510f064: `<l-dropdown>` now supports nested submenus. Nest `<l-dropdown-item slot="submenu">` elements inside an item to create a submenu at any depth — the parent item shows a chevron and opens its panel on hover, click, Enter or ArrowRight (ArrowLeft/Escape close one level at a time). Selecting a nested item fires the usual `select` event on the dropdown and closes the whole menu; checkbox items keep it open. Parent items expose `aria-haspopup="menu"`/`aria-expanded`, and submenu panels follow the dropdown's existing theming custom properties (`--background`, `--padding`, `--border-radius`, `--shadow`).
+- 3624b69: Add a semantic elevation scale to the shipped token layer — `--l-shadow-sm`, `--l-shadow-md`, `--l-shadow-lg` — whose shadow color uses `light-dark()` so it deepens in dark mode, where a faint black cast would otherwise disappear. `<l-popover>`, `<l-dropdown>`, and `<l-drawer>` now default their `--shadow` to these tokens, so their shadows stay visible on dark surfaces.
+- 4c5e35d: Events are now typed `Event` subclasses with direct payload properties instead of `CustomEvent` with a `detail` object. This is a breaking change for event consumers:
+  - Read payloads from the event itself (`event.index`, `event.toast`, `event.selection`…) instead of `event.detail.*`.
+  - Most events no longer bubble and are no longer `composed` — listen on the element itself rather than relying on delegation or shadow-DOM crossing. `change`/`select` still bubble (matching native `change`) but are not composed.
+  - `show` is now cancelable on `l-dialog`, `l-drawer` and `l-stories-viewer` (it already was on dropdown/toast/sticky-bar) — `event.preventDefault()` keeps the element closed.
+  - The internal `l-tree-item-toggle` event was renamed to `selection-toggle` (private contract between `l-tree-item` and `l-tree`; consumers should listen for `selection-change` on `l-tree`).
+
+  New: event classes are exported (e.g. `import { HideEvent } from 'luxen-ui/events'`, or per-element classes like `TabsChangeEvent`) so you can narrow with `instanceof`, and direct `addEventListener` on an element is typed for its events.
+
+- 5be0372: Built-in UI strings are now localizable. The accessible labels the components ship themselves — the spinner's "Loading", the carousel's slide/fullscreen buttons, the input-stepper's increment/decrement buttons, the prose-editor toolbar, and the stories-viewer controls — are resolved from a small in-house translation registry instead of being hardcoded in English. The active language follows the page: each element reads the closest `[lang]` ancestor (falling back to `<html lang>`, then English) and re-renders automatically when the document language changes.
+
+  English ships by default. Activate another locale with a side-effect import — French is included:
+
+  ```js
+  import "luxen-ui/translations/fr";
+  ```
+
+  Register your own locale (or override terms) via the new `luxen-ui/localize` export:
+
+  ```js
+  import { registerTranslation } from "luxen-ui/localize";
+  registerTranslation({
+    $code: "es",
+    $name: "Español",
+    $dir: "ltr",
+    loading: "Cargando" /* … */,
+  });
+  ```
+
+  A consumer-supplied label (an explicit `aria-label`, or a labelling prop) always takes precedence over the localized default. The mechanism is SSR-safe: importing the elements or the registry in Node touches no DOM APIs.
+
+- 9c6f8b3: Add a radio form control — `.l-radio` on a native `<input type="radio">`.
+  - **`.l-radio`** styles a native radio with a round box and a centered dot for the selected state, sharing the same `--l-form-control-*` look as the checkbox (border, hover, focus ring, disabled and invalid states). Native `name` grouping handles single selection and arrow-key navigation, so there is no JavaScript.
+  - Inside `l-form-field` a bare `<input type="radio">` is auto-styled (the class is optional there), and the field switches to its inline toggle layout.
+  - **Size & accent**: override `--size` for the box and `--accent` for the selected fill; override `--dot` to swap the selected icon.
+
+  Import `luxen-ui/css/radio` for the styles.
+
+- 7363d63: Recalibrate the control-size scale (`--l-size-control-xs` … `xl`) up one step to **28 / 32 / 36 / 40 / 44px**. The default medium height grows from 32px to 36px for buttons, inputs and selects, and the extra-large size now reaches the 44px WCAG 2.5.5 / Apple HIG touch-target minimum. Controls render ~4px taller across the board.
+- 991e087: Add a text input and its adornment wrapper, and polish the shared form-control look.
+  - **`.l-input`** styles a native `<input>` across every text-like type (text, search, number, password, email, url, tel, date, time) with consistent border, focus, disabled and invalid states. Date/time inputs get custom picker icons and search a custom clear button — all with zero JavaScript. Inside `l-form-field` or `l-input-group` a bare text input is auto-styled.
+  - **`<l-input-group>`** (progressive) wraps an input with leading/trailing adornments in DOM order — an `<l-icon>` before, a unit `<span>` or `<button>` after, no classes needed. Its `password-toggle` attribute injects an accessible show/hide button at upgrade time (localized label, `aria-pressed`, eye icon swap); without JavaScript the field stays a plain password input.
+  - **Size**: `data-size` (native `.l-input` / `.l-select`) and `size` (`l-input-group`) map the control height to the shared `--l-size-control-*` scale (xs–xl), affecting only the height — not the label or hint/error.
+  - **States**: on focus the border takes the focus-ring color with a soft halo; invalid adds a red border plus a faint danger wash; disabled now renders a solid greyed fill (new `--l-form-control-disabled-*` tokens) instead of fading the control with opacity. `.l-select` gains size and disabled support too.
+  - Form-field labels are now `14px` / medium weight with a tighter label-to-control gap.
+
+  Import `luxen-ui/css/input` (+ `luxen-ui/css/select`) for the styles and `luxen-ui/input-group` for the password-toggle behavior.
+
+- 51a3674: Add a `.l-textarea` style for native `<textarea>` controls. A bare `<textarea>` inside `l-form-field` is auto-styled (no class needed); `data-size` (`xs`–`xl`) sets the height and `data-resize` (`vertical`, `none`, `both`, `auto`) controls the resize handle, with `auto` growing the box to fit its content.
+
+### Patch Changes
+
+- 27b5601: Accessibility fixes across seven elements, surfaced by the new axe-core test suite. `<l-button-group>` no longer sets `aria-orientation` on `role="group"` (not allowed by ARIA 1.2 — the attribute still drives the layout via CSS). An interactive `<l-avatar>` now exposes its accessible name on the inner button instead of an illegal focusable `role="img"` host. `<l-carousel>` navigation buttons gained accessible names ("Previous slide", "Next slide", "Toggle fullscreen"). `<l-input-otp>` no longer hides its real input from assistive technology — only the decorative cells are `aria-hidden`, so the input is now exposed as a textbox. `<l-popover>` no longer emits an `aria-controls` reference that cannot resolve across its shadow boundary. `<l-prose-editor>` forwards the host's `aria-label` (default "Rich text editor") onto the editable region. The `<l-stories-viewer>` progress bar is now named ("Story progress").
+- cd39b3e: `<l-dialog>` and `<l-drawer>` now expose an accessible name: the `title`
+  property (or a slotted `slot="title"` heading) names the native dialog via
+  `aria-labelledby`/`aria-label`, so screen readers announce the dialog by its
+  title instead of an unnamed dialog (WCAG 4.1.2).
+- 1122893: `<l-dialog>` (vetoed close) and `<l-prose-editor>` (first render) no longer
+  schedule redundant re-renders from inside their update cycles, removing Lit
+  dev-mode warnings and an extra render pass each.
+- cf0dc0a: Dropdown accessibility hardening: keyboard focus now shows a focus ring distinct from hover, `Tab` closes the menu (and any open submenus) as documented, and the trigger exposes `aria-haspopup="menu"` plus an initial `aria-expanded`. Every `role="menu"` panel now has an accessible name (the root menu after its trigger, each submenu after its parent item), submenu parents link their panel via `aria-controls`, and item hosts carry `role="none"` so the menu owns its menuitems directly. Focus is no longer lost when a submenu collapses while focused, and roving within a level now closes a sibling's open submenu.
+- edd6cfb: `l-input-stepper` now creates its button icons via DOM APIs instead of HTML string interpolation, so icon names sourced from application data can never inject markup.
+- da9f736: Light-DOM elements (`l-input-stepper`, `l-input-otp`, `l-tabs`) now initialize in hidden tabs, iframes, and prerendered documents, and no longer double-initialize after being moved in the DOM. Setup previously waited for an animation frame, which never fires while the document is hidden.
+- d8cedcc: The `l-prose-editor` emoji picker no longer breaks after the element is moved or remounted: the picker is rebuilt on next use instead of pointing at a detached node, and a picker still loading when the editor is removed is no longer orphaned in the document.
+- 68d043a: `<l-input-otp>` now keeps its native input visible and usable before the element
+  upgrades (or if JavaScript never loads), instead of hiding it until hydration.
+  The pre-upgrade field is styled with the cell tokens and the Luxen focus ring.
+- 15d571d: The `<l-prose-editor>` toolbar now follows the APG toolbar keyboard pattern:
+  one tab stop with arrow-key navigation between buttons (ArrowLeft/ArrowRight
+  with wrap-around, Home/End), instead of a tab stop per button.
+- d3ddc88: `<l-rating>` no longer schedules a redundant re-render on first update,
+  removing a Lit dev-mode warning and an extra render pass.
+- 5781a4d: `<l-stories-viewer>` no longer schedules redundant re-renders when opening or
+  advancing between stories, removing a Lit dev-mode warning and an extra
+  render cycle per story change.
+- 2890376: `<l-tabs>` now positions its active-tab indicator without relying on
+  `requestAnimationFrame`, so the indicator renders correctly when the tabs
+  start inside a hidden container (background tab, `display: none` ancestor,
+  preview panes) and stays aligned when the tablist resizes.
+- 510f064: Element styles now reference design tokens without hardcoded fallback values (the tokens stylesheet is a required dependency). This also fixes the dropdown and popover panel backgrounds, which referenced a non-existent `--l-color-bg-surface` token and silently rendered with the browser `Canvas` color instead of `--l-color-surface-overlay` — they now match other overlays (dialog, toast), most visibly in dark mode.
+
 ## 0.11.1
 
 ### Patch Changes
