@@ -8,11 +8,11 @@
 
   .l-button {
     /* Local variables */
-    --_button-size-xs: var(--l-size-control-xs); /* 24px */
-    --_button-size-sm: var(--l-size-control-sm); /* 28px */
-    --_button-size-md: var(--l-size-control-md); /* 32px */
-    --_button-size-lg: var(--l-size-control-lg); /* 36px */
-    --_button-size-xl: var(--l-size-control-xl); /* 40px */
+    --_button-size-xs: var(--l-size-control-xs); /* 28px */
+    --_button-size-sm: var(--l-size-control-sm); /* 32px */
+    --_button-size-md: var(--l-size-control-md); /* 36px */
+    --_button-size-lg: var(--l-size-control-lg); /* 40px */
+    --_button-size-xl: var(--l-size-control-xl); /* 44px */
 
     /* Appearance (default: secondary) */
     --height: var(--_button-size-md);

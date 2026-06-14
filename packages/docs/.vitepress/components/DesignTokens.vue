@@ -91,6 +91,34 @@ function controlLabel(t) {
   return t.path[2];
 }
 
+/** Spacing base (`--l-spacing`) in px — derived from the tokens, not hardcoded. */
+const spacingBasePx = (() => {
+  const base = tokensJson.find((t) => t.name === '--l-spacing');
+  const m = typeof base?.value === 'string' && base.value.match(/^([\d.]+)rem$/);
+  return m ? parseFloat(m[1]) * 16 : 4;
+})();
+
+/**
+ * Pixel equivalent for length tokens (root font-size 16px), or `null` when the
+ * value isn't a convertible length (colors, raw `px`, `0`). Handles the two
+ * shapes used by sizing/spacing tokens: a bare `rem` and the spacing scale's
+ * `calc(var(--l-spacing) * N)`.
+ */
+function pxEquiv(value) {
+  if (typeof value !== 'string') return null;
+  const v = value.trim();
+  const rem = v.match(/^(-?[\d.]+)rem$/);
+  if (rem) return fmtPx(parseFloat(rem[1]) * 16);
+  const mult = v.match(/^calc\(\s*var\(--l-spacing\)\s*\*\s*([\d.]+)\s*\)$/);
+  if (mult) return fmtPx(parseFloat(mult[1]) * spacingBasePx);
+  return null;
+}
+
+/** Trim trailing zeros so 28.00 → "28px", 2.5 → "2.5px". */
+function fmtPx(n) {
+  return `${Number(n.toFixed(2))}px`;
+}
+
 /**
  * Legend shown under each swatch: the underlying CSS custom property name.
  *   var(--l-color-gray-700)   →  "--l-color-gray-700"
@@ -401,6 +429,11 @@ function copy(name) {
             </div>
             <div class="tokens__cell-footer">
               <span class="tokens__cell-legend">{{ legend(token.value) }}</span>
+              <span
+                v-if="pxEquiv(token.value)"
+                class="tokens__cell-px"
+                >{{ pxEquiv(token.value) }}</span
+              >
             </div>
           </div>
         </div>
@@ -519,6 +552,16 @@ function copy(name) {
   text-overflow: ellipsis;
   min-inline-size: 0;
   flex: 1;
+}
+
+/* Pixel equivalent for length tokens (sizing/spacing) — a fixed chip on the
+   right, so the rem/calc legend keeps the flexible space. */
+.tokens__cell-px {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
 }
 
 /* ────────────────────── viz primitives ────────────────────── */

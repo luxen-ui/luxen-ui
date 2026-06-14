@@ -258,28 +258,28 @@
     "control": {
       "xs": {
         "$type": "dimension",
-        "$value": "1.5rem",
-        "$description": "Standard interactive control height for extra-small elements like compact buttons, tags, and inline controls."
+        "$value": "1.75rem",
+        "$description": "Standard interactive control height (28px) for extra-small elements like compact buttons, tags, and inline controls."
       },
       "sm": {
         "$type": "dimension",
-        "$value": "1.75rem",
-        "$description": "Standard interactive control height for small elements like secondary buttons, small selects, and tight-layout controls."
+        "$value": "2rem",
+        "$description": "Standard interactive control height (32px) for small elements like secondary buttons, small selects, and tight-layout controls."
       },
       "md": {
         "$type": "dimension",
-        "$value": "2rem",
-        "$description": "Standard interactive control height for medium (default) elements like buttons, inputs, selects, and form controls."
+        "$value": "2.25rem",
+        "$description": "Standard interactive control height (36px) for medium (default) elements like buttons, inputs, selects, and form controls."
       },
       "lg": {
         "$type": "dimension",
-        "$value": "2.25rem",
-        "$description": "Standard interactive control height for large elements like prominent buttons, inputs in spacious layouts, and hero CTAs."
+        "$value": "2.5rem",
+        "$description": "Standard interactive control height (40px) for large elements like prominent buttons, inputs in spacious layouts, and hero CTAs."
       },
       "xl": {
         "$type": "dimension",
-        "$value": "2.5rem",
-        "$description": "Standard interactive control height for extra-large elements like oversized buttons, landing page CTAs, and touch-optimized controls."
+        "$value": "2.75rem",
+        "$description": "Standard interactive control height (44px) for extra-large elements like oversized buttons, landing page CTAs, and touch-optimized controls — meets the 44px WCAG 2.5.5 / Apple HIG touch-target minimum."
       }
     }
   }
