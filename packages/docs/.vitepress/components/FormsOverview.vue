@@ -203,6 +203,54 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
+      <!-- Radio — a group, so the legend is the field label and the options
+           share a name. `<fieldset disabled>` disables every option at once. -->
+      <fieldset
+        class="m-0 grid gap-[var(--l-form-field-gap)] border-0 p-0"
+        :disabled="disabled"
+      >
+        <legend
+          class="p-0 text-sm font-medium [color:var(--l-form-control-label-color)]"
+          :class="
+            required &&
+            'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]'
+          "
+        >
+          Notification preference
+        </legend>
+        <label
+          class="flex cursor-pointer items-center gap-[var(--l-form-field-choice-gap)] text-sm"
+        >
+          <input
+            type="radio"
+            class="l-radio"
+            name="overview-notifications"
+            :required="required"
+            :checked="!invalid"
+            :aria-invalid="invalid ? 'true' : null"
+          />
+          All new messages
+        </label>
+        <label
+          class="flex cursor-pointer items-center gap-[var(--l-form-field-choice-gap)] text-sm"
+        >
+          <input
+            type="radio"
+            class="l-radio"
+            name="overview-notifications"
+            :aria-invalid="invalid ? 'true' : null"
+          />
+          Direct messages and mentions
+        </label>
+        <p class="l-hint">{{ hint }}</p>
+        <p
+          class="l-error"
+          :hidden="!invalid"
+        >
+          {{ error }}
+        </p>
+      </fieldset>
+
       <!-- Input stepper — value stays "5"; Error just tightens max so it is
            invalid (rangeOverflow), toggling only the styling, not the value. -->
       <l-form-field :invalid="attr(invalid)">

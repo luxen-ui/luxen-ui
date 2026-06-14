@@ -58,6 +58,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Popover        | `<l-popover>`        | ⬢ Custom HTML Element (with Shadow DOM) |
 | Progress       | `<progress>`         | ⏣ Native HTML Element                   |
 | Prose editor   | `<l-prose-editor>`   | ⬢ Custom HTML Element (with Shadow DOM) |
+| Radio          | `<input>`            | ⏣ Native HTML Element                   |
 | Rating         | `<l-rating>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Select         | `<select>`           | ⏣ Native HTML Element                   |
 | Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |

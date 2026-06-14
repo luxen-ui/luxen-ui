@@ -1,0 +1,30 @@
+<fieldset class="m-0 border-0 p-0">
+  <legend class="mb-3 text-sm font-medium">Notifications</legend>
+  <div class="flex flex-col gap-3">
+    <l-form-field>
+      <label>All new messages</label>
+      <input
+        type="radio"
+        name="notifications"
+        value="all"
+        checked
+      />
+    </l-form-field>
+    <l-form-field>
+      <label>Direct messages and mentions</label>
+      <input
+        type="radio"
+        name="notifications"
+        value="mentions"
+      />
+    </l-form-field>
+    <l-form-field>
+      <label>Nothing</label>
+      <input
+        type="radio"
+        name="notifications"
+        value="none"
+      />
+    </l-form-field>
+  </div>
+</fieldset>
