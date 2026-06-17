@@ -13,6 +13,11 @@ const invalid = ref(false);
 const size = ref('md');
 const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
+// Accent — overrides `--l-form-control-activated-color` on the form, so every
+// control that reads it (checkbox / radio / switch fills, focus accents)
+// recolors live. A pure CSS variable, so it survives the stateKey remount.
+const accent = ref('#2563eb'); // blue-600, the token's default
+
 // `l-form-field` wires its children once on connect, so we remount the whole
 // form (via :key) whenever a toggle changes — each field then re-wires with the
 // new attributes.
@@ -56,6 +61,16 @@ const attr = (on) => (on ? '' : null);
         Error
       </label>
 
+      <label class="forms-overview__toggle">
+        <input
+          type="color"
+          class="forms-overview__accent size-[1.4rem] cursor-pointer rounded-full border-0 bg-transparent p-0 shadow-[0_0_0_1px_var(--vp-c-divider)]"
+          v-model="accent"
+          aria-label="Accent color"
+        />
+        Accent
+      </label>
+
       <div
         class="forms-overview__sizes"
         role="group"
@@ -76,6 +91,7 @@ const attr = (on) => (on ? '' : null);
     <form
       :key="stateKey"
       class="forms-overview__form"
+      :style="{ '--l-form-control-activated-color': accent }"
     >
       <!-- Each input below mirrors the element's reference page. Error feeds a
            genuinely invalid value (typeMismatch / patternMismatch / range*) so
@@ -220,6 +236,21 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
+      <!-- Switch — auto-styled bare control, promoted with role="switch". Like
+           the checkbox, Error unchecks a required switch (valueMissing). -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Email notifications</label>
+        <input
+          type="checkbox"
+          role="switch"
+          :required="required || invalid"
+          :disabled="disabled"
+          :checked="!invalid"
+        />
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
       <!-- Radio — a group, so the legend is the field label and the options
            share a name. `<fieldset disabled>` disables every option at once. -->
       <fieldset
@@ -286,8 +317,8 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
-      <!-- TODO: add select, radio, switch here as they ship — they reuse the
-           same l-form-field wiring and --l-form-control-* tokens. -->
+      <!-- TODO: add select here as it ships — it reuses the same l-form-field
+           wiring and --l-form-control-* tokens. -->
     </form>
   </div>
 </template>
@@ -313,6 +344,23 @@ const attr = (on) => (on ? '' : null);
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+}
+
+/* Native color input as a round swatch — sized/shaped with Tailwind utilities on
+   the element; only the swatch pseudo-elements (unreachable by utilities) live
+   here, so the circle reads as a "color" dot, not one of the square checkboxes. */
+.forms-overview__accent::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.forms-overview__accent::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.forms-overview__accent::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
 }
 
 /* Segmented control to swap the shared control size live. */

@@ -8,3 +8,27 @@
    class is needed (`unstyled` opts out). See the partial for details. */
 
 @import '../../html/shared/styles/checkbox-appearance.css';
+
+/* Hover halo — light-DOM `.l-checkbox` only. Deliberately kept out of the shared
+   `checkbox-appearance.css` partial: that partial is also loaded into Shadow-DOM
+   consumers (e.g. `l-tree-item`), which never opted into a hover glow. Mirrors
+   the radio and switch hover language (same `--_halo` flip, same ratio token). */
+@layer components {
+  .l-checkbox,
+  :where(l-form-field:not([unstyled])) > input[type='checkbox']:not([role='switch']) {
+    --_halo: var(--l-form-control-border-color-hover);
+    transition-property: background-color, border-color, box-shadow;
+
+    &:checked,
+    &:indeterminate {
+      --_halo: var(--accent);
+    }
+
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        box-shadow: 0 0 0 calc(var(--size) * var(--l-form-control-toggle-halo-ratio))
+          color-mix(in oklab, var(--_halo), transparent 84%);
+      }
+    }
+  }
+}

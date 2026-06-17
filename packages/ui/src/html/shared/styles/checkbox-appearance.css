@@ -67,6 +67,17 @@
       outline-offset: 2px;
     }
 
+    /* High contrast: the checked fill is forced to Canvas, hiding the accent and
+       leaving the baked-white glyph invisible — pin the checked box to a system
+       color so the checkmark/dash stays legible. */
+    @media (forced-colors: active) {
+      &:checked,
+      &:indeterminate {
+        border-color: Highlight;
+        background-color: Highlight;
+      }
+    }
+
     /* Invalid: only after interaction (`:user-invalid`), or forced via
        `aria-invalid` (set by `l-form-field` / server-side validation).
        Overriding `--accent` makes a checked invalid box fill with the error
