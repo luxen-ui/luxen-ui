@@ -1,0 +1,33 @@
+<select
+  class="l-select"
+  aria-label="Merge method"
+>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+
+  <option
+    class="l-select-item"
+    value="squash"
+    selected
+  >
+    <span class="l-select-item-text">
+      <span class="l-select-item-title">Squash and merge</span>
+      <span class="l-select-item-description">
+        The 1 commit from this branch will be added to the base branch.
+      </span>
+    </span>
+  </option>
+
+  <option
+    class="l-select-item"
+    value="rebase"
+  >
+    <span class="l-select-item-text">
+      <span class="l-select-item-title">Rebase and merge</span>
+      <span class="l-select-item-description">
+        The 1 commit from this branch will be rebased and added to the base branch.
+      </span>
+    </span>
+  </option>
+</select>

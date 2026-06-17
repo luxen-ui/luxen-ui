@@ -1,13 +1,54 @@
+/* Select — `.l-select` on a native <select> using the customizable
+   `base-select` appearance (the Customizable Select API).
+
+   Progressive enhancement: where `base-select` is unsupported the markup
+   degrades to a plain native <select> — the `<button><selectedcontent>` trigger
+   is ignored and rich <option> content collapses to its text node. Always keep
+   meaningful text in each <option> so the fallback stays usable.
+
+   Two surfaces, two design references kept in sync with the rest of the library:
+   - the trigger (the <select> box) mirrors the form controls (l-input /
+     l-textarea) through the --l-form-control-* tokens;
+   - the picker (::picker(select)) and its items mirror the l-dropdown panel
+     (--l-color-surface-overlay / --l-color-border-overlay / --l-shadow-md). */
+
 @layer components {
   .l-select {
-    /* Height on the shared control scale; `data-size` swaps it (default `md`).
-       Only the height changes — label and hint/error are unaffected. */
+    /* Public knobs — mirror l-input so a select sits consistently among the
+       other form controls. */
     --height: var(--l-form-control-height);
-    --border-radius: 4px;
-    --border-color: light-dark(var(--l-color-gray-200), var(--l-color-gray-800));
+    --border-radius: var(--l-form-control-border-radius);
+    --caret-color: var(--l-form-control-placeholder-color);
+    /* mdi:chevron-down — same glyph as l-disclosure's `data-marker="arrow"`.
+       Override with any url()/image to re-skin; pairs with --caret-color. */
+    --caret-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"></path></svg>');
 
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     min-block-size: var(--height);
+    padding-block: 0;
+    padding-inline: var(--l-form-control-padding-inline);
+    border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--l-form-control-background-color);
+    color: var(--l-form-control-value-color);
+    font: inherit;
+    line-height: normal;
+    cursor: pointer;
+    transition-property: border-color, box-shadow, background-color;
+    transition-duration: 150ms;
 
+    /* base-select on the control AND its picker unlocks full CSS styling;
+       both fall back to the native select where unsupported. */
+    &,
+    &::picker(select) {
+      appearance: base-select;
+    }
+
+    /* Size — `data-size` maps the height onto the shared control scale
+       (default `md`). Only the height changes. */
     &[data-size='xs'] {
       --height: var(--l-size-control-xs);
     }
@@ -24,6 +65,32 @@
       --height: var(--l-size-control-xl);
     }
 
+    @media (hover: hover) {
+      &:hover:where(:not(:disabled)) {
+        border-color: var(--l-form-control-border-color-hover);
+      }
+    }
+
+    /* Focus: border takes the ring color plus the soft halo, matching l-input. */
+    &:focus-visible {
+      border-color: var(--l-focus-ring);
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+    }
+
+    /* Invalid: red border + faint danger wash. Ordered after focus so the red
+       border wins when the field is both focused and invalid. */
+    &:user-invalid,
+    &[aria-invalid='true'] {
+      border-color: var(--l-form-control-border-color-invalid);
+      background-color: color-mix(
+        in oklab,
+        var(--l-form-control-border-color-invalid) 6%,
+        var(--l-form-control-background-color)
+      );
+    }
+
     &:disabled {
       cursor: not-allowed;
       border-color: var(--l-form-control-disabled-border);
@@ -31,69 +98,164 @@
       color: var(--l-form-control-disabled-color);
     }
 
-    &,
-    &::picker(select) {
-      appearance: base-select;
+    /* The selected value fills the trigger; the chevron sits at the inline-end.
+       <selectedcontent> clones the option's children, not the `.l-select-item`
+       flex container — so it must re-establish the row itself, else rich options
+       (media + text) stack vertically in the trigger. */
+    & selectedcontent {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1 1 auto;
+      min-inline-size: 0;
+      overflow: hidden;
     }
 
-    &::picker-icon {
+    /* Keep the trigger compact when a rich option is selected: only the title
+       is mirrored into the value, the secondary description is dropped. */
+    & selectedcontent .l-select-item-description {
       display: none;
     }
 
-    &::picker(select) {
-      border: 1px solid var(--border-color);
-      border-radius: var(--border-radius);
-      min-width: 180px;
-      margin-block-start: 0.25rem;
-      padding: 4px;
+    /* Native chevron — its glyph is replaced by a mask so it can be re-skinned
+       (--caret-icon) and recolored (--caret-color) independently of the value
+       color; rotates on open. `content: ''` drops the UA glyph. */
+    &::picker-icon {
+      content: '';
+      flex: 0 0 auto;
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      background-color: var(--caret-color);
+      mask: var(--caret-icon) center / contain no-repeat;
+      transition: rotate 150ms ease;
     }
-
-    /* enable transitions in the drop down */
-    &::picker(select) {
-      transition:
-        opacity 0.2s ease,
-        transform 0.2s var(--ease-out-3, cubic-bezier(0, 0, 0.3, 1)),
-        display 0.2s allow-discrete,
-        overlay 0.2s allow-discrete;
+    &:open::picker-icon {
+      rotate: 180deg;
     }
+  }
 
-    /* set the off stage styles */
-    &:not(:open)::picker(select) {
+  /* Picker panel — mirrors the l-dropdown popover. `anchor-size(width)` keeps
+     the panel at least as wide as the trigger; ignored (panel sizes to content)
+     where unsupported. */
+  .l-select::picker(select) {
+    box-sizing: border-box;
+    /* At least the trigger width, capped at a readable measure — without an
+       explicit max the popover sizes to max-content and rich descriptions
+       never wrap (they'd overflow with a horizontal scrollbar). */
+    min-inline-size: anchor-size(width);
+    max-inline-size: min(90vw, 22rem);
+    padding: 0.25rem;
+    margin-block-start: 0.25rem;
+    border: 1px solid var(--l-color-border-overlay);
+    border-radius: 6px;
+    background: var(--l-color-surface-overlay);
+    color: var(--l-color-text-primary);
+    box-shadow: var(--l-shadow-md);
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    /* Off-stage (also the exit state); the entry starts from @starting-style. */
+    opacity: 0;
+    transform: scale(0.97);
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease,
+      display 150ms allow-discrete,
+      overlay 150ms allow-discrete;
+  }
+
+  .l-select:open::picker(select) {
+    opacity: 1;
+    transform: scale(1);
+
+    @starting-style {
       opacity: 0;
-      transform: scale(0.95);
-    }
-
-    /* set the on stage styles */
-    &:open::picker(select) {
-      opacity: 1;
-      transform: scale(1);
+      transform: scale(0.97);
     }
   }
 
   .l-select-item {
     display: flex;
     position: relative;
-    align-items: center;
-    padding-inline: 8px;
-    padding-block: 6px;
-    isolation: isolate;
+    align-items: start;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    min-block-size: 36px;
+    padding-block: 0.5rem;
+    /* Reserve the inline-start checkmark column on every row so titles align
+       whether or not the option is selected (like l-dropdown). */
+    padding-inline: 1.75rem 0.5rem;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: var(--border-radius);
+    color: var(--l-color-text-primary);
 
-    &::checkmark {
-      background-color: currentColor;
-      block-size: 20px;
-      inline-size: 20px;
-      /* https://lucide.dev/icons/check-check */
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>')
-        center no-repeat;
-      mask-size: 16px;
-    }
-
+    /* Selection is shown by the checkmark alone (like l-dropdown) — the
+       selected option carries NO background, so it never reads as merged with
+       the hovered/active row, which is the only one that takes the tint. */
     @media (hover: hover) {
       &:hover {
-        background-color: var(--l-color-blue-50);
+        background: var(--l-color-bg-state-hover);
       }
+    }
+
+    /* Native selected indicator — absolutely placed in the reserved inline-start
+       column and pinned to the first line, so a wrapping description never
+       shifts it and unselected rows keep identical text alignment. */
+    &::checkmark {
+      position: absolute;
+      inset-inline-start: 0.5rem;
+      /* Sit in the title's line box: same start offset as the padding, and a
+         block-size equal to the title's line-height (0.875rem × 1.5) so the
+         glyph centers on the title regardless of its cap height. */
+      inset-block-start: 0.5rem;
+      inline-size: 1rem;
+      block-size: 1.3125rem;
+      background-color: currentColor;
+      /* https://lucide.dev/icons/check */
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>')
+        center / 1rem no-repeat;
+    }
+  }
+
+  /* Rich option content — image/icon + title + optional description. */
+  .l-select-item-media {
+    flex: 0 0 auto;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
+  .l-select-item-text {
+    display: flex;
+    min-inline-size: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .l-select-item-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 600;
+  }
+
+  .l-select-item-description {
+    /* Override the `white-space: nowrap` inherited from the native <select>, so
+       the description wraps within the picker's max-inline-size instead of
+       overflowing on one line. */
+    white-space: normal;
+    text-wrap: pretty;
+    color: var(--l-color-text-tertiary);
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .l-select,
+    .l-select::picker-icon,
+    .l-select::picker(select) {
+      transition-duration: 0ms;
     }
   }
 }

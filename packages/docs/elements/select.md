@@ -4,21 +4,39 @@ outline: deep
 
 <script setup>
 import selectExample from '../.vitepress/examples/select/Select.html?raw'
+import selectRichOptions from '../.vitepress/examples/select/SelectRichOptions.html?raw'
 </script>
 
 # Select <Badge type="tip">&lt;select&gt;</Badge>
 
 Selects are used to pick a single option from a dropdown list. Commonly used in forms for choosing categories, countries, or any predefined set of values.
 
+Built on the [Customizable Select API](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select) (`appearance: base-select`). Where unsupported it degrades to a native `<select>` — so always keep meaningful text in each `<option>`.
+
 <ElementSpec element="select" />
 
 ## Options
+
+### Basic
+
+Add `class="l-select"` to a native `<select>` and `class="l-select-item"` to each `<option>`.
 
 <ComponentWrapper :html="selectExample" />
 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/select/Select.html [HTML]
+:::
+
+### Rich options
+
+Put any HTML inside an `<option>`. Wrap a `.l-select-item-title` over a `.l-select-item-description` in `.l-select-item-text` (add a `.l-select-item-media` image or icon before it if needed). A `<button><selectedcontent></button>` trigger mirrors the chosen option — the description is hidden there to keep it compact.
+
+<ComponentWrapper :html="selectRichOptions" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectRichOptions.html [HTML]
 :::
 
 ## Accessibility
