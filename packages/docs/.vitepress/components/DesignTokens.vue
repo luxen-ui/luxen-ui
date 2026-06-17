@@ -365,9 +365,48 @@ function copy(name) {
             </div>
           </template>
 
+          <!-- SHADOW: dual cells. The value bakes in light-dark(), so we force
+               color-scheme per cell to surface both casts regardless of page theme. -->
+          <template v-else-if="vizKind(token) === 'shadow'">
+            <div
+              class="tokens__cell"
+              :data-mode="'light'"
+            >
+              <div class="tokens__cell-viz">
+                <div class="viz-shadow viz-shadow--light">
+                  <span
+                    class="viz-shadow__card"
+                    :style="{ boxShadow: token.value }"
+                  />
+                </div>
+              </div>
+              <div class="tokens__cell-footer">
+                <span class="tokens__cell-mode">Light</span>
+                <span class="tokens__cell-legend">{{ legend(token.value) }}</span>
+              </div>
+            </div>
+            <div
+              class="tokens__cell"
+              :data-mode="'dark'"
+            >
+              <div class="tokens__cell-viz">
+                <div class="viz-shadow viz-shadow--dark">
+                  <span
+                    class="viz-shadow__card"
+                    :style="{ boxShadow: token.value }"
+                  />
+                </div>
+              </div>
+              <div class="tokens__cell-footer">
+                <span class="tokens__cell-mode">Dark</span>
+                <span class="tokens__cell-legend">{{ legend(token.value) }}</span>
+              </div>
+            </div>
+          </template>
+
           <!-- SINGLE cell (no light/dark: focus-ring, alias-of-alias, sizing, spacing) -->
           <div
-            v-if="!hasModes(token)"
+            v-if="!hasModes(token) && vizKind(token) !== 'shadow'"
             class="tokens__cell"
           >
             <div class="tokens__cell-viz">
@@ -589,6 +628,23 @@ function copy(name) {
   block-size: 1.5rem;
   border-radius: 0.375rem;
   background: var(--l-color-surface-overlay);
+}
+/* Forced color-scheme per cell so the token's light-dark() shadow resolves to
+   each cast — independent of the page theme. Fixed primitive backdrops/cards
+   keep both cells legible regardless of the active site theme. */
+.viz-shadow--light {
+  color-scheme: light;
+  background: var(--l-color-gray-50);
+}
+.viz-shadow--light .viz-shadow__card {
+  background: var(--l-color-white);
+}
+.viz-shadow--dark {
+  color-scheme: dark;
+  background: var(--l-color-gray-900);
+}
+.viz-shadow--dark .viz-shadow__card {
+  background: var(--l-color-gray-800);
 }
 
 .viz-disabled {
