@@ -1,0 +1,180 @@
+/* Switch — `.l-switch` on a native `<input type="checkbox" role="switch">`.
+
+   A switch is the *same control* as a checkbox (binary on/off, native form
+   participation, Space to toggle) with a different affordance: a sliding thumb
+   in a pill track instead of a tick box. So it stays a CSS-only `appearance:
+   none` skin on a native `<input type="checkbox">` — no JS. The one required
+   addition is `role="switch"`, which makes assistive tech announce it as a
+   switch ("on/off") rather than a checkbox ("checked"), and which `l-form-field`
+   keys on for inline layout. `checkbox.css` excludes `[role='switch']` from its
+   auto-styling so the two skins never collide.
+
+   The thumb is drawn as a `background-image` radial-gradient on the input
+   itself — `::before`/`::after` do not paint on replaced elements like
+   `<input>`, and an `<input>` can't hold child nodes. That constraint shapes
+   the motion: the thumb travels by transitioning `background-position`, and
+   reshapes (the hover swell and the press squish) by transitioning
+   `background-size` of an `ellipse closest-side` gradient. There is no inner
+   node to transform, so the full drag/pill choreography of a JS switch is out
+   of scope by design — what remains is a spring-eased slide plus tactile
+   hover/press cues, which is the "fluid but simple" target.
+
+   Contrast: the thumb is baked with the stable, non-inverting
+   `--l-form-control-activated-content-color` (white). The off-track therefore
+   uses `--l-color-text-tertiary` (gray-500 in *both* light and dark), which
+   keeps the white thumb at ~5:1 against the off state in either mode — a
+   lighter neutral fill would drop the off-state thumb below 3:1.
+
+   `l-form-field` auto-styles a bare switch via a zero-specificity `:where()`
+   selector, so inside a field no class is needed (`unstyled` opts out). */
+
+@layer components {
+  .l-switch,
+  :where(l-form-field:not([unstyled])) > input[type='checkbox'][role='switch'] {
+    /* Public knobs */
+    --size: var(--l-form-control-toggle-size);
+    --accent: var(--l-form-control-activated-color);
+
+    /* Geometry — all derived from the track height so a single `--size`
+       rescales the whole control proportionally. */
+    --_gap: calc(var(--size) * 0.125);
+    --_track-width: calc(var(--size) * 1.75);
+    --_thumb: calc(var(--size) - var(--_gap) * 2);
+
+    /* `--_track` is the live track fill; `:checked` flips it to the accent.
+       The hover halo reads it back so the glow always matches the state. */
+    --_track: var(--l-form-control-track-off-color);
+    --_thumb-color: var(--l-form-control-activated-content-color);
+    --_thumb-img: radial-gradient(ellipse closest-side, var(--_thumb-color) 94%, #0000);
+
+    /* Box-shadow is composed from two independent layers so they coexist: the
+       hover halo (`--_glow`) and the invalid ring (`--_ring`). Each state sets
+       only its own layer; both default to nothing. */
+    --_glow: 0 0 0 0 #0000;
+    --_ring: 0 0 0 0 #0000;
+
+    /* A gentle spring (slight overshoot) for the slide; the ~4% overshoot is a
+       sub-pixel of travel and is clipped to the track, so it reads as a settle,
+       not a bounce. */
+    --_slide-ease: linear(
+      0,
+      0.045 3.7%,
+      0.18 8.5%,
+      0.737 24.3%,
+      0.92 30.6%,
+      1.014 36.1%,
+      1.043 42.4%,
+      1.032 51.6%,
+      1.004 67.7%,
+      0.998 85%,
+      1
+    );
+
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    inline-size: var(--_track-width);
+    block-size: var(--size);
+    margin: 0;
+    padding: 0;
+    appearance: none;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--_track);
+    background-image: var(--_thumb-img);
+    background-repeat: no-repeat;
+    /* The thumb rests at the inline-start (left in LTR); `:dir(rtl)` flips it. */
+    background-position: var(--_gap) center;
+    background-size: var(--_thumb) var(--_thumb);
+    /* Ring on top (crisp), glow behind (soft) — so an invalid switch keeps its
+       error ring visible through the hover halo. */
+    box-shadow: var(--_ring), var(--_glow);
+    vertical-align: middle;
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      box-shadow 160ms ease,
+      background-position 320ms var(--_slide-ease),
+      background-size 200ms ease;
+
+    &:checked {
+      --_track: var(--accent);
+      /* `calc(100% - gap)` pins the thumb's right edge a gap in from the track
+         end, mirroring the off state's left inset. */
+      background-position: calc(100% - var(--_gap)) center;
+    }
+
+    /* RTL: the thumb rests at the inline-start (right) and slides to the
+       inline-end (left) when on — `background-position` is physical, so flip it
+       explicitly. */
+    &:dir(rtl) {
+      background-position: calc(100% - var(--_gap)) center;
+
+      &:checked {
+        background-position: var(--_gap) center;
+      }
+    }
+
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        /* Soft halo proves interactivity without moving anything; it tints from
+           the current track color, so it's neutral when off and accent when on.
+           The thumb also swells a touch — a quiet "ready" cue. Shares the
+           toggle-family halo ratio with checkbox/radio. */
+        background-color: color-mix(in oklab, var(--_track), black 6%);
+        background-size: calc(var(--_thumb) * 1.06) var(--_thumb);
+        --_glow: 0 0 0 calc(var(--size) * var(--l-form-control-toggle-halo-ratio))
+          color-mix(in oklab, var(--_track), transparent 84%);
+      }
+    }
+
+    /* Press: the thumb squishes — wider and shorter — anchored to its resting
+       edge (left when off, right when on) thanks to the background-position
+       above. Tactile, and it survives without hover on touch. */
+    &:active:not(:disabled) {
+      background-size: calc(var(--_thumb) * 1.18) calc(var(--_thumb) * 0.9);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* Invalid: after interaction (`:user-invalid`) or forced via `aria-invalid`
+       (set by `l-form-field` / server-side validation). The error ring shows in
+       both states; overriding `--accent` turns an *on* invalid switch red too. */
+    &:user-invalid,
+    &[aria-invalid='true'] {
+      --accent: var(--l-form-control-border-color-invalid);
+      /* Sets only the ring layer, so a hovered invalid switch keeps both its
+         error ring and the hover halo. */
+      --_ring: 0 0 0 1.5px var(--l-form-control-border-color-invalid);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+      /* Clear the error ring so a disabled control never reads as erroring. */
+      box-shadow: none;
+    }
+
+    /* In forced-colors the gradient thumb and track fill can flatten, so lean on
+       what survives: a track outline plus the thumb's left/right position, and
+       distinguish on/off by switching the outline to the system Highlight. */
+    @media (forced-colors: active) {
+      border: 1px solid CanvasText;
+      --_thumb-color: CanvasText;
+
+      &:checked {
+        border-color: Highlight;
+        --_thumb-color: Highlight;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .l-switch,
+    :where(l-form-field:not([unstyled])) > input[type='checkbox'][role='switch'] {
+      transition-duration: 0ms;
+    }
+  }
+}

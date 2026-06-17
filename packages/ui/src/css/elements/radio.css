@@ -23,6 +23,9 @@
     --size: var(--l-form-control-toggle-size);
     --accent: var(--l-form-control-activated-color);
     --dot: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="6"/></svg>');
+    /* Hover-halo tint — neutral when unselected, accent when selected (set
+       below); mirrors the switch so the toggle family shares one hover language. */
+    --_halo: var(--l-form-control-border-color-hover);
 
     box-sizing: border-box;
     flex: 0 0 auto;
@@ -39,10 +42,11 @@
     background-size: 100%;
     vertical-align: middle;
     cursor: pointer;
-    transition-property: background-color, border-color;
+    transition-property: background-color, border-color, box-shadow;
     transition-duration: 150ms;
 
     &:checked {
+      --_halo: var(--accent);
       border-color: var(--accent);
       background-color: var(--accent);
       background-image: var(--dot);
@@ -51,6 +55,8 @@
     @media (hover: hover) {
       &:hover:not(:disabled) {
         border-color: var(--l-form-control-border-color-hover);
+        box-shadow: 0 0 0 calc(var(--size) * var(--l-form-control-toggle-halo-ratio))
+          color-mix(in oklab, var(--_halo), transparent 84%);
       }
     }
 
@@ -72,6 +78,16 @@
     &:disabled {
       cursor: not-allowed;
       opacity: 0.4;
+    }
+
+    /* High contrast: the selected fill is forced to Canvas, hiding the accent
+       and leaving the baked-white dot invisible — pin the selected box to a
+       system color so the dot stays legible. */
+    @media (forced-colors: active) {
+      &:checked {
+        border-color: Highlight;
+        background-color: Highlight;
+      }
     }
   }
 

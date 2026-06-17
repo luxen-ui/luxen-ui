@@ -290,6 +290,15 @@
       "subItemOf": "stories"
     },
     {
+      "name": "switch",
+      "displayName": "Switch",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-switch"
+    },
+    {
       "name": "tabs",
       "displayName": "Tabs",
       "kind": "element",

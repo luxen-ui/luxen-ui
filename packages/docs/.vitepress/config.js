@@ -158,6 +158,7 @@ export default defineConfig({
           el('Input stepper', 'l-input-stepper', 'input-stepper'),
           el('Radio', 'input', 'radio'),
           el('Select', 'select', 'select'),
+          el('Switch', 'input', 'switch'),
           el('Textarea', 'textarea', 'textarea'),
         ],
       },

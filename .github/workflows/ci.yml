@@ -46,7 +46,11 @@ jobs:
       - run: vp check
       # Install the browser before any browser-backed run: luxen-ui#test now
       # includes Vitest browser-mode component tests, and test:e2e uses Playwright.
-      - run: vp dlx playwright install chromium --with-deps
+      # Pin the install to the SAME version as the cache key (the workspace
+      # Playwright) — a bare `vp dlx playwright` resolves the latest release,
+      # whose browser build (e.g. chrome-headless-shell revision) drifts from the
+      # one the test runner launches, leaving the expected binary absent.
+      - run: vp dlx playwright@${{ steps.pwv.outputs.version }} install chromium --with-deps
       - run: vp run luxen-ui#test
       - run: vp run luxen-ui#test:e2e
 

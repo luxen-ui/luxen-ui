@@ -72,6 +72,16 @@
         "$value": "1.25em",
         "$description": "Box size of toggle controls (checkbox, radio, switch). Relative to font size so it scales with the label."
       },
+      "toggle-halo-ratio": {
+        "$type": "number",
+        "$value": "0.22",
+        "$description": "Thickness of the hover halo ring on toggle controls (checkbox, radio, switch), as a fraction of the toggle size. Single source for the shared toggle hover language."
+      },
+      "track-off-color": {
+        "$type": "color",
+        "$value": "{color.gray.500}",
+        "$description": "Off-state track fill of the switch. A mid grey that holds in both light and dark so the white thumb keeps ~5:1 contrast either way — decoupled from text tokens so re-theming body text never moves the track."
+      },
       "height": {
         "$type": "dimension",
         "$value": "{size.control.md}",
