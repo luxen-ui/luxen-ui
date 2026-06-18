@@ -33,6 +33,7 @@ Visit https://luxen-ui.com to explore the documentation.
 
 | Name           | HTML tag             | Type                                    |
 | -------------- | -------------------- | --------------------------------------- |
+| Alert          | `<l-alert>`          | ◇ Custom HTML Element (no Shadow DOM)   |
 | Alert dialog   | `<l-alert-dialog>`   | ⬢ Custom HTML Element (with Shadow DOM) |
 | Avatar         | `<l-avatar>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Badge          | `<l-badge>`          | ◇ Custom HTML Element (no Shadow DOM)   |

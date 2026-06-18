@@ -1,5 +1,6 @@
 /** Every component base name the library ships. */
 export type ElementBaseName =
+  | 'alert'
   | 'alert-dialog'
   | 'avatar'
   | 'badge'
