@@ -1,0 +1,19 @@
+<button
+  type="button"
+  class="l-button"
+  data-variant="destructive"
+  command="--show"
+  commandfor="confirm-delete"
+>
+  Delete project
+</button>
+
+<l-alert-dialog
+  id="confirm-delete"
+  tone="danger"
+  title="Delete this project?"
+  confirm-text="Delete"
+>
+  This permanently deletes the <strong>Acme</strong> project and everything in it. This action
+  cannot be undone.
+</l-alert-dialog>

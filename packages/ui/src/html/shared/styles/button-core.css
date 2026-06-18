@@ -1,0 +1,111 @@
+/*
+ * Shared `.l-button` appearance — the single source of truth for the button's
+ * base look, primary, and destructive variants. Lives in the HTML tree so it is
+ * both:
+ *   - `@import`ed (and layered) by src/css/elements/button.css for the light-DOM
+ *     `.l-button`, and
+ *   - imported `?inline` into shadow-DOM elements (l-alert-dialog) that render
+ *     their own `.l-button` actions and can't reach the global stylesheet.
+ *
+ * Intentionally UNLAYERED: the light-DOM import wraps it in `@layer components`
+ * via `@import … layer(components)`, while shadow consumers want it unlayered to
+ * sit alongside the (also unlayered) dialog styles. Size/icon-only/press-effect
+ * variants stay in button.css — shadow actions don't need them.
+ */
+.l-button {
+  /* Local size scaffolding (referenced by the size variants in button.css). */
+  --_button-size-xs: var(--l-size-control-xs); /* 28px */
+  --_button-size-sm: var(--l-size-control-sm); /* 32px */
+  --_button-size-md: var(--l-size-control-md); /* 36px */
+  --_button-size-lg: var(--l-size-control-lg); /* 40px */
+  --_button-size-xl: var(--l-size-control-xl); /* 44px */
+
+  /* Appearance (default: secondary) */
+  --height: var(--_button-size-md);
+  --padding-inline: 0.625rem;
+  --background-color: var(--l-color-bg-fill-secondary);
+  --background-color-active: color-mix(
+    in oklab,
+    var(--l-color-bg-fill-secondary) 90%,
+    var(--l-color-text-primary)
+  );
+  --background-color-hover: var(--background-color-active);
+  --font-size: var(--l-text-sm);
+  --text-color: var(--l-color-text-primary);
+  --text-color-hover: var(--text-color);
+  --border-color: var(--l-color-border);
+  --border-color-hover: color-mix(in oklab, var(--l-color-border) 75%, var(--l-color-text-primary));
+
+  position: relative;
+  display: inline-flex;
+  place-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing) * 2);
+  height: var(--height);
+  padding-inline: var(--padding-inline);
+  border: 1px solid var(--border-color);
+  border-radius: calc(var(--height) / 8);
+  background: var(--background-color);
+  color: var(--text-color);
+  outline: none;
+  font-size: var(--font-size);
+  font-weight: var(--l-font-weight-semibold);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transition-property: background-color, color, text-decoration, border-color;
+  transition-duration: 150ms;
+
+  /* `:disabled` (native) and `[aria-disabled]` (a busy/blocked control kept in
+     the tab order) read the same. */
+  &:not(:disabled):not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  &:not(:disabled):not([aria-disabled='true']):hover {
+    background-color: var(--background-color-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-color-hover);
+  }
+
+  &:not(:disabled):not([aria-disabled='true']):active {
+    background-color: var(--background-color-active);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--l-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.l-button[data-variant='primary'] {
+  --background-color: var(--l-color-bg-fill-brand);
+  --background-color-active: var(--l-color-bg-fill-brand-active);
+  --background-color-hover: var(--l-color-bg-fill-brand-hover);
+  --text-color: var(--l-color-text-on-fill-brand);
+  --text-color-hover: var(--l-color-text-on-fill-brand);
+  --border-color: transparent;
+  --border-color-hover: transparent;
+}
+
+/* High-emphasis, solid danger fill (white label, per the codebase convention
+   for text on a strong fill — see badge.css). A destructive button is a primary
+   action themed danger; it should read as prominently as `primary`, not recede. */
+.l-button[data-variant='destructive'] {
+  --background-color: var(--l-color-bg-fill-danger-strong);
+  --background-color-hover: color-mix(in oklab, var(--l-color-bg-fill-danger-strong) 88%, black);
+  --background-color-active: color-mix(in oklab, var(--l-color-bg-fill-danger-strong) 78%, black);
+  --text-color: white;
+  --text-color-hover: white;
+  --border-color: transparent;
+  --border-color-hover: transparent;
+}

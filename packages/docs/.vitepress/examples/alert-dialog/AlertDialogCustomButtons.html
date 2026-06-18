@@ -1,0 +1,32 @@
+<button
+  type="button"
+  class="l-button"
+  command="--show"
+  commandfor="confirm-invite"
+>
+  Invite collaborator
+</button>
+
+<l-alert-dialog
+  id="confirm-invite"
+  title="Send this invitation?"
+  confirm-text="Send invite"
+>
+  Jane Cooper will get access to the Acme workspace and can edit all projects.
+
+  <a
+    slot="cancel"
+    class="l-button"
+    href="#confirm-invite"
+  >
+    Not now
+  </a>
+  <button
+    slot="confirm"
+    type="button"
+    class="l-button [--background-color:var(--l-color-bg-fill-success-strong)] [--background-color-hover:color-mix(in_oklab,var(--l-color-bg-fill-success-strong)_88%,black)] [--background-color-active:color-mix(in_oklab,var(--l-color-bg-fill-success-strong)_78%,black)] [--text-color:white] [--text-color-hover:white] [--border-color:transparent]"
+  >
+    <l-icon name="lucide:send"></l-icon>
+    Send invite
+  </button>
+</l-alert-dialog>

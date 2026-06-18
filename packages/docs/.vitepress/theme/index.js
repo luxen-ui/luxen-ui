@@ -37,6 +37,7 @@ export default {
       void import('luxen-ui/divider');
       void import('luxen-ui/icon');
       void import('luxen-ui/rating');
+      void import('luxen-ui/alert-dialog');
       void import('luxen-ui/dialog');
       void import('luxen-ui/drawer');
       void import('luxen-ui/dropdown');
