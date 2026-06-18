@@ -194,8 +194,8 @@
           },
           "strong": {
             "$type": "color",
-            "$value": { "light": "{color.red.600}", "dark": "{color.red.500}" },
-            "$description": "Strong danger fill — solid background for solid badges and high-emphasis status indicators."
+            "$value": { "light": "{color.red.600}", "dark": "{color.red.600}" },
+            "$description": "Strong danger fill — solid background for solid badges, high-emphasis status indicators, and destructive buttons. Dark uses red-600 (not red-500) so white text clears WCAG AA 4.5:1."
           }
         },
         "success": {

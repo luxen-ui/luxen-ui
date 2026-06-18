@@ -3,6 +3,14 @@
   "_doc": "Single source of truth for Luxen elements. Consumed by scripts/prepare-skill-templates.mjs (which feeds the bin/cli.mjs `generate-skill` CLI) and the MOCKUPS.md tag-list updater. When adding/removing an element, edit this file.",
   "elements": [
     {
+      "name": "alert-dialog",
+      "displayName": "Alert dialog",
+      "kind": "element",
+      "type": "shadow",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
       "name": "avatar",
       "displayName": "Avatar",
       "kind": "element",

@@ -101,6 +101,17 @@ export class Dialog extends LuxenElement {
   // gutter (no page shift); `edge` skips it (drawers sit flush to the edge).
   protected _modalKind: 'centered' | 'edge' = 'centered';
 
+  // Subclass seams (defaults keep `l-dialog` unchanged). `alert-dialog`
+  // overrides these to expose `role="alertdialog"` and wire `aria-describedby`
+  // to the body. `_bodyId` drives both the body's `id` and `aria-describedby`,
+  // so the association can't drift; an empty string emits neither.
+  protected get _role(): string {
+    return '';
+  }
+  protected get _bodyId(): string {
+    return '';
+  }
+
   private _mouseDownTarget: EventTarget | null = null;
 
   private _commandListener: EventListenerObject = {
@@ -143,7 +154,7 @@ export class Dialog extends LuxenElement {
       }
       this.setAttribute('data-modal', this._modalKind);
       this.dialog.showModal();
-      this._focusAutofocusTarget();
+      this._focusInitial();
       void this._emitAfter('after-show');
     } else if (!this.open && this.dialog.open) {
       // Closing — cancelable. Revert the property if consumer prevents.
@@ -179,7 +190,7 @@ export class Dialog extends LuxenElement {
   // Fires on Escape and on `closedby="any"` close requests.
   // Does NOT fire when script calls `.close()`, so `updated()`'s cancelable
   // `hide` emit doesn't collide with this one.
-  private _onCancel(e: Event) {
+  protected _onCancel(e: Event) {
     if (!this.dispatchEvent(new HideEvent())) {
       e.preventDefault();
     }
@@ -232,7 +243,8 @@ export class Dialog extends LuxenElement {
 
   // Firefox/Safari don't reliably resolve `[autofocus]` when `<dialog>`
   // is in shadow DOM and the target is in light DOM. Resolve it manually.
-  private _focusAutofocusTarget() {
+  // Subclasses (alert-dialog) override to fall back to a shadow-DOM target.
+  protected _focusInitial() {
     const target = this.querySelector<HTMLElement>('[autofocus]');
     target?.focus({ preventScroll: true });
   }
@@ -242,9 +254,11 @@ export class Dialog extends LuxenElement {
     return html`
       <dialog
         part="dialog"
+        role=${this._role || nothing}
         closedby=${closedby}
         aria-labelledby=${this.withoutHeader ? nothing : 'title-area'}
         aria-label=${this.title || nothing}
+        aria-describedby=${this._bodyId || nothing}
       >
         ${this.withoutHeader
           ? nothing
@@ -259,16 +273,27 @@ export class Dialog extends LuxenElement {
                 <slot name="close"></slot>
               </header>
             `}
-        <div part="body">
+        <div
+          part="body"
+          id=${this._bodyId || nothing}
+        >
           <slot></slot>
         </div>
-        <footer
-          part="footer"
-          ?data-empty=${!this._slots.test('footer')}
-        >
-          <slot name="footer"></slot>
-        </footer>
+        ${this.renderFooter()}
       </dialog>
+    `;
+  }
+
+  // Footer row. Overridden by subclasses (alert-dialog) to render their own
+  // actions in place of the default `footer` slot.
+  protected renderFooter() {
+    return html`
+      <footer
+        part="footer"
+        ?data-empty=${!this._slots.test('footer')}
+      >
+        <slot name="footer"></slot>
+      </footer>
     `;
   }
 }

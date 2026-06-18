@@ -1,0 +1,43 @@
+/*
+ * Layout for l-alert-dialog. Unlayered to match dialog.css (the inherited
+ * shared styles) so these overrides win — inside a shadow root there's no host
+ * cascade to guard against, and layered rules can't override dialog.css's
+ * unlayered ones. The `.l-button` appearance comes from the shared button-core
+ * (imported in alert-dialog.ts), not from here.
+ *
+ * Visual rhythm: a confirmation reads better with the title and description
+ * grouped tight and the actions set off in their own bar.
+ */
+
+/* Interruptive by nature: a stronger backdrop (the token meant for immersive
+   overlays) plus a touch of blur pulls focus firmly onto the confirmation.
+   Consumers can still retune --backdrop / --backdrop-blur. */
+:host {
+  --backdrop: var(--l-backdrop-strong);
+  --backdrop-blur: 2px;
+}
+
+/* Pull the description up close under the title (title keeps the inherited
+   1.125rem / 600 from dialog.css). */
+[part='header'] {
+  padding-block-end: 0.5rem;
+}
+
+/* Muted, smaller description with a comfortable reading measure, plus its own
+   block-end gap so the footer divider isn't crowded. */
+[part='body'] {
+  padding-block-end: var(--padding);
+  color: var(--l-color-text-secondary);
+  font-size: var(--l-text-sm);
+  line-height: 1.5;
+}
+
+/* Footer as a distinct action bar: subtle fill + top divider, corners rounded
+   to match the dialog (which doesn't clip its overflow). */
+[part='footer'] {
+  padding: 1rem var(--padding);
+  border-top: 1px solid var(--l-color-border);
+  background: var(--l-color-bg-fill-neutral-subtle);
+  border-end-start-radius: var(--border-radius);
+  border-end-end-radius: var(--border-radius);
+}

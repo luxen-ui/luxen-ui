@@ -1,144 +1,16 @@
+/**
+ * - https://component.gallery/components/button
+ * - https://designsystems.surf/components/button
+ * - https://www.uiguideline.com/components/button
+ * - https://codepen.io/jh3y/pen/XJdLrZV
+ *
+ * Base appearance + primary/destructive variants are shared with shadow-DOM
+ * elements (l-alert-dialog) from button-core.css; layered here into
+ * `@layer components`. Size/icon-only/press-effect variants are button-only.
+ */
+@import '../../html/shared/styles/button-core.css' layer(components);
+
 @layer components {
-  /**
-   * - https://component.gallery/components/button
-   * - https://designsystems.surf/components/button
-   * - https://www.uiguideline.com/components/button
-   * - https://codepen.io/jh3y/pen/XJdLrZV
-   */
-
-  .l-button {
-    /* Local variables */
-    --_button-size-xs: var(--l-size-control-xs); /* 28px */
-    --_button-size-sm: var(--l-size-control-sm); /* 32px */
-    --_button-size-md: var(--l-size-control-md); /* 36px */
-    --_button-size-lg: var(--l-size-control-lg); /* 40px */
-    --_button-size-xl: var(--l-size-control-xl); /* 44px */
-
-    /* Appearance (default: secondary) */
-    --height: var(--_button-size-md);
-    --padding-inline: 0.625rem;
-    --background-color: var(--l-color-bg-fill-secondary);
-    --background-color-active: color-mix(
-      in oklab,
-      var(--l-color-bg-fill-secondary) 90%,
-      var(--l-color-text-primary)
-    );
-    --background-color-hover: var(--background-color-active);
-    --font-size: var(--l-text-sm);
-    --text-color: var(--l-color-text-primary);
-    --text-color-hover: var(--text-color);
-    --border-color: var(--l-color-border);
-    --border-color-hover: color-mix(
-      in oklab,
-      var(--l-color-border) 75%,
-      var(--l-color-text-primary)
-    );
-
-    /*
-    --border-radius: if(
-      style(--size: sm): var(--l-radius-sm);
-      style(--size: lg): var(--l-radius-md);
-      style(--size: xl): var(--l-radius-lg);
-      else: var(--l-radius-md);
-    );
-    */
-
-    /* Base styles */
-    position: relative;
-    display: inline-flex;
-    place-items: center;
-    justify-content: center;
-    gap: calc(var(--spacing) * 2);
-    height: var(--height);
-    padding-inline: var(--padding-inline);
-    border: 1px solid var(--border-color);
-    border-radius: calc(var(--height) / 8);
-    background: var(--background-color);
-    color: var(--text-color);
-    outline: none;
-    font-size: var(--font-size);
-    font-weight: var(--l-font-weight-semibold);
-    text-decoration: none;
-    user-select: none;
-    white-space: nowrap;
-    appearance: none;
-    -webkit-tap-highlight-color: transparent;
-
-    /* Transitions */
-    transition-property: background-color, color, text-decoration, border-color;
-    transition-duration: 150ms;
-
-    /*
-    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-    Button states
-    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-    */
-
-    &:not(:disabled) {
-      cursor: pointer;
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.4;
-    }
-
-    &:not(:disabled):hover {
-      background-color: var(--background-color-hover);
-      border-color: var(--border-color-hover);
-      color: var(--text-color-hover);
-    }
-
-    &:not(:disabled):active {
-      background-color: var(--background-color-active);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--l-focus-ring);
-      outline-offset: 2px;
-    }
-  }
-
-  /*
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-   Button variant="primary"
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-  */
-
-  .l-button[data-variant='primary'] {
-    --background-color: var(--l-color-bg-fill-brand);
-    --background-color-active: var(--l-color-bg-fill-brand-active);
-    --background-color-hover: var(--l-color-bg-fill-brand-hover);
-    --text-color: var(--l-color-text-on-fill-brand);
-    --text-color-hover: var(--l-color-text-on-fill-brand);
-    --border-color: transparent;
-    --border-color-hover: transparent;
-  }
-
-  /*
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-   Button variant="destructive"
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-  */
-
-  .l-button[data-variant='destructive'] {
-    --background-color: var(--l-color-bg-fill-danger-soft);
-    --background-color-hover: color-mix(
-      in oklab,
-      var(--l-color-bg-fill-danger-soft) 80%,
-      var(--l-color-text-danger)
-    );
-    --background-color-active: color-mix(
-      in oklab,
-      var(--l-color-bg-fill-danger-soft) 65%,
-      var(--l-color-text-danger)
-    );
-    --text-color: var(--l-color-text-danger);
-    --text-color-hover: var(--l-color-text-danger);
-    --border-color: transparent;
-    --border-color-hover: transparent;
-  }
-
   .l-button[data-press-effect]:active {
     scale: 0.98;
     translate: 0 1px;
