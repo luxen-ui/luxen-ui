@@ -55,6 +55,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Rating         | `<l-rating>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Select         | `<select>`           | ⏣ Native HTML Element                   |
 | Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |
+| Slider         | `<l-slider>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Spinner        | `<l-spinner>`        | ⬢ Custom HTML Element (with Shadow DOM) |
 | Sticky bar     | `<l-sticky-bar>`     | ⬢ Custom HTML Element (with Shadow DOM) |
 | Stories        | `<l-stories>`        | ◇ Custom HTML Element (no Shadow DOM)   |

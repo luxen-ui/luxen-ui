@@ -21,6 +21,7 @@ export type ElementBaseName =
   | 'popover'
   | 'prose-editor'
   | 'skeleton'
+  | 'slider'
   | 'spinner'
   | 'rating'
   | 'sticky-bar'
