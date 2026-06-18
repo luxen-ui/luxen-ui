@@ -97,15 +97,25 @@
   --border-color-hover: transparent;
 }
 
-/* High-emphasis, solid danger fill (white label, per the codebase convention
-   for text on a strong fill — see badge.css). A destructive button is a primary
-   action themed danger; it should read as prominently as `primary`, not recede. */
+/* Soft danger fill: a pale tint with a dark-red label, deepening the tint on
+   hover/active. Reads clearly as destructive without the visual shout of a solid
+   red — the consequence lives in the copy and the confirmation, not the chrome.
+   Derivations mix the soft fill toward the danger text color, so the tint
+   deepens in light mode and lightens in dark mode (where soft is near-black). */
 .l-button[data-variant='destructive'] {
-  --background-color: var(--l-color-bg-fill-danger-strong);
-  --background-color-hover: color-mix(in oklab, var(--l-color-bg-fill-danger-strong) 88%, black);
-  --background-color-active: color-mix(in oklab, var(--l-color-bg-fill-danger-strong) 78%, black);
-  --text-color: white;
-  --text-color-hover: white;
+  --background-color: var(--l-color-bg-fill-danger-soft);
+  --background-color-hover: color-mix(
+    in oklab,
+    var(--l-color-bg-fill-danger-soft) 80%,
+    var(--l-color-text-danger)
+  );
+  --background-color-active: color-mix(
+    in oklab,
+    var(--l-color-bg-fill-danger-soft) 65%,
+    var(--l-color-text-danger)
+  );
+  --text-color: var(--l-color-text-danger);
+  --text-color-hover: var(--l-color-text-danger);
   --border-color: transparent;
   --border-color-hover: transparent;
 }
