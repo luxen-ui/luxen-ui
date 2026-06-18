@@ -1,0 +1,241 @@
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🆂🅻🅸🅳🅴🆁 (shadow)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+- https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb/
+
+shadcn-flavoured: a thin neutral rail, a high-contrast (primary) filled
+indicator, and circular white thumbs with a primary border + focus ring. The
+thumb's hit box is ≥24px (WCAG 2.5.8) while the visible disc stays smaller.
+*/
+
+:host {
+  --track-size: 0.375rem;
+  --thumb-size: 1.125rem;
+  /* The hit target never drops below 24px even though the disc is smaller. */
+  --_thumb-hit: 1.5rem;
+
+  --track-color: var(--l-color-bg-fill-neutral-subtle);
+  /* The active fill reads the shared form-control accent — same token the
+     switch / checkbox / radio use — so the slider stays consistent and
+     responds to a themed `--l-form-control-activated-color`. */
+  --indicator-color: var(--l-form-control-activated-color);
+  --thumb-color: var(--l-color-surface);
+
+  display: block;
+  inline-size: 100%;
+}
+
+:host([size='xs']) {
+  --track-size: 0.25rem;
+  --thumb-size: 0.875rem;
+}
+:host([size='sm']) {
+  --track-size: 0.3125rem;
+  --thumb-size: 1rem;
+}
+:host([size='lg']) {
+  --track-size: 0.4375rem;
+  --thumb-size: 1.25rem;
+}
+:host([size='xl']) {
+  --track-size: 0.5rem;
+  --thumb-size: 1.5rem;
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.base {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-block-size: var(--_thumb-hit);
+  touch-action: none;
+}
+
+.track {
+  position: relative;
+  inline-size: 100%;
+  block-size: var(--track-size);
+  background-color: var(--track-color);
+  border-radius: 999px;
+}
+
+.indicator {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--start, 0%);
+  inset-inline-end: calc(100% - var(--end, 0%));
+  background-color: var(--indicator-color);
+  border-radius: inherit;
+}
+
+.thumb {
+  position: absolute;
+  inset-inline-start: var(--pos, 0%);
+  inset-block-start: 50%;
+  inline-size: var(--_thumb-hit);
+  block-size: var(--_thumb-hit);
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+
+.thumb::before {
+  content: '';
+  inline-size: var(--thumb-size);
+  block-size: var(--thumb-size);
+  border-radius: 50%;
+  background-color: var(--thumb-color);
+  border: 2px solid var(--indicator-color);
+  box-shadow: var(--l-shadow-sm);
+  transition:
+    box-shadow 0.15s ease,
+    scale 0.1s ease;
+}
+
+.thumb:active {
+  cursor: grabbing;
+}
+
+.thumb:focus-visible {
+  outline: none;
+}
+
+.thumb:focus-visible::before {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 45%, transparent);
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🆃🅾🅾🅻🆃🅸🅿  (with-tooltip)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+Reuses the l-tooltip bubble tokens. Shown only when the host has `with-tooltip`
+and the thumb is keyboard-focused or being dragged (`[data-active]`).
+*/
+
+.tooltip {
+  position: absolute;
+  inset-block-end: calc(100% + 0.25rem);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  padding: 0.125rem 0.4rem;
+  border-radius: 4px;
+  background: var(--l-tooltip-background-color);
+  color: oklch(from var(--l-tooltip-background-color) calc(0.59 - 0.41 * sign(l - 0.5)) 0 0);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.85;
+  transition:
+    opacity 0.12s ease,
+    scale 0.12s ease;
+}
+
+@supports (color: contrast-color(red vs black, white)) {
+  .tooltip {
+    color: contrast-color(var(--l-tooltip-background-color) vs #111827, #fff to AA);
+  }
+}
+
+/* Little caret under the bubble. */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 50%;
+  translate: -50% -1px;
+  border: 4px solid transparent;
+  border-block-start-color: var(--l-tooltip-background-color);
+}
+
+:host([with-tooltip]) .thumb:focus-visible .tooltip,
+:host([with-tooltip]) .thumb[data-active] .tooltip {
+  opacity: 1;
+  scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition-duration: 0ms;
+  }
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🆅🅴🆁🆃🅸🅲🅰🅻
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+The same `--start` / `--end` / `--pos` percentages (low→high) drive the block
+axis instead of the inline axis; the value increases upward. Height defaults to
+`--length` (override per instance).
+*/
+
+:host([orientation='vertical']) {
+  --length: 11rem;
+  display: inline-block;
+  inline-size: auto;
+}
+
+:host([orientation='vertical']) .base {
+  flex-direction: column;
+  inline-size: var(--_thumb-hit);
+  min-inline-size: var(--_thumb-hit);
+  block-size: var(--length);
+}
+
+:host([orientation='vertical']) .track {
+  inline-size: var(--track-size);
+  block-size: 100%;
+}
+
+:host([orientation='vertical']) .indicator {
+  inset-block: auto;
+  inset-inline: 0;
+  inset-block-end: var(--start, 0%);
+  inset-block-start: calc(100% - var(--end, 0%));
+}
+
+:host([orientation='vertical']) .thumb {
+  inset-inline-start: 50%;
+  inset-block-start: auto;
+  inset-block-end: var(--pos, 0%);
+  translate: -50% 50%;
+}
+
+/* In vertical mode the bubble sits to the inline-start with a side caret. */
+:host([orientation='vertical']) .tooltip {
+  inset-block-end: auto;
+  inset-block-start: 50%;
+  inset-inline-start: auto;
+  inset-inline-end: calc(100% + 0.25rem);
+  translate: 0 -50%;
+}
+
+:host([orientation='vertical']) .tooltip::after {
+  inset-block-start: 50%;
+  inset-inline-start: 100%;
+  translate: -1px -50%;
+  border-block-start-color: transparent;
+  border-inline-start-color: var(--l-tooltip-background-color);
+}
+
+@media (hover: hover) {
+  .thumb:hover::before {
+    scale: 1.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb::before {
+    transition-duration: 0ms;
+  }
+}

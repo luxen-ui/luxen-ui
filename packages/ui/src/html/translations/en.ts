@@ -18,6 +18,9 @@ const en: LuxenTranslation = {
   increaseValue: 'Increase value',
   decreaseValue: 'Decrease value',
 
+  rangeMinimum: 'Minimum',
+  rangeMaximum: 'Maximum',
+
   richTextEditor: 'Rich text editor',
   formatting: 'Formatting',
   heading1: 'Heading 1',

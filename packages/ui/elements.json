@@ -261,6 +261,14 @@
       "inMockups": true
     },
     {
+      "name": "slider",
+      "displayName": "Slider",
+      "kind": "element",
+      "type": "shadow",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
       "name": "spinner",
       "displayName": "Spinner",
       "kind": "element",

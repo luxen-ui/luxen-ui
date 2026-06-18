@@ -407,6 +407,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="shadow" href="/elements/prose-editor"><code>&lt;l-prose-editor&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/rating"><code>&lt;l-rating&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/skeleton"><code>&lt;l-skeleton&gt;</code></a>
+<a class="luxen-tag" data-type="shadow" href="/elements/slider"><code>&lt;l-slider&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/spinner"><code>&lt;l-spinner&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/sticky-bar"><code>&lt;l-sticky-bar&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/stories"><code>&lt;l-stories&gt;</code></a>

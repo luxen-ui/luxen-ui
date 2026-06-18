@@ -160,6 +160,7 @@ export default defineConfig({
           el('Radio', 'input', 'radio'),
           el('Rating', 'l-rating', 'rating'),
           el('Select', 'select', 'select'),
+          el('Slider', 'l-slider', 'slider'),
           el('Switch', 'input', 'switch'),
           el('Textarea', 'textarea', 'textarea'),
         ],

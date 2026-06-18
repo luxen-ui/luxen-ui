@@ -56,6 +56,10 @@ export interface LuxenTranslation {
   increaseValue: string;
   decreaseValue: string;
 
+  // slider
+  rangeMinimum?: string;
+  rangeMaximum?: string;
+
   // prose-editor
   richTextEditor: string;
   formatting: string;

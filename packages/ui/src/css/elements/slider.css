@@ -1,0 +1,37 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🅻🅸🅳🅴🆁 — document-level fallback
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  l-slider is a Shadow-DOM element: its full UI lives in the shadow root. This
+  file only reserves layout and paints a static rail BEFORE the element upgrades
+  (`:not(:defined)`), so there's no flash or layout shift on hydration. Once
+  defined, the shadow styles take over and these rules no longer match.
+  */
+
+  l-slider {
+    display: block;
+    inline-size: 100%;
+  }
+
+  /* The host itself IS the rail — a thin solid bar, vertically centred in a
+     reserved ~24px box so there's no layout shift on upgrade. A `::before`
+     paints a faint filled amorce so it reads as a slider at rest. Solid colors
+     (not sized gradients) so it paints reliably everywhere, incl. srcdoc demos.
+     The real value/position is unknown pre-upgrade — this is purely cosmetic. */
+  l-slider:not(:defined) {
+    block-size: 0.375rem;
+    margin-block: 0.5625rem; /* (1.5rem − 0.375rem) / 2 → 24px total footprint */
+    overflow: hidden;
+    background-color: var(--l-color-bg-fill-neutral-subtle);
+    border-radius: 999px;
+  }
+
+  l-slider:not(:defined)::before {
+    content: '';
+    display: block;
+    block-size: 100%;
+    inline-size: 40%;
+    background-color: var(--l-form-control-activated-color);
+  }
+}

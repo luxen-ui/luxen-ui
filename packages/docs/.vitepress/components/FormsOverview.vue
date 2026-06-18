@@ -355,6 +355,34 @@ const attr = (on) => (on ? '' : null);
         </p>
       </div>
 
+      <!-- Slider — form-associated; `label` drives the thumb accessible name. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Volume</label>
+        <l-slider
+          label="Volume"
+          value="40"
+          :size="size"
+          :disabled="attr(disabled)"
+        ></l-slider>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Slider range — two thumbs, submitted under one name. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Price range</label>
+        <l-slider
+          label="Price range"
+          range
+          min-value="20"
+          max-value="70"
+          :size="size"
+          :disabled="attr(disabled)"
+        ></l-slider>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
       <!-- TODO: add select here as it ships — it reuses the same l-form-field
            wiring and --l-form-control-* tokens. -->
     </form>
