@@ -12,7 +12,7 @@
  *
  *   {
  *     name, displayName, type, isCustomElement, tag, nativeTag, selector,
- *     summary, status, appearances, import: { css, js },
+ *     subItemOf, summary, status, appearances, import: { css, js },
  *     properties[], attributes[], events[], methods[], slots[],
  *     cssClasses[], cssParts[], cssProperties[], commands[], examples[]
  *   }
@@ -212,6 +212,8 @@ async function normalizeElement(entry, decl) {
     tag,
     nativeTag,
     selector,
+    // Set on sub-components (e.g. l-tree-item → "tree"); null for top-level elements.
+    subItemOf: entry.subItemOf ?? null,
     summary: decl?.summary ?? decl?.description ?? '',
     status: entry.status ?? 'stable',
     appearances: entry.appearances ?? [],
