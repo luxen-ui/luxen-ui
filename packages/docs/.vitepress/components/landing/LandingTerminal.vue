@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { version } from '../../../../ui/package.json';
+import metadata from 'luxen-ui/metadata' with { type: 'json' };
 
 const prefixes = ['l-', 'acme-', 'pulse-'];
 const current = ref(0);
@@ -70,26 +71,14 @@ const principles = [
   { key: 'agent', body: 'ships an agent skill for ai code generation.' },
 ];
 
-const railTags = [
-  'l-avatar',
-  'l-badge',
-  'l-carousel',
-  'l-dialog',
-  'l-divider',
-  'l-drawer',
-  'l-dropdown',
-  'l-icon',
-  'l-input-otp',
-  'l-input-stepper',
-  'l-popover',
-  'l-rating',
-  'l-skeleton',
-  'l-spinner',
-  'l-tabs',
-  'l-toast',
-  'l-tooltip',
-  'l-tree',
-];
+// Top-level custom elements (`<l-*>` tags), derived from the metadata so the
+// count and the marquee never drift when an element is added or removed.
+// Excludes native CSS-only elements (no tag) and sub-components (subItemOf set,
+// e.g. l-tree-item, l-dropdown-item). To change this list, edit elements.json.
+const railTags = metadata.elements
+  .filter((el) => el.isCustomElement && !el.subItemOf)
+  .map((el) => el.tag)
+  .sort();
 </script>
 
 <template>

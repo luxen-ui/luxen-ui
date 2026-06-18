@@ -150,6 +150,8 @@ Always update the element list in these files:
 - `README.md` (repository root) — the element table in the project README
 - `packages/docs/overview/introduction.md` — the element list on the introduction page
 
+The homepage "N custom elements" count and the marquee in `LandingTerminal.vue` are **not** hand-maintained — they derive from `luxen-ui/metadata` (the rail lists every top-level custom element, i.e. `isCustomElement && !subItemOf`). Adding or removing an element in `packages/ui/elements.json` and rebuilding metadata (`cd packages/ui && pnpm run metadata`) updates the count automatically. Don't reintroduce a hardcoded list or number.
+
 ## Checklist Before Merging Element Docs
 
 - [ ] Has hero code snippet below description
