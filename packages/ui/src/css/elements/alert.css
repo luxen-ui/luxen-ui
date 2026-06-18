@@ -1,0 +1,151 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅰🅻🅴🆁🆃
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  - Flex row: [icon] [content] [close]. Authored children are moved into the
+    injected `.l-alert-content` wrapper (a text-node body cannot be placed by
+    CSS), which stacks them vertically.
+  - Variants tint the whole callout (text + icon + border) from a single
+    `--_color`, over a soft background — mirrors the toast look.
+  */
+
+  l-alert {
+    /* Public knobs */
+    --gap: 0.75rem;
+    --padding: 1rem;
+    --border-radius: 8px;
+
+    /* Neutral primitives — overridden per variant */
+    --_color: var(--l-color-text-neutral);
+    --_bg: var(--l-color-bg-fill-neutral-subtle);
+    --_border: var(--l-color-border);
+
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap);
+    padding: var(--padding);
+    border: 1px solid var(--_border);
+    border-radius: var(--border-radius);
+    background: var(--_bg);
+    color: var(--l-color-text-primary);
+    font-family: var(--l-font-neo-grotesque);
+    font-size: var(--l-text-sm);
+    line-height: 1.5;
+
+    transition:
+      opacity 150ms ease,
+      translate 150ms ease;
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆅🅰🆁🅸🅰🅽🆃🆂
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    &[variant='info'] {
+      --_color: var(--l-color-text-info);
+      --_bg: var(--l-color-bg-fill-info-soft);
+    }
+    &[variant='success'] {
+      --_color: var(--l-color-text-success);
+      --_bg: var(--l-color-bg-fill-success-soft);
+    }
+    &[variant='warning'] {
+      --_color: var(--l-color-text-warning);
+      --_bg: var(--l-color-bg-fill-warning-soft);
+    }
+    &[variant='danger'] {
+      --_color: var(--l-color-text-danger);
+      --_bg: var(--l-color-bg-fill-danger-soft);
+    }
+
+    &[variant] {
+      --_border: color-mix(in oklab, var(--_color) 25%, transparent);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆄🅸: icon
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    > .l-alert-icon {
+      flex-shrink: 0;
+      margin-top: 0.0625rem;
+      font-size: 1.25rem;
+      color: var(--_color);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆄🅸: content (authored children, stacked)
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    > .l-alert-content {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      /* Body copy stays in the readable primary text color; only the icon,
+         title, and border carry the semantic tint, so prose contrast holds
+         and links keep a distinct affordance. */
+      color: var(--l-color-text-primary);
+
+      > * {
+        margin: 0;
+      }
+
+      /* Links keep an underline (and the semantic tint on variants) so they
+         remain distinguishable from the body text. */
+      :where(a) {
+        color: var(--_color);
+        text-decoration: underline;
+      }
+    }
+
+    .l-alert-title {
+      font-weight: var(--l-font-weight-medium);
+      line-height: 1.4;
+    }
+
+    &[variant] .l-alert-title {
+      color: var(--_color);
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🆄🅸: close button (shared .l-close, ring appearance)
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    > .l-close {
+      --size: 28px;
+      --icon-size: 14px;
+      --icon-color: var(--_color);
+      --ring-color: color-mix(in oklab, var(--_color) 40%, transparent);
+
+      flex-shrink: 0;
+      margin: -0.25rem -0.25rem 0 0;
+    }
+
+    /*
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     🅰🅽🅸🅼🅰🆃🅸🅾🅽: dismiss
+    ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    */
+
+    &[data-dismissing] {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    l-alert {
+      transition: none;
+    }
+  }
+}

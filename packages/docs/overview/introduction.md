@@ -386,6 +386,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <code>&lt;var&gt;</code>
 <code>&lt;video&gt;</code>
 <code>&lt;wbr&gt;</code>
+<a class="luxen-tag" data-type="custom" href="/elements/alert"><code>&lt;l-alert&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/alert-dialog"><code>&lt;l-alert-dialog&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/avatar"><code>&lt;l-avatar&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/badge"><code>&lt;l-badge&gt;</code></a>

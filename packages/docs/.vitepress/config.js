@@ -108,6 +108,7 @@ export default defineConfig({
         text: 'Elements',
         collapsed: false,
         items: [
+          el('Alert', 'l-alert', 'alert'),
           el('Alert dialog', 'l-alert-dialog', 'alert-dialog'),
           el('Avatar', 'l-avatar', 'avatar'),
           el('Badge', 'l-badge', 'badge'),
