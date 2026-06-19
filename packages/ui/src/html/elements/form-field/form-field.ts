@@ -185,9 +185,3 @@ export class FormField extends LuxenElement {
     else control.removeAttribute('aria-describedby');
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-form-field': FormField;
-  }
-}

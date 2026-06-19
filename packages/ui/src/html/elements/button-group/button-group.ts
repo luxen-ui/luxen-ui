@@ -51,9 +51,3 @@ export class ButtonGroup extends LuxenElement {
     }
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-button-group': ButtonGroup;
-  }
-}

@@ -110,6 +110,38 @@ composed: false` — listen on the element itself (like `toggle`/`close`).
   parsed into metadata; describe the payload as `Properties: …`, and note
   `Bubbles.` when non-default).
 
+## Renameable Prefix (`l-` is never hardcoded)
+
+The `l-` prefix is a **default, not a constant**. Consumers rebrand it via
+`luxen.config.mjs` (`elementPrefix` / `cssPrefix`), so element source must
+**derive** every tag and class name from the registry — never bake `l-` into a
+string literal or a type.
+
+- **Tag names → `tagName(baseName)`** from `registry.js`. Any `closest()`,
+  `querySelector()`, `createElement()`, `matches()`, or `el.tagName === …`
+  comparison that targets an `l-*` element must go through `tagName('story')`
+  (and `.toUpperCase()` for `tagName` comparisons), like `dropdown` / `tree` do.
+  Never `closest('l-story')` or `=== 'L-STORIES-VIEWER'`.
+- **Internal CSS classes → `cls(name)`** from `registry.js` when set
+  imperatively (`el.className = cls('toast-icon')`), like `toast` / `slider`.
+  Static `class="l-…"` in Lit templates is the one tolerated literal (the
+  consumer's `luxen-ui/vite-plugin` rewrites the `cssPrefix` at build time) —
+  but anything computed in JS must use `cls()`.
+- **Never augment the global `HTMLElementTagNameMap` (or Vue's
+  `GlobalComponents`) in element source.** A `declare global { interface
+HTMLElementTagNameMap { 'l-foo': Foo } }` block hardcodes `l-` and is wrong
+  under any non-default prefix. Consumer-side typing is emitted **dynamically,
+  with the configured prefix**, by the Vite plugin's `emitTypes` option (see
+  `LuxenEmitTypesConfig` in `src/html/config.ts`) — the library must not ship a
+  fixed-prefix augmentation. Typed event listeners still use the
+  declaration-merged `interface Foo { addEventListener… }` pattern (see
+  `tabs.ts` / `alert-dialog.ts`); that merge carries no tag-name key, so it's
+  fine.
+
+Rule of thumb: if you typed the characters `l-` (or `L-`) anywhere in a `.ts`
+file outside a JSDoc tag, a code comment, or a static template `class=`, it's a
+bug against rebranding — route it through `tagName()` / `cls()` instead.
+
 ## Testing
 
 Two runners, two jobs:
