@@ -37,27 +37,39 @@ jobs:
           publish: vp run release
           title: 'chore: release'
           commit: 'chore: release'
-          # Disabled during 0.x phase (lib under construction).
+          # GitHub Releases stay disabled during the 0.x phase (lib under construction).
           # Re-enable when going to 1.0 to officialize releases on the GitHub Releases page.
-          # Git tags are still created automatically by `pnpm publish` regardless of this flag.
+          # Note: neither this flag nor `pnpm publish` creates git tags — the
+          # "Tag release and deploy docs" step below does that explicitly.
           # createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
-      # Deploy the docs site to production only when a publish actually happened,
-      # so luxen-ui.com always reflects the last released package (not bare main).
-      # Triggers the Netlify build hook, which builds main's HEAD (= the version-
-      # bumped release commit). No-op until NETLIFY_BUILD_HOOK_URL is configured.
-      - name: Deploy docs to production
+      # On a real publish, tag the release commit `v<version>` (luxen-ui's version)
+      # and deploy the docs. The tag marks the released version; the Netlify build
+      # hook is curled in the SAME run on purpose — a separate `on: push: tags`
+      # workflow would never fire for a tag pushed with GITHUB_TOKEN. luxen-ui.com
+      # thus always reflects the last released package, not bare main. The deploy is
+      # a no-op until NETLIFY_BUILD_HOOK_URL is configured; tagging still happens.
+      - name: Tag release and deploy docs to production
         if: steps.changesets.outputs.published == 'true'
         env:
           NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
         run: |
+          VERSION=$(node -p "require('./packages/ui/package.json').version")
+          TAG="v$VERSION"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists — skipping tag creation."
+          else
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "Pushed git tag $TAG."
+          fi
           if [ -n "$NETLIFY_BUILD_HOOK_URL" ]; then
-            curl -fsSL -X POST -d '{"trigger_title":"release"}' "$NETLIFY_BUILD_HOOK_URL"
-            echo "Triggered Netlify production deploy."
+            curl -fsSL -X POST -d '{"trigger_title":"release '"$TAG"'"}' "$NETLIFY_BUILD_HOOK_URL"
+            echo "Triggered Netlify production deploy for $TAG."
           else
             echo "NETLIFY_BUILD_HOOK_URL not set — skipping docs deploy."
           fi
