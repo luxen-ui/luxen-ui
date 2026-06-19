@@ -13,6 +13,11 @@ const invalid = ref(false);
 const size = ref('md');
 const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
+// `l-rating` sizes via `--icon-size`, not the `--l-size-control-*` scale, so map
+// the shared size onto a matching icon size keeping the same xs→xl progression.
+const ratingIconSizes = { xs: '14px', sm: '16px', md: '20px', lg: '24px', xl: '28px' };
+const ratingIconSize = computed(() => ratingIconSizes[size.value]);
+
 // Accent — overrides `--l-form-control-activated-color` on the form, so every
 // control that reads it (checkbox / radio / switch fills, focus accents)
 // recolors live. A pure CSS variable, so it survives the stateKey remount.
@@ -316,6 +321,39 @@ const attr = (on) => (on ? '' : null);
         <p class="l-hint">{{ hint }}</p>
         <p class="l-error">{{ error }}</p>
       </l-form-field>
+
+      <!-- Rating — a form-associated custom control, but not an
+           input/select/textarea, so l-form-field can't auto-wire it; mirror the
+           radio fieldset with a manual label, required marker and error. The
+           shared size maps to --icon-size and the accent to --active-color.
+           Error clears a required rating (value 0) so it reads as invalid. -->
+      <div class="grid gap-[var(--l-form-field-gap)]">
+        <span
+          class="text-sm font-medium [color:var(--l-form-control-label-color)]"
+          :class="
+            required &&
+            'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]'
+          "
+        >
+          Overall rating
+        </span>
+        <l-rating
+          name="overview-rating"
+          edit-mode
+          :value="invalid ? 0 : 4"
+          :required="attr(required)"
+          :disabled="attr(disabled)"
+          :aria-invalid="invalid ? 'true' : null"
+          :style="{ '--icon-size': ratingIconSize, '--active-color': accent }"
+        ></l-rating>
+        <p class="l-hint">{{ hint }}</p>
+        <p
+          class="l-error"
+          :hidden="!invalid"
+        >
+          {{ error }}
+        </p>
+      </div>
 
       <!-- TODO: add select here as it ships — it reuses the same l-form-field
            wiring and --l-form-control-* tokens. -->
