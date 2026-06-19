@@ -151,9 +151,3 @@ export class InputGroup extends LuxenElement {
     if (event.target === this) this._input?.focus();
   };
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-input-group': InputGroup;
-  }
-}

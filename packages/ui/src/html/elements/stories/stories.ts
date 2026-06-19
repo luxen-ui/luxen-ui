@@ -1,5 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { tagName } from '../../registry.js';
 import type { LuxenStory } from '../story/story.js';
 
 export type StoriesAppearance = 'rounded' | 'squared' | 'portrait' | 'landscape';
@@ -88,13 +89,13 @@ export class LuxenStories extends LuxenElement {
 
   /** All `<l-story>` children. */
   stories(): LuxenStory[] {
-    return Array.from(this.querySelectorAll<LuxenStory>(':scope > l-story'));
+    return Array.from(this.querySelectorAll<LuxenStory>(`:scope > ${tagName('story')}`));
   }
 
   private _onClick = (e: MouseEvent) => {
     const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-story-trigger]');
     if (!trigger) return;
-    const story = trigger.closest<LuxenStory>('l-story');
+    const story = trigger.closest<LuxenStory>(tagName('story'));
     if (!story) return;
     const index = this.stories().indexOf(story);
     if (index < 0) return;
@@ -109,9 +110,11 @@ export class LuxenStories extends LuxenElement {
       if (el && _isViewer(el)) return el;
     }
     // Auto-singleton fallback.
-    let auto = document.querySelector<LuxenStoriesViewerLike>('l-stories-viewer[data-auto]');
+    let auto = document.querySelector<LuxenStoriesViewerLike>(
+      `${tagName('stories-viewer')}[data-auto]`,
+    );
     if (!auto) {
-      auto = document.createElement('l-stories-viewer') as LuxenStoriesViewerLike;
+      auto = document.createElement(tagName('stories-viewer')) as LuxenStoriesViewerLike;
       auto.setAttribute('data-auto', '');
       document.body.appendChild(auto);
     }
@@ -127,5 +130,5 @@ interface LuxenStoriesViewerLike extends HTMLElement {
 }
 
 function _isViewer(el: Element): el is LuxenStoriesViewerLike {
-  return el.tagName === 'L-STORIES-VIEWER';
+  return el.tagName === tagName('stories-viewer').toUpperCase();
 }

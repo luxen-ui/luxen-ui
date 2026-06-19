@@ -252,9 +252,3 @@ export interface AlertDialog {
     options?: boolean | EventListenerOptions,
   ): void;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-alert-dialog': AlertDialog;
-  }
-}
