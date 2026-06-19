@@ -1,5 +1,22 @@
 # luxen-ui
 
+## 0.13.0
+
+### Minor Changes
+
+- d147f7a: Add `<l-alert>`, a contextual callout that highlights an inline message with a semantic color and a leading icon. It supports `info` / `success` / `warning` / `danger` variants (each with a default icon), an `icon` override or `no-icon` to control the glyph, and a `dismissible` attribute that adds a close button emitting cancelable `hide` / `after-hide` events. Authored content (an optional `.l-alert-title` plus body) stacks automatically, and the whole callout adapts to dark mode through the design tokens.
+- 9e16be1: Add `<l-alert-dialog>`, an interruptive confirmation dialog built on `<l-dialog>`. It ships built-in cancel/confirm actions, a `tone="danger"` destructive variant, cancelable `confirm` / `cancel` events (call `preventDefault()` to keep it open for async work), a `loading` state, and `role="alertdialog"` with an accessible description.
+
+  The `destructive` button variant (`data-variant="destructive"`) is now a solid, high-emphasis danger fill (previously a soft, low-emphasis tint) so a destructive action reads as prominently as `primary`. Buttons also pick up disabled styling from `aria-disabled` (not just the native `disabled` attribute).
+
+- df0ca55: Restyle the Select (`.l-select`) for consistency: the trigger now matches the other form controls (border, focus ring, invalid and disabled states) and the picker mirrors the dropdown panel. The native chevron is recolored via `--caret-color` and replaceable via `--caret-icon`. Adds rich `<option>` support with `.l-select-item-media`, `.l-select-item-text`, `.l-select-item-title` and `.l-select-item-description`, where selection is marked by an inline-start checkmark and the trigger mirrors the chosen option.
+- f5d09c1: Add `<l-slider>`, a single- or dual-thumb range slider. Set `value` (with `min`, `max`, `step`), or add `range` with `min-value` / `max-value` for a min–max selection whose thumbs cannot cross. It's a form-associated custom element — the value is submitted under `name` (range mode submits the low and high values as two entries) — with full keyboard support (arrows, Page, Home/End), `role="slider"` thumbs, size variants (`xs`–`xl`), and a shadcn-style look. Emits typed `input` and `change` events (with `value` and `values`) and exposes the `base`, `track`, `indicator` and `thumb` CSS parts plus `--track-size`, `--thumb-size`, `--track-color`, `--indicator-color` and `--thumb-color`.
+- 51f68a3: Add a Switch element: a CSS-only `<input type="checkbox" role="switch">` skin with a sliding thumb, accent hover halo, full keyboard and form support, dark mode, forced-colors and reduced-motion support. Checkbox and radio now share the switch's hover halo for a consistent toggle feel.
+
+### Patch Changes
+
+- d03a529: Fix the custom-element prefix rename so it stays consistent across the library. `<l-stories>` now resolves its `<l-story>` / `<l-stories-viewer>` children through the prefix registry instead of hardcoded `l-` tag literals, so the playlist and the auto-singleton viewer keep working under a custom `elementPrefix`. The library also no longer ships fixed `l-*` keys in the global `HTMLElementTagNameMap` for a handful of elements — consumer-side tag typing is emitted with the configured prefix via the Vite plugin's `emitTypes` option instead.
+
 ## 0.12.0
 
 ### Minor Changes
