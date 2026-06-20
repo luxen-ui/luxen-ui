@@ -2,7 +2,10 @@ import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { uniqueId } from '../../registry.js';
 
-type FormControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+type NativeControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+/** A form-associated custom element (e.g. `l-slider`) exposes the same constraint
+ * surface as a native control but doesn't match the native selector. */
+type FormControl = NativeControl | (HTMLElement & { checkValidity(): boolean });
 
 const CONTROL_SELECTOR = 'input, select, textarea';
 
@@ -25,7 +28,8 @@ const CONTROL_SELECTOR = 'input, select, textarea';
  * </l-form-field>
  * ```
  *
- * @slot - A `<label>`, one form control (`input` / `select` / `textarea`), and
+ * @slot - A `<label>`, one form control (a native `input` / `select` /
+ * `textarea`, or a form-associated custom element such as `l-slider`), and
  * optional `.l-hint` / `.l-error` message elements, in any order.
  *
  * @cssClass .l-hint - Helper text element. Always visible; linked via `aria-describedby`.
@@ -72,7 +76,18 @@ export class FormField extends LuxenElement {
     // the element is defined after its markup). Fall back to a macrotask — which,
     // unlike requestAnimationFrame, still fires in a hidden tab — if the element
     // upgrades mid-parse before its children exist.
-    if (!this._setup()) setTimeout(() => this._setup(), 0);
+    if (this._setup()) return;
+    setTimeout(() => this._setup(), 0);
+    // A custom-element control (e.g. l-slider) can upgrade after us — its module
+    // may load lazily — so the macrotask retry can still miss it. Re-attempt once
+    // each pending custom-element child is defined. `_setup()` is idempotent via
+    // `_wired`, so the earliest successful attempt wins.
+    for (const el of this.querySelectorAll('*')) {
+      const tag = el.localName;
+      if (tag.includes('-') && !customElements.get(tag)) {
+        void customElements.whenDefined(tag).then(() => this._setup());
+      }
+    }
   }
 
   override disconnectedCallback() {
@@ -83,7 +98,7 @@ export class FormField extends LuxenElement {
 
   private _setup(): boolean {
     if (this._wired) return true;
-    this._control = this.querySelector<FormControl>(CONTROL_SELECTOR);
+    this._control = this._findControl();
     if (!this._control) return false;
     this._wired = true;
     const control = this._control;
@@ -139,6 +154,24 @@ export class FormField extends LuxenElement {
 
     this._updateValidity();
     return true;
+  }
+
+  /**
+   * The field's control: a native `input`/`select`/`textarea`, or — when none is
+   * present — the first form-associated custom element (e.g. `l-slider`). Those
+   * expose the same `checkValidity()` / `invalid` event surface but don't match
+   * the native selector, so without this fallback the field never wires up and
+   * the `l-error` message stays visible on load.
+   */
+  private _findControl(): FormControl | null {
+    const native = this.querySelector<NativeControl>(CONTROL_SELECTOR);
+    if (native) return native;
+    for (const el of this.querySelectorAll<HTMLElement>('*')) {
+      if ((el.constructor as { formAssociated?: boolean }).formAssociated) {
+        return el as FormControl;
+      }
+    }
+    return null;
   }
 
   private _teardown() {
