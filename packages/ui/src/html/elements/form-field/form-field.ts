@@ -141,10 +141,10 @@ export class FormField extends LuxenElement {
     this.required = control.hasAttribute('required');
     this.optional = !this.required;
 
-    // Error is hidden until the field is invalid after interaction (or already
-    // flagged invalid by the author / server).
+    // The error stays hidden until the field is invalid after interaction (or is
+    // already flagged invalid by the author / server). Visibility is owned by CSS
+    // off the reflected `invalid` state — the field never toggles `hidden`.
     const preInvalid = this.invalid || control.getAttribute('aria-invalid') === 'true';
-    if (this._error) this._error.hidden = !preInvalid;
     this._hasInteracted = preInvalid;
 
     control.addEventListener('invalid', this._onInvalid);
@@ -200,11 +200,11 @@ export class FormField extends LuxenElement {
     if (!control) return;
     const showError = this._hasInteracted && !control.checkValidity();
 
+    // `invalid` reflects to the host; CSS reveals `.l-error` from there.
     this.invalid = showError;
     if (showError) control.setAttribute('aria-invalid', 'true');
     else control.removeAttribute('aria-invalid');
 
-    if (this._error) this._error.hidden = !showError;
     this._updateDescribedby();
   }
 
@@ -213,7 +213,7 @@ export class FormField extends LuxenElement {
     if (!control) return;
     const ids = [...this._externalDescribedby];
     if (this._hint?.id) ids.push(this._hint.id);
-    if (this._error && !this._error.hidden && this._error.id) ids.push(this._error.id);
+    if (this._error && this.invalid && this._error.id) ids.push(this._error.id);
     if (ids.length) control.setAttribute('aria-describedby', ids.join(' '));
     else control.removeAttribute('aria-describedby');
   }
