@@ -63,7 +63,22 @@
     font-size: var(--l-text-sm);
   }
 
+  /* `.l-error` is a standalone message too (e.g. a radio fieldset or a custom
+     control the field can't auto-wire): visible by default, hidden via the
+     `hidden` attribute the author toggles directly. */
   .l-error[hidden] {
     display: none;
+  }
+
+  /* Inside a field, the field owns the error's visibility through its reflected
+     `invalid` state — no JS needed for the resting state. Hidden by default, so
+     a `.l-error` never flashes on load (even before the element upgrades, or if
+     its script never runs), and revealed only once the field is invalid. */
+  l-form-field .l-error {
+    display: none;
+  }
+
+  l-form-field[invalid] .l-error {
+    display: block;
   }
 }

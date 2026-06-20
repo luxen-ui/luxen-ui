@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import '../../src/html/elements/form-field/index.js';
 import '../../src/html/elements/slider/index.js';
+// The field owns its error's visibility through CSS keyed on the reflected
+// `invalid` state, so load the real stylesheet and assert what a user sees.
+import '../../src/css/elements/form-field.css';
 
 // l-form-field wires id/for/aria-describedby/aria-invalid around its control and
 // keeps the .l-error message hidden until the control is invalid after
@@ -26,9 +29,11 @@ async function mount(html: string): Promise<HTMLElement> {
 async function settle(field: HTMLElement) {
   await (field as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete;
   // Setup runs synchronously, then retries on a macrotask, then again once the
-  // control's custom element is defined — wait past all three.
+  // control's custom element is defined — wait past all three, plus the
+  // reflection of `invalid` to the host attribute that drives the CSS.
   await new Promise((r) => setTimeout(r, 0));
   await new Promise((r) => setTimeout(r, 0));
+  await (field as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete;
 }
 
 const SLIDER_FIELD = `
@@ -39,12 +44,14 @@ const SLIDER_FIELD = `
     <p class="l-error">This is an error message.</p>
   </l-form-field>`;
 
+const displayOf = (el: HTMLElement) => getComputedStyle(el).display;
+
 describe('l-form-field wires a form-associated custom element control', () => {
-  it('keeps the error message hidden on load (a valid slider is not invalid)', async () => {
+  it('keeps the error hidden on load (a valid slider is not invalid)', async () => {
     const field = await mount(SLIDER_FIELD);
     const error = field.querySelector<HTMLElement>('.l-error')!;
-    expect(error.hidden).toBe(true);
-    expect((field as HTMLElement & { invalid?: boolean }).invalid).toBe(false);
+    expect(field.hasAttribute('invalid')).toBe(false);
+    expect(displayOf(error)).toBe('none');
   });
 
   it('links the control to the hint via aria-describedby', async () => {
@@ -63,7 +70,7 @@ describe('l-form-field wires a form-associated custom element control', () => {
   });
 
   it('reveals the error once the control is invalid after interaction', async () => {
-    const field = (await mount(SLIDER_FIELD)) as HTMLElement & { invalid: boolean };
+    const field = await mount(SLIDER_FIELD);
     const error = field.querySelector<HTMLElement>('.l-error')!;
     const slider = field.querySelector<HTMLElement & { setCustomValidity(m: string): void }>(
       'l-slider',
@@ -75,9 +82,19 @@ describe('l-form-field wires a form-associated custom element control', () => {
     slider.dispatchEvent(new Event('input', { bubbles: true }));
     await settle(field);
 
-    expect(error.hidden).toBe(false);
-    expect(field.invalid).toBe(true);
+    expect(field.hasAttribute('invalid')).toBe(true);
+    expect(displayOf(error)).not.toBe('none');
     expect(error.getAttribute('role')).toBe('alert');
     expect(slider.getAttribute('aria-describedby')).toContain(error.id);
+  });
+
+  it('leaves a standalone .l-error (outside a field) visible by default', async () => {
+    host = document.createElement('div');
+    host.innerHTML = `<p class="l-error">Standalone error</p>`;
+    document.body.append(host);
+    const error = host.querySelector<HTMLElement>('.l-error')!;
+    expect(displayOf(error)).toBe('block');
+    error.hidden = true;
+    expect(displayOf(error)).toBe('none');
   });
 });
