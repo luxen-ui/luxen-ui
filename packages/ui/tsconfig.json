@@ -3,11 +3,14 @@
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src/html",
     "moduleResolution": "bundler",
+    "allowJs": true,
+    "noEmit": true,
+    "rootDir": ".",
+    "paths": {
+      "vite-plus/test": ["./tests/types/vite-plus-test.d.ts"],
+      "vite-plus/test/browser/context": ["./tests/types/vite-plus-test-browser-context.d.ts"]
+    },
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -17,6 +20,12 @@
     "experimentalDecorators": true,
     "useDefineForClassFields": false
   },
-  "include": ["src/html/**/*"],
+  "include": [
+    "src/html/**/*",
+    "tests/**/*",
+    "*.config.ts",
+    "vite-plugin.ts",
+    "postcss-plugin-prefix.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

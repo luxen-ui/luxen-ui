@@ -164,12 +164,10 @@ How to write component tests:
   delegation) that synthetic events can't. Never use `dispatchEvent`, DOM
   `.click()`, or manual `.focus()` in a test. `userEvent.keyboard` targets the
   focused element: establish focus the way a user would (`userEvent.tab()` or
-  a click), never with `.focus()`. vite-plus 0.1.22 packaging gap: a static
-  `import { userEvent }` fails at runtime (typed but not exported by the
-  virtual module) — obtain it via
-  `const userEvent: UserEvent = ((await import('vite-plus/test/browser/context')) as any).createUserEvent();`
-  as in the reference suite, and drop this workaround once vite-plus exports
-  the singleton.
+  a click), never with `.focus()`. Import the shared `userEvent` singleton from
+  `tests/elements/support/user-event.ts` (it re-exports vite-plus 0.2's
+  `userEvent` from `vite-plus/test/browser/context`); never re-create it
+  per-suite.
 - **Query like assistive tech.** `page.getByRole(role, { name, ...states })`
   is the default query — it pierces open shadow DOM and proves the accessible
   name/state is actually exposed. `getByLabelText` for form controls. Get
