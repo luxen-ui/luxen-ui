@@ -1,0 +1,271 @@
+:host {
+  --height: var(--l-form-control-height);
+  --border-radius: var(--l-form-control-border-radius);
+  --background: var(--l-color-surface-overlay);
+
+  display: block;
+  inline-size: 100%;
+}
+
+:host([size='xs']) {
+  --height: var(--l-size-control-xs);
+}
+:host([size='sm']) {
+  --height: var(--l-size-control-sm);
+}
+:host([size='lg']) {
+  --height: var(--l-size-control-lg);
+}
+:host([size='xl']) {
+  --height: var(--l-size-control-xl);
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.base {
+  position: relative;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🅲🅾🅽🆃🆁🅾🅻 (trigger)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  block-size: var(--height);
+  padding-inline: var(--l-form-control-padding-inline);
+  border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--l-form-control-background-color);
+  cursor: text;
+}
+
+@media (hover: hover) {
+  .control:hover {
+    border-color: var(--l-form-control-border-color-hover);
+  }
+}
+
+.control:has(.input:focus-visible) {
+  border-color: var(--l-focus-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+}
+
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  border: 0;
+  background: transparent;
+  color: var(--l-form-control-value-color);
+  font: inherit;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--l-form-control-placeholder-color);
+}
+
+.chevron {
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  background-color: currentColor;
+  color: var(--l-form-control-placeholder-color);
+  mask: var(--_chevron-icon) center / contain no-repeat;
+  transition: rotate 0.15s ease;
+}
+
+/* ≥24px hit area (WCAG 2.5.8) with a 1em icon centred inside. */
+.clear {
+  flex: none;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: currentColor;
+  color: var(--l-form-control-placeholder-color);
+  mask: var(--_x-icon) center / 1em no-repeat;
+}
+
+@media (hover: hover) {
+  .clear:hover {
+    color: var(--l-form-control-value-color);
+  }
+}
+
+.control:has(.input[aria-expanded='true']) .chevron {
+  rotate: 180deg;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🅿🅰🅽🅴🅻 (popover listbox)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+.panel {
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--l-color-border-overlay);
+  border-radius: var(--border-radius);
+  background-color: var(--background);
+  box-shadow: var(--l-shadow-md);
+  overflow: hidden;
+  opacity: 0;
+  scale: 0.98;
+  transition:
+    opacity 0.12s ease,
+    scale 0.12s ease,
+    display 0.12s allow-discrete,
+    overlay 0.12s allow-discrete;
+}
+
+.panel:popover-open {
+  opacity: 1;
+  scale: 1;
+}
+
+@starting-style {
+  .panel:popover-open {
+    opacity: 0;
+    scale: 0.98;
+  }
+}
+
+.listbox {
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem var(--height);
+  position: relative;
+  border-radius: calc(var(--border-radius) - 2px);
+  color: var(--l-color-text-primary);
+  cursor: pointer;
+}
+
+.option[aria-selected='true'] {
+  background-color: var(--l-color-bg-state-hover);
+}
+
+.option[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Checkmark on the currently committed value. */
+.option[data-current]::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  inline-size: 1em;
+  block-size: 1em;
+  background-color: var(--l-form-control-activated-color);
+  mask: var(--_check-icon) center / contain no-repeat;
+}
+
+.option-label {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-label mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+}
+
+/* Rich options — same authoring classes as l-select, styled inside the shadow. */
+.option-rich {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.option-rich .l-select-item-media {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.25em;
+}
+
+.option-rich .l-select-item-text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.option-rich .l-select-item-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-rich .l-select-item-description {
+  font-size: 0.85em;
+  color: var(--l-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 0.5rem;
+  color: var(--l-color-text-tertiary);
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🅸🅲🅾🅽🆂
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+:host {
+  --_chevron-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --_x-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  --_check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .chevron {
+    transition-duration: 0ms;
+  }
+}

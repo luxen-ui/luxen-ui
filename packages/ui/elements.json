@@ -96,6 +96,14 @@
       "selector": ".l-close"
     },
     {
+      "name": "combobox",
+      "displayName": "Combobox",
+      "kind": "element",
+      "type": "shadow",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
       "name": "dialog",
       "displayName": "Dialog",
       "kind": "element",

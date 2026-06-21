@@ -44,6 +44,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Carousel item  | `<l-carousel-item>`  | ⬢ Custom HTML Element (with Shadow DOM) |
 | Checkbox       | `<input>`            | ⏣ Native HTML Element                   |
 | Close button   | `<button>`           | ⏣ Native HTML Element                   |
+| Combobox       | `<l-combobox>`       | ⬢ Custom HTML Element (with Shadow DOM) |
 | Dialog         | `<l-dialog>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Disclosure     | `<details>`          | ⏣ Native HTML Element                   |
 | Divider        | `<l-divider>`        | ◇ Custom HTML Element (no Shadow DOM)   |

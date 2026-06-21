@@ -21,6 +21,11 @@ const en: LuxenTranslation = {
   rangeMinimum: 'Minimum',
   rangeMaximum: 'Maximum',
 
+  clear: 'Clear',
+  noResults: 'No results',
+  selectOption: 'Please select an option.',
+  suggestions: 'Suggestions',
+
   richTextEditor: 'Rich text editor',
   formatting: 'Formatting',
   heading1: 'Heading 1',

@@ -155,6 +155,7 @@ export default defineConfig({
           { text: 'Overview', link: '/forms/overview' },
           el('Form field', 'l-form-field', 'form-field'),
           el('Checkbox', 'input', 'checkbox'),
+          el('Combobox', 'l-combobox', 'combobox'),
           el('Input', 'input', 'input'),
           el('Input OTP', 'l-input-otp', 'input-otp'),
           el('Input stepper', 'l-input-stepper', 'input-stepper'),

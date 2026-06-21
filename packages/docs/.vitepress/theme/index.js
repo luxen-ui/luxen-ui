@@ -22,6 +22,7 @@ export default {
       void import('luxen-ui/badge');
       void import('luxen-ui/button-group');
       void import('luxen-ui/carousel');
+      void import('luxen-ui/combobox');
       void import('luxen-ui/carousel-item');
       void import('luxen-ui/skeleton');
       void import('luxen-ui/slider');
