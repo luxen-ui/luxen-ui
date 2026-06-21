@@ -28,6 +28,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Alert dialog   | `<l-alert-dialog>`   | ⬢ Custom HTML Element (with Shadow DOM) |
 | Avatar         | `<l-avatar>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Badge          | `<l-badge>`          | ◇ Custom HTML Element (no Shadow DOM)   |
+| Breadcrumb     | `<nav>`              | ⏣ Native HTML Element                   |
 | Button         | `<button>`           | ⏣ Native HTML Element                   |
 | Button group   | `<l-button-group>`   | ◇ Custom HTML Element (no Shadow DOM)   |
 | Carousel       | `<l-carousel>`       | ⬢ Custom HTML Element (with Shadow DOM) |
