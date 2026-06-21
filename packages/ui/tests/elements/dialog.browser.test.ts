@@ -4,6 +4,7 @@ import '../../src/html/elements/dialog/index.js';
 import type { Dialog } from '../../src/html/elements/dialog/dialog.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
+import { waitUntil } from './support/timing.js';
 
 // These tests drive l-dialog the way a real user would — interacting via
 // trusted CDP events, querying via accessible roles — and assert what a user,
@@ -148,20 +149,10 @@ describe('The page behind a modal dialog cannot scroll', () => {
     await settle();
     await afterHideP;
 
-    // Poll until data-modal is removed (up to ~500 ms) before reading overflow.
-    // The attribute drives the adopted-stylesheet rule; reading getComputedStyle
-    // before the attribute is gone gives a false positive in CI.
-    await new Promise<void>((resolve) => {
-      const deadline = Date.now() + 500;
-      const check = () => {
-        if (!dialog().hasAttribute('data-modal') || Date.now() >= deadline) {
-          resolve();
-        } else {
-          setTimeout(check, 10);
-        }
-      };
-      check();
-    });
+    // Poll until data-modal is removed before reading overflow. The attribute
+    // drives the adopted-stylesheet rule; reading getComputedStyle before the
+    // attribute is gone gives a false positive in CI.
+    await waitUntil(() => !dialog().hasAttribute('data-modal'));
 
     expect(dialog().hasAttribute('data-modal')).toBe(false);
     expect(getComputedStyle(document.documentElement).overflow).not.toBe('hidden');

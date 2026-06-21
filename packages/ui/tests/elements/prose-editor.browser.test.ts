@@ -6,6 +6,7 @@ import type { ProseEditor } from '../../src/html/elements/prose-editor/prose-edi
 import { EditorChangeEvent } from '../../src/html/elements/prose-editor/prose-editor.js';
 import { userEvent } from './support/user-event.js';
 import { deepActiveElement } from './support/a11y.js';
+import { waitUntil } from './support/timing.js';
 
 // Drive l-prose-editor the way a person would — click toolbar buttons, type
 // in the editor, open and dismiss the emoji picker, submit forms — and assert
@@ -55,20 +56,6 @@ async function settleEl(el: ProseEditor) {
 
 function macrotask(n = 1): Promise<void> {
   return new Promise((r) => setTimeout(r, n * 10));
-}
-
-/**
- * Poll until `predicate` holds or the deadline passes. The first emoji-picker
- * open lazily `import()`s `emoji-picker-element/picker.js`; on a loaded CI
- * runner that dynamic import can exceed a fixed macrotask delay, so wait for the
- * observable state instead of guessing a timeout.
- */
-async function waitUntil(predicate: () => boolean, timeout = 2000): Promise<void> {
-  const start = performance.now();
-  while (!predicate()) {
-    if (performance.now() - start > timeout) return;
-    await macrotask();
-  }
 }
 
 // ---------------------------------------------------------------------------

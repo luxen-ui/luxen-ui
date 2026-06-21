@@ -4,6 +4,7 @@ import '../../src/html/elements/drawer/index.js';
 import type { Drawer } from '../../src/html/elements/drawer/drawer.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
+import { waitUntil } from './support/timing.js';
 
 // These tests drive l-drawer the way a real user would — interacting via
 // trusted CDP events, querying via accessible roles — and assert what a user,
@@ -81,19 +82,9 @@ describe('The drawer opens as an edge modal', () => {
     await settle();
     await afterHideP;
 
-    // Poll until data-modal is removed before reading overflow (same CI-safe pattern
-    // used in stories-viewer and dialog tests — avoids the attribute/stylesheet race).
-    await new Promise<void>((resolve) => {
-      const deadline = Date.now() + 500;
-      const check = () => {
-        if (!drawer().hasAttribute('data-modal') || Date.now() >= deadline) {
-          resolve();
-        } else {
-          setTimeout(check, 10);
-        }
-      };
-      check();
-    });
+    // Poll until data-modal is removed before reading overflow (same CI-safe
+    // pattern as stories-viewer and dialog — avoids the attribute/stylesheet race).
+    await waitUntil(() => !drawer().hasAttribute('data-modal'));
 
     expect(drawer().hasAttribute('data-modal')).toBe(false);
     expect(getComputedStyle(document.documentElement).overflow).not.toBe('hidden');

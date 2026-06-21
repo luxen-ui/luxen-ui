@@ -13,6 +13,7 @@ import type { LuxenStory } from '../../src/html/elements/story/story.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
 import { deepActiveElement } from './support/a11y.js';
+import { waitUntil } from './support/timing.js';
 
 // These tests drive l-stories-viewer the way a real user would — interacting via
 // trusted CDP events, querying via accessible roles — and assert what a user,
@@ -211,20 +212,10 @@ describe('Opening and closing the viewer', () => {
     await settle();
     await afterHideP;
 
-    // Poll until data-modal is removed (up to ~500 ms) before reading overflow.
-    // The attribute drives the adopted-stylesheet rule; reading getComputedStyle
-    // before the attribute is gone gives a false positive in CI.
-    await new Promise<void>((resolve) => {
-      const deadline = Date.now() + 500;
-      const check = () => {
-        if (!viewer().hasAttribute('data-modal') || Date.now() >= deadline) {
-          resolve();
-        } else {
-          setTimeout(check, 10);
-        }
-      };
-      check();
-    });
+    // Poll until data-modal is removed before reading overflow. The attribute
+    // drives the adopted-stylesheet rule; reading getComputedStyle before the
+    // attribute is gone gives a false positive in CI.
+    await waitUntil(() => !viewer().hasAttribute('data-modal'));
 
     expect(viewer().hasAttribute('data-modal')).toBe(false);
     const closedStyle = getComputedStyle(document.documentElement).overflow;
