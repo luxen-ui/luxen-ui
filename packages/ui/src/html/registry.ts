@@ -7,6 +7,7 @@ export type ElementBaseName =
   | 'button-group'
   | 'carousel'
   | 'carousel-item'
+  | 'combobox'
   | 'dialog'
   | 'divider'
   | 'drawer'

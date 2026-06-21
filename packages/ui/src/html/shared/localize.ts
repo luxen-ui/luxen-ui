@@ -60,6 +60,12 @@ export interface LuxenTranslation {
   rangeMinimum?: string;
   rangeMaximum?: string;
 
+  // combobox
+  clear?: string;
+  noResults?: string;
+  selectOption?: string;
+  suggestions?: string;
+
   // prose-editor
   richTextEditor: string;
   formatting: string;
