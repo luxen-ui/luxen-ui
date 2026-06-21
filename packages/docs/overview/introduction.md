@@ -337,7 +337,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <code>&lt;menu&gt;</code>
 <code>&lt;meta&gt;</code>
 <code>&lt;meter&gt;</code>
-<code>&lt;nav&gt;</code>
+<a class="luxen-tag" data-type="native" href="/elements/breadcrumb"><code>&lt;nav&gt;</code></a>
 <code>&lt;noscript&gt;</code>
 <code>&lt;object&gt;</code>
 <code>&lt;ol&gt;</code>

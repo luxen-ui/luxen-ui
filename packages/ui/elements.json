@@ -35,6 +35,15 @@
       "inMockups": true
     },
     {
+      "name": "breadcrumb",
+      "displayName": "Breadcrumb",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": false,
+      "selector": ".l-breadcrumb"
+    },
+    {
       "name": "button",
       "displayName": "Button",
       "kind": "native",

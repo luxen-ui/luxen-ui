@@ -1,0 +1,145 @@
+/*
+ * Breadcrumb — `.l-breadcrumb` on a native <nav> wrapping an <ol>/<li>/<a>.
+ *
+ * CSS-only (no JS). Maps 1:1 onto the WAI-ARIA APG breadcrumb pattern:
+ * https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
+ *
+ * Markup contract:
+ *   <nav class="l-breadcrumb" aria-label="Breadcrumb">
+ *     <ol>
+ *       <li><a href="/">Home</a></li>
+ *       <li><a href="/products">Products</a></li>
+ *       <li><a href="/products/bags" aria-current="page">Bags</a></li>
+ *     </ol>
+ *   </nav>
+ *
+ * - Links are underlined; the current crumb (`aria-current="page"`) is rendered
+ *   subtler than the rest and non-interactive.
+ * - The trail never wraps: it scrolls horizontally with touch momentum when it
+ *   overflows (the default mobile behavior), scrollbar hidden.
+ * - Separators are CSS `::before` pseudo-elements (an oblique `/` by default) —
+ *   decorative and hidden from assistive tech. Recolor with `--separator-color`;
+ *   swap the glyph with any character or `url()` via `--separator`.
+ * - Icons (a leading home glyph, etc.) compose via <l-icon> inside the <a>.
+ */
+
+@layer components {
+  .l-breadcrumb {
+    /* Public knobs */
+    --gap: 0.5rem;
+    --separator: '/';
+    /* Tertiary text, not the divider token: a thin `/` glyph needs more weight
+       than a 1px line color. Still a step lighter than the link text. */
+    --separator-color: var(--l-color-text-tertiary);
+
+    display: block;
+    font-size: var(--l-text-sm);
+    line-height: 1.4;
+
+    & ol {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: var(--gap);
+      margin: 0;
+      /* Block padding leaves room for focus rings inside the scroll clip. */
+      padding-block: 0.25rem;
+      padding-inline: 0;
+      list-style: none;
+
+      /* Never wrap — scroll horizontally with momentum on touch, no scrollbar. */
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--gap);
+      flex: none;
+      white-space: nowrap;
+    }
+
+    /* Separator before every crumb except the first. */
+    & li + li::before {
+      content: var(--separator);
+      color: var(--separator-color);
+    }
+
+    /* Keep the decorative divider out of the accessibility tree where the
+       content alt-text syntax is supported (the visible glyph still renders). */
+    @supports (content: '/' / '') {
+      & li + li::before {
+        content: var(--separator) / '';
+      }
+    }
+
+    &:dir(rtl) li + li::before {
+      display: inline-block;
+      scale: -1 1;
+    }
+
+    /* Structural link bits — always applied so icons align and focus shows,
+       even when the consumer brings their own link styling. */
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      border-radius: var(--l-radius-sm);
+
+      &:focus-visible {
+        outline: 2px solid var(--l-focus-ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* The current crumb is never a destination (APG `aria-current="page"`). */
+    & [aria-current='page'] {
+      pointer-events: none;
+      cursor: default;
+    }
+
+    /* Luxen link theming. Opt out with `data-unstyled-links` to bring your own
+       link class — layout, separators, scroll, and current-page behavior stay. */
+    &:not([data-unstyled-links]) {
+      & a {
+        color: var(--l-color-text-secondary);
+        text-decoration-line: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.2em;
+        transition:
+          color 150ms,
+          text-decoration-thickness 150ms;
+
+        /* Minimal hover: the underline thickens and the text deepens. */
+        @media (hover: hover) {
+          &:hover {
+            color: var(--l-color-text-primary);
+            text-decoration-thickness: 2px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
+      }
+
+      /* Current crumb rendered subtler than the links. */
+      & [aria-current='page'] {
+        color: var(--l-color-text-tertiary);
+        text-decoration: none;
+      }
+    }
+
+    /* Icons inside crumbs follow the text size. */
+    & l-icon {
+      font-size: 1.125em;
+    }
+  }
+}

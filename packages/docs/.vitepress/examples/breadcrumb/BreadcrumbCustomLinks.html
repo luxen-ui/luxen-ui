@@ -1,0 +1,36 @@
+<!--
+  data-unstyled-links turns off Luxen's link theming (color, underline, hover)
+  so your own class fully owns the look. Structure, separators, the horizontal
+  scroll, and the current-page behavior all stay. Here the links use plain
+  Tailwind utilities instead.
+-->
+<nav
+  class="l-breadcrumb"
+  data-unstyled-links
+  aria-label="Breadcrumb"
+>
+  <ol>
+    <li>
+      <a
+        href="#"
+        class="font-semibold text-primary underline-offset-4 hover:underline"
+        >Home</a
+      >
+    </li>
+    <li>
+      <a
+        href="#"
+        class="font-semibold text-primary underline-offset-4 hover:underline"
+        >Products</a
+      >
+    </li>
+    <li>
+      <a
+        href="#"
+        aria-current="page"
+        class="font-semibold text-tertiary"
+        >Bags</a
+      >
+    </li>
+  </ol>
+</nav>

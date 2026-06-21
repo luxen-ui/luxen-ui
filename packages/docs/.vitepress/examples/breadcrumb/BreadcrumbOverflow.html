@@ -1,0 +1,35 @@
+<!--
+  Long trails: keep the first and last crumbs visible and collapse the middle
+  ones into an l-dropdown. The trigger is a plain button styled to sit inline
+  with the trail; the hidden ancestors become links inside the menu.
+-->
+<nav
+  class="l-breadcrumb"
+  aria-label="Breadcrumb"
+>
+  <ol>
+    <li><a href="#">Home</a></li>
+    <li>
+      <l-dropdown class="inline-flex items-center">
+        <button
+          slot="trigger"
+          class="inline-flex items-center rounded-[--l-radius-sm] px-1 text-tertiary hover:text-primary"
+          aria-label="Show 3 more breadcrumbs"
+        >
+          <l-icon name="lucide:ellipsis"></l-icon>
+        </button>
+        <l-dropdown-item><a href="#">Products</a></l-dropdown-item>
+        <l-dropdown-item><a href="#">Bags</a></l-dropdown-item>
+        <l-dropdown-item><a href="#">Leather</a></l-dropdown-item>
+      </l-dropdown>
+    </li>
+    <li><a href="#">Totes</a></li>
+    <li>
+      <a
+        href="#"
+        aria-current="page"
+        >Weekend tote</a
+      >
+    </li>
+  </ol>
+</nav>
