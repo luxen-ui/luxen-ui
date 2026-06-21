@@ -1,5 +1,16 @@
 # luxen-ui
 
+## 0.14.0
+
+### Minor Changes
+
+- 9753dd2: Add the `breadcrumb` element — a CSS-only navigation trail (`.l-breadcrumb` on a native `<nav>`) following the WAI-ARIA breadcrumb pattern. Underlined links with a minimal hover, a subtler current page, and an oblique `/` separator themeable via `--separator` / `--separator-color`. The trail scrolls horizontally with touch momentum instead of wrapping, and `data-unstyled-links` opts out of link theming so you can apply your own link class.
+- 0302cf2: Add `<l-combobox>`, a searchable text input paired with a filterable list of options (the ARIA combobox pattern). Options are authored as a native `<datalist>` of `<option>` — the same authoring surface as `<select>`. It's a form-associated custom element (submits the chosen `value` under `name`), with client-side filtering (overridable via the `filter` property), match highlighting, full keyboard support (Up/Down, Home/End, Enter, Escape, Tab) on the `aria-activedescendant` model, `with-clear` and `allow-custom` options, size variants (`xs`–`xl`), and a shadcn-style look. Emits typed `change` and `input` events and exposes the `base`, `control`, `input`, `panel`, `listbox` and `option` CSS parts.
+
+### Patch Changes
+
+- cb350c1: Fix `l-form-field` not wiring up form-associated custom element controls such as `l-slider`. A slider (or any custom control) inside a form field no longer shows its `.l-error` message on load, and now receives the proper `id`/`label[for]`/`aria-describedby` accessibility wiring. The field also re-attempts wiring once a lazily-loaded control element upgrades, so it works regardless of script load order. The error message's resting visibility is now driven by CSS from the field's `invalid` state, so it stays hidden by default even before the element upgrades or if its script never runs.
+
 ## 0.13.0
 
 ### Minor Changes
