@@ -57,6 +57,20 @@ function macrotask(n = 1): Promise<void> {
   return new Promise((r) => setTimeout(r, n * 10));
 }
 
+/**
+ * Poll until `predicate` holds or the deadline passes. The first emoji-picker
+ * open lazily `import()`s `emoji-picker-element/picker.js`; on a loaded CI
+ * runner that dynamic import can exceed a fixed macrotask delay, so wait for the
+ * observable state instead of guessing a timeout.
+ */
+async function waitUntil(predicate: () => boolean, timeout = 2000): Promise<void> {
+  const start = performance.now();
+  while (!predicate()) {
+    if (performance.now() - start > timeout) return;
+    await macrotask();
+  }
+}
+
 // ---------------------------------------------------------------------------
 // The ProseMirror contenteditable lives in light DOM (slotted, not shadow)
 // ---------------------------------------------------------------------------
@@ -240,9 +254,10 @@ describe('l-prose-editor emoji picker', () => {
       `<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>`,
     );
 
-    // First open — verifies the picker builds at all.
+    // First open — verifies the picker builds at all. The picker module is
+    // lazily imported on this first click, so wait for it to actually appear.
     await _userEvent.click(toolbarButton('Emoji'));
-    await macrotask(2);
+    await waitUntil(() => picker()?.matches(':popover-open') ?? false);
 
     const firstPicker = picker();
     expect(firstPicker).not.toBeNull();
@@ -265,7 +280,7 @@ describe('l-prose-editor emoji picker', () => {
     let error: unknown;
     try {
       await _userEvent.click(toolbarButton('Emoji'));
-      await macrotask(2);
+      await waitUntil(() => picker()?.matches(':popover-open') ?? false);
     } catch (e) {
       error = e;
     }
