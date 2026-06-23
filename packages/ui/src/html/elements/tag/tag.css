@@ -1,0 +1,166 @@
+@layer components {
+  :host {
+    /* Size defaults (md). A removable tag is always ≥24px tall (target-size). */
+    --_height: 1.5rem;
+    --_font-size: var(--l-text-xs);
+    --_padding-inline: 0.5rem;
+    --_gap: 0.25rem;
+
+    display: inline-flex;
+    vertical-align: middle;
+    max-inline-size: 100%;
+  }
+
+  :host([size='sm']) {
+    --_padding-inline: 0.375rem;
+    --_gap: 0.125rem;
+  }
+
+  :host([size='lg']) {
+    --_height: 1.75rem;
+    --_font-size: var(--l-text-sm);
+    --_padding-inline: 0.625rem;
+  }
+
+  /* Disabled is conveyed by the greyed × button + cursor, NOT by washing out
+   * the label — dimming the whole chip with opacity composites the text below
+   * the WCAG AA contrast floor (axe flags it; a disabled <button> is exempt but
+   * the label span is not). */
+  :host([disabled]) .base {
+    cursor: not-allowed;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🅲🅷🅸🅿
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .base {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--_gap);
+    min-block-size: var(--_height);
+    padding-inline: var(--_padding-inline);
+    /* Discreet border + hover tint derive from the text color, so they adapt to
+       any consumer `--color`. */
+    border: 1px solid color-mix(in oklab, currentColor 14%, transparent);
+    border-radius: var(--border-radius, var(--l-radius-full));
+    background-color: var(--background, var(--l-color-bg-fill-neutral-subtle));
+    color: var(--color, var(--l-color-text-neutral));
+    font-family: var(--l-font-neo-grotesque);
+    font-size: var(--_font-size);
+    font-weight: var(--l-font-weight-medium);
+    line-height: 1;
+    min-inline-size: 0;
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  /* Whole-chip hover: a touch more presence, without competing with the ×. */
+  :host(:hover:not([disabled])) .base {
+    background-color: color-mix(
+      in oklab,
+      var(--background, var(--l-color-bg-fill-neutral-subtle)),
+      currentColor 7%
+    );
+    border-color: color-mix(in oklab, currentColor 26%, transparent);
+  }
+
+  .content {
+    display: inline-flex;
+    align-items: center;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ::slotted([slot='prefix']) {
+    display: inline-flex;
+    flex: none;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆁🅴🅼🅾🆅🅴  (≥24px target-size, mdi:close mask — mirrors l-close)
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .remove {
+    flex: none;
+    display: grid;
+    place-items: center;
+    /* 24px hit target (WCAG 2.5.8); the visible tint circle is inset to ~18px. */
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin-inline: calc(var(--_gap) * -0.5) calc(var(--_padding-inline) * -0.5);
+    padding: 0;
+    border: 0;
+    border-radius: var(--l-radius-full);
+    color: inherit;
+    cursor: pointer;
+    /* Tint circle behind the glyph — a gradient disc kept smaller than the 24px
+       hit area, grown from 0 on hover so it reads as a neat ~18px dot. */
+    background: radial-gradient(
+        circle at center,
+        color-mix(in oklab, currentColor 15%, transparent) 60%,
+        transparent 62%
+      )
+      no-repeat center / 0 0;
+    transition:
+      scale 120ms ease,
+      background-size 140ms ease;
+
+    &::after {
+      content: '';
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+      background-color: currentColor;
+      opacity: 0.55;
+      transition: opacity 120ms ease;
+      /* https://pictogrammers.com/library/mdi/icon/close */
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>')
+        center / contain no-repeat;
+    }
+
+    &:hover {
+      background-size: 1.125rem 1.125rem;
+    }
+    &:hover::after {
+      opacity: 1;
+    }
+
+    /* Tactile press — the button dips and the disc deepens. */
+    &:active {
+      scale: 0.86;
+      background-image: radial-gradient(
+        circle at center,
+        color-mix(in oklab, currentColor 26%, transparent) 60%,
+        transparent 62%
+      );
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: 1px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .base,
+    .remove,
+    .remove::after {
+      transition-duration: 0ms;
+    }
+    .remove:active {
+      scale: 1;
+    }
+  }
+}

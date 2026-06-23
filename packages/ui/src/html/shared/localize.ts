@@ -66,6 +66,12 @@ export interface LuxenTranslation {
   selectOption?: string;
   suggestions?: string;
 
+  // select
+  search?: string;
+
+  // tag
+  remove?: string;
+
   // prose-editor
   richTextEditor: string;
   formatting: string;

@@ -3,25 +3,38 @@ outline: deep
 ---
 
 <script setup>
-import selectExample from '../.vitepress/examples/select/Select.html?raw'
-import selectRichOptions from '../.vitepress/examples/select/SelectRichOptions.html?raw'
+import selectNative from '../.vitepress/examples/select/Select.html?raw'
+import selectNativeRich from '../.vitepress/examples/select/SelectRichOptions.html?raw'
+import selectSearchable from '../.vitepress/examples/select/SelectSearchable.html?raw'
+import selectMultiple from '../.vitepress/examples/select/SelectMultiple.html?raw'
+import selectRich from '../.vitepress/examples/select/SelectRich.html?raw'
 </script>
 
-# Select <Badge type="tip">&lt;select&gt;</Badge>
+# Select <Badge type="tip">&lt;l-select&gt;</Badge>
 
-Selects are used to pick a single option from a dropdown list. Commonly used in forms for choosing categories, countries, or any predefined set of values.
+Build a select two ways. For a simple single select, style a native `<select>` with `class="l-select"` — zero-JS and the recommended default. For in-popover search, multi-select with chips, or async options, reach for the `<l-select>` custom element.
 
-Built on the [Customizable Select API](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select) (`appearance: base-select`). Where unsupported it degrades to a native `<select>` — so always keep meaningful text in each `<option>`.
+<ElementSpec
+  tag="select"
+  type="native"
+/>
 
-<ElementSpec element="select" />
+::: code-group
 
-## Options
+```html [HTML]
+<select class="l-select">
+  <option>France</option>
+  <option>Germany</option>
+</select>
+```
 
-### Basic
+:::
 
-Add `class="l-select"` to a native `<select>` and `class="l-select-item"` to each `<option>`.
+## Basic
 
-<ComponentWrapper :html="selectExample" />
+Add `class="l-select"` to a native `<select>` — its `<option>`s are styled automatically. Built on the [Customizable Select API](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select) (`appearance: base-select`), degrading to a native `<select>` where unsupported — so always keep meaningful text in each `<option>`.
+
+<ComponentWrapper :html="selectNative" />
 
 ::: details Code
 ::: code-group
@@ -30,46 +43,111 @@ Add `class="l-select"` to a native `<select>` and `class="l-select-item"` to eac
 
 ### Rich options
 
-Put any HTML inside an `<option>`. Wrap a `.l-select-item-title` over a `.l-select-item-description` in `.l-select-item-text` (add a `.l-select-item-media` image or icon before it if needed). A `<button><selectedcontent></button>` trigger mirrors the chosen option — the description is hidden there to keep it compact.
+Put markup inside each `<option>` — wrap a `.l-select-item-title` over a `.l-select-item-description` in `.l-select-item-text` (add a `.l-select-item-media` image or icon before it). A `<button><selectedcontent></button>` trigger mirrors the chosen option.
 
-<ComponentWrapper :html="selectRichOptions" />
+<ComponentWrapper :html="selectNativeRich" />
 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/select/SelectRichOptions.html [HTML]
 :::
 
+## Enhanced: `<l-select>`
+
+When the native tier isn't enough, the `<l-select>` custom element adds in-popover search, multi-select with removable chips, and async options. It needs its JS module (`import 'luxen-ui/select'`). Options are authored as a native `<datalist>` of `<option>` — the same surface as [`<l-combobox>`](/elements/combobox) — with `<option selected>` for pre-selection.
+
+<ElementSpec element="select" />
+
+### Searchable
+
+Add `searchable` for a filter box inside the popover — useful for long lists. Matching is accent/case-insensitive.
+
+<ComponentWrapper :html="selectSearchable" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectSearchable.html [HTML]
+:::
+
+### Multiple
+
+Add `multiple` to select several values. The trigger shows a removable [`<l-tag>`](/elements/tag) chip per value and the form submits one entry per value under `name`.
+
+<ComponentWrapper :html="selectMultiple" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectMultiple.html [HTML]
+:::
+
+### Rich options
+
+The same `.l-select-item-*` classes as the native tier work inside each `<option>`. Set a `label` (or `.l-select-item-title`) so filtering and the trigger display use the title.
+
+<ComponentWrapper :html="selectRich" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectRich.html [HTML]
+:::
+
+### Clearable
+
+Add `with-clear` for a button that resets the value.
+
+### Custom filter
+
+Options are matched case- and accent-insensitively (every space-separated keyword must appear). Override the `filter` property — `(item, query) => boolean` — for `startsWith`, fuzzy, or remote-driven filtering.
+
+::: code-group
+
+```js [JS]
+const select = document.querySelector('l-select');
+
+// Match from the start of the label instead of anywhere in it.
+select.filter = (item, query) => item.label.toLowerCase().startsWith(query.toLowerCase());
+```
+
+:::
+
 ## Accessibility
+
+The native tier inherits the platform's `<select>` semantics — pair it with a `<label>`. The criteria below cover the `<l-select>` custom element.
 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Uses native `<select>` — built-in `combobox`/`listbox` semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Must have an associated `<label>` element', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Disabled state', Description: 'Native `disabled` attribute prevents interaction and announces as disabled', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Required state', Description: 'Native `required` attribute communicates mandatory field to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Role', Description: 'The trigger exposes `aria-haspopup=&quot;listbox&quot;` / `aria-expanded` / `aria-controls`; options are `role=&quot;option&quot;` in a `role=&quot;listbox&quot;` (with `aria-multiselectable` when `multiple`)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Accessible name', Description: 'Set `label` (or wrap with `<l-form-field>`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus management', Description: 'Opening moves focus into the search box (or the listbox when not searchable); closing returns it to the trigger', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8)' },
+  { Check: 'Target size', Description: 'The trigger and chip remove buttons keep a minimum 24×24px hit target', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
 ]" :rules="[
-  'Always pair the `<select>` with a visible `<label>` element using `for`/`id`',
-  'Use native `<option>` elements for choices — the browser handles all ARIA semantics',
+  'Always set `label` so the trigger has an accessible name',
 ]" />
 
 ### Keyboard interactions
 
 <KeyboardTable :data="[
-  { Key: 'Enter', Description: 'Opens the option list or confirms selection' },
-  { Key: 'Space', Description: 'Opens the option list' },
-  { Key: 'ArrowDown', Description: 'Moves to the next option' },
-  { Key: 'ArrowUp', Description: 'Moves to the previous option' },
-  { Key: 'Tab', Description: 'Moves focus to the next focusable element' },
+  { Key: 'Enter / Space / ArrowDown', Description: 'Opens the listbox (focus moves to the search box when searchable, else the list)' },
+  { Key: 'ArrowDown / ArrowUp', Description: 'Moves the active option' },
+  { Key: 'Enter', Description: 'Selects the active option (single) or toggles it (multiple)' },
+  { Key: 'Escape', Description: 'Closes the listbox and returns focus to the trigger' },
+  { Key: 'Backspace / Delete', Description: 'Removes a focused chip (multiple)' },
 ]" />
 
 ## API reference
+
+The native tier ships its styles via `luxen-ui/css/select`; the reference below is for the `<l-select>` custom element.
 
 ### Importing
 
 ::: code-group
 
-```css [CSS]
+```js [JS]
+import 'luxen-ui/select';
+```
+
+```css [CSS — native tier]
 @import 'luxen-ui/css/select';
 ```
 
@@ -77,15 +155,15 @@ Put any HTML inside an `<option>`. Wrap a `.l-select-item-title` over a `.l-sele
 
 ### Attributes & Properties
 
-<ApiTable element="select" section="attributes" />
+<ApiTable element="select" section="properties" />
 
 ### Events
 
 <ApiTable element="select" section="events" />
 
-### CSS classes
+### CSS parts
 
-<ApiTable element="select" section="cssClasses" />
+<ApiTable element="select" section="cssParts" />
 
 ### CSS custom properties
 
