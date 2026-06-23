@@ -407,6 +407,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="shadow" href="/elements/popover"><code>&lt;l-popover&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/prose-editor"><code>&lt;l-prose-editor&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/rating"><code>&lt;l-rating&gt;</code></a>
+<a class="luxen-tag" data-type="shadow" href="/elements/select"><code>&lt;l-select&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/skeleton"><code>&lt;l-skeleton&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/slider"><code>&lt;l-slider&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/spinner"><code>&lt;l-spinner&gt;</code></a>
@@ -415,6 +416,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="custom" href="/elements/story"><code>&lt;l-story&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/stories-viewer"><code>&lt;l-stories-viewer&gt;</code></a>
 <a class="luxen-tag" data-type="progressive" href="/elements/tabs"><code>&lt;l-tabs&gt;</code></a>
+<a class="luxen-tag" data-type="shadow" href="/elements/tag"><code>&lt;l-tag&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/toast"><code>&lt;l-toast&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/tooltip"><code>&lt;l-tooltip&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/tree"><code>&lt;l-tree&gt;</code></a>

@@ -1,0 +1,370 @@
+:host {
+  --height: var(--l-form-control-height);
+  --border-radius: var(--l-form-control-border-radius);
+  --background: var(--l-color-surface-overlay);
+
+  display: block;
+  inline-size: 100%;
+}
+
+:host([size='xs']) {
+  --height: var(--l-size-control-xs);
+}
+:host([size='sm']) {
+  --height: var(--l-size-control-sm);
+}
+:host([size='lg']) {
+  --height: var(--l-size-control-lg);
+}
+:host([size='xl']) {
+  --height: var(--l-size-control-xl);
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.base {
+  position: relative;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🆃🆁🅸🅶🅶🅴🆁  (button, opens the listbox popover)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: 100%;
+  min-block-size: var(--height);
+  padding-block: 0.25rem;
+  padding-inline: var(--l-form-control-padding-inline);
+  border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--l-form-control-background-color);
+  color: var(--l-form-control-value-color);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* The form-control inline padding is tuned for text; before a chip row it reads
+   as too much, so tighten the start edge in multiple mode (the chips bring their
+   own spacing). */
+:host([multiple]) .trigger {
+  padding-inline-start: 0.375rem;
+}
+
+@media (hover: hover) {
+  .trigger:hover {
+    border-color: var(--l-form-control-border-color-hover);
+  }
+}
+
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--l-focus-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+}
+
+/* Selection display fills the trigger; the chevron (and overlaid clear) sit at the end. */
+.value {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.value-text {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: var(--l-form-control-placeholder-color);
+}
+
+.chevron {
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  background-color: currentColor;
+  color: var(--l-form-control-placeholder-color);
+  mask: var(--_chevron-icon) center / contain no-repeat;
+  transition: rotate 0.15s ease;
+}
+
+.trigger[aria-expanded='true'] .chevron {
+  rotate: 180deg;
+}
+
+/* Clear is a SIBLING of the trigger (not a child — no nested buttons), overlaid
+ * over the trigger's end, before the chevron. ≥24px hit area (WCAG 2.5.8). */
+.clear {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(var(--l-form-control-padding-inline) + 1.25em);
+  margin-block: auto;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: currentColor;
+  color: var(--l-form-control-placeholder-color);
+  mask: var(--_x-icon) center / 1em no-repeat;
+}
+
+@media (hover: hover) {
+  .clear:hover {
+    color: var(--l-form-control-value-color);
+  }
+}
+
+.clear:focus-visible {
+  outline: 2px solid var(--l-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Rich content rendered in the trigger mirrors the option rows. */
+.value .l-select-item-media {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.25em;
+}
+.value .l-select-item-text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+/* Mirror the native trigger: show only the title, drop the secondary description
+   so the selected value stays compact and consistent across options. */
+.value .l-select-item-title {
+  font-weight: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.value .l-select-item-description {
+  display: none;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🅿🅰🅽🅴🅻  (popover: search + listbox)
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+.panel {
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--l-color-border-overlay);
+  border-radius: var(--border-radius);
+  background-color: var(--background);
+  color: var(--l-color-text-primary);
+  box-shadow: var(--l-shadow-md);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow: hidden;
+  opacity: 0;
+  scale: 0.98;
+  transition:
+    opacity 0.12s ease,
+    scale 0.12s ease,
+    display 0.12s allow-discrete,
+    overlay 0.12s allow-discrete;
+}
+
+.panel:popover-open {
+  opacity: 1;
+  scale: 1;
+}
+
+@starting-style {
+  .panel:popover-open {
+    opacity: 0;
+    scale: 0.98;
+  }
+}
+
+.search-row {
+  padding: 0.375rem;
+  border-block-end: 1px solid var(--l-color-border-overlay);
+}
+
+.search {
+  inline-size: 100%;
+  block-size: var(--l-size-control-sm);
+  padding-inline: 0.5rem;
+  border: var(--l-form-control-border-width) solid var(--l-form-control-border-color);
+  border-radius: calc(var(--border-radius) - 2px);
+  background-color: var(--l-form-control-background-color);
+  color: var(--l-form-control-value-color);
+  font: inherit;
+}
+
+.search:focus-visible {
+  outline: none;
+  border-color: var(--l-focus-ring);
+}
+
+.search::placeholder {
+  color: var(--l-form-control-placeholder-color);
+}
+
+.listbox {
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Mirrors the native `.l-select` picker (itself calé on l-dropdown): the
+ * checkmark lives in a reserved inline-start column, only the hovered/active row
+ * takes the tint, and a selected row carries no background (checkmark only). */
+.option {
+  display: flex;
+  position: relative;
+  align-items: start;
+  gap: 0.5rem;
+  min-block-size: 36px;
+  padding-block: 0.5rem;
+  padding-inline: 1.75rem 0.5rem;
+  border-radius: 4px;
+  color: var(--l-color-text-primary);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .option:hover {
+    background-color: var(--l-color-bg-state-hover);
+  }
+}
+
+/* Keyboard-active row (moves with Arrow keys) — same tint as hover. */
+.option[data-active] {
+  background-color: var(--l-color-bg-state-hover);
+}
+
+.option[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Selected indicator in the reserved inline-start column, pinned to the first
+ * line so a wrapping description never shifts it (matches the native picker). */
+.option[data-current]::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  inset-block-start: 0.5rem;
+  inline-size: 1rem;
+  block-size: 1.3125rem;
+  background-color: currentColor;
+  mask: var(--_check-icon) center / 1rem no-repeat;
+}
+
+.option-label {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-label mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+}
+
+.option-rich {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.option-rich .l-select-item-media {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: 4px;
+  object-fit: cover;
+  font-size: 1.25em;
+}
+
+.option-rich .l-select-item-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.option-rich .l-select-item-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.option-rich .l-select-item-description {
+  color: var(--l-color-text-tertiary);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  white-space: normal;
+  text-wrap: pretty;
+}
+
+.empty {
+  padding: 0.5rem;
+  color: var(--l-color-text-tertiary);
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+ 🅸🅲🅾🅽🆂
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+*/
+
+:host {
+  --_chevron-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --_x-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  --_check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .chevron {
+    transition-duration: 0ms;
+  }
+}

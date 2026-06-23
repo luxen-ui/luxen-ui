@@ -25,6 +25,9 @@ const en: LuxenTranslation = {
   noResults: 'No results',
   selectOption: 'Please select an option.',
   suggestions: 'Suggestions',
+  search: 'Search',
+
+  remove: 'Remove',
 
   richTextEditor: 'Rich text editor',
   formatting: 'Formatting',

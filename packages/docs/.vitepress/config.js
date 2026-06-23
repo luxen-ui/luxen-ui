@@ -139,6 +139,7 @@ export default defineConfig({
             ],
           },
           el('Tabs', 'l-tabs', 'tabs'),
+          el('Tag', 'l-tag', 'tag'),
           el('Toast', 'l-toast', 'toast'),
           el('Tooltip', 'l-tooltip', 'tooltip'),
           {
@@ -161,7 +162,7 @@ export default defineConfig({
           el('Input stepper', 'l-input-stepper', 'input-stepper'),
           el('Radio', 'input', 'radio'),
           el('Rating', 'l-rating', 'rating'),
-          el('Select', 'select', 'select'),
+          el('Select', 'l-select', 'select'),
           el('Slider', 'l-slider', 'slider'),
           el('Switch', 'input', 'switch'),
           el('Textarea', 'textarea', 'textarea'),

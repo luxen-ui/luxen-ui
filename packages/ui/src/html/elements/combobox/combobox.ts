@@ -5,6 +5,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import type { Placement } from '@floating-ui/dom';
 import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
 import { PopoverController } from '../../shared/controllers/popover.js';
+import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { cls, uniqueId } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -116,6 +117,15 @@ export class Combobox extends LuxenFormAssociatedElement {
     getArrowElement: () => null,
   });
 
+  private _nav = new ListboxNavController(this, {
+    listboxId: this._listId,
+    getCount: () => this._filtered.length,
+    isDisabled: (i) => this._filtered[i]?.disabled ?? false,
+    isOpen: () => this._open,
+    open: () => this.show(),
+    getOptionElements: () => this.shadowRoot?.querySelectorAll<HTMLElement>('.option'),
+  });
+
   /** Selected value (the chosen option's `value`). */
   @property({ reflect: true })
   accessor value = '';
@@ -153,7 +163,6 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   @state() private accessor _open = false;
   @state() private accessor _query = '';
-  @state() private accessor _activeIndex = -1;
   @state() private accessor _items: ComboboxItem[] = [];
 
   private get _controlEl() {
@@ -184,7 +193,7 @@ export class Combobox extends LuxenFormAssociatedElement {
   override formResetCallback() {
     this.value = this._defaultFormValue;
     this._query = '';
-    this._activeIndex = -1;
+    this._nav.reset();
     super.formResetCallback();
     this._resetDisplay();
   }
@@ -245,7 +254,7 @@ export class Combobox extends LuxenFormAssociatedElement {
     // Pre-activate the chosen option so a screen reader announces the current
     // selection when the list opens (only when not actively filtering).
     if (this.value && !this._query) {
-      this._activeIndex = this._filtered.findIndex((i) => i.value === this.value);
+      this._nav.setActive(this._filtered.findIndex((i) => i.value === this.value));
     }
     this.updateComplete.then(() => {
       const panel = this._panelEl as (HTMLElement & { showPopover?: () => void }) | null;
@@ -262,7 +271,7 @@ export class Combobox extends LuxenFormAssociatedElement {
     if (!this._open) return;
     if (!this.dispatchEvent(new Event('hide', { cancelable: true }))) return;
     this._open = false;
-    this._activeIndex = -1;
+    this._nav.reset();
     const panel = this._panelEl as (HTMLElement & { hidePopover?: () => void }) | null;
     if (panel?.matches?.(':popover-open')) (panel as { hidePopover?: () => void }).hidePopover?.();
     this._floating.stopPositioning();
@@ -287,8 +296,9 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   private _commitActiveOrCustom() {
     const filtered = this._filtered;
-    if (this._activeIndex >= 0 && filtered[this._activeIndex]) {
-      this._commit(filtered[this._activeIndex]);
+    const active = this._nav.activeIndex;
+    if (active >= 0 && filtered[active]) {
+      this._commit(filtered[active]);
       return;
     }
     const input = this._inputEl;
@@ -304,7 +314,7 @@ export class Combobox extends LuxenFormAssociatedElement {
   private _clear() {
     this.value = '';
     this._query = '';
-    this._activeIndex = -1;
+    this._nav.reset();
     if (this._inputEl) this._inputEl.value = '';
     this._syncFormValue('');
     this._updateValidity();
@@ -312,55 +322,13 @@ export class Combobox extends LuxenFormAssociatedElement {
     this._inputEl?.focus();
   }
 
-  // --- Keyboard navigation (self-owned; aria-activedescendant model) ---
-
-  private _moveActive(diff: 1 | -1) {
-    if (!this._open) {
-      // Open and land on the first (Down) or last (Up) option — APG.
-      this.show();
-      this._activeIndex = diff > 0 ? -1 : this._filtered.length;
-    }
-    this._stepActive(diff);
-  }
-
-  private _stepActive(diff: 1 | -1) {
-    const items = this._filtered;
-    const n = items.length;
-    if (n === 0) return;
-    let i = this._activeIndex + diff;
-    if (i < 0) i = n - 1;
-    if (i >= n) i = 0;
-    // Skip disabled options.
-    const start = i;
-    while (items[i]?.disabled) {
-      i += diff;
-      if (i < 0) i = n - 1;
-      if (i >= n) i = 0;
-      if (i === start) return;
-    }
-    this._activeIndex = i;
-    this.updateComplete.then(() => this._scrollActiveIntoView());
-  }
-
-  private _scrollActiveIntoView() {
-    // Query by index, not `#id` — the unique id contains colons (invalid in a
-    // CSS selector). The id value is still valid for aria-activedescendant.
-    const opts = this.shadowRoot?.querySelectorAll<HTMLElement>('.option');
-    opts?.[this._activeIndex]?.scrollIntoView({ block: 'nearest' });
-  }
+  // --- Keyboard (navigation delegated to ListboxNavController) ---
 
   private _onKeyDown = (e: KeyboardEvent) => {
+    // Arrow Up/Down move aria-activedescendant. Home/End are left to the input's
+    // text cursor (APG editable combobox).
+    if (this._nav.onKeyDown(e)) return;
     switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        this._moveActive(1);
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this._moveActive(-1);
-        break;
-      // Home / End are intentionally NOT handled — in an editable combobox they
-      // move the text cursor in the input (APG editable combobox pattern).
       case 'Enter':
         if (this._open) {
           e.preventDefault();
@@ -376,7 +344,7 @@ export class Combobox extends LuxenFormAssociatedElement {
         }
         break;
       case 'Tab':
-        if (this._open && this._activeIndex >= 0) this._commitActiveOrCustom();
+        if (this._open && this._nav.activeIndex >= 0) this._commitActiveOrCustom();
         break;
       default:
         break;
@@ -385,7 +353,7 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   private _onInput = (e: Event) => {
     this._query = (e.target as HTMLInputElement).value;
-    this._activeIndex = -1;
+    this._nav.reset();
     if (!this._open) this.show();
     this.dispatchEvent(new ComboboxInputEvent(this._query));
   };
@@ -420,8 +388,8 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   override render() {
     const filtered = this._filtered;
-    const activeId =
-      this._open && this._activeIndex >= 0 ? `${this._listId}-opt-${this._activeIndex}` : undefined;
+    const activeId = this._nav.activeDescendant;
+    const activeIndex = this._nav.activeIndex;
     const invalid = this.required && !this.value && this.hasInteracted;
     const status = !this._open
       ? ''
@@ -492,9 +460,9 @@ export class Combobox extends LuxenFormAssociatedElement {
               (item, i) => html`<li
                 class="option"
                 part="option"
-                id=${`${this._listId}-opt-${i}`}
+                id=${this._nav.optionId(i)}
                 role="option"
-                aria-selected=${i === this._activeIndex ? 'true' : 'false'}
+                aria-selected=${i === activeIndex ? 'true' : 'false'}
                 aria-disabled=${item.disabled ? 'true' : nothing}
                 data-current=${item.value === this.value ? '' : nothing}
                 @pointerdown=${(e: Event) => e.preventDefault()}

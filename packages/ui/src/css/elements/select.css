@@ -99,8 +99,8 @@
     }
 
     /* The selected value fills the trigger; the chevron sits at the inline-end.
-       <selectedcontent> clones the option's children, not the `.l-select-item`
-       flex container — so it must re-establish the row itself, else rich options
+       <selectedcontent> clones the option's children, not the option's flex
+       container — so it must re-establish the row itself, else rich options
        (media + text) stack vertically in the trigger. */
     & selectedcontent {
       display: flex;
@@ -115,6 +115,14 @@
        is mirrored into the value, the secondary description is dropped. */
     & selectedcontent .l-select-item-description {
       display: none;
+    }
+
+    /* Normalize the mirrored title to the control's value font, so the trigger
+       reads the same whether a rich option (bold title in the picker) or a plain
+       option is selected — the bold weight stays in the picker only. */
+    & selectedcontent .l-select-item-title {
+      font-weight: inherit;
+      font-size: inherit;
     }
 
     /* Native chevron — its glyph is replaced by a mask so it can be re-skinned
@@ -174,7 +182,7 @@
     }
   }
 
-  .l-select-item {
+  .l-select option {
     display: flex;
     position: relative;
     align-items: start;

@@ -79,7 +79,7 @@ Returns JSON `{"files":[{"name":"/cdn/styles/elements/badge.css", ...}, ...]}`. 
 
 <!-- generated:l-tags — edit packages/ui/elements.json and run the skill build to update -->
 
-`l-alert`, `l-alert-dialog`, `l-avatar`, `l-badge`, `l-button-group`, `l-carousel`, `l-carousel-item`, `l-combobox`, `l-dialog`, `l-divider`, `l-drawer`, `l-dropdown`, `l-dropdown-item`, `l-dropdown-label`, `l-form-field`, `l-icon`, `l-input-group`, `l-input-otp`, `l-input-stepper`, `l-popover`, `l-prose-editor`, `l-rating`, `l-skeleton`, `l-slider`, `l-spinner`, `l-sticky-bar`, `l-tabs`, `l-toast`, `l-tooltip`, `l-tree`, `l-tree-item`.
+`l-alert`, `l-alert-dialog`, `l-avatar`, `l-badge`, `l-button-group`, `l-carousel`, `l-carousel-item`, `l-combobox`, `l-dialog`, `l-divider`, `l-drawer`, `l-dropdown`, `l-dropdown-item`, `l-dropdown-label`, `l-form-field`, `l-icon`, `l-input-group`, `l-input-otp`, `l-input-stepper`, `l-popover`, `l-prose-editor`, `l-rating`, `l-select`, `l-skeleton`, `l-slider`, `l-spinner`, `l-sticky-bar`, `l-tabs`, `l-tag`, `l-toast`, `l-tooltip`, `l-tree`, `l-tree-item`.
 
 <!-- /generated:l-tags -->
 

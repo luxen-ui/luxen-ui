@@ -64,7 +64,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Prose editor   | `<l-prose-editor>`   | ⬢ Custom HTML Element (with Shadow DOM) |
 | Radio          | `<input>`            | ⏣ Native HTML Element                   |
 | Rating         | `<l-rating>`         | ⬢ Custom HTML Element (with Shadow DOM) |
-| Select         | `<select>`           | ⏣ Native HTML Element                   |
+| Select         | `<l-select>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Skeleton       | `<l-skeleton>`       | ◇ Custom HTML Element (no Shadow DOM)   |
 | Slider         | `<l-slider>`         | ⬢ Custom HTML Element (with Shadow DOM) |
 | Spinner        | `<l-spinner>`        | ⬢ Custom HTML Element (with Shadow DOM) |
@@ -74,6 +74,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Story          | `<l-story>`          | ◇ Custom HTML Element (no Shadow DOM)   |
 | Switch         | `<input>`            | ⏣ Native HTML Element                   |
 | Tabs           | `<l-tabs>`           | ⬡ Progressive Custom HTML Element       |
+| Tag            | `<l-tag>`            | ⬢ Custom HTML Element (with Shadow DOM) |
 | Textarea       | `<textarea>`         | ⏣ Native HTML Element                   |
 | Toast          | `<l-toast>`          | ◇ Custom HTML Element (no Shadow DOM)   |
 | Tooltip        | `<l-tooltip>`        | ⬢ Custom HTML Element (with Shadow DOM) |
