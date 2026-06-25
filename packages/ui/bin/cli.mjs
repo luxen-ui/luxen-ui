@@ -275,6 +275,12 @@ async function runGenerateSkill(ctx) {
     vars,
     ctx,
   );
+  await renderTemplate(
+    join(tplDir, 'choosing-elements.md.tpl'),
+    join(ctx.outDir, 'references', 'choosing-elements.md'),
+    vars,
+    ctx,
+  );
   if (ctx.mockups) {
     await renderTemplate(
       join(tplDir, 'claude-design.md.tpl'),
