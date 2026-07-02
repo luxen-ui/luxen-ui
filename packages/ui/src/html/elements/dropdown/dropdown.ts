@@ -253,7 +253,22 @@ export class Dropdown extends LuxenElement {
       path.find((n): n is DropdownItem => n instanceof Element && n.tagName === itemTag) ?? null;
     if (!item) return null;
     const row = item.shadowRoot?.querySelector('.item');
-    if (row && !path.includes(row)) return null;
+    if (row && !path.includes(row)) {
+      // The path reached the item host but not its row. Reject only when the
+      // hit actually landed inside this item's own submenu panel (its padding),
+      // which must not read as a selection of the parent item.
+      //
+      // Why not `return null` outright: a click dispatched on the host element
+      // — `item.click()`, a synthetic MouseEvent, or a testing tool (Cypress,
+      // Playwright) whose coordinate hit-test resolves to the host rather than
+      // the inner row — produces a path with neither the row nor the submenu in
+      // it. Such programmatic activation should still select the item. Checking
+      // for the submenu explicitly (instead of the absent row) is also
+      // retargeting-independent, so it holds regardless of which shadow tree the
+      // listener sits in.
+      const submenu = item.shadowRoot?.querySelector('.submenu');
+      if (submenu && path.includes(submenu)) return null;
+    }
     return item;
   }
 
