@@ -303,6 +303,33 @@ describe('Selecting items', () => {
     expect(item('check').checked).toBe(true);
     expect(isOpen()).toBe(true);
   });
+
+  it('a programmatic click dispatched on the item host still fires select', async () => {
+    // A real pointer lands on the inner `.item` row, so its composed path
+    // includes the row. A synthetic click — item.click(), a dispatched
+    // MouseEvent, or a testing tool whose hit-test resolves to the host — has
+    // a path that reaches only the host, not the row. Selection must still fire
+    // for such programmatic activation; only hits inside an item's own submenu
+    // panel are ignored (covered in the Submenus suite).
+    await mount(FIXTURE);
+    const shown = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await shown;
+    await settle();
+
+    let selectedItem: DropdownItem | null = null;
+    el().addEventListener('select', (e: Event) => {
+      selectedItem = (e as DropdownSelectEvent).item;
+    });
+
+    const hidden = waitForEvent(el(), 'after-hide');
+    item('apple').click();
+    await hidden;
+    await settle();
+
+    expect(selectedItem).toBe(item('apple'));
+    expect(isOpen()).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -402,6 +429,29 @@ describe('Submenus', () => {
       await settle();
       expect(isSubmenuOpen('documents')).toBe(false);
       expect(isOpen()).toBe(true);
+    });
+
+    it('clicking the submenu panel padding does not select the parent item', async () => {
+      // A pointer landing on the open panel's own padding (not on any nested
+      // row) retargets to the parent's `.submenu` div, so the composed path
+      // reaches the parent item host and its submenu panel but never a `.item`
+      // row. That must not read as selecting the parent — the counterpart to
+      // the host-click case, locking the `path.includes(submenu)` guard branch.
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      let selected = false;
+      el().addEventListener('select', () => (selected = true));
+
+      submenuPanel('documents').click();
+      await settle();
+
+      expect(selected).toBe(false);
+      expect(isOpen()).toBe(true);
+      expect(isSubmenuOpen('documents')).toBe(true);
     });
 
     it('hovering a parent item opens its submenu; hovering a sibling closes it', async () => {
