@@ -10,6 +10,18 @@ import rawStyles from './tooltip.css?inline';
 const styles = unsafeCSS(rawStyles);
 
 /**
+ * Module-level registry of connected tooltips. A tooltip behaves like a label,
+ * not a dialog: at most one pointer/focus/click-triggered tooltip is visible at
+ * a time. Without this, on a dense grid of small triggers the safe polygon of
+ * the previous tooltip overlaps the neighbouring triggers and two (or more)
+ * tooltips end up visible during a horizontal sweep. `trigger="manual"`
+ * tooltips opt out: they never claim the active slot and are never evicted, so
+ * programmatic multi-tooltip scenarios (annotations, coach marks) keep working.
+ */
+const tooltipInstances = new Set<Tooltip>();
+let activeTooltip: Tooltip | null = null;
+
+/**
  * @summary A tooltip that displays contextual text on hover or focus.
  * @customElement l-tooltip
  *
@@ -38,7 +50,7 @@ export class Tooltip extends LuxenElement {
   });
 
   /** The HTML id of the element triggering the tooltip. */
-  @property()
+  @property({ reflect: true })
   accessor for = '';
 
   /** The preferred placement of the tooltip. */
@@ -66,7 +78,13 @@ export class Tooltip extends LuxenElement {
   }
 
   private get _trigger(): HTMLElement | null {
-    return this.for ? (this.getRootNode() as Document | ShadowRoot).getElementById(this.for) : null;
+    if (!this.for) return null;
+    // A detached tooltip's root is a plain element with no getElementById —
+    // async open/close work (e.g. an eviction) may land after removal.
+    const root = this.getRootNode();
+    return root instanceof Document || root instanceof ShadowRoot
+      ? root.getElementById(this.for)
+      : null;
   }
 
   private get _popover(): HTMLElement {
@@ -84,11 +102,14 @@ export class Tooltip extends LuxenElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    tooltipInstances.add(this);
     requestAnimationFrame(() => this._addTriggerListeners());
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    tooltipInstances.delete(this);
+    if (activeTooltip === this) activeTooltip = null;
     this._removeTriggerListeners();
   }
 
@@ -121,6 +142,13 @@ export class Tooltip extends LuxenElement {
     const posOpts = { placement: this.placement, distance: this.distance };
 
     if (this.open) {
+      // Single-open invariant: opening a non-manual tooltip evicts the current
+      // one. The evicted tooltip's hide flows back through this method, which
+      // also removes its safe-polygon `pointermove` listener.
+      if (!this._hasTrigger('manual')) {
+        if (activeTooltip && activeTooltip !== this) activeTooltip.hide();
+        activeTooltip = this;
+      }
       popover.showPopover();
       await this._floating.updatePosition(posOpts);
       if (!this.open) return;
@@ -128,6 +156,7 @@ export class Tooltip extends LuxenElement {
       this._floating.startPositioning(posOpts);
       this._trigger?.setAttribute('aria-describedby', this._tooltipId);
     } else {
+      if (activeTooltip === this) activeTooltip = null;
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
       this._trigger?.removeAttribute('aria-describedby');
@@ -140,7 +169,13 @@ export class Tooltip extends LuxenElement {
 
   private _onPointerEnter = () => {
     if (!this._hasTrigger('hover')) return;
-    this._floating.cleanupSafePolygon();
+    // The safe polygon means "the pointer is travelling toward the bubble" —
+    // provably false once the pointer enters another tooltip's trigger, so
+    // invalidate every peer's polygon (and drop its stale `pointermove`
+    // listener) along with our own.
+    for (const tooltip of tooltipInstances) {
+      tooltip._floating.cleanupSafePolygon();
+    }
     this.show();
   };
 
