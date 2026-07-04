@@ -45,6 +45,8 @@ Set `placement` to control position: `top` (default), `bottom`, `left`, `right`.
 
 Set `trigger` to control activation: `hover focus` (default), `click`, `hover`, `focus`, `manual`.
 
+At most one `hover`/`focus`/`click` tooltip is visible at a time — opening one dismisses the previous. `manual` tooltips opt out: several can stay open together and are never dismissed by other tooltips.
+
 <ComponentWrapper :html="tooltipClick" />
 
 ::: details Code
