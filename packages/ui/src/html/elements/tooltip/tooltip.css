@@ -19,19 +19,42 @@
   border: 0;
   border-radius: var(--border-radius);
   background: var(--background-color);
-  color: var(
-    --text-color,
-    oklch(from var(--background-color) calc(0.59 - 0.41 * sign(l - 0.5)) 0 0)
+  /*
+   * Text over --background-color, decided by the background's own luminance —
+   * never the document mode, since --background-color is consumer-set and
+   * ignores light/dark. The contrast-color() block below is the primary path
+   * (Baseline 2026); this --_on calc() is the fallback for browsers predating
+   * it. It approximates WCAG relative luminance with squared sRGB channels
+   * (Rec. 709 weights) and flips at 0.2, just above the black/white crossover
+   * (~0.179) — holding AA across saturated custom colors where an
+   * OKLCH-lightness threshold collapses to ≈1:1 (OKLCH L tracks hue, not
+   * luminance). --text-color lets consumers force a specific text color.
+   */
+  --_on: calc(
+    255 *
+      (
+        1 -
+          sign(
+            0.2126 * (r / 255) * (r / 255) + 0.7152 * (g / 255) * (g / 255) + 0.0722 * (b / 255) *
+              (b / 255) - 0.2
+          )
+      ) /
+      2
   );
+  color: var(--text-color, rgb(from var(--background-color) var(--_on) var(--_on) var(--_on)));
   font-size: 0.8125rem;
   line-height: 1.4;
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 16%));
   pointer-events: none;
 }
 
-@supports (color: contrast-color(red vs black, white)) {
+/* Primary path: native, guaranteed-contrast black/white. @supports (not
+ * declaration order) is required — the value contains var(), so a non-supporting
+ * browser treats contrast-color() as invalid-at-computed-value-time and resets to
+ * inherit rather than falling back to the calc() line. */
+@supports (color: contrast-color(red)) {
   [popover] {
-    color: var(--text-color, contrast-color(var(--background-color) vs #111827, #fff to AA));
+    color: var(--text-color, contrast-color(var(--background-color)));
   }
 }
 
