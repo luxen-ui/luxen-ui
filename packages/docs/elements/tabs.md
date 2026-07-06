@@ -12,7 +12,7 @@ import tabsLineColors from '../.vitepress/examples/tabs/TabsLineColors.html?raw'
 
 # Tabs <Badge type="tip">&lt;l-tabs&gt;</Badge>
 
-Tabs organize content into panels, showing one at a time. Progressive enhancement — plain HTML is enhanced with ARIA roles, keyboard navigation, and an animated indicator.
+Tabs organize content into panels, showing one at a time. Progressive enhancement — plain HTML is enhanced with ARIA roles, keyboard navigation, and an animated indicator. Mark the initially-active tab with `aria-selected="true"` so it is styled as selected before the script loads.
 
 <ElementSpec element="tabs" />
 
