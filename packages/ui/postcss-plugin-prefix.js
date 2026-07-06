@@ -28,6 +28,16 @@ const plugin = (opts = {}) => {
           if (node.name === 'keyframes' && node.params.startsWith('l-')) {
             node.params = node.params.replace(/^l-/, `${cssPrefix}-`);
           }
+
+          // `@scope` preludes are selector lists, not part of any child rule, so
+          // the `walk` over rules never sees them — the root (and optional `to`
+          // limit) would stay `l-…` and match nothing under a custom prefix,
+          // leaving the whole scoped block inert. Rewrite it with the same
+          // selector rewriter: it handles bare tags, `:not(…)`, attribute
+          // qualifiers, comma-separated roots and a `.l-` limit for free.
+          if (node.name === 'scope' && node.params) {
+            node.params = rewriteSelector(node.params, elementPrefix, cssPrefix);
+          }
         }
 
         if (node.type === 'rule') {
