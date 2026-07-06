@@ -10,7 +10,7 @@
   */
 
   l-tabs[variant='enclosed'] {
-    & [role='tablist'] {
+    & > :first-child {
       background: var(--l-color-bg-fill-neutral-subtle);
       border-radius: var(--l-radius-lg);
       padding: calc(var(--spacing) * 1);
@@ -28,7 +28,7 @@
       }
     }
 
-    & [role='tab'] {
+    & > :first-child button {
       position: relative;
       z-index: 1;
       padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);

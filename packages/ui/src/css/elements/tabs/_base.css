@@ -9,7 +9,12 @@
     display: block;
   }
 
-  l-tabs [role='tablist'] {
+  /* Structural selectors (not [role='…']) so the tablist/tabs/panels are styled
+     from the plain light DOM — the element is progressive, so it must look right
+     before JS runs and adds the ARIA roles. First child = tablist; its buttons =
+     tabs; remaining children = panels. JS only enhances (roles, keyboard, the
+     sliding indicator, and hiding inactive panels). */
+  l-tabs > :first-child {
     --_duration: 150ms;
     --_easing: cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -31,11 +36,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    l-tabs [role='tablist'] {
+    l-tabs > :first-child {
       --_duration: 0ms;
     }
 
-    l-tabs [role='tab'] {
+    l-tabs > :first-child button {
       transition-duration: 0ms;
     }
   }
@@ -46,7 +51,7 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
   */
 
-  l-tabs [role='tab'] {
+  l-tabs > :first-child button {
     appearance: none;
     border: none;
     background: none;
@@ -86,7 +91,7 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
   */
 
-  l-tabs [role='tabpanel'] {
+  l-tabs > :not(:first-child) {
     &:focus-visible {
       outline: 2px solid var(--l-focus-ring);
       outline-offset: 2px;
@@ -100,11 +105,11 @@
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
   */
 
-  l-tabs[full-width] [role='tablist'] {
+  l-tabs[full-width] > :first-child {
     width: 100%;
   }
 
-  l-tabs[full-width] [role='tab'] {
+  l-tabs[full-width] > :first-child button {
     flex: 1;
     text-align: center;
   }

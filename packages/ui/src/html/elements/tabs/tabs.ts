@@ -25,10 +25,12 @@ interface TabsEventMap {
  * with ARIA roles, keyboard navigation, and animated indicators.
  *
  * @example
+ * Mark the initially-active tab with `aria-selected="true"` so it is styled as
+ * selected before the script upgrades the element (progressive enhancement).
  * ```html
  * <l-tabs variant="enclosed">
  *   <div>
- *     <button>Tab 1</button>
+ *     <button aria-selected="true">Tab 1</button>
  *     <button>Tab 2</button>
  *   </div>
  *   <div>Content 1</div>
