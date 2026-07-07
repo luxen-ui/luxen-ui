@@ -43,6 +43,10 @@ These rules apply across all elements; element-specific detail lives in the per-
 - **Show/hide overlays with the invoker pattern**: `command="--show"` / `command="--hide"` + `commandfor="<id>"` for dialog and drawer.
 - **Colors, spacing, and typography come from design tokens** — see [references/tokens.md](references/tokens.md). Use the semantic tokens and utility classes listed there rather than arbitrary values.
 
+## Choosing an element
+
+**When the right element isn't obvious, read [references/choosing-elements.md](references/choosing-elements.md) first.** It routes from user intent to the correct element, tells you when a native HTML element + CSS class beats a custom element, and lists the common look-alikes (alert vs toast, switch vs checkbox, dropdown vs select).
+
 ## Per-element specs
 
 **ALWAYS read `references/<element>.md` before emitting that element** (e.g. `references/dialog.md`) — attribute conventions differ per element, so guessing from memory is unsafe. Each file describes attributes, slots, events, and CSS custom properties.
