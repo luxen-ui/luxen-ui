@@ -1,5 +1,24 @@
 # luxen-ui
 
+## 0.15.0
+
+### Minor Changes
+
+- f23c439: Add `<l-select>`, a searchable select with a button trigger and a popover listbox. It supports single and multiple selection (with removable `<l-tag>` chips), in-popover search with accent/case-insensitive filtering, rich options via the shared `.l-select-item-*` classes, `<option selected>` pre-selection, sizes, a clear button, and full keyboard/ARIA support. It is form-associated — single mode submits one value, multiple mode submits one entry per value.
+
+  Options are authored as a native `<datalist>` of `<option>`, the same surface as `<l-combobox>`. The zero-JS native `<select class="l-select">` continues to ship as the "platform" tier and is now documented alongside `<l-select>` on a single Select page.
+
+- f23c439: Add `<l-tag>`, a compact chip element for tokens, filters, and selected values. It supports an optional remove button (click or Backspace/Delete), a leading `prefix` slot for an icon or avatar, three sizes, and a disabled state. As a Shadow DOM element it renders correctly anywhere, including inside another element's shadow root.
+- 9f5cf80: The generated agent skill now ships a `choosing-elements.md` reference that helps AI agents pick the right element from user intent — when to prefer a native HTML element with a CSS class over a custom element, and how to tell apart common look-alikes (alert vs toast, switch vs checkbox, dropdown vs select).
+
+### Patch Changes
+
+- ee5f578: Fix scoped elements (`l-toast`, `l-story`, `l-input-otp`, `l-input-stepper`) rendering completely unstyled when a custom `elementPrefix` is configured. Their CSS wraps rules in an `@scope (l-…)` block, and the prelude was left un-rewritten — so the scope root matched nothing and the whole block went inert. The `@scope` prelude is now rewritten to the configured prefix like every other selector.
+- 1ef8308: Fix `l-dropdown`: a click dispatched programmatically on an `l-dropdown-item` host (`item.click()`, a synthetic `MouseEvent`, or a testing tool that retargets to the host) now fires `select`. Previously only pointer/keyboard hits on the inner row were honored, which broke programmatic activation and E2E tests. Hits inside a parent item's submenu panel are still correctly ignored.
+- 7f7b816: Fix `<l-tabs>` rendering with JavaScript disabled. The tablist, tabs, and panels are now styled from the light-DOM structure (`l-tabs > div > button`) instead of the ARIA roles the element adds at runtime, so this progressive element looks correct before its script loads. Mark the initially-active tab with `aria-selected="true"` to style it as selected without JS.
+- cfde125: Fix `l-tooltip`: at most one hover/focus/click-triggered tooltip is visible at a time. On dense trigger grids (heatmaps, calendars, avatar stacks), sweeping the pointer across a row could leave two or three tooltips open at once because each instance's safe polygon kept it alive while the neighbour opened — opening a tooltip now dismisses the previous one and invalidates every peer's safe polygon. `trigger="manual"` tooltips opt out: several can stay open together and hover opens never evict them. Also, the `for` property now reflects to the attribute, so `[for="…"]` CSS and `querySelector` calls match when a framework (Vue, React) sets it as a DOM property.
+- 2651ad8: Fix `l-tooltip` auto-derived text color on custom backgrounds. The `contrast-color()` path used the withdrawn `color-contrast()` syntax (`… vs … to AA`), so its `@supports` guard evaluated false in every browser and the native path never ran — text color always fell back to an OKLCH-lightness threshold, which tracks hue rather than luminance and could collapse contrast to ≈1:1 on a saturated `--background-color`. The tooltip now uses the single-argument `contrast-color()` where supported and a squared-sRGB luminance approximation as the fallback, matching `l-avatar`.
+
 ## 0.14.0
 
 ### Minor Changes
