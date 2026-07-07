@@ -1,6 +1,6 @@
 {
   "name": "luxen-ui",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Modern web components and CSS-first UI library built with Lit. Framework-agnostic, customizable prefix, design tokens.",
   "keywords": [
     "custom-elements",
