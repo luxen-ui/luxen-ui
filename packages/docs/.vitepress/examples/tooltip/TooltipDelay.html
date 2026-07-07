@@ -1,0 +1,22 @@
+<div class="flex gap-3">
+  <button
+    id="tooltip-delay-a"
+    class="l-button"
+  >
+    Immediate
+  </button>
+  <l-tooltip for="tooltip-delay-a">Shows right away</l-tooltip>
+
+  <button
+    id="tooltip-delay-b"
+    class="l-button"
+  >
+    Dwell 400ms
+  </button>
+  <l-tooltip
+    for="tooltip-delay-b"
+    show-delay="400"
+    hide-delay="150"
+    >Only after the pointer rests</l-tooltip
+  >
+</div>
