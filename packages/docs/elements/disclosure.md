@@ -6,6 +6,7 @@ outline: deep
 import disclosureDefault from '../.vitepress/examples/disclosure/DisclosureDefault.html?raw'
 import disclosureOpen from '../.vitepress/examples/disclosure/DisclosureOpen.html?raw'
 import disclosureMarkers from '../.vitepress/examples/disclosure/DisclosureMarkers.html?raw'
+import disclosureMarkerPlacement from '../.vitepress/examples/disclosure/DisclosureMarkerPlacement.html?raw'
 import disclosureFaq from '../.vitepress/examples/disclosure/DisclosureFaq.html?raw'
 </script>
 
@@ -48,6 +49,17 @@ Add `data-marker="arrow"` or `data-marker="plus"` for an animated icon indicator
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/disclosure/DisclosureMarkers.html [HTML]
+:::
+
+### Marker placement
+
+Add `data-marker-placement="start"` to move the marker before the label (defaults to `end`).
+
+<ComponentWrapper vertical :html="disclosureMarkerPlacement" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/disclosure/DisclosureMarkerPlacement.html [HTML]
 :::
 
 ## Examples

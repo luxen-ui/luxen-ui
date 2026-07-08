@@ -14,6 +14,7 @@
  * @attribute open - Native attribute — starts the disclosure expanded.
  * @attribute name - Native attribute — groups disclosures into an exclusive accordion.
  * @attribute data-marker - arrow | plus — Marker icon: `arrow` rotates 180° when open; `plus` rotates 45° into a cross.
+ * @attribute data-marker-placement - start | end — Marker side. Defaults to `end`.
  * @attribute data-variant - bordered — Adds border, background, and border-radius.
  * @attribute disabled - Disables interaction (set on `<details>` or `<summary>`).
  *
