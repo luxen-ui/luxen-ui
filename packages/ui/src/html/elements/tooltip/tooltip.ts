@@ -248,12 +248,17 @@ export class Tooltip extends LuxenElement {
   }
 
   private _onFocusIn = () => {
+    if (!this._hasTrigger('focus')) return;
+    // Keyboard focus only. A pointer click focuses the trigger too, but the
+    // pointer already drives the `hover` trigger — showing on mouse focus would
+    // resurrect the tooltip when a modal (e.g. `l-dialog`) restores focus to
+    // the trigger on close. `:focus-visible` is exactly "focus that warrants a
+    // visible affordance", matching the platform's own `title`/APG behaviour.
+    if (!this._trigger?.matches(':focus-visible')) return;
     // Focus is a discrete affordance — show immediately, ignoring the dwell delay.
-    if (this._hasTrigger('focus')) {
-      clearTimeout(this._hideTimer);
-      this._hideTimer = undefined;
-      this.show();
-    }
+    clearTimeout(this._hideTimer);
+    this._hideTimer = undefined;
+    this.show();
   };
   private _onFocusOut = () => {
     if (this._hasTrigger('focus')) {
