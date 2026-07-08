@@ -14,6 +14,17 @@ import {
 
 type Point = [number, number];
 
+/**
+ * How long the pointer may rest, in the corridor between the trigger and the
+ * bubble, before the safe polygon gives up and hides. The polygon is only
+ * re-evaluated on `pointermove`, so a pointer that leaves and immediately stops
+ * emits no further event to close on — this fallback guarantees the tooltip
+ * still hides. Kept short so a genuine pause while travelling toward the bubble
+ * re-arms it without a visible flicker. It is *not* armed while the pointer sits
+ * on the bubble or the trigger themselves — those are stable "stay open" states.
+ */
+const SAFE_POLYGON_REST_HIDE_MS = 200;
+
 /** Check if a point is inside a polygon using ray-casting. */
 function isPointInPolygon([px, py]: Point, polygon: Point[]) {
   let inside = false;
@@ -346,16 +357,38 @@ export class PopoverController implements ReactiveController {
 
   // --- Safe polygon ---
 
-  handlePointerLeave(e: PointerEvent, onHide: () => void) {
+  handlePointerLeave(e: PointerEvent, onHide: (reason: 'exit' | 'settled') => void) {
     const floating = this._config.getFloatingElement();
     const trigger = this._config.getTriggerElement();
     if (!floating || !trigger) {
-      onHide();
+      onHide('exit');
       return;
     }
 
     const cursorX = e.clientX;
     const cursorY = e.clientY;
+
+    // Armed only while the pointer sits in the corridor between the trigger and
+    // the bubble: there we cannot tell "paused mid-travel" from "gone" without
+    // waiting, so if no further `pointermove` re-evaluates the polygon the
+    // pointer has settled and we hide. On the bubble or the trigger themselves
+    // the answer is unambiguous — stay open — so the timer is cleared, never
+    // armed (otherwise a pointer resting on the bubble to read it would hide).
+    let fallback: ReturnType<typeof setTimeout> | undefined;
+
+    const hide = (reason: 'exit' | 'settled') => {
+      cleanup();
+      onHide(reason);
+    };
+
+    // Stable "stay open" surface (bubble or trigger): cancel any pending rest-hide.
+    const stayOpen = () => clearTimeout(fallback);
+
+    // Transient corridor: keep open, but hide if the pointer comes to rest here.
+    const armRestHide = () => {
+      clearTimeout(fallback);
+      fallback = setTimeout(() => hide('settled'), SAFE_POLYGON_REST_HIDE_MS);
+    };
 
     const onMove = (moveEvent: PointerEvent) => {
       const { clientX: mx, clientY: my } = moveEvent;
@@ -364,8 +397,14 @@ export class PopoverController implements ReactiveController {
       const refRect = trigger.getBoundingClientRect();
       const side = this._currentPlacement.split('-')[0];
 
-      if (isPointInRect(cursor, rect)) return;
-      if (isPointInRect(cursor, refRect)) return;
+      if (isPointInRect(cursor, rect)) {
+        stayOpen();
+        return;
+      }
+      if (isPointInRect(cursor, refRect)) {
+        stayOpen();
+        return;
+      }
 
       if (
         (side === 'top' && cursorY >= refRect.bottom - 1) ||
@@ -373,23 +412,28 @@ export class PopoverController implements ReactiveController {
         (side === 'left' && cursorX >= refRect.right - 1) ||
         (side === 'right' && cursorX <= refRect.left + 1)
       ) {
-        cleanup();
-        onHide();
+        hide('exit');
         return;
       }
 
       const polygon = getSafePolygon(cursorX, cursorY, rect, refRect, this._currentPlacement);
-      if (isPointInPolygon(cursor, polygon)) return;
+      if (isPointInPolygon(cursor, polygon)) {
+        armRestHide();
+        return;
+      }
 
-      cleanup();
-      onHide();
+      hide('exit');
     };
 
     const cleanup = () => {
+      clearTimeout(fallback);
       document.removeEventListener('pointermove', onMove);
     };
 
     document.addEventListener('pointermove', onMove);
+    // Arm immediately: a leave with no subsequent move (flick-and-stop) lands in
+    // the corridor and must still hide once the pointer has settled.
+    armRestHide();
 
     this._cleanupSafePolygon?.();
     this._cleanupSafePolygon = cleanup;

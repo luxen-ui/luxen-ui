@@ -199,11 +199,17 @@ export class Tooltip extends LuxenElement {
   private _onPointerEnter = () => {
     if (!this._hasTrigger('hover')) return;
     // The safe polygon means "the pointer is travelling toward the bubble" —
-    // provably false once the pointer enters another tooltip's trigger, so
-    // invalidate every peer's polygon (and drop its stale `pointermove`
-    // listener) along with our own.
+    // provably false once the pointer enters another tooltip's trigger. Drop
+    // our own stale polygon, and close every peer now: invalidating a peer's
+    // polygon without hiding it leaves the peer stuck open, because its only
+    // remaining close path was eviction when *this* tooltip opens — and with
+    // `show-delay` that can be much later, or never if the pointer moves on
+    // before the dwell elapses (a fast sweep across a button group).
+    this._floating.cleanupSafePolygon();
     for (const tooltip of tooltipInstances) {
+      if (tooltip === this || tooltip._hasTrigger('manual')) continue;
       tooltip._floating.cleanupSafePolygon();
+      tooltip.hide();
     }
     // The pointer is back on the trigger: cancel a pending hide (exit-and-return).
     clearTimeout(this._hideTimer);
@@ -221,7 +227,14 @@ export class Tooltip extends LuxenElement {
     clearTimeout(this._showTimer);
     this._showTimer = undefined;
     if (!this._hasTrigger('hover') || !this.open) return;
-    this._floating.handlePointerLeave(e, () => this._scheduleHide());
+    // `exit` — the pointer actively moved off the trigger/bubble: honour
+    // `hide-delay` so a brief exit-and-return doesn't flicker. `settled` — the
+    // pointer left and sat motionless in the corridor: there is no in-flight
+    // gesture to bridge, so hide at once (never stack the delay on top).
+    this._floating.handlePointerLeave(e, (reason) => {
+      if (reason === 'settled') this.hide();
+      else this._scheduleHide();
+    });
   };
 
   /** Hide now, or after `hide-delay` if set (cancellable by a pointer return). */
