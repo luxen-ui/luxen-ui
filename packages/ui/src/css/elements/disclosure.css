@@ -134,4 +134,20 @@
   .l-disclosure[data-marker='plus'][open] summary::after {
     rotate: 45deg;
   }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Marker: placement
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-disclosure[data-marker-placement='start'] summary {
+    justify-content: flex-start;
+    /* Match the summary's inline padding so the space around the marker is symmetric */
+    gap: calc(var(--spacing) * 4);
+  }
+
+  .l-disclosure[data-marker-placement='start'] summary::after {
+    order: -1;
+  }
 }
