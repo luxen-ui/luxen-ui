@@ -64,6 +64,20 @@ const GRID = `
   </div>
 `;
 
+// The same waffle grid, but with a show-delay: opening (and therefore the
+// single-open eviction) is deferred, so a fast sweep can leave a peer's polygon
+// invalidated while the newcomer hasn't opened yet.
+const GRID_DELAY = `
+  <div style="padding: 120px 40px 200px">
+    <div style="display: flex; gap: 3px">
+      <button id="cell-a" style="width: 14px; height: 14px; padding: 0" aria-label="Machine A"></button>
+      <button id="cell-b" style="width: 14px; height: 14px; padding: 0" aria-label="Machine B"></button>
+    </div>
+    <l-tooltip id="tip-a" for="cell-a" show-delay="400" style="--show-duration: 0ms; --hide-duration: 0ms">Machine A</l-tooltip>
+    <l-tooltip id="tip-b" for="cell-b" show-delay="400" style="--show-duration: 0ms; --hide-duration: 0ms">Machine B</l-tooltip>
+  </div>
+`;
+
 // The bubble opens 8px above the trigger (placement top). #midway sits inside
 // the bubble's area — the bubble itself is pointer-events: none, so "moving the
 // pointer into the bubble" is simulated by hovering this target underneath it.
@@ -99,6 +113,23 @@ describe('Only one hover tooltip is visible at a time', () => {
     expect(openTips().map((t) => t.id)).toEqual(['tip-c']);
   });
 
+  it('closes an open tooltip when the pointer reaches another trigger, even before the newcomer opens (show-delay sweep)', async () => {
+    await mount(GRID_DELAY);
+
+    await userEvent.hover(cell('cell-a'));
+    await waitUntil(() => tip('tip-a').open);
+
+    // Sweep onto B's trigger. B won't open until its 400ms dwell elapses, so
+    // eviction-on-open can't close A in time. Reaching B's trigger proves the
+    // pointer is no longer travelling toward A's bubble, so A must close now —
+    // otherwise it is orphaned open with no pointermove left to hide it.
+    await userEvent.hover(cell('cell-b'));
+    await waitUntil(() => !tip('tip-a').open);
+    expect(tip('tip-a').open).toBe(false);
+    // The newcomer is still only pending — not yet shown.
+    expect(tip('tip-b').open).toBe(false);
+  });
+
   it('exposes a single role=tooltip bubble to assistive tech after the sweep', async () => {
     await mount(GRID);
 
@@ -128,6 +159,50 @@ describe('Only one hover tooltip is visible at a time', () => {
 
     // …while leaving the bubble toward unrelated content still closes it.
     await userEvent.hover(cell('away'));
+    await waitUntil(() => !tip('tip').open);
+    expect(tip('tip').open).toBe(false);
+  });
+
+  it('stays open while the pointer rests on the bubble to read it', async () => {
+    await mount(SINGLE);
+
+    await userEvent.hover(cell('lonely'));
+    await waitUntil(() => tip('tip').open);
+
+    // Travel onto the bubble and stop — no further `pointermove` follows. The
+    // rest fallback must NOT fire here: the bubble is a stable "stay open"
+    // surface, not the transient corridor. Wait well past the ~200ms fallback.
+    await userEvent.hover(cell('midway'));
+    await sleep(400);
+    await settle();
+    expect(tip('tip').open).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The tooltip hides when the pointer leaves and comes to rest
+// ---------------------------------------------------------------------------
+
+describe('The tooltip hides when the pointer leaves and comes to rest', () => {
+  it('closes even when no pointermove follows the pointerleave (flick-and-stop)', async () => {
+    await mount(SINGLE);
+
+    await userEvent.hover(cell('lonely'));
+    await waitUntil(() => tip('tip').open);
+
+    // Flick-and-stop: the pointer leaves the trigger and immediately rests, so
+    // the browser fires `pointerleave` but no further `pointermove`. The safe
+    // polygon is only re-checked on move, so nothing after the leave could ever
+    // close the tooltip — the timed fallback must hide it on its own.
+    const trigger = cell('lonely');
+    const r = trigger.getBoundingClientRect();
+    trigger.dispatchEvent(
+      new PointerEvent('pointerleave', {
+        clientX: r.left + r.width / 2,
+        clientY: r.bottom + 200, // far below, opposite the top-placed bubble
+      }),
+    );
+
     await waitUntil(() => !tip('tip').open);
     expect(tip('tip').open).toBe(false);
   });

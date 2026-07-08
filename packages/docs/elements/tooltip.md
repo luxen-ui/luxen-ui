@@ -10,6 +10,7 @@ import tooltipNoArrow from '../.vitepress/examples/tooltip/TooltipNoArrow.html?r
 import tooltipClick from '../.vitepress/examples/tooltip/TooltipClick.html?raw'
 import tooltipDelay from '../.vitepress/examples/tooltip/TooltipDelay.html?raw'
 import tooltipColor from '../.vitepress/examples/tooltip/TooltipColor.html?raw'
+import tooltipButtonGroup from '../.vitepress/examples/tooltip/TooltipButtonGroup.html?raw'
 </script>
 
 # Tooltip <Badge type="tip">&lt;l-tooltip&gt;</Badge>
@@ -89,6 +90,17 @@ Set `--background-color` to a base color. Text color is auto-derived from its lu
 :::
 
 ## Examples
+
+### Icon toolbar
+
+Give each icon button its own tooltip and a `show-delay` so sweeping across the group doesn't flash a tooltip on every control the pointer passes over — only the one the pointer rests on opens. Keep an `aria-label` on each button: the tooltip supplements the accessible name, it doesn't replace it.
+
+<ComponentWrapper :html="tooltipButtonGroup" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tooltip/TooltipButtonGroup.html [HTML]
+:::
 
 ### All placements
 
