@@ -134,6 +134,86 @@ describe('Only one hover tooltip is visible at a time', () => {
 });
 
 // ---------------------------------------------------------------------------
+// A dwell delay filters out pass-through hovers
+// ---------------------------------------------------------------------------
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// A single trigger with a dwell delay on both directions. `away` sits far below,
+// opposite the bubble, so leaving toward it exits the safe polygon at once.
+const DELAY = `
+  <div style="padding: 120px 40px 240px">
+    <button id="dwell">Save</button>
+    <l-tooltip id="tip" for="dwell" show-delay="250" hide-delay="250" style="--show-duration: 0ms; --hide-duration: 0ms">Save changes</l-tooltip>
+    <button id="away" style="display: block; margin-top: 160px">Elsewhere</button>
+  </div>
+`;
+
+describe('A dwell delay filters out pass-through hovers', () => {
+  it('waits show-delay before opening — a resting pointer eventually shows it', async () => {
+    await mount(DELAY);
+
+    await userEvent.hover(cell('dwell'));
+    // The dwell has not elapsed: the tooltip stays closed just after entering.
+    await settle();
+    expect(tip('tip').open).toBe(false);
+
+    // Once the pointer has rested long enough, it opens.
+    await waitUntil(() => tip('tip').open);
+    expect(tip('tip').open).toBe(true);
+  });
+
+  it('cancels the pending open if the pointer leaves before the dwell elapses', async () => {
+    await mount(DELAY);
+
+    // Sweep across: enter then leave well before show-delay (250ms).
+    await userEvent.hover(cell('dwell'));
+    await userEvent.hover(cell('away'));
+
+    // Past the original delay, the tooltip never opened and never wired ARIA.
+    await sleep(350);
+    await settle();
+    expect(tip('tip').open).toBe(false);
+    expect(cell('dwell').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('opens immediately on focus, ignoring the pointer dwell delay (WCAG 2.1.1 / RGAA 7.3)', async () => {
+    await mount(DELAY);
+
+    await userEvent.tab(); // focus lands on the trigger button
+    // No wait: focus is a discrete affordance, so the delay must not apply.
+    await settle();
+    expect(tip('tip').open).toBe(true);
+  });
+
+  it('drops the pending open when the trigger is removed before the dwell elapses', async () => {
+    await mount(DELAY);
+
+    const removed = tip('tip');
+    await userEvent.hover(cell('dwell'));
+    removed.remove(); // disconnect must clear the queued show
+
+    await sleep(350);
+    expect(removed.open).toBe(false);
+  });
+
+  it('bridges a brief exit-and-return within hide-delay without flicker', async () => {
+    await mount(DELAY);
+
+    await userEvent.hover(cell('dwell'));
+    await waitUntil(() => tip('tip').open);
+
+    // Leave toward unrelated content — the safe polygon schedules a delayed hide.
+    await userEvent.hover(cell('away'));
+    // Return to the trigger within the hide-delay window: it must stay open.
+    await userEvent.hover(cell('dwell'));
+    await sleep(50);
+    await settle();
+    expect(tip('tip').open).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Manual tooltips opt out of the single-open invariant
 // ---------------------------------------------------------------------------
 

@@ -61,6 +61,24 @@ export class Tooltip extends LuxenElement {
   @property({ type: Number })
   accessor distance = 8;
 
+  /**
+   * Milliseconds the pointer must dwell on the trigger before the tooltip
+   * shows. Applies to `hover` only — focus shows immediately.
+   */
+  @property({ type: Number, attribute: 'show-delay' })
+  accessor showDelay = 0;
+
+  /**
+   * Milliseconds to wait after the pointer leaves the trigger (and its safe
+   * polygon) before hiding. Bridges a brief exit-and-return without flicker.
+   * Applies to `hover` only.
+   */
+  @property({ type: Number, attribute: 'hide-delay' })
+  accessor hideDelay = 0;
+
+  private _showTimer?: ReturnType<typeof setTimeout>;
+  private _hideTimer?: ReturnType<typeof setTimeout>;
+
   /** Whether or not the tooltip is visible. */
   @property({ type: Boolean, reflect: true })
   accessor open = false;
@@ -110,6 +128,7 @@ export class Tooltip extends LuxenElement {
     super.disconnectedCallback();
     tooltipInstances.delete(this);
     if (activeTooltip === this) activeTooltip = null;
+    this._clearTimers();
     this._removeTriggerListeners();
   }
 
@@ -118,9 +137,19 @@ export class Tooltip extends LuxenElement {
       void this._handleOpenChange();
     }
     if (changed.has('for')) {
+      // A queued show/hide targets the old trigger — drop it before rewiring.
+      this._clearTimers();
       this._removeTriggerListeners(changed.get('for') as string);
       this._addTriggerListeners();
     }
+  }
+
+  /** Cancel any pending delayed show/hide (trigger gone, `for` changed, disconnect). */
+  private _clearTimers() {
+    clearTimeout(this._showTimer);
+    clearTimeout(this._hideTimer);
+    this._showTimer = undefined;
+    this._hideTimer = undefined;
   }
 
   show() {
@@ -176,19 +205,50 @@ export class Tooltip extends LuxenElement {
     for (const tooltip of tooltipInstances) {
       tooltip._floating.cleanupSafePolygon();
     }
-    this.show();
+    // The pointer is back on the trigger: cancel a pending hide (exit-and-return).
+    clearTimeout(this._hideTimer);
+    this._hideTimer = undefined;
+    if (this.showDelay > 0 && !this.open) {
+      clearTimeout(this._showTimer);
+      this._showTimer = setTimeout(() => this.show(), this.showDelay);
+    } else {
+      this.show();
+    }
   };
 
   private _onPointerLeave = (e: PointerEvent) => {
+    // Cancel a still-pending show — the pointer left before the dwell elapsed.
+    clearTimeout(this._showTimer);
+    this._showTimer = undefined;
     if (!this._hasTrigger('hover') || !this.open) return;
-    this._floating.handlePointerLeave(e, () => this.hide());
+    this._floating.handlePointerLeave(e, () => this._scheduleHide());
   };
 
+  /** Hide now, or after `hide-delay` if set (cancellable by a pointer return). */
+  private _scheduleHide() {
+    if (this.hideDelay > 0) {
+      clearTimeout(this._hideTimer);
+      this._hideTimer = setTimeout(() => this.hide(), this.hideDelay);
+    } else {
+      this.hide();
+    }
+  }
+
   private _onFocusIn = () => {
-    if (this._hasTrigger('focus')) this.show();
+    // Focus is a discrete affordance — show immediately, ignoring the dwell delay.
+    if (this._hasTrigger('focus')) {
+      clearTimeout(this._hideTimer);
+      this._hideTimer = undefined;
+      this.show();
+    }
   };
   private _onFocusOut = () => {
-    if (this._hasTrigger('focus')) this.hide();
+    if (this._hasTrigger('focus')) {
+      // A hover may have queued a show; blur must not resurrect it.
+      clearTimeout(this._showTimer);
+      this._showTimer = undefined;
+      this.hide();
+    }
   };
   private _onClick = () => {
     if (this._hasTrigger('click')) this.toggle();

@@ -8,6 +8,7 @@ import tooltipPlacement from '../.vitepress/examples/tooltip/TooltipPlacement.ht
 import tooltipAllPlacements from '../.vitepress/examples/tooltip/TooltipAllPlacements.html?raw'
 import tooltipNoArrow from '../.vitepress/examples/tooltip/TooltipNoArrow.html?raw'
 import tooltipClick from '../.vitepress/examples/tooltip/TooltipClick.html?raw'
+import tooltipDelay from '../.vitepress/examples/tooltip/TooltipDelay.html?raw'
 import tooltipColor from '../.vitepress/examples/tooltip/TooltipColor.html?raw'
 </script>
 
@@ -52,6 +53,17 @@ At most one `hover`/`focus`/`click` tooltip is visible at a time — opening one
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/tooltip/TooltipClick.html [HTML]
+:::
+
+### Delay
+
+Set `show-delay` to require the pointer to dwell before the tooltip shows — filtering out tooltips for controls the pointer merely passes over (toolbars, table action columns, dense grids). Set `hide-delay` to bridge a brief exit-and-return without flicker. Both are in milliseconds and apply to `hover` only; focus always shows immediately.
+
+<ComponentWrapper :html="tooltipDelay" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tooltip/TooltipDelay.html [HTML]
 :::
 
 ### Without arrow
