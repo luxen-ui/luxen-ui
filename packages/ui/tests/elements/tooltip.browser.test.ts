@@ -289,6 +289,72 @@ describe('A dwell delay filters out pass-through hovers', () => {
 });
 
 // ---------------------------------------------------------------------------
+// A modal returning focus to a clicked trigger does not resurrect the tooltip
+// ---------------------------------------------------------------------------
+
+// A trigger that opens a modal <dialog>. Native `showModal()`/`close()`
+// reproduces l-dialog's focus restoration: closing returns focus to the
+// element that had it, firing `focusin` on the trigger.
+const DIALOG = `
+  <div style="padding: 120px 40px 200px">
+    <button id="opener">Actions</button>
+    <l-tooltip id="tip" for="opener" style="--show-duration: 0ms; --hide-duration: 0ms">Voir / ajouter des notes</l-tooltip>
+    <dialog id="dlg" style="inset: 0; margin: auto">
+      <p>Notes</p>
+      <button id="dlg-close">Close</button>
+    </dialog>
+  </div>
+`;
+
+describe('A modal returning focus to a clicked trigger does not resurrect the tooltip', () => {
+  function wireDialog() {
+    const dlg = host.querySelector<HTMLDialogElement>('#dlg')!;
+    cell('opener').addEventListener('click', () => dlg.showModal());
+    cell('dlg-close').addEventListener('click', () => dlg.close());
+    return dlg;
+  }
+
+  it('stays hidden after a mouse-opened dialog closes (the reported l-dialog bug)', async () => {
+    await mount(DIALOG);
+    wireDialog();
+
+    // Hover shows the tooltip; clicking opens the modal, which pulls focus off
+    // the trigger — so the tooltip hides.
+    await userEvent.hover(cell('opener'));
+    await waitUntil(() => tip('tip').open);
+    await userEvent.click(cell('opener'));
+    await waitUntil(() => !tip('tip').open);
+
+    // Dismiss the modal with the mouse (over the close button, away from the
+    // opener). The dialog restores focus to the opener, firing `focusin` — but
+    // this was a pointer interaction, so the trigger is not `:focus-visible`
+    // and the tooltip must not reappear.
+    await userEvent.click(cell('dlg-close'));
+    await settle();
+    await sleep(50);
+    expect(tip('tip').open).toBe(false);
+  });
+
+  it('still reappears for a keyboard user when the dialog returns focus (WCAG 2.1.1 / RGAA 7.3)', async () => {
+    await mount(DIALOG);
+    wireDialog();
+
+    // A keyboard user tabs to the trigger (tooltip shows), activates it to open
+    // the modal, then presses Escape to close it. Focus returns to the trigger
+    // as `:focus-visible`, so the tooltip should come back — the accessible
+    // behaviour the pointer path deliberately suppresses.
+    await userEvent.tab();
+    await waitUntil(() => tip('tip').open);
+    await userEvent.keyboard('{Enter}');
+    await waitUntil(() => !tip('tip').open);
+
+    await userEvent.keyboard('{Escape}');
+    await waitUntil(() => tip('tip').open);
+    expect(tip('tip').open).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Manual tooltips opt out of the single-open invariant
 // ---------------------------------------------------------------------------
 
