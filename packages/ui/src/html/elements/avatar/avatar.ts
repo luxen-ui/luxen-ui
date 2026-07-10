@@ -7,13 +7,34 @@ import rawStyles from './avatar.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
-function getInitials(name: string): string {
-  return name
-    .match(/(\b\S)?/g)!
-    .join('')
-    .match(/(^\S|\S$)?/g)!
-    .join('')
-    .toUpperCase();
+/**
+ * Extracts up to two uppercase initials from a name: the first letter of the
+ * first word, plus the first letter of the last word when there is more than one.
+ *
+ * Splits on whitespace rather than relying on a `\b`/`\w` regex, which only
+ * recognises ASCII and mangles accented or non-ASCII names.
+ *
+ * @param name - The name to extract initials from. Defaults to an empty string.
+ * @return The uppercased initials, or an empty string when `name` is blank.
+ *
+ * @example getInitials('John Doe')            // 'JD'
+ * @example getInitials('Markus Nösterer')     // 'MN'  (accents preserved)
+ * @example getInitials('Cher')                // 'C'   (single word → one initial)
+ * @example getInitials('  John   Doe  ')      // 'JD'  (extra whitespace ignored)
+ * @example getInitials('')                    // ''
+ */
+function getInitials(name: string = ''): string {
+  const words = name.normalize('NFC').trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+
+  // Spreading iterates by code point, so an accented letter (or an astral
+  // character like an emoji) is taken whole instead of a broken half.
+  // oxlint-disable-next-line typescript/no-misused-spread -- code-point-safe first char is the intent
+  const firstLetter = (word: string) => [...word][0];
+
+  const first = firstLetter(words[0]);
+  const last = words.length > 1 ? firstLetter(words[words.length - 1]) : '';
+  return (first + last).toUpperCase();
 }
 
 const defaultIcon = svg`<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
