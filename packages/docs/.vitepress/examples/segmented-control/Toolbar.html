@@ -1,0 +1,33 @@
+<div class="flex flex-wrap items-center gap-2">
+  <button class="l-button bg-fill-neutral-subtle">
+    <l-icon name="lucide:layout-list"></l-icon>
+    List view
+    <l-icon name="lucide:chevron-down"></l-icon>
+  </button>
+  <button class="l-button bg-fill-neutral-subtle">
+    <l-icon name="lucide:arrow-down-narrow-wide"></l-icon>
+    Sort
+    <l-icon name="lucide:chevron-down"></l-icon>
+  </button>
+  <l-segmented-control
+    label="Metric"
+    value="cost"
+  >
+    <button value="volume">Volume</button>
+    <button value="cost">Cost</button>
+  </l-segmented-control>
+  <l-segmented-control
+    label="Color"
+    value="all"
+  >
+    <button value="all">All</button>
+    <button value="color">
+      <span class="size-2.5 rounded-[3px] bg-[#ef4444]"></span>
+      Color
+    </button>
+    <button value="black">
+      <span class="size-2.5 rounded-[3px] bg-[#64748b]"></span>
+      Black
+    </button>
+  </l-segmented-control>
+</div>

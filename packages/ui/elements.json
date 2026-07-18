@@ -262,6 +262,14 @@
       "inMockups": true
     },
     {
+      "name": "segmented-control",
+      "displayName": "Segmented control",
+      "kind": "element",
+      "type": "progressive",
+      "inSkill": true,
+      "inMockups": true
+    },
+    {
       "name": "select",
       "displayName": "Select",
       "kind": "element",

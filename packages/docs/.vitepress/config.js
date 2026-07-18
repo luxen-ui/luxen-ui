@@ -127,6 +127,7 @@ export default defineConfig({
           el('Popover', 'l-popover', 'popover'),
           el('Progress', 'progress', 'progress'),
           el('Prose editor', 'l-prose-editor', 'prose-editor'),
+          el('Segmented control', 'l-segmented-control', 'segmented-control'),
           el('Skeleton', 'l-skeleton', 'skeleton'),
           el('Spinner', 'l-spinner', 'spinner'),
           el('Sticky bar', 'l-sticky-bar', 'sticky-bar'),

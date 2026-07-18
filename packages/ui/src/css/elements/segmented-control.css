@@ -1,0 +1,165 @@
+@layer components {
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Segmented control
+   A single-select switch: a muted track with a sliding pill behind the
+   selected segment. Shares its visual language with l-tabs[variant='enclosed']
+   (same neutral-subtle track + surface pill), but carries radio-group
+   semantics instead of tabs.
+
+   Structural selectors (not [role='…']) so the control is styled from plain
+   light DOM — it is progressive, so it must look right before JS adds ARIA.
+   The host is the flex track; its `<button>` children are the segments. JS
+   only enhances (roles, keyboard, and the sliding pill offsets).
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-segmented-control {
+    --_height: var(--l-size-control-md);
+    --_pad: 0.1875rem;
+    --_duration: 150ms;
+    --_easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+    display: inline-flex;
+    position: relative;
+    align-items: stretch;
+    height: var(--_height);
+    padding: var(--_pad);
+    gap: calc(var(--spacing) * 0.5);
+    background: var(--l-color-bg-fill-neutral-subtle);
+    border-radius: var(--border-radius, var(--l-radius-lg));
+    /* Match the form-control border (--l-color-border, as used by .l-button,
+       l-select, and l-input) so the track lines up with dropdowns in a toolbar
+       — not the lighter --l-color-divider that enclosed tabs use. */
+    box-shadow: inset 0 0 0 1px var(--l-color-border);
+
+    /* Sliding pill behind the selected segment. Positioned by JS via
+       --_indicator-left / --_indicator-width (button offsetLeft / offsetWidth);
+       width 0 until JS runs, so it stays invisible in the no-JS fallback. */
+    &::before {
+      content: '';
+      position: absolute;
+      top: var(--_pad);
+      bottom: var(--_pad);
+      left: 0;
+      width: var(--_indicator-width, 0);
+      transform: translateX(var(--_indicator-left, 0));
+      background: var(--indicator-color, var(--l-color-surface));
+      border-radius: var(--l-radius-md);
+      box-shadow:
+        0 1px 3px 0 rgb(0 0 0 / 0.08),
+        0 1px 2px -1px rgb(0 0 0 / 0.08);
+      pointer-events: none;
+      will-change: transform, width;
+      transition:
+        transform var(--_duration) var(--_easing),
+        width var(--_duration) var(--_easing);
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Sizes — align with .l-button and form controls at the same size.
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-segmented-control[size='sm'] {
+    --_height: var(--l-size-control-sm);
+  }
+
+  l-segmented-control[size='lg'] {
+    --_height: var(--l-size-control-lg);
+  }
+
+  l-segmented-control[size='xl'] {
+    --_height: var(--l-size-control-xl);
+  }
+
+  /* Whole-control disabled (host `disabled` attribute, form-associated). */
+  l-segmented-control[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Segments
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-segmented-control button {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 1.5);
+    padding-inline: calc(var(--spacing) * 3);
+    margin: 0;
+    appearance: none;
+    border: none;
+    background: none;
+    border-radius: var(--l-radius-md);
+    color: var(--l-color-text-secondary);
+    font-family: inherit;
+    font-size: var(--l-text-sm);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 150ms;
+
+    /* Icon-only segments (JS-detected, no visible text): square them. */
+    &[data-icon-only] {
+      padding-inline: 0;
+      width: calc(var(--_height) - 2 * var(--_pad));
+    }
+
+    &[aria-checked='true'] {
+      color: var(--l-color-text-primary);
+    }
+
+    @media (hover: hover) {
+      &:hover:not([aria-checked='true']):not(:disabled):not([aria-disabled='true']) {
+        color: var(--l-color-text-primary);
+      }
+    }
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: -2px;
+      border-radius: var(--l-radius-sm);
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Full width
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-segmented-control[full-width] {
+    display: flex;
+  }
+
+  l-segmented-control[full-width] button {
+    flex: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    l-segmented-control::before {
+      transition-duration: 0ms;
+    }
+
+    l-segmented-control button {
+      transition-duration: 0ms;
+    }
+  }
+}
