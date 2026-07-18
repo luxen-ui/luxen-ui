@@ -138,6 +138,16 @@ describe('A person selecting a segment', () => {
     expect(radio('List', { checked: true }).elements()).toHaveLength(1);
     expect(fired).toBe(false);
   });
+
+  it('does not emit change when the already-selected segment is clicked', async () => {
+    await mount(BASIC); // "Board" is selected (value="board")
+    let count = 0;
+    el().addEventListener('change', () => count++);
+    await userEvent.click(radio('Board'));
+    await settle();
+    expect(count).toBe(0);
+    expect(radio('Board', { checked: true }).elements()).toHaveLength(1);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -161,6 +171,54 @@ describe('A disabled segment', () => {
     await userEvent.keyboard('{ArrowRight}');
     await settle();
     expect(radio('Calendar', { checked: true }).elements()).toHaveLength(1);
+  });
+
+  it('defaults to the first enabled segment when the default one is disabled', async () => {
+    await mount(`
+      <l-segmented-control label="View">
+        <button value="list" disabled>List</button>
+        <button value="board">Board</button>
+      </l-segmented-control>
+    `);
+    expect(radio('Board', { checked: true }).elements()).toHaveLength(1);
+    expect(radio('List', { checked: false }).elements()).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Whole-control disabled
+// ---------------------------------------------------------------------------
+
+describe('When the whole control is disabled', () => {
+  const segment = (value: string) =>
+    [...el().querySelectorAll<HTMLButtonElement>('button')].find(
+      (b) => b.getAttribute('value') === value,
+    )!;
+
+  it('marks every segment aria-disabled and out of the tab order', async () => {
+    await mount(`
+      <l-segmented-control label="View" value="board" disabled>
+        <button value="list">List</button>
+        <button value="board">Board</button>
+      </l-segmented-control>
+    `);
+    const radios = [...el().querySelectorAll<HTMLElement>('[role="radio"]')];
+    expect(radios.every((r) => r.getAttribute('aria-disabled') === 'true')).toBe(true);
+    expect(radios.every((r) => r.getAttribute('tabindex') === '-1')).toBe(true);
+  });
+
+  it('restores the roving tabindex when re-enabled', async () => {
+    await mount(`
+      <l-segmented-control label="View" value="board" disabled>
+        <button value="list">List</button>
+        <button value="board">Board</button>
+      </l-segmented-control>
+    `);
+    el().disabled = false;
+    await settle();
+    expect(segment('board').getAttribute('tabindex')).toBe('0');
+    expect(segment('list').getAttribute('tabindex')).toBe('-1');
+    expect(segment('board').hasAttribute('aria-disabled')).toBe(false);
   });
 });
 

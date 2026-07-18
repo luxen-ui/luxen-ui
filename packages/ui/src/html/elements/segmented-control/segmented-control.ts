@@ -41,8 +41,6 @@ interface SegmentedControlEventMap {
  * @cssproperty [--indicator-color=var(--l-color-surface)] - Background of the sliding pill behind the selected segment.
  * @cssproperty [--border-radius=var(--l-radius-lg)] - Corner radius of the track.
  *
- * @cssClass .l-segmented-control - Only used as the host tag selector; segments are the light-DOM `<button>` children.
- *
  * @customElement l-segmented-control
  */
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
@@ -113,6 +111,9 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
         this.removeAttribute('aria-label');
       }
     }
+    if (changed.has('disabled')) {
+      this._applyDisabledState();
+    }
   }
 
   // --- Form lifecycle ---
@@ -164,6 +165,9 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
     this.addEventListener('click', this._onClick);
     this.addEventListener('keydown', this._onKeyDown);
 
+    // Reflect a whole-control `disabled` onto the segments (aria + tab order).
+    this._applyDisabledState();
+
     // Canonicalize `value` to the active segment now that roles are set, and
     // seed the form value (the value a form reset restores to).
     this._syncValueFromIndex(activeIndex);
@@ -199,7 +203,10 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
       if (Number.isInteger(asIndex) && asIndex >= 0 && asIndex < _buttons.length) return asIndex;
     }
     const checked = _buttons.findIndex((b) => b.getAttribute('aria-checked') === 'true');
-    return checked >= 0 ? checked : 0;
+    if (checked >= 0) return checked;
+    // No explicit selection: default to the first enabled segment (else 0).
+    const firstEnabled = _buttons.findIndex((b) => !this._isDisabled(b));
+    return firstEnabled >= 0 ? firstEnabled : 0;
   }
 
   private _syncValueFromIndex(index: number) {
@@ -208,18 +215,22 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
 
   private _select(index: number, emitEvent = true) {
     if (index < 0 || index >= this._buttons.length) return;
+    // Whether this is an actual change — re-selecting the current segment must
+    // not re-fire `change` (matches native radio / `<select>`).
+    const changed = this._buttons[index].getAttribute('aria-checked') !== 'true';
 
     for (let i = 0; i < this._buttons.length; i++) {
       const isActive = i === index;
       this._buttons[i].setAttribute('aria-checked', String(isActive));
-      this._buttons[i].setAttribute('tabindex', isActive ? '0' : '-1');
+      // Disabled control keeps every segment out of the tab order.
+      this._buttons[i].setAttribute('tabindex', isActive && !this.disabled ? '0' : '-1');
     }
 
     this._syncValueFromIndex(index);
     this._syncFormValue(this.value);
     this._updateIndicator();
 
-    if (emitEvent) {
+    if (emitEvent && changed) {
       this.hasInteracted = true;
       this.dispatchEvent(new SegmentChangeEvent(this.value, index));
     }
@@ -237,6 +248,20 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
 
   private _isDisabled(btn: HTMLButtonElement): boolean {
     return btn.disabled || btn.getAttribute('aria-disabled') === 'true';
+  }
+
+  /** Reflect the host `disabled` state onto the segments (aria + tab order). */
+  private _applyDisabledState() {
+    for (const btn of this._buttons) {
+      if (this.disabled) {
+        btn.setAttribute('aria-disabled', 'true');
+        btn.setAttribute('tabindex', '-1');
+      } else {
+        btn.removeAttribute('aria-disabled');
+        // Restore the roving tabindex (only the selected segment is tabbable).
+        btn.setAttribute('tabindex', btn.getAttribute('aria-checked') === 'true' ? '0' : '-1');
+      }
+    }
   }
 
   // --- Indicator ---
