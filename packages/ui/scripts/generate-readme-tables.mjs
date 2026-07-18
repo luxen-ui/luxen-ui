@@ -57,21 +57,29 @@ function buildTableBlock(elements) {
   // Sort alphabetically by displayName
   const sorted = [...elements].toSorted((a, b) => a.displayName.localeCompare(b.displayName));
 
-  const rows = sorted.map((el) => {
-    const name = el.displayName;
-    const tag = el.tag ?? el.nativeTag ?? '';
-    const type = TYPE_LABELS[el.type] ?? el.type;
-    return `| ${name.padEnd(14)} | \`<${tag}>\`${' '.repeat(Math.max(0, 20 - tag.length - 3))} | ${type.padEnd(39)} |`;
-  });
+  const headers = { name: 'Name', tag: 'HTML tag', type: 'Type' };
+  const cells = sorted.map((el) => ({
+    name: el.displayName,
+    tag: `\`<${el.tag ?? el.nativeTag ?? ''}>\``,
+    type: TYPE_LABELS[el.type] ?? el.type,
+  }));
+
+  // Column widths grow to fit the longest entry, matching oxfmt's table
+  // alignment — so the generated output stays formatter-clean as element names
+  // and tags get longer.
+  const width = (key) => Math.max(headers[key].length, ...cells.map((c) => c[key].length));
+  const w = { name: width('name'), tag: width('tag'), type: width('type') };
+  const row = (c) =>
+    `| ${c.name.padEnd(w.name)} | ${c.tag.padEnd(w.tag)} | ${c.type.padEnd(w.type)} |`;
 
   const legend = [
     '_⏣ Native HTML Element · ⬡ Progressive Custom HTML Element · ◇ Custom HTML Element (no Shadow DOM) · ⬢ Custom HTML Element (with Shadow DOM)_',
   ].join('\n');
 
   const table = [
-    '| Name           | HTML tag             | Type                                    |',
-    '| -------------- | -------------------- | --------------------------------------- |',
-    ...rows,
+    row(headers),
+    `| ${'-'.repeat(w.name)} | ${'-'.repeat(w.tag)} | ${'-'.repeat(w.type)} |`,
+    ...cells.map(row),
   ].join('\n');
 
   return `${START_MARKER}\n\n${table}\n\n${legend}\n\n${END_MARKER}`;

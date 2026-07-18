@@ -25,6 +25,7 @@ export type ElementBaseName =
   | 'slider'
   | 'spinner'
   | 'rating'
+  | 'segmented-control'
   | 'select'
   | 'sticky-bar'
   | 'stories'
