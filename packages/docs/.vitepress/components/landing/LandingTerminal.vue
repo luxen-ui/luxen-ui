@@ -68,7 +68,7 @@ const principles = [
   { key: 'dom', body: 'light dom by default. shadow only when it earns its keep.' },
   { key: 'js', body: 'tiny runtime. tree-shakeable. no framework lock-in.' },
   { key: 'a11y', body: 'wcag 2.2 aa — semantics, aria, focus.' },
-  { key: 'agent', body: 'ships an agent skill for ai code generation.' },
+  { key: 'agent', body: 'a standards-first architecture ai agents can target. ships a skill.' },
 ];
 
 // Top-level custom elements (`<l-*>` tags), derived from the metadata so the
@@ -170,9 +170,9 @@ const railTags = metadata.elements
           <span class="accent">design&nbsp;system</span><span class="dot-pulse">.</span>
         </h1>
         <p class="lede">
-          Native HTML. Modern CSS. Built-in accessibility. Progressive custom elements by default,
-          Shadow DOM only when it pays off. A foundation you rename and ship as your own — starting
-          with the <code class="prefix-inline">l-</code> prefix.
+          Built on web standards. Native HTML. Modern CSS. Built-in accessibility. Progressive
+          custom elements by default, Shadow DOM only when it pays off. A foundation you rename and
+          ship as your own — starting with the <code class="prefix-inline">l-</code> prefix.
         </p>
 
         <div class="ctas">
