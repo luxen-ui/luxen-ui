@@ -6,6 +6,7 @@ outline: deep
 import dropdownBasic from '../.vitepress/examples/dropdown/DropdownBasic.html?raw'
 import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabledItem.html?raw'
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
+import dropdownDestructive from '../.vitepress/examples/dropdown/DropdownDestructive.html?raw'
 import dropdownSections from '../.vitepress/examples/dropdown/DropdownSections.html?raw'
 import dropdownSubmenu from '../.vitepress/examples/dropdown/DropdownSubmenu.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
@@ -53,6 +54,17 @@ Set `type="checkbox"` for toggleable items. The dropdown stays open when checkin
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownCheckbox.html [HTML]
+:::
+
+### Destructive items
+
+Set `variant="destructive"` to mark a delete-style action in red.
+
+<ComponentWrapper :html="dropdownDestructive" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownDestructive.html [HTML]
 :::
 
 ### Section labels

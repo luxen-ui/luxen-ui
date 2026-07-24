@@ -1,0 +1,44 @@
+<l-dropdown>
+  <button
+    slot="trigger"
+    class="l-button"
+  >
+    Project
+  </button>
+
+  <l-dropdown-item value="share">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:share"
+    ></iconify-icon>
+    Share
+  </l-dropdown-item>
+  <l-dropdown-item value="preferences">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:settings"
+    ></iconify-icon>
+    Preferences
+  </l-dropdown-item>
+
+  <l-divider></l-divider>
+
+  <l-dropdown-label>Danger zone</l-dropdown-label>
+  <l-dropdown-item value="archive">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:archive"
+    ></iconify-icon>
+    Archive
+  </l-dropdown-item>
+  <l-dropdown-item
+    value="delete"
+    variant="destructive"
+  >
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:trash-2"
+    ></iconify-icon>
+    Delete
+  </l-dropdown-item>
+</l-dropdown>

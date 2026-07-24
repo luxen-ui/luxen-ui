@@ -44,6 +44,24 @@
   background: var(--l-color-bg-state-hover);
 }
 
+/* Destructive variant — a delete-style action. Red label at rest, danger-tinted
+   fill and focus ring on hover/focus so the highlight reads as "danger" rather
+   than the neutral hover tint. */
+:host([variant='destructive']) .item {
+  color: var(--l-color-text-danger);
+}
+
+:host([variant='destructive']) .item:focus-visible {
+  background: var(--l-color-bg-fill-danger-soft);
+  outline-color: var(--l-color-text-danger);
+}
+
+@media (hover: hover) {
+  :host([variant='destructive']) .item:hover {
+    background: var(--l-color-bg-fill-danger-soft);
+  }
+}
+
 .check {
   display: flex;
   width: 16px;
