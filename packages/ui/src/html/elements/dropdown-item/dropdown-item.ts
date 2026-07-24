@@ -21,6 +21,8 @@ const styles = unsafeCSS(rawStyles);
  *
  * @cssproperty --color - Text color.
  *
+ * @attribute variant - destructive — Renders the item as a destructive action (red), for delete-style entries.
+ *
  * @customElement l-dropdown-item
  */
 export class DropdownItem extends LuxenElement {
@@ -43,6 +45,10 @@ export class DropdownItem extends LuxenElement {
   /** The type of item: `normal` or `checkbox`. */
   @property()
   accessor type: 'normal' | 'checkbox' = 'normal';
+
+  /** Visual variant. `destructive` marks a delete-style action in red. */
+  @property({ reflect: true })
+  accessor variant: 'destructive' | undefined = undefined;
 
   /** Whether the checkbox item is checked. */
   @property({ type: Boolean, reflect: true })
