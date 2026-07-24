@@ -1,5 +1,11 @@
 # luxen-ui
 
+## 0.17.1
+
+### Patch Changes
+
+- 4f93167: Add `variant="destructive"` to `<l-dropdown-item>`. Set it to mark a delete-style menu action in red, with a danger-tinted highlight on hover and focus. The item still selects and fires the dropdown's `select` event like any other.
+
 ## 0.17.0
 
 ### Minor Changes
