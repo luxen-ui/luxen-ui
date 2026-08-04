@@ -52,6 +52,19 @@ describe('l-tag renders a chip', () => {
     expect(el.textContent?.trim()).toBe('Design');
   });
 
+  it.each(['sm', 'md', 'lg'])('shows descenders in full at size=%s', async (size: string) => {
+    // The label sits in a one-em line box, so its descenders (g, j, p, q, y)
+    // spill below it and a plain `overflow: hidden` shears them. The clip
+    // rectangle has to cover that spill — assert the invariant rather than the
+    // declaration, so it keeps holding if either side is retuned.
+    const el = await mount(`<l-tag size="${size}">Language typography</l-tag>`);
+    const content = el.shadowRoot!.querySelector('[part="content"]')!;
+    const styles = getComputedStyle(content);
+    const spill = content.scrollHeight - content.clientHeight;
+    expect(styles.overflowY).toBe('clip');
+    expect(parseFloat(styles.overflowClipMargin)).toBeGreaterThanOrEqual(spill);
+  });
+
   it('has no remove button unless removable', async () => {
     await mount(`<l-tag>Design</l-tag>`);
     expect(removeButton().elements()).toHaveLength(0);
@@ -82,6 +95,18 @@ describe('A user can remove the tag', () => {
     await userEvent.click(removeButton());
     await settle(el);
     expect(el.isConnected).toBe(true);
+  });
+
+  it('lets the × click reach a delegating ancestor', async () => {
+    // Filter panels delegate clicks on a container. Swallowing the event inside
+    // the shadow root would make removals invisible to that listener.
+    const el = await mount(`<l-tag removable>Design</l-tag>`);
+    el.addEventListener('remove', (e) => e.preventDefault());
+    const seen: string[] = [];
+    host.addEventListener('click', (e) => seen.push((e.target as Element).tagName));
+    await userEvent.click(removeButton());
+    await settle(el);
+    expect(seen).toContain(el.tagName);
   });
 
   it('cannot be removed when disabled — the × button is disabled and unfocusable', async () => {
@@ -185,6 +210,33 @@ describe('A user can toggle a tag that carries a checkbox', () => {
     el.selected = true;
     await settle(el);
     expect(page.getByRole('checkbox', { name: 'Color', checked: true }).elements()).toHaveLength(1);
+  });
+
+  it('unchecks the box too when a controlling host vetoes the toggle', async () => {
+    // The veto sets `selected` back to the value Lit last wrote, so the
+    // `.checked` binding dirty-checks itself out — but the click already had the
+    // user agent flip the box. Without a re-assert the chip reads unselected
+    // while its box stays checked, and a screen reader announces "checked".
+    const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+    el.addEventListener('change', () => {
+      el.selected = false;
+    });
+    await userEvent.click(chipLabel(el));
+    await settle(el);
+    expect(el.selected).toBe(false);
+    expect(page.getByRole('checkbox', { name: 'Color', checked: false }).elements()).toHaveLength(
+      1,
+    );
+  });
+
+  it('does not toggle when the × inside the label is clicked', async () => {
+    // The remove button lives inside the chip's <label>. Label activation skips
+    // interactive content descendants, so removing must never flip the box.
+    const el = await mount(`<l-tag selectable control="checkbox" removable>Color</l-tag>`);
+    el.addEventListener('remove', (e) => e.preventDefault());
+    await userEvent.click(removeButton());
+    await settle(el);
+    expect(el.selected).toBe(false);
   });
 
   it('implies `selectable`, so the styling hook is there without repeating it', async () => {

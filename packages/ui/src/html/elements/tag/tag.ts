@@ -129,11 +129,18 @@ export class Tag extends LuxenElement {
     if (this.control === 'checkbox') this.selectable = true;
   }
 
-  private _requestRemove = (e?: Event) => {
-    // Inside `control="checkbox"` the × lives in the <label>; interactive
-    // descendants are excluded from label activation, but stop the click here
-    // too so a controlled host never sees a stray toggle.
-    e?.stopPropagation();
+  override updated() {
+    // Re-assert the box, don't rely on the `.checked` binding. Lit dirty-checks
+    // a property part against the value it last wrote, and a click has the user
+    // agent flip `checked` behind its back — so when a controlling host vetoes
+    // the toggle by setting `selected` back to what it already was, Lit sees no
+    // change, skips the write, and leaves a checked box on an unselected chip
+    // (announced "checked" too). Cheap: the query is null on every other path.
+    const box = this.renderRoot.querySelector<HTMLInputElement>('.checkbox');
+    if (box) box.checked = this.selected;
+  }
+
+  private _requestRemove = () => {
     if (this.disabled) return;
     const event = new TagRemoveEvent();
     this.dispatchEvent(event);

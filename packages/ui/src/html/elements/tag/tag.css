@@ -83,7 +83,20 @@
     display: inline-flex;
     align-items: center;
     min-inline-size: 0;
-    overflow: hidden;
+    /* `.base` sets `line-height: 1` so the chip's height comes from its own size
+       tokens rather than the document's leading. That makes the line box exactly
+       one em tall, and a plain `overflow: hidden` then shears every descender
+       (g, j, p, q, y) at all three sizes — measured 1px short.
+
+       Fixed by widening the clip rectangle, not the box: growing the line box
+       instead (`line-height: normal`) moves the text half a pixel against the ×
+       and the prefix icon, since the font's ascent and descent are not
+       symmetrical. `clip` keeps the geometry identical and simply paints the
+       tails. The margin applies to every side — there are no per-axis longhands
+       in any engine yet — but 0.2em of horizontal bleed is invisible next to a
+       label that is hard-cut at the edge anyway. */
+    overflow: clip;
+    overflow-clip-margin: 0.2em;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
