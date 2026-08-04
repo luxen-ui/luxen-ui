@@ -6,7 +6,11 @@ outline: deep
 import tagDefault from '../.vitepress/examples/tag/TagDefault.html?raw'
 import tagSizes from '../.vitepress/examples/tag/TagSizes.html?raw'
 import tagPrefix from '../.vitepress/examples/tag/TagPrefix.html?raw'
+import tagSelectable from '../.vitepress/examples/tag/TagSelectable.html?raw'
+import tagCheckbox from '../.vitepress/examples/tag/TagCheckbox.html?raw'
 import tagDisabled from '../.vitepress/examples/tag/TagDisabled.html?raw'
+import tagFilterPanel from '../.vitepress/examples/tag/TagFilterPanel.html?raw'
+import tagTheming from '../.vitepress/examples/tag/TagTheming.html?raw'
 </script>
 
 # Tag <Badge type="tip">&lt;l-tag&gt;</Badge>
@@ -47,15 +51,37 @@ Add `size="sm"` or `size="lg"`. Default is md. A removable tag is always at leas
 <<< @/.vitepress/examples/tag/TagSizes.html [HTML]
 :::
 
-### Leading content
+### Leading and trailing content
 
-Put an icon or avatar in the `prefix` slot.
+Put an icon or avatar in the `prefix` slot, and a count or trailing glyph in the `suffix` slot. Both get the chip's own gutter, so they need no margin.
 
 <ComponentWrapper :html="tagPrefix" />
 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/tag/TagPrefix.html [HTML]
+:::
+
+### Selectable
+
+Add `selectable` to turn the chip into a filter control. The tag becomes a toggle button, and re-activating a selected tag deselects it — so a facet always has a way back to "all". Each toggle fires a `change` event carrying the new `selected` state.
+
+<ComponentWrapper :html="tagSelectable" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tag/TagSelectable.html [HTML]
+:::
+
+### Checkbox
+
+Add `control="checkbox"` for a multi-select facet: the library's checkbox rides inside and the chip becomes its label, so clicking anywhere on the chip toggles it. Implies `selectable`.
+
+<ComponentWrapper :html="tagCheckbox" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tag/TagCheckbox.html [HTML]
 :::
 
 ### Disabled
@@ -69,24 +95,54 @@ Add `disabled` to block removal. The label stays legible — disabled is conveye
 <<< @/.vitepress/examples/tag/TagDisabled.html [HTML]
 :::
 
+## Examples
+
+### Filter panel
+
+One tag per facet value: a checkbox for a multi-select axis, the count in the `suffix` slot. Listen for `change` on the container — the event bubbles and carries `selected`.
+
+<ComponentWrapper :html="tagFilterPanel" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tag/TagFilterPanel.html [HTML]
+:::
+
+### Theming the selected state
+
+`--selected-color` sets the text, border, and checkbox accent at once, and the background is derived from it. Add `--selected-background` for a different fill, and `--border-radius` to trade the pill for a softer rectangle. All three inherit, so setting them on the group themes every chip inside.
+
+Pair a semantic text token with its matching `-soft` fill — those two are designed to clear 4.5:1 together in both light and dark. A `--selected-color` on its own must clear that bar against the tint the chip derives from it.
+
+<ComponentWrapper :html="tagTheming" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tag/TagTheming.html [HTML]
+:::
+
 ## Accessibility
 
 ### Criteria
 
 <AccessibilityTable :data="[
   { Check: 'Accessible name', Description: 'The remove button exposes a localized `Remove` label', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Target size', Description: 'The remove button keeps a minimum 24×24px hit target', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
-  { Check: 'Keyboard', Description: 'The remove button is reachable with Tab and removes the tag with Backspace / Delete', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.9](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.9)' },
-  { Check: 'Color contrast', Description: 'The label keeps the minimum contrast ratio over the chip background in every state, including disabled', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Target size', Description: 'The remove button keeps a minimum 24×24px hit target, and a selectable chip is taller than a display one', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
+  { Check: 'Keyboard', Description: 'The remove button is reachable with Tab and removes the tag with Backspace / Delete; a selectable tag toggles with Enter or Space', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.9](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.9)' },
+  { Check: 'State', Description: 'A selectable tag exposes `aria-pressed`, or the checked state of its checkbox with `control=checkbox`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Color contrast', Description: 'The label keeps the minimum contrast ratio over the chip background in every state, including selected and disabled', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Not colour alone', Description: 'With `control=checkbox` the checkmark conveys selection alongside the tint', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
 ]" :rules="[
   'Always give a removable tag a visible text label so its remove button has context',
+  'Group related selectable tags under a visible heading, and give the group a role of `group` with an `aria-label` when the heading is not adjacent',
+  'Use `control=checkbox` for a multi-select axis and the default toggle for a single-value one — never radios, which cannot be released once checked',
 ]" />
 
 ### Keyboard interactions
 
 <KeyboardTable :data="[
-  { Key: 'Tab', Description: 'Moves focus to the remove button (when removable)' },
-  { Key: 'Enter / Space', Description: 'Activates the focused remove button' },
+  { Key: 'Tab', Description: 'Moves focus to the tag (when selectable), then to the remove button (when removable)' },
+  { Key: 'Enter / Space', Description: 'Toggles a focused selectable tag, or activates the focused remove button' },
   { Key: 'Backspace / Delete', Description: 'Removes the tag while it is focused' },
 ]" />
 
@@ -109,3 +165,15 @@ import 'luxen-ui/tag';
 ### Events
 
 <ApiTable element="tag" section="events" />
+
+### Slots
+
+<ApiTable element="tag" section="slots" />
+
+### CSS parts
+
+<ApiTable element="tag" section="cssParts" />
+
+### CSS custom properties
+
+<ApiTable element="tag" section="cssProperties" />

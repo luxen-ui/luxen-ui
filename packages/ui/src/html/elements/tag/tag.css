@@ -6,6 +6,12 @@
     --_padding-inline: 0.5rem;
     --_gap: 0.25rem;
 
+    /* Skin, resolved once so `[selected]` can swap all three at the source
+       instead of re-declaring the properties that consume them. */
+    --_background: var(--background, var(--l-color-bg-fill-neutral-subtle));
+    --_color: var(--color, var(--l-color-text-neutral));
+    --_border-strength: 14%;
+
     display: inline-flex;
     vertical-align: middle;
     max-inline-size: 100%;
@@ -40,14 +46,14 @@
     display: inline-flex;
     align-items: center;
     gap: var(--_gap);
-    min-block-size: var(--_height);
+    min-block-size: var(--height, var(--_height));
     padding-inline: var(--_padding-inline);
     /* Discreet border + hover tint derive from the text color, so they adapt to
        any consumer `--color`. */
-    border: 1px solid color-mix(in oklab, currentColor 14%, transparent);
+    border: 1px solid color-mix(in oklab, currentColor var(--_border-strength), transparent);
     border-radius: var(--border-radius, var(--l-radius-full));
-    background-color: var(--background, var(--l-color-bg-fill-neutral-subtle));
-    color: var(--color, var(--l-color-text-neutral));
+    background-color: var(--_background);
+    color: var(--_color);
     font-family: var(--l-font-neo-grotesque);
     font-size: var(--_font-size);
     font-weight: var(--l-font-weight-medium);
@@ -60,12 +66,12 @@
 
   /* Whole-chip hover: a touch more presence, without competing with the ×. */
   :host(:hover:not([disabled])) .base {
-    background-color: color-mix(
+    background-color: color-mix(in oklab, var(--_background), currentColor 7%);
+    border-color: color-mix(
       in oklab,
-      var(--background, var(--l-color-bg-fill-neutral-subtle)),
-      currentColor 7%
+      currentColor calc(var(--_border-strength) + 12%),
+      transparent
     );
-    border-color: color-mix(in oklab, currentColor 26%, transparent);
   }
 
   .content {
@@ -80,6 +86,167 @@
   ::slotted([slot='prefix']) {
     display: inline-flex;
     flex: none;
+  }
+
+  /* A count or trailing glyph. It sits in its own slot so `.base`'s gap gives it
+     a gutter by construction — the label is a bare text node and can never be
+     targeted from the outside. Lighter weight than the medium label, and
+     tabular so a column of counts stays aligned. */
+  ::slotted([slot='suffix']) {
+    flex: none;
+    font-weight: var(--l-font-weight-normal);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   🆂🅴🅻🅴🅲🆃🅰🅱🅻🅴  (filter chip — toggle button, or a checkbox riding inside)
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  :host([selectable]) {
+    /* Taller than a display chip at the same `size`: a chip you click is a
+       target (WCAG 2.5.8), and this is the dense step between `sm` and `lg` —
+       more room, same 12px label, where `lg` would jump the label to body size.
+       `--height` overrides it without reaching for ::part(base). */
+    --_height: 1.75rem;
+
+    /* The selection accent is the same one the library's checkbox, radio and
+       switch use, so a chip with a checkbox inside reads as a single control. */
+    --_accent: var(--l-form-control-activated-color);
+    /* The label is 12px, so it owes 4.5:1 over its own tint — and the raw accent
+       misses it on the light one (4.35:1 measured). Darken it there, lighten it
+       on the dark tint, and both modes clear 6:1. `color-mix()` resolves
+       reliably inside `light-dark()` — `oklch(from …)` does not. */
+    --_selected-color: var(
+      --selected-color,
+      light-dark(
+        color-mix(in oklab, var(--_accent), black 14%),
+        color-mix(in oklab, var(--_accent), white 45%)
+      )
+    );
+    /* Derived from the text color, so overriding `--selected-color` alone
+       repaints the whole chip coherently. Kept at 10%: a consumer accent skips
+       the mode correction above, so the tint has to stay pale enough for a
+       semantic token (`--l-color-text-success` and friends) to clear 4.5:1 on
+       it unaided. The border carries the rest of the emphasis. */
+    --_selected-background: var(
+      --selected-background,
+      color-mix(in oklab, var(--_selected-color) 10%, var(--l-color-surface))
+    );
+  }
+
+  :host([selectable][size='lg']) {
+    --_height: 2rem;
+  }
+
+  :host([selectable][selected]) {
+    --_background: var(--_selected-background);
+    --_color: var(--_selected-color);
+    --_border-strength: 45%;
+  }
+
+  :host([selectable]) .base {
+    cursor: pointer;
+    /* A chip is tapped, not read: never leave a text selection behind a
+       double-click on a filter. */
+    user-select: none;
+  }
+
+  :host([selectable][disabled]) .base {
+    cursor: not-allowed;
+  }
+
+  /* The chip *is* the button. Negative inline margins let it cover `.base`'s
+     padding so the whole pill is the target, while `.base` keeps owning the
+     border, background, and the × button's spacing math. */
+  .toggle {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    align-self: stretch;
+    gap: var(--_gap);
+    min-inline-size: 0;
+    margin-inline: calc(var(--_padding-inline) * -1);
+    padding-inline: var(--_padding-inline);
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: inherit;
+  }
+
+  /* Stop before the × instead of running under it. */
+  :host([removable]) .toggle {
+    margin-inline-end: 0;
+    padding-inline-end: 0;
+  }
+
+  /* One ring for the whole chip: the inner control is a detail of how the chip
+     is operated, not a second thing to focus visually — and the ring drawn
+     below fully encloses the box, so the indicator only grows (WCAG 2.4.7 /
+     2.4.13).
+
+     Qualified by `:host(…)` on purpose. The shared appearance nests
+     `&:focus-visible` under a selector list, so it lands as
+     `:is(.l-checkbox, … input[type='checkbox']:not(…)):focus-visible` — 0,3,1,
+     which outranks a bare `.checkbox:focus-visible` (0,2,0) and paints a second
+     ring around the box. `:host([selectable])` brings this to 0,4,0. */
+  :host([selectable]) .toggle:focus-visible,
+  :host([selectable]) .checkbox:focus-visible {
+    outline: none;
+  }
+
+  .base:has(:is(.toggle, .checkbox):focus-visible) {
+    outline: 2px solid var(--l-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* The skin comes from the shared `.l-checkbox` appearance, applied through
+     `cls('checkbox')` rather than a static class literal: `dist` ships that CSS
+     as a real file, so a consumer's PostCSS rewrites its selector under a
+     renamed `cssPrefix` — a baked `l-checkbox` in the template would stop
+     matching it. This rule only carries what is specific to a chip.
+
+     The shared appearance sizes the box in `em`, and a UA gives `<input>` its
+     own font — inheriting the chip's makes the box track the `size` step. The
+     accent follows the selected color, so a themed chip keeps its checkbox in
+     the same hue. */
+  .checkbox {
+    --accent: var(--selected-color, var(--l-form-control-activated-color));
+    /* Hover halo — same ratio and same token flip as the light-DOM
+       `.l-checkbox`, which keeps this rule out of the shared partial (see
+       `css/elements/checkbox.css`). Repeated here rather than moved into the
+       partial: `l-tree-item` shares that file and never opted into a glow. */
+    --_halo: var(--l-form-control-border-color-hover);
+
+    flex: none;
+    font: inherit;
+    transition-property: background-color, border-color, box-shadow;
+  }
+
+  .checkbox:checked,
+  .checkbox:indeterminate {
+    --_halo: var(--accent);
+  }
+
+  /* Driven by the chip, not by the box: the chip is the label and the whole
+     click target, so a halo lighting up only over 15px of a 28px pill would
+     read as a glitch. */
+  @media (hover: hover) {
+    :host([selectable]:not([disabled])) .base:hover .checkbox:not(:disabled) {
+      box-shadow: 0 0 0 calc(var(--size) * var(--l-form-control-toggle-halo-ratio))
+        color-mix(in oklab, var(--_halo), transparent 84%);
+    }
+  }
+
+  /* Forced colors drop the tint (backgrounds are forced to Canvas), so pin the
+     border to the system highlight — otherwise selection becomes invisible. */
+  @media (forced-colors: active) {
+    :host([selectable][selected]) .base {
+      border-color: Highlight;
+    }
   }
 
   /*
@@ -155,6 +322,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .base,
+    .checkbox,
     .remove,
     .remove::after {
       transition-duration: 0ms;

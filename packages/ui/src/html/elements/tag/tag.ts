@@ -2,12 +2,15 @@ import { html, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { LocalizeController } from '../../shared/localize.js';
+import { cls } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import checkboxAppearance from '../../shared/styles/checkbox-appearance.styles.js';
 import rawStyles from './tag.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
 export type TagSize = 'sm' | 'md' | 'lg';
+export type TagControl = 'none' | 'checkbox';
 
 /**
  * Fired when the user asks to remove the tag — clicking the × button, or
@@ -19,6 +22,19 @@ export class TagRemoveEvent extends Event {
   constructor() {
     super('remove', { bubbles: false, composed: false, cancelable: true });
   }
+}
+
+/** Fired when a `selectable` tag is toggled. Bubbles; not composed. */
+export class TagChangeEvent extends Event {
+  readonly selected: boolean;
+  constructor(selected: boolean) {
+    super('change', { bubbles: true, composed: false, cancelable: false });
+    this.selected = selected;
+  }
+}
+
+interface TagEventMap {
+  change: TagChangeEvent;
 }
 
 declare global {
@@ -33,30 +49,46 @@ declare global {
  * inside another element's shadow root (e.g. the `<l-select>` multi-select
  * trigger).
  *
- * @summary A compact, optionally removable chip.
+ * Add `selectable` to turn the chip into a filter control: the tag itself
+ * becomes a toggle button (`aria-pressed`), and re-activating a selected tag
+ * deselects it — the affordance a radio group cannot offer, so a facet always
+ * has a way back to "all". Add `control="checkbox"` for a multi-select axis and
+ * the library's own checkbox rides inside, with the chip as its label.
+ *
+ * @summary A compact, optionally removable or selectable chip.
  *
  * @example
  * ```html
  * <l-tag removable>Design</l-tag>
+ * <l-tag selectable selected>A3</l-tag>
+ * <l-tag selectable control="checkbox">Color <span slot="suffix">79</span></l-tag>
  * ```
  *
  * @event remove - Fired when the user removes the tag (× click or Backspace/Delete). Cancelable; if not prevented the tag removes itself. Not composed, does not bubble.
+ * @event change - Fired when a `selectable` tag is toggled. Not cancelable. Bubbles. Properties: `selected: boolean`.
  *
  * @slot - The tag label.
  * @slot prefix - Leading content, e.g. an `<l-icon>` or `<l-avatar>`.
+ * @slot suffix - Trailing content, e.g. a result count. Gets the chip's own gutter, so no margin is needed.
  *
  * @csspart base - The chip container.
  * @csspart content - The label wrapper.
+ * @csspart toggle - The toggle button rendered by `selectable` (not with `control="checkbox"`).
+ * @csspart checkbox - The native checkbox rendered by `control="checkbox"`.
  * @csspart remove - The remove button.
  *
  * @cssproperty [--border-radius] - Corner radius. Defaults to a full pill.
+ * @cssproperty [--height] - Chip height. Defaults to the `size` step (a selectable chip is taller, to keep a comfortable target).
  * @cssproperty [--background] - Chip background.
  * @cssproperty [--color] - Text color.
+ * @cssproperty [--selected-color] - Text, border, and checkbox accent when selected. Defaults to the library's form-control accent, lightened in dark mode.
+ * @cssproperty [--selected-background] - Chip background when selected. Defaults to a tint of `--selected-color`.
  *
  * @customElement l-tag
  */
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Tag extends LuxenElement {
-  static override styles = [hostStyles, styles];
+  static override styles = [hostStyles, checkboxAppearance, styles];
 
   private _localize = new LocalizeController(this);
 
@@ -68,11 +100,38 @@ export class Tag extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   accessor removable = false;
 
-  /** Disable the tag — dims it and blocks removal. */
+  /** Make the tag a filter control the user can toggle on and off. */
+  @property({ type: Boolean, reflect: true })
+  accessor selectable = false;
+
+  /** Whether the tag is selected. Reflected, so `[selected]` is styleable. */
+  @property({ type: Boolean, reflect: true })
+  accessor selected = false;
+
+  /**
+   * What drives the selection: `none` (default) makes the chip itself a toggle
+   * button; `checkbox` renders a checkbox inside and makes the chip its label —
+   * the right choice for a multi-select facet. Implies `selectable`.
+   */
+  @property({ reflect: true })
+  accessor control: TagControl = 'none';
+
+  /** Disable the tag — dims it and blocks selection and removal. */
   @property({ type: Boolean, reflect: true })
   accessor disabled = false;
 
-  private _requestRemove = () => {
+  override willUpdate() {
+    // A checkbox is only ever rendered on a selectable chip, so the attribute
+    // (which every selectable style rule keys off) is derived rather than
+    // duplicated in every selector — and in the consumer's markup.
+    if (this.control === 'checkbox') this.selectable = true;
+  }
+
+  private _requestRemove = (e?: Event) => {
+    // Inside `control="checkbox"` the × lives in the <label>; interactive
+    // descendants are excluded from label activation, but stop the click here
+    // too so a controlled host never sees a stray toggle.
+    e?.stopPropagation();
     if (this.disabled) return;
     const event = new TagRemoveEvent();
     this.dispatchEvent(event);
@@ -87,31 +146,124 @@ export class Tag extends LuxenElement {
     }
   };
 
+  private _toggle = () => {
+    if (this.disabled) return;
+    // Toggling, not setting: re-activating a selected tag releases it.
+    this.selected = !this.selected;
+    this.dispatchEvent(new TagChangeEvent(this.selected));
+  };
+
+  private _onCheckboxChange = (e: Event) => {
+    this.selected = (e.target as HTMLInputElement).checked;
+    this.dispatchEvent(new TagChangeEvent(this.selected));
+  };
+
+  private _label() {
+    return html`
+      <slot name="prefix"></slot>
+      <span
+        class="content"
+        part="content"
+      >
+        <slot></slot>
+      </span>
+      <slot name="suffix"></slot>
+    `;
+  }
+
+  private _removeButton() {
+    return this.removable
+      ? html`<button
+          class="remove"
+          part="remove"
+          type="button"
+          ?disabled=${this.disabled}
+          aria-label=${this._localize.term('remove')}
+          @click=${this._requestRemove}
+        ></button>`
+      : nothing;
+  }
+
   override render() {
+    if (this.control === 'checkbox') {
+      return html`
+        <label
+          class="base"
+          part="base"
+          @keydown=${this._onKeyDown}
+        >
+          <input
+            class="checkbox ${cls('checkbox')}"
+            part="checkbox"
+            type="checkbox"
+            .checked=${this.selected}
+            ?disabled=${this.disabled}
+            @change=${this._onCheckboxChange}
+          />
+          ${this._label()}${this._removeButton()}
+        </label>
+      `;
+    }
+
+    if (this.selectable) {
+      return html`
+        <span
+          class="base"
+          part="base"
+          @keydown=${this._onKeyDown}
+        >
+          <button
+            class="toggle"
+            part="toggle"
+            type="button"
+            aria-pressed=${this.selected ? 'true' : 'false'}
+            ?disabled=${this.disabled}
+            @click=${this._toggle}
+          >
+            ${this._label()}
+          </button>
+          ${this._removeButton()}
+        </span>
+      `;
+    }
+
     return html`
       <span
         class="base"
         part="base"
         @keydown=${this._onKeyDown}
       >
-        <slot name="prefix"></slot>
-        <span
-          class="content"
-          part="content"
-        >
-          <slot></slot>
-        </span>
-        ${this.removable
-          ? html`<button
-              class="remove"
-              part="remove"
-              type="button"
-              ?disabled=${this.disabled}
-              aria-label=${this._localize.term('remove')}
-              @click=${this._requestRemove}
-            ></button>`
-          : nothing}
+        ${this._label()}${this._removeButton()}
       </span>
     `;
   }
+}
+
+// Type `addEventListener('change', …)` so listeners receive a `TagChangeEvent`
+// (with `.selected`) instead of a bare `Event`. `change` collides with lib.dom's
+// `GlobalEventHandlersEventMap`, so it can't be augmented globally — the
+// overloads are declaration-merged onto this element's interface instead. The
+// interface MUST come after the class (the CEM analyzer dedups on the first
+// declaration of the name). See `tabs.ts` for the fully-annotated reference.
+export interface Tag {
+  addEventListener<K extends keyof TagEventMap>(
+    type: K,
+    listener: (this: Tag, ev: TagEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof TagEventMap>(
+    type: K,
+    listener: (this: Tag, ev: TagEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }

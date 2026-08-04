@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/tag/index.js';
-import type { Tag } from '../../src/html/elements/tag/tag.js';
+import type { Tag, TagChangeEvent } from '../../src/html/elements/tag/tag.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
 import { deepActiveElement } from './support/a11y.js';
@@ -96,6 +96,89 @@ describe('A user can remove the tag', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Selection
+// ---------------------------------------------------------------------------
+
+describe('A user can toggle a selectable tag', () => {
+  it('selects it on click and fires `change` with the new state', async () => {
+    const el = await mount(`<l-tag selectable>A3</l-tag>`);
+    const changed = waitForEvent(el, 'change');
+    await userEvent.click(page.getByRole('button', { name: 'A3' }));
+    const event = (await changed) as TagChangeEvent;
+    expect(event.selected).toBe(true);
+    expect(el.selected).toBe(true);
+  });
+
+  it('releases it on a second click — a facet always has a way back to "all"', async () => {
+    const el = await mount(`<l-tag selectable selected>A3</l-tag>`);
+    await userEvent.click(page.getByRole('button', { name: 'A3' }));
+    await settle(el);
+    expect(el.selected).toBe(false);
+  });
+
+  it('cannot be toggled when disabled — the chip is a disabled button', async () => {
+    // A disabled button takes neither click nor focus, so no interaction can
+    // reach the toggle path at all; the chip stays unselected.
+    const el = await mount(`<l-tag selectable disabled>A3</l-tag>`);
+    expect(page.getByRole('button', { name: 'A3' }).element().hasAttribute('disabled')).toBe(true);
+    expect(el.selected).toBe(false);
+  });
+
+  it('reflects `selected` so a consumer can style and query [selected]', async () => {
+    const el = await mount(`<l-tag selectable>A3</l-tag>`);
+    el.selected = true;
+    await settle(el);
+    expect(el.matches('[selected]')).toBe(true);
+  });
+
+  it('is a plain chip — no button — without `selectable`', async () => {
+    await mount(`<l-tag>A3</l-tag>`);
+    expect(page.getByRole('button', { name: 'A3' }).elements()).toHaveLength(0);
+  });
+});
+
+// The chip is the checkbox's <label>, so a user aims at the text, not at the
+// 15px box — and that is also the only reliable target here: the box is sized
+// from `--l-form-control-toggle-size`, and the behavioural suites deliberately
+// run without the token stylesheet (the a11y suite is the one that loads it).
+const chipLabel = (el: Tag) => el.shadowRoot!.querySelector<HTMLElement>('[part="content"]')!;
+
+describe('A user can toggle a tag that carries a checkbox', () => {
+  it('checks the box when the chip label is clicked', async () => {
+    const el = await mount(
+      `<l-tag selectable control="checkbox">Color <span slot="suffix">54</span></l-tag>`,
+    );
+    const changed = waitForEvent(el, 'change');
+    await userEvent.click(chipLabel(el));
+    const event = (await changed) as TagChangeEvent;
+    expect(event.selected).toBe(true);
+    expect(el.selected).toBe(true);
+    expect(page.getByRole('checkbox', { name: 'Color 54', checked: true }).elements()).toHaveLength(
+      1,
+    );
+  });
+
+  it('unchecks it again on a second click', async () => {
+    const el = await mount(`<l-tag selectable control="checkbox" selected>Color</l-tag>`);
+    await userEvent.click(chipLabel(el));
+    await settle(el);
+    expect(el.selected).toBe(false);
+  });
+
+  it('keeps the box in sync when `selected` is set from the outside', async () => {
+    const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+    el.selected = true;
+    await settle(el);
+    expect(page.getByRole('checkbox', { name: 'Color', checked: true }).elements()).toHaveLength(1);
+  });
+
+  it('implies `selectable`, so the styling hook is there without repeating it', async () => {
+    const el = await mount(`<l-tag control="checkbox">Color</l-tag>`);
+    expect(el.matches('[selectable]')).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility (APG: no dedicated pattern — a chip with a remove button)
 // ---------------------------------------------------------------------------
 
@@ -104,6 +187,27 @@ describe('Accessibility', () => {
     it('the remove button has an accessible name (WCAG 4.1.2 / RGAA 7.1)', async () => {
       await mount(`<l-tag removable>Design</l-tag>`);
       expect(removeButton().element().getAttribute('aria-label')).toBe('Remove');
+    });
+
+    it('a selectable tag is a toggle button named by its label (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(`<l-tag selectable>A3</l-tag>`);
+      const toggle = page.getByRole('button', { name: 'A3' }).element();
+      expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('exposes the pressed state when selected (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(`<l-tag selectable selected>A3</l-tag>`);
+      const toggle = page.getByRole('button', { name: 'A3' }).element();
+      expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('exposes a checkbox named by the whole chip with control="checkbox" (WCAG 4.1.2 / RGAA 7.1)', async () => {
+      await mount(
+        `<l-tag selectable control="checkbox" selected>Color <span slot="suffix">54</span></l-tag>`,
+      );
+      expect(
+        page.getByRole('checkbox', { name: 'Color 54', checked: true }).elements(),
+      ).toHaveLength(1);
     });
   });
 
@@ -125,12 +229,66 @@ describe('Accessibility', () => {
       await removed;
       expect(el.isConnected).toBe(false);
     });
+
+    it('toggles a selectable tag with Space (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-tag selectable>A3</l-tag>`);
+      await userEvent.tab();
+      const changed = waitForEvent(el, 'change');
+      await userEvent.keyboard(' ');
+      await changed;
+      expect(el.selected).toBe(true);
+    });
+
+    it('toggles a selectable tag with Enter (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-tag selectable>A3</l-tag>`);
+      await userEvent.tab();
+      const changed = waitForEvent(el, 'change');
+      await userEvent.keyboard('{Enter}');
+      await changed;
+      expect(el.selected).toBe(true);
+    });
+
+    it('toggles a checkbox tag with Space (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+      await userEvent.tab();
+      const changed = waitForEvent(el, 'change');
+      await userEvent.keyboard(' ');
+      await changed;
+      expect(el.selected).toBe(true);
+    });
   });
 
   describe('Focus management', () => {
     it('the remove button is reachable with Tab (WCAG 2.4.3 / RGAA 12.8)', async () => {
       await mountAndFocusRemove(`<l-tag removable>Design</l-tag>`);
       expect(deepActiveElement()).toBe(removeButton().element());
+    });
+
+    it('a selectable tag takes focus before its remove button (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      await mount(`<l-tag selectable removable>A3</l-tag>`);
+      await userEvent.tab();
+      expect(deepActiveElement()).toBe(page.getByRole('button', { name: 'A3' }).element());
+      await userEvent.tab();
+      expect(deepActiveElement()).toBe(removeButton().element());
+    });
+
+    it('shows a single focus indicator, drawn around the whole chip (WCAG 2.4.13)', async () => {
+      // The shared checkbox appearance nests its own `:focus-visible` ring under
+      // a selector list, which outranks a bare `.checkbox:focus-visible` — left
+      // unqualified it paints a second ring inside the chip's. Assert the box
+      // carries none; the chip's own ring uses `--l-focus-ring`, and the token
+      // stylesheet is deliberately absent from the behavioural suites.
+      const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+      await userEvent.tab();
+      const box = el.shadowRoot!.querySelector('input')!;
+      expect(el.shadowRoot!.activeElement).toBe(box);
+      expect(getComputedStyle(box).outlineStyle).toBe('none');
+    });
+
+    it('a disabled selectable tag is skipped by Tab (WCAG 2.1.1 / RGAA 7.3)', async () => {
+      await mount(`<l-tag selectable disabled>A3</l-tag>`);
+      await userEvent.tab();
+      expect(deepActiveElement()).not.toBe(page.getByRole('button', { name: 'A3' }).element());
     });
   });
 });
