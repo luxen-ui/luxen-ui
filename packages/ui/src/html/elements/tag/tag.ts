@@ -65,7 +65,7 @@ declare global {
  * ```
  *
  * @event remove - Fired when the user removes the tag (× click or Backspace/Delete). Cancelable; if not prevented the tag removes itself. Not composed, does not bubble.
- * @event change - Fired when a `selectable` tag is toggled. Not cancelable. Bubbles. Properties: `selected: boolean`.
+ * @event change - Fired when a `selectable` tag is toggled. Not cancelable — like the platform's own `change`, and like `l-segmented-control`. Bubbles. Properties: `selected: boolean`. The chip is uncontrolled: it applies the new state before dispatching, so a host that vetoes a toggle (a "max 3 filters" rule, an async guard) sets `selected` back in the listener — the revert lands in the same render and is never painted.
  *
  * @slot - The tag label.
  * @slot prefix - Leading content, e.g. an `<l-icon>` or `<l-avatar>`.
@@ -79,6 +79,8 @@ declare global {
  *
  * @cssproperty [--border-radius] - Corner radius. Defaults to a full pill.
  * @cssproperty [--height] - Chip height. Defaults to the `size` step (a selectable chip is taller, to keep a comfortable target).
+ * @cssproperty [--font-size] - Label size. Defaults to the `size` step — 12px, or 14px at `size="lg"`. Set it with `--height` to land between the two steps in a dense filter panel.
+ * @cssproperty [--padding-inline] - Horizontal padding. Defaults to the `size` step.
  * @cssproperty [--background] - Chip background.
  * @cssproperty [--color] - Text color.
  * @cssproperty [--selected-color] - Text, border, and checkbox accent when selected. Defaults to the library's form-control accent, lightened in dark mode.

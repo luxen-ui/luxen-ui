@@ -131,6 +131,21 @@ describe('A user can toggle a selectable tag', () => {
     expect(el.matches('[selected]')).toBe(true);
   });
 
+  it('lets a controlling host veto the toggle by setting `selected` back', async () => {
+    // The chip is uncontrolled — it applies the state then dispatches. A host
+    // enforcing its own rule (max N filters, an async guard) reverts inside the
+    // listener; the revert lands in the same render, so the user never sees the
+    // chip flip. Documented under "Controlled usage".
+    const el = await mount(`<l-tag selectable>A3</l-tag>`);
+    el.addEventListener('change', () => {
+      el.selected = false;
+    });
+    await userEvent.click(page.getByRole('button', { name: 'A3' }));
+    await settle(el);
+    expect(el.selected).toBe(false);
+    expect(page.getByRole('button', { name: 'A3', pressed: false }).elements()).toHaveLength(1);
+  });
+
   it('is a plain chip — no button — without `selectable`', async () => {
     await mount(`<l-tag>A3</l-tag>`);
     expect(page.getByRole('button', { name: 'A3' }).elements()).toHaveLength(0);

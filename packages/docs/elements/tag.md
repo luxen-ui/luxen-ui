@@ -110,7 +110,9 @@ One tag per facet value: a checkbox for a multi-select axis, the count in the `s
 
 ### Theming the selected state
 
-`--selected-color` sets the text, border, and checkbox accent at once, and the background is derived from it. Add `--selected-background` for a different fill, and `--border-radius` to trade the pill for a softer rectangle. All three inherit, so setting them on the group themes every chip inside.
+`--selected-color` sets the text, border, and checkbox accent at once, and the background is derived from it. Add `--selected-background` for a different fill, and `--border-radius` to trade the pill for a softer rectangle. Every custom property inherits, so setting them on the group themes each chip inside.
+
+A dense filter drawer usually wants a step between `md` and `lg`: `--height` and `--font-size` (and `--padding-inline` if needed) land anywhere between them, so `::part(base)` stays out of it. The example below sits at 26px / 13px.
 
 Pair a semantic text token with its matching `-soft` fill — those two are designed to clear 4.5:1 together in both light and dark. A `--selected-color` on its own must clear that bar against the tint the chip derives from it.
 
@@ -145,6 +147,37 @@ Pair a semantic text token with its matching `-soft` fill — those two are desi
   { Key: 'Enter / Space', Description: 'Toggles a focused selectable tag, or activates the focused remove button' },
   { Key: 'Backspace / Delete', Description: 'Removes the tag while it is focused' },
 ]" />
+
+### Selectors & testing
+
+Selection state lives on the reflected `selected` attribute of the host — that is the one to query. `aria-pressed` sits on the toggle button and `control="checkbox"` renders its `<input>`, both **inside the shadow DOM**, so a descendant selector from the light DOM never matches them. Role queries do work: the accessibility tree is unaffected by the shadow boundary.
+
+```js
+document.querySelectorAll('l-tag[selected]'); // ✅ reflected boolean attribute
+screen.getByRole('button', { pressed: true }); // ✅ selectable tag
+screen.getByRole('checkbox', { checked: true }); // ✅ control="checkbox"
+
+tag.querySelector('input'); // ❌ null — the checkbox is in the shadow root
+tag.getAttribute('aria-pressed'); // ❌ null — it is on the inner button
+```
+
+```css
+/* Style by the reflected attribute; ::part() reaches the inner nodes. */
+l-tag[selected]::part(base) {
+  outline: 1px dashed var(--l-color-border);
+}
+```
+
+### Controlled usage
+
+The chip is uncontrolled: it applies the new state, then fires `change`. To veto a toggle — a "max 3 filters" rule, an async guard — set `selected` back in the listener. The revert lands in the same render, so nothing is painted in between.
+
+```js
+panel.addEventListener('change', (event) => {
+  const tag = event.target;
+  if (tag.selected && selectedCount() > 3) tag.selected = false;
+});
+```
 
 ## API reference
 
