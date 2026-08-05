@@ -142,6 +142,7 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * @csspart editor - The container around the editable content.
  *
  * @cssproperty --border-color - Color of the editor frame border.
+ * @cssproperty --border-color-focus - Color of the editor frame border while the editable area has focus.
  * @cssproperty --border-width - Width of the editor frame border.
  * @cssproperty --border-radius - Corner radius of the editor frame.
  * @cssproperty --background - Background color of the editor.

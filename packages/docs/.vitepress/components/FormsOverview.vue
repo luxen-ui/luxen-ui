@@ -228,6 +228,32 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
+      <!-- Prose editor — form-associated, but not an input/select/textarea, so
+           l-form-field picks it up through its formAssociated fallback (like
+           l-slider). Sits next to the textarea on purpose: both are multi-line
+           text, so the resting border and the focus ring should read identically.
+           Error empties a required editor so it is genuinely invalid
+           (valueMissing), same trick as the textarea. No `size` — the editor
+           sizes through --content-min-height, not the --l-size-control-* scale.
+           Known gap this page is meant to surface: on Required / Error the
+           field shows no marker, no message and no invalid border until you
+           interact with the editor. l-form-field seeds `required` / `invalid`
+           from the control at connect time, and this control upgrades later
+           (dynamic import + deferred editor init), so it is still bare then. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Release notes</label>
+        <l-prose-editor
+          toolbar-preset="minimal"
+          placeholder="Placeholder text"
+          :initial-html="invalid ? '' : '<p>This is a longer message.</p>'"
+          :required="attr(required || invalid)"
+          :disabled="attr(disabled)"
+          class="[--content-min-height:4rem]"
+        ></l-prose-editor>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
       <!-- Checkbox -->
       <l-form-field :invalid="attr(invalid)">
         <label>Subscribe to the newsletter</label>
