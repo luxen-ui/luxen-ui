@@ -7,8 +7,14 @@ import postcssPrefix from './postcss-plugin-prefix.js';
 /**
  * Map of element base name → class name as exported by `luxen-ui/<name>/element`.
  * Keep in sync with `src/html/registry.ts` `ElementBaseName`.
+ *
+ * Still missing (an element absent here silently emits no typing, so `emitTypes`
+ * consumers get an untyped `Element` for it): alert-dialog, button-group,
+ * combobox, dropdown-label, form-field, input-group, prose-editor,
+ * segmented-control, select, tag.
  */
 const ELEMENT_CLASSES: Record<string, string> = {
+  alert: 'Alert',
   avatar: 'Avatar',
   badge: 'Badge',
   carousel: 'Carousel',
@@ -24,6 +30,7 @@ const ELEMENT_CLASSES: Record<string, string> = {
   popover: 'Popover',
   rating: 'Rating',
   skeleton: 'Skeleton',
+  slider: 'Slider',
   spinner: 'Spinner',
   'sticky-bar': 'StickyBar',
   stories: 'LuxenStories',

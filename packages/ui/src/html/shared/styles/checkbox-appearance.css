@@ -8,6 +8,14 @@
    shadow boundary, but the `--l-form-control-*` tokens this rule relies on DO
    inherit across shadow roots.
 
+   Shadow consumers must emit the class via `cls('checkbox')`, never a static
+   `class="l-checkbox"` literal. This file ships to dist as a real CSS file and
+   is imported `?inline`, so the CONSUMER's Vite runs postcss-plugin-prefix over
+   it and rewrites this selector to `.<cssPrefix>-checkbox`. The vite-plugin's
+   `transform` hook only rewrites `_cssPrefix` in registry.js — it never touches
+   template literals in element JS — so a hardcoded class attribute would stop
+   matching the rewritten selector and the checkbox would render unstyled.
+
    The checkmark / indeterminate dash are drawn with a `background-image` SVG on
    the input itself — `::before`/`::after` do not paint on replaced elements
    like `<input>`. `background-image` can't read the host's `currentColor`, so

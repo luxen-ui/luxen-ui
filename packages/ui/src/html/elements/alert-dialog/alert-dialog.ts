@@ -1,5 +1,11 @@
 import { html, nothing, unsafeCSS, type PropertyValues } from 'lit';
+// Only the spinner fragment needs the static tag function; the outer template
+// stays on lit's `html` so `renderFooter()` keeps the return type `Dialog`
+// declares. A static-html result nests inside a regular one just fine.
+import { html as staticHtml } from 'lit/static-html.js';
 import { property } from 'lit/decorators.js';
+import { cls } from '../../registry.js';
+import { staticTag } from '../../static-tag.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import { HasSlotController } from '../../shared/controllers/has-slot-controller.js';
 import { Dialog } from '../dialog/dialog.js';
@@ -11,6 +17,9 @@ import '../spinner/index.js';
 // The built-in actions render as `.l-button`, styled inside the shadow root from
 // the SAME shared button-core as the light-DOM `.l-button` (single source of
 // truth — no copy to drift). alert-dialog.css adds only the dialog layout.
+// The class is emitted through `cls('button')` so it tracks a renamed
+// `cssPrefix` — button-core.css ships as a real CSS file the consumer's postcss
+// re-prefixes, and a static literal would desync from it (see button-core.css).
 const alertStyles = unsafeCSS(rawAlertStyles);
 
 /**
@@ -182,6 +191,7 @@ export class AlertDialog extends Dialog {
 
   protected override renderFooter() {
     const confirmVariant = this.tone === 'danger' ? 'destructive' : 'primary';
+    const spinnerTag = staticTag('spinner');
     return html`
       <footer
         part="footer"
@@ -190,7 +200,7 @@ export class AlertDialog extends Dialog {
         <slot name="cancel">
           <button
             part="button cancel"
-            class="l-button"
+            class=${cls('button')}
             type="button"
             data-cancel
           >
@@ -200,14 +210,16 @@ export class AlertDialog extends Dialog {
         <slot name="confirm">
           <button
             part="button confirm"
-            class="l-button"
+            class=${cls('button')}
             type="button"
             data-confirm
             data-variant=${confirmVariant}
             aria-disabled=${this.loading ? 'true' : nothing}
             aria-busy=${this.loading ? 'true' : nothing}
           >
-            ${this.loading ? html`<l-spinner aria-hidden="true"></l-spinner>` : nothing}
+            ${this.loading
+              ? staticHtml`<${spinnerTag} aria-hidden="true"></${spinnerTag}>`
+              : nothing}
             ${this.confirmText}
           </button>
         </slot>

@@ -217,9 +217,3 @@ export class Alert extends LuxenElement {
     this._dismissTimer = setTimeout(finish, duration + 50);
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-alert': Alert;
-  }
-}

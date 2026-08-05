@@ -1,5 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { cls } from '../../registry.js';
 
 /**
  * Enhances a child `<input>` with visual digit cells (Stripe-style OTP input).
@@ -91,11 +92,11 @@ export class InputOtp extends LuxenElement {
     // aria-hidden goes on each decorative cell/separator, never on the wrapper
     // (a focusable element inside an aria-hidden subtree violates WCAG 4.1.2).
     this._container = document.createElement('div');
-    this._container.className = 'l-input-otp-cells';
+    this._container.className = cls('input-otp-cells');
 
     for (let i = 0; i < digits; i++) {
       const cell = document.createElement('div');
-      cell.className = 'l-input-otp-cell';
+      cell.className = cls('input-otp-cell');
       cell.setAttribute('aria-hidden', 'true');
       cell.appendChild(document.createElement('span'));
       this._cells.push(cell);
@@ -104,7 +105,7 @@ export class InputOtp extends LuxenElement {
       // Insert separator after the specified position
       if (this.separatorAfter && i === this.separatorAfter - 1 && i < digits - 1) {
         this._separatorEl = document.createElement('span');
-        this._separatorEl.className = 'l-input-otp-separator';
+        this._separatorEl.className = cls('input-otp-separator');
         this._separatorEl.setAttribute('aria-hidden', 'true');
         this._container.appendChild(this._separatorEl);
       }

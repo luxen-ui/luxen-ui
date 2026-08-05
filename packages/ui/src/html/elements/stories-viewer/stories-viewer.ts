@@ -4,6 +4,7 @@ import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { LocalizeController } from '../../shared/localize.js';
+import { tagName } from '../../registry.js';
 import { staticTag } from '../../static-tag.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -65,8 +66,10 @@ declare global {
 const SCROLL_LOCK_SHEET = Symbol.for('luxen-stories-viewer-scroll-lock');
 if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
   const sheet = new CSSStyleSheet();
+  // Runs at import time, after the consumer has called `setPrefix()` (or the
+  // vite-plugin baked it into registry.js) — same ordering `define()` relies on.
   sheet.replaceSync(
-    `html:has(l-stories-viewer[data-modal]) { overflow: hidden; scrollbar-gutter: stable; }`,
+    `html:has(${tagName('stories-viewer')}[data-modal]) { overflow: hidden; scrollbar-gutter: stable; }`,
   );
   document.adoptedStyleSheets.push(sheet);
   Object.defineProperty(document, SCROLL_LOCK_SHEET, { value: sheet });

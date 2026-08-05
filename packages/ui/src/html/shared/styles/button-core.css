@@ -11,6 +11,12 @@
  * via `@import … layer(components)`, while shadow consumers want it unlayered to
  * sit alongside the (also unlayered) dialog styles. Size/icon-only/press-effect
  * variants stay in button.css — shadow actions don't need them.
+ *
+ * Shadow consumers must emit the class via `cls('button')`, never a static
+ * `class="l-button"` literal: this file ships to dist as a real CSS file, so the
+ * CONSUMER's postcss-plugin-prefix rewrites this selector to
+ * `.<cssPrefix>-button`, while the vite-plugin's `transform` hook only rewrites
+ * `_cssPrefix` in registry.js and never touches template literals in element JS.
  */
 .l-button {
   /* Local size scaffolding (referenced by the size variants in button.css). */

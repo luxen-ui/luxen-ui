@@ -2,6 +2,7 @@ import { nothing } from 'lit';
 import { html } from 'lit/static-html.js';
 import { property, query } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { cls } from '../../registry.js';
 import { staticTag } from '../../static-tag.js';
 
 /**
@@ -120,14 +121,18 @@ export class LuxenStory extends LuxenElement {
   }
   override render() {
     const iconTag = staticTag('icon');
+    // Classes go through `cls()`, not static `l-story-*` literals: story.css
+    // ships to dist and the consumer's postcss-plugin-prefix rewrites these
+    // selectors to `.<cssPrefix>-story-*`, while the vite-plugin only rewrites
+    // `_cssPrefix` in registry.js — a literal would desync and render unstyled.
     return html`
       <button
         type="button"
-        class="l-story-trigger"
+        class=${cls('story-trigger')}
         aria-label=${this.label || 'Open story'}
         data-story-trigger
       >
-        <span class="l-story-thumb">
+        <span class=${cls('story-thumb')}>
           ${
             this.preview
               ? html`<video
@@ -151,13 +156,13 @@ export class LuxenStory extends LuxenElement {
                 : nothing
           }
           <span
-            class="l-story-play"
+            class=${cls('story-play')}
             aria-hidden="true"
           >
             <${iconTag} name="mdi:play"></${iconTag}>
           </span>
         </span>
-        ${this.label ? html`<span class="l-story-label">${this.label}</span>` : nothing}
+        ${this.label ? html`<span class=${cls('story-label')}>${this.label}</span>` : nothing}
       </button>
     `;
   }
