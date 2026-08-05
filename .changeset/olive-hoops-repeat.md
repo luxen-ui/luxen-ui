@@ -18,5 +18,6 @@ Breaking (types): `luxen-ui` no longer augments the global
 `HTMLElementTagNameMap` with `'l-alert'` / `'l-slider'`. Those entries hardcoded
 the default prefix and were wrong for any rebranded build. If you relied on
 `document.querySelector('l-alert')` being typed as `Alert`, generate a
-prefix-aware declaration file with the Vite plugin's `emitTypes` option, which
-emits the entries for every element under your configured prefix.
+prefix-aware declaration file with the Vite plugin's `emitTypes` option — `alert`
+and `slider` are now included in the elements it emits, under your configured
+prefix.
