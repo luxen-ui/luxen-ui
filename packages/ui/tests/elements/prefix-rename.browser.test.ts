@@ -35,6 +35,7 @@ describe('A consumer who rebrands the prefix', () => {
     await import('../../src/html/elements/input-stepper/index.js');
     await import('../../src/html/elements/form-field/index.js');
     await import('../../src/html/elements/stories-viewer/index.js');
+    await import('../../src/html/elements/tag/index.js');
 
     const host = document.createElement('div');
     host.innerHTML = `
@@ -48,7 +49,8 @@ describe('A consumer who rebrands the prefix', () => {
         <input id="e" type="email" />
         <p class="x-hint">Hint text</p>
         <p class="x-error">Error text</p>
-      </x-form-field>`;
+      </x-form-field>
+      <x-tag selectable control="checkbox">Colour</x-tag>`;
     document.body.appendChild(host);
     try {
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -63,6 +65,13 @@ describe('A consumer who rebrands the prefix', () => {
       const box = item.shadowRoot!.querySelector('input[type=checkbox]')!;
       expect([...box.classList]).toContain('x-checkbox');
       expect([...box.classList]).not.toContain('l-checkbox');
+
+      // Shadow DOM: the other consumer of checkbox-appearance.css — a filter
+      // chip whose <label> is the chip itself.
+      const tag = await settle(host.querySelector('x-tag')!);
+      const tagBox = tag.shadowRoot!.querySelector('input[type=checkbox]')!;
+      expect([...tagBox.classList]).toContain('x-checkbox');
+      expect([...tagBox.classList]).not.toContain('l-checkbox');
 
       // Shadow DOM: skin comes from shared/styles/button-core.css
       const dialog = await settle(host.querySelector('x-alert-dialog')!);
