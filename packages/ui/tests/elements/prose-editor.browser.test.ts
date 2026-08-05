@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import type { UserEvent } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/prose-editor/index.js';
+// The focus indicator lives in the light-DOM stylesheet (it is the only place
+// that can see .ProseMirror's focus state), so load it to assert what a user sees.
+import '../../src/css/elements/prose-editor.css';
 import type { ProseEditor } from '../../src/html/elements/prose-editor/prose-editor.js';
 import { EditorChangeEvent } from '../../src/html/elements/prose-editor/prose-editor.js';
 import { userEvent } from './support/user-event.js';
@@ -575,6 +578,67 @@ describe('Accessibility', () => {
       // Still exactly one tabindex="0" — now on the second button (Italic).
       expect(tabZeroButtons).toHaveLength(1);
       expect(tabZeroButtons[0].getAttribute('aria-label')).toBe('Italic');
+    });
+
+    // The frame ring is CSS-only and axe can't see it (2.4.7 is not automatable),
+    // so it is asserted here on the computed border color of the shadow parts.
+    const RING = 'rgb(217, 70, 31)';
+    const IDLE = 'rgb(200, 200, 200)';
+
+    // The frame fades border-color / box-shadow over 150ms, like l-textarea, so
+    // every read below has to let the transition finish — otherwise it catches
+    // an interpolated colour rather than the state under test.
+    const settleTransition = () => new Promise((r) => setTimeout(r, 200));
+
+    async function mountThemed(markup: string): Promise<ProseEditor> {
+      const el = await mount(markup);
+      // The tokens stylesheet isn't loaded in the bare test harness; supply the
+      // two tokens the frame reads so the var() chains resolve as in real usage.
+      host.style.setProperty('--l-focus-ring', RING);
+      host.style.setProperty('--l-color-border', IDLE);
+      await settleTransition();
+      return el;
+    }
+
+    // borderLeftColor, not the shorthand: the collapsed edge between toolbar and
+    // editor is a `border-top: 0` / `border-bottom: 0` shorthand, which resets
+    // that side's color to currentColor.
+    const frameColor = (el: ProseEditor, part: string) =>
+      getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>(`[part="${part}"]`)!)
+        .borderLeftColor;
+
+    const halo = (el: ProseEditor) =>
+      getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>('[part="wrapper"]')!).boxShadow;
+
+    it('the editor frame shows a visible focus ring when the editable area is focused (WCAG 2.4.7 / RGAA 10.7)', async () => {
+      const el = await mountThemed(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      expect(frameColor(el, 'editor')).toBe(IDLE);
+      expect(halo(el)).toBe('none');
+
+      await _userEvent.click(page.getByRole('textbox'));
+      await settleEl(el);
+      await settleTransition();
+
+      // Both halves flip together, so the shared collapsed edge stays one color.
+      expect(frameColor(el, 'editor')).toBe(RING);
+      expect(frameColor(el, 'toolbar')).toBe(RING);
+      // Second layer, matching l-input / l-textarea: a soft halo around the
+      // whole frame. On the wrapper, so the two halves cast one shadow, not two.
+      expect(halo(el)).not.toBe('none');
+    });
+
+    it('the editor frame stays neutral when a toolbar button holds focus (WCAG 2.4.7 / RGAA 10.7)', async () => {
+      // Regression guard for the `:focus-within` trap: a focused toolbar button
+      // shows its own ring, not the whole field's.
+      const el = await mountThemed(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      await _userEvent.tab();
+      await settleEl(el);
+      await settleTransition();
+      expect(el.shadowRoot?.activeElement?.getAttribute('aria-label')).toBe('Bold');
+
+      expect(frameColor(el, 'editor')).toBe(IDLE);
+      expect(frameColor(el, 'toolbar')).toBe(IDLE);
+      expect(halo(el)).toBe('none');
     });
   });
 });

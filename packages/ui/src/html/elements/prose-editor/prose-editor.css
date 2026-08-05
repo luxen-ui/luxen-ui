@@ -1,6 +1,9 @@
 :host {
   /* Editor frame */
   --border-color: var(--l-color-border);
+  /* Consumed from the light-DOM stylesheet (luxen-ui/css/prose-editor), which
+     is the only place that can see .ProseMirror's focus state. */
+  --border-color-focus: var(--l-focus-ring);
   --border-width: 1px;
   --border-radius: var(--l-radius-md);
   --background: var(--l-color-surface);
@@ -26,11 +29,35 @@
   --placeholder-color: var(--l-color-text-tertiary);
 
   display: block;
+  /* Opt into full width like the other text controls (.l-input, .l-textarea):
+     `l-form-field` sets `justify-items: start`, so a control that doesn't ask
+     for it collapses to fit-content. */
+  box-sizing: border-box;
+  inline-size: 100%;
 }
 
 :host([disabled]) {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* Fade the focus state in like l-input / l-textarea (same 150ms). The focus
+   rules themselves live in the light-DOM stylesheet — only .ProseMirror's focus
+   is observable from there — but the transition belongs here, on the elements
+   that carry the properties. */
+.wrapper,
+.toolbar,
+.editor {
+  transition-property: border-color, box-shadow;
+  transition-duration: 150ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper,
+  .toolbar,
+  .editor {
+    transition-duration: 0ms;
+  }
 }
 
 .wrapper {
@@ -49,6 +76,10 @@
   gap: var(--toolbar-gap);
   padding: var(--toolbar-padding);
   border: var(--border-width) solid var(--border-color);
+  /* Same radius as .editor — the toolbar-placement rules below zero the two
+     corners on the shared edge, so both halves must start from the full radius
+     for the frame to read as one rounded box. */
+  border-radius: var(--border-radius);
   background-color: var(--toolbar-background);
 }
 

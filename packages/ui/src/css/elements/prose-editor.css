@@ -12,7 +12,53 @@
   l-prose-editor .ProseMirror {
     padding: var(--content-padding, 0.75rem 1rem);
     min-height: var(--content-min-height, 8rem);
+
+    /* The UA ring on the contenteditable is replaced by the frame ring below —
+       it would render square (this element has no radius) and only around the
+       content, not the toolbar. */
     outline: none;
+  }
+
+  /* Focus: the editor frame border takes the focus-ring color, matching
+     l-input / l-textarea. `:has(.ProseMirror:focus-visible)`, not
+     `:focus-within` — a focused toolbar button shows its own ring, not the
+     field's (same rule as the l-input adornment group).
+     The shadow stylesheet can't express this: `.ProseMirror` is slotted light
+     DOM, and `:has()` inside `:host()` does not match. Hence ::part().
+     Both halves flip together so the collapsed edge shared by toolbar and
+     editor stays one continuous color.
+     border-color, not an outline: it follows --border-radius (including the
+     toolbar-placement corner collapsing) and can never be clipped by a
+     consumer ancestor with `overflow: hidden`. That makes the border the
+     primary layer; the soft halo below is the second one, exactly as in
+     input.css / textarea.css.
+     The fallback matters: this stylesheet ships separately from the element's
+     shadow styles that define --border-color-focus, so a consumer pairing
+     mismatched CSS/JS versions would otherwise hit an undefined variable —
+     border-color then resets to currentColor and the frame takes the text
+     color instead of the ring. */
+  l-prose-editor:has(.ProseMirror:focus-visible)::part(toolbar),
+  l-prose-editor:has(.ProseMirror:focus-visible)::part(editor) {
+    border-color: var(--border-color-focus, var(--l-focus-ring));
+  }
+
+  /* Soft focus halo — same recipe as input.css / textarea.css, so a prose
+     editor and a textarea are indistinguishable when focused. On the wrapper,
+     not on toolbar/editor: one halo around the whole frame, otherwise the two
+     halves would each cast one along the edge they share. An ancestor with
+     `overflow: hidden` clips this, which is why it is the second layer and not
+     the only one — clipped, the border above still reads as focus.
+
+     The transparent outline keeps a visible indicator under forced colors,
+     where border-color is overridden by the user's palette and the border rule
+     stops reading as a state change. Inset (negative offset), unlike
+     input.css / textarea.css: under forced colors it is the only indicator
+     left, so it must survive that same clipping. */
+  l-prose-editor:has(.ProseMirror:focus-visible)::part(wrapper) {
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+    box-shadow: 0 0 0 3px
+      color-mix(in oklab, var(--border-color-focus, var(--l-focus-ring)) 22%, transparent);
   }
 
   l-prose-editor .ProseMirror :first-child {
