@@ -122,11 +122,20 @@ string literal or a type.
   comparison that targets an `l-*` element must go through `tagName('story')`
   (and `.toUpperCase()` for `tagName` comparisons), like `dropdown` / `tree` do.
   Never `closest('l-story')` or `=== 'L-STORIES-VIEWER'`.
-- **Internal CSS classes → `cls(name)`** from `registry.js` when set
-  imperatively (`el.className = cls('toast-icon')`), like `toast` / `slider`.
-  Static `class="l-…"` in Lit templates is the one tolerated literal (the
-  consumer's `luxen-ui/vite-plugin` rewrites the `cssPrefix` at build time) —
-  but anything computed in JS must use `cls()`.
+- **Internal CSS classes → `cls(name)`** from `registry.js`, in **both**
+  imperative code (`el.className = cls('toast-icon')`, like `toast` / `slider`)
+  and Lit templates (`class=${cls('story-thumb')}`, like `story` / `tree-item`).
+  There is no tolerated static `class="l-…"` literal. The vite-plugin's
+  `transform` hook rewrites **only** the two `_cssPrefix` / `_elementPrefix`
+  initialisers in `registry.js` — it never touches template literals in element
+  JS. Meanwhile the CSS carrying the matching selector (`src/css/elements/*.css`
+  for light DOM, `shared/styles/*.css` imported `?inline` for shadow DOM) ships
+  to `dist/` as real CSS, so the **consumer's** Vite runs
+  `postcss-plugin-prefix` over it and rewrites `.l-checkbox` →
+  `.<cssPrefix>-checkbox`. A hardcoded class attribute therefore desyncs from
+  its own stylesheet and the element renders unstyled under any renamed prefix —
+  silently, since nothing in this repo's build exercises a non-default prefix.
+  `cls()` is a no-op at the default `l` prefix, so binding costs nothing.
 - **Never augment the global `HTMLElementTagNameMap` (or Vue's
   `GlobalComponents`) in element source.** A `declare global { interface
 HTMLElementTagNameMap { 'l-foo': Foo } }` block hardcodes `l-` and is wrong
@@ -139,8 +148,8 @@ HTMLElementTagNameMap { 'l-foo': Foo } }` block hardcodes `l-` and is wrong
   fine.
 
 Rule of thumb: if you typed the characters `l-` (or `L-`) anywhere in a `.ts`
-file outside a JSDoc tag, a code comment, or a static template `class=`, it's a
-bug against rebranding — route it through `tagName()` / `cls()` instead.
+file outside a JSDoc tag or a code comment, it's a bug against rebranding —
+route it through `tagName()` / `cls()` instead.
 
 ## Testing
 

@@ -1,5 +1,6 @@
 import { html, nothing, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
+import { cls } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import { HasSlotController } from '../../shared/controllers/has-slot-controller.js';
 import { Dialog } from '../dialog/dialog.js';
@@ -11,6 +12,9 @@ import '../spinner/index.js';
 // The built-in actions render as `.l-button`, styled inside the shadow root from
 // the SAME shared button-core as the light-DOM `.l-button` (single source of
 // truth — no copy to drift). alert-dialog.css adds only the dialog layout.
+// The class is emitted through `cls('button')` so it tracks a renamed
+// `cssPrefix` — button-core.css ships as a real CSS file the consumer's postcss
+// re-prefixes, and a static literal would desync from it (see button-core.css).
 const alertStyles = unsafeCSS(rawAlertStyles);
 
 /**
@@ -190,7 +194,7 @@ export class AlertDialog extends Dialog {
         <slot name="cancel">
           <button
             part="button cancel"
-            class="l-button"
+            class=${cls('button')}
             type="button"
             data-cancel
           >
@@ -200,7 +204,7 @@ export class AlertDialog extends Dialog {
         <slot name="confirm">
           <button
             part="button confirm"
-            class="l-button"
+            class=${cls('button')}
             type="button"
             data-confirm
             data-variant=${confirmVariant}

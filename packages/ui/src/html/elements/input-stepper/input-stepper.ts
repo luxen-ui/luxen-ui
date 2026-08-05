@@ -1,7 +1,7 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { LocalizeController } from '../../shared/localize.js';
-import { tagName } from '../../registry.js';
+import { cls, tagName } from '../../registry.js';
 
 export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -151,7 +151,7 @@ export class InputStepper extends LuxenElement {
 
     // Wrap input in value container
     this._valueWrapper = document.createElement('div');
-    this._valueWrapper.className = 'l-input-stepper-value';
+    this._valueWrapper.className = cls('input-stepper-value');
     this._input.replaceWith(this._valueWrapper);
     this._valueWrapper.appendChild(this._input);
 
@@ -226,10 +226,10 @@ export class InputStepper extends LuxenElement {
     if (!this._valueWrapper) return;
 
     this._trackDisplay = document.createElement('div');
-    this._trackDisplay.className = 'l-input-stepper-track-display';
+    this._trackDisplay.className = cls('input-stepper-track-display');
 
     this._track = document.createElement('div');
-    this._track.className = 'l-input-stepper-track';
+    this._track.className = cls('input-stepper-track');
     this._track.setAttribute('aria-hidden', 'true');
 
     this._rebuildTrackNumbers();

@@ -1,7 +1,7 @@
 import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
-import { tagName } from '../../registry.js';
+import { cls, tagName } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import checkboxAppearance from '../../shared/styles/checkbox-appearance.styles.js';
 import rawStyles from './tree-item.css?inline';
@@ -317,7 +317,7 @@ export class TreeItem extends LuxenElement {
         </span>
 
         <input
-          class="checkbox l-checkbox"
+          class="checkbox ${cls('checkbox')}"
           part="checkbox"
           type="checkbox"
           tabindex="-1"
