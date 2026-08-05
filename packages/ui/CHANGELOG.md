@@ -1,5 +1,59 @@
 # luxen-ui
 
+## 0.18.0
+
+### Minor Changes
+
+- 306423d: Fix elements breaking when the prefix is renamed via `luxen.config.mjs` / the
+  Vite plugin's `elementPrefix` / `cssPrefix` options. `l-tree-item`'s checkbox,
+  `l-alert-dialog`'s built-in actions, `l-story`, `l-input-otp`, and
+  `l-input-stepper` emitted hardcoded `l-*` class names while their stylesheets
+  were rewritten to the configured prefix, so the selectors no longer matched and
+  those parts fell back to native/unstyled appearance. `l-form-field` looked for
+  `.l-hint` / `.l-error` and so never wired `aria-describedby` or the error's
+  `role="alert"`; `l-alert-dialog`'s loading spinner and `l-stories-viewer`'s
+  scroll lock referenced hardcoded tag names and silently did nothing. All of
+  these now derive from the configured prefix. No effect at the default `l`
+  prefix.
+
+  Breaking (types): `luxen-ui` no longer augments the global
+  `HTMLElementTagNameMap` with `'l-alert'` / `'l-slider'`. Those entries hardcoded
+  the default prefix and were wrong for any rebranded build. If you relied on
+  `document.querySelector('l-alert')` being typed as `Alert`, generate a
+  prefix-aware declaration file with the Vite plugin's `emitTypes` option — `alert`
+  and `slider` are now included in the elements it emits, under your configured
+  prefix.
+
+- 2654966: `<l-tag>` can now be a filter chip. Add `selectable` and the tag becomes a toggle button that reports `aria-pressed` and fires a bubbling `change` event — re-activating a selected tag releases it, so a facet always has a way back to "all". Add `control="checkbox"` for a multi-select axis and the library's own checkbox rides inside the chip, with the whole chip as its label.
+
+  A new `suffix` slot holds a count or trailing glyph and gets the chip's gutter by construction, `--height` sizes the chip without reaching for `::part(base)`, and `--selected-color` / `--selected-background` theme the selected look — set the colour alone and the tint, border, and checkbox accent follow.
+
+### Patch Changes
+
+- ebed8db: `l-prose-editor` now shows a visible focus indicator on the field itself: focusing the editable area turns the whole editor frame — toolbar and content — to the focus-ring color and adds the soft halo, fading in over 150ms. It is now indistinguishable from a focused `l-input` or `l-textarea`. Focusing a toolbar button still shows only that button's own ring. The color is themable through the new `--border-color-focus` custom property.
+
+  The frame's border is the primary layer, so the indicator follows `--border-radius` (including the collapsed corners under `toolbar-placement`) and survives an ancestor with `overflow: hidden`, which would clip the halo. Consumers who added their own focus ring around the editable area can remove it.
+
+  Two related fixes to the same frame:
+  - The toolbar had no `border-radius`, so the editor rendered with square top corners and a rounded bottom instead of one rounded box. Both halves now start from `--border-radius`.
+  - The editor stretches to full width like the other text controls, so it no longer collapses to fit-content inside `l-form-field` (or any other shrink-to-fit container such as a flex or grid item).
+
+- b914aa7: Disabled controls now follow one rule, applied consistently across the form system: a mark painted on an accent fill fades with `opacity`; everything else greys out through the `--l-form-control-disabled-*` tokens.
+
+  Before, the two were mixed arbitrarily. Several controls applied `opacity` **on top of** a colour that had already been chosen for the disabled state, diluting it to 40% of its intended value — the OTP digits, the stepper icons and an input group's adornment icon all landed near 1.5:1 against the page instead of the value they were given. The stepper did it twice over, with one appearance setting a disabled border token that the base then faded again. Those now use their tokens undiluted.
+
+  A disabled `<input>`, `<select>`, `<textarea>`, OTP cell, stepper and unchecked checkbox in the same form now resolve to exactly the same greys, and a consumer's `--l-form-control-disabled-*` override reaches all of them — an opacity fade used to run on top of those colours and ignore them.
+
+  Checked checkboxes, selected radios, on switches and the slider keep fading. They paint a mark on an accent fill, and the fade reads as "inactive" more immediately than a neutral repaint, which reads as a styled but still-live control. The mark gets fainter as a result; WCAG 1.4.11 exempts inactive components, and the residual accent tint is what tells you the control is on.
+
+  `l-form-field` now greys a disabled field's label, hint and required marker — previously a greyed-out control sat under a full-strength label and the field still read as available. A native `<fieldset disabled>`, the standard way to disable a radio group, does the same for its legend, its option labels and its hint.
+
+  `--l-form-control-disabled-background` and `--l-form-control-disabled-border` become translucent rather than solid, so a disabled field composites onto its backdrop. On the default page surface it looks unchanged; inside a tinted card — where the old opaque fill could resolve to the card's own colour and make the field vanish — it now stays visible.
+
+  Adds `--l-form-control-disabled-mark-color` for the off switch's thumb, the one mark that sits on a token-greyed fill rather than an accent one.
+
+  `.l-button`, `l-disclosure` and `l-rating` are unchanged.
+
 ## 0.17.1
 
 ### Patch Changes
