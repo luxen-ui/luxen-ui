@@ -65,6 +65,39 @@ Add a `<p class="l-hint">` for always-visible helper text. The field links it to
 
 Add a `<p class="l-error">` for the validation message. It stays hidden until the control is invalid after interaction, then the field reveals it, sets `aria-invalid`, adds it to `aria-describedby`, and gives it `role="alert"` so it is announced.
 
+### Disabled
+
+Add native `disabled` to the control. The field greys its label, hint and required marker to match.
+
+### Disabled group
+
+Wrap the fields in `<fieldset disabled>` to disable a whole group at once — the platform's own mechanism, and the usual shape for a radio group, where the `<legend>` is the group's label. Every control inside is disabled and excluded from submission; the legend, option labels and hint grey out with them.
+
+```html
+<fieldset disabled>
+  <legend>Notification preference</legend>
+
+  <l-form-field>
+    <label>All new messages</label>
+    <input
+      type="radio"
+      name="notify"
+      checked
+    />
+  </l-form-field>
+
+  <l-form-field>
+    <label>Direct messages only</label>
+    <input
+      type="radio"
+      name="notify"
+    />
+  </l-form-field>
+
+  <p class="l-hint">You can change this later.</p>
+</fieldset>
+```
+
 ### Unstyled
 
 Add `unstyled` to keep the accessibility wiring while opting out of auto-styling the control — useful for a third-party control or your own styling.

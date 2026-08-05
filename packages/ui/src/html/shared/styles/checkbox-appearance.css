@@ -84,6 +84,14 @@
         border-color: Highlight;
         background-color: Highlight;
       }
+
+      &:disabled {
+        border-color: GrayText;
+      }
+
+      &:disabled:is(:checked, :indeterminate) {
+        background-color: GrayText;
+      }
     }
 
     /* Invalid: only after interaction (`:user-invalid`), or forced via
@@ -98,7 +106,40 @@
 
     &:disabled {
       cursor: not-allowed;
+    }
+
+    /* Unchecked: the same three tokens as `input`/`select`/`textarea`, so a
+       checkbox and an input in the same disabled form grey out identically.
+       There is no mark here — only a box — so nothing can be washed out. */
+    &:disabled:not(:checked, :indeterminate) {
+      border-color: var(--l-form-control-disabled-border);
+      background-color: var(--l-form-control-disabled-background);
+    }
+
+    /* Checked: faded rather than greyed. A solid neutral fill keeps the glyph
+       crisp but reads as a styled, still-live control; the fade reads as
+       "inactive" at a glance, which is the message that matters more here.
+       The cost is measured and accepted: the checkmark drops to 1.85:1 against
+       its own box, and the residual accent tint (1.81:1 against the page) is
+       what carries "this one is checked". WCAG 1.4.11 exempts inactive
+       components, so this is a deliberate trade, not a shortfall.
+
+       It assumes the accent is dark enough for the baked-white glyph — the same
+       assumption `--l-form-control-activated-color` already documents, and which
+       the enabled state depends on just as much (a pale accent scores 1.31:1
+       there, before anything is disabled). */
+    &:disabled:is(:checked, :indeterminate) {
       opacity: 0.4;
+    }
+
+    /* Forced colors replaces author colors with the user's palette, so a fade
+       would only dim a system color — the box is already GrayText up in the
+       forced-colors block above. Placed here, after the fade, because it needs
+       to win at equal specificity. */
+    @media (forced-colors: active) {
+      &:disabled:is(:checked, :indeterminate) {
+        opacity: 1;
+      }
     }
   }
 

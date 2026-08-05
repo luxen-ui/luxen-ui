@@ -54,18 +54,23 @@
       },
       "disabled-background": {
         "$type": "color",
-        "$value": "{color.bg.disabled}",
-        "$description": "Background of a disabled text control — a subtle grey fill (reinforces non-interactivity, instead of fading the whole control with opacity)."
+        "$value": "color-mix(in oklab, {color.text.primary} 6%, transparent)",
+        "$description": "Background of a disabled text control — a faint ink wash (reinforces non-interactivity, instead of fading the whole control with opacity). Translucent rather than a solid grey so it composites onto whatever sits behind: a disabled field reads the same on a card, an alert, or a dialog, where an opaque fill would show as a mismatched patch. On the default surface it lands within a step of the former solid --l-color-bg-disabled, in both light and dark."
       },
       "disabled-border": {
         "$type": "color",
-        "$value": "{color.border-disabled}",
-        "$description": "Border color of a disabled text control."
+        "$value": "color-mix(in oklab, {color.text.primary} 20%, transparent)",
+        "$description": "Border color of a disabled text control. Translucent for the same reason as --l-form-control-disabled-background, and derived from the same ink so fill and border stay in step under any theme. 20% is the alpha that reproduces the former solid --l-color-border-disabled on the default surface in both modes; 25% (the CSSWG default-UA proposal) drifts bright enough in dark mode to read as an enabled border."
       },
       "disabled-color": {
         "$type": "color",
         "$value": "{color.text.disabled}",
-        "$description": "Value/placeholder text color of a disabled text control."
+        "$description": "Value/placeholder text color of a disabled text control. Deliberately opaque, unlike the fill and border: text is the one layer that must not composite. An ink-derived alpha assumes the backdrop luminance matches the color scheme, so on a dark card in light mode a translucent value would fade dark-on-dark to nothing — a solid grey stays legible either way."
+      },
+      "disabled-mark-color": {
+        "$type": "color",
+        "$value": "{color.gray.500}",
+        "$description": "Mark on a disabled control that greys out through tokens rather than fading — currently the switch's thumb when it is off and disabled, sitting on the pale --l-form-control-disabled-background. A mid grey that holds in both light and dark, so the mark keeps past 3:1 against that fill either way; the lighter --l-form-control-disabled-color would drop below it. Decoupled from text tokens for the same reason as --l-form-control-track-off-color. Activated controls (checked checkbox, selected radio, on switch) do not use this — they fade instead, keeping their accent tint."
       },
       "toggle-size": {
         "$type": "dimension",

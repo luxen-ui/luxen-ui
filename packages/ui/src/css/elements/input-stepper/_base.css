@@ -108,9 +108,13 @@
       z-index: 1;
     }
 
+    /* The buttons hold nothing but a currentColor icon, so the disabled ink
+       token does the whole job — and undiluted, unlike the opacity fade it
+       replaces, which also dimmed the border token the `rounded` appearance
+       sets on this same state. Matches `input:disabled` below. */
     button:disabled {
       cursor: not-allowed;
-      opacity: 0.4;
+      color: var(--l-form-control-disabled-color);
     }
 
     @media (hover: hover) {

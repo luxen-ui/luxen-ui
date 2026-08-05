@@ -77,16 +77,38 @@
 
     &:disabled {
       cursor: not-allowed;
+    }
+
+    /* Mirrors the checkbox: unselected takes the text-control tokens (no mark to
+       wash out), selected fades (the fade reads as inactive at a glance, at the
+       cost of a 1.85:1 dot — see checkbox-appearance.css for the full rationale). */
+    &:disabled:not(:checked) {
+      border-color: var(--l-form-control-disabled-border);
+      background-color: var(--l-form-control-disabled-background);
+    }
+
+    &:disabled:checked {
       opacity: 0.4;
     }
 
     /* High contrast: the selected fill is forced to Canvas, hiding the accent
        and leaving the baked-white dot invisible — pin the selected box to a
-       system color so the dot stays legible. */
+       system color so the dot stays legible. The fade is dropped here: it would
+       only dim a system color. Placed after the fade so it wins at equal
+       specificity. */
     @media (forced-colors: active) {
       &:checked {
         border-color: Highlight;
         background-color: Highlight;
+      }
+
+      &:disabled {
+        border-color: GrayText;
+      }
+
+      &:disabled:checked {
+        background-color: GrayText;
+        opacity: 1;
       }
     }
   }

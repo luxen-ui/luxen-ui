@@ -56,7 +56,7 @@ The native `rows` attribute sets the initial height; the textarea never shrinks 
 
 ### States
 
-Native `disabled` and `readonly`. Invalid is styled via `:user-invalid` (after interaction) or by setting `aria-invalid="true"` — inside `l-form-field` this is managed for you.
+Native `disabled` and `readonly`. Invalid is styled via `:user-invalid` (after interaction) or by setting `aria-invalid="true"` — inside `l-form-field` this is managed for you. To disable a group of fields at once, wrap them in `<fieldset disabled>` — see [Form field](./form-field.md#disabled-group).
 
 <ComponentWrapper :html="statesExample" />
 

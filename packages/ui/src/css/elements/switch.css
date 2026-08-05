@@ -152,14 +152,31 @@
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.4;
       /* Clear the error ring so a disabled control never reads as erroring. */
       box-shadow: none;
     }
 
+    /* Off + disabled: tokens. The track takes the same pale fill as a disabled
+       input and the thumb flips to the muted grey so it stays legible on it —
+       an off switch has no accent fill, so there is nothing a fade would help. */
+    &:disabled:not(:checked) {
+      --_track: var(--l-form-control-disabled-background);
+      --_thumb-color: var(--l-form-control-disabled-mark-color);
+    }
+
+    /* On + disabled: faded, like the checked checkbox and radio. The white thumb
+       on an accent track is the same mark-on-a-fill, and the same trade applies —
+       see checkbox-appearance.css. The thumb survives the fade better here than a
+       checkmark does, being a large disc rather than a thin stroke. */
+    &:disabled:checked {
+      opacity: 0.4;
+    }
+
     /* In forced-colors the gradient thumb and track fill can flatten, so lean on
        what survives: a track outline plus the thumb's left/right position, and
-       distinguish on/off by switching the outline to the system Highlight. */
+       distinguish on/off by switching the outline to the system Highlight. The
+       fade is dropped — it would only dim a system color. Placed after it so it
+       wins at equal specificity. */
     @media (forced-colors: active) {
       border: 1px solid CanvasText;
       --_thumb-color: CanvasText;
@@ -167,6 +184,15 @@
       &:checked {
         border-color: Highlight;
         --_thumb-color: Highlight;
+      }
+
+      &:disabled {
+        border-color: GrayText;
+        --_thumb-color: GrayText;
+      }
+
+      &:disabled:checked {
+        opacity: 1;
       }
     }
   }

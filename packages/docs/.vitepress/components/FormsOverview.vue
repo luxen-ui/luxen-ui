@@ -267,6 +267,20 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
+      <!-- Unchecked counterpart. The form remounts on every state toggle (see
+           `stateKey`), so a control always snaps back to its authored `checked`
+           value — unchecking by hand never survives. Pairing a checked and an
+           unchecked box makes the Disabled state show both at once, which is
+           the whole point: a disabled control must still say which one it is. -->
+      <l-form-field>
+        <label>Weekly product digest</label>
+        <input
+          type="checkbox"
+          :disabled="disabled"
+        />
+        <p class="l-hint">Unchecked, for comparison.</p>
+      </l-form-field>
+
       <!-- Switch — auto-styled bare control, promoted with role="switch". Like
            the checkbox, Error unchecks a required switch (valueMissing). -->
       <l-form-field :invalid="attr(invalid)">
@@ -288,12 +302,19 @@ const attr = (on) => (on ? '' : null);
         class="m-0 grid gap-[var(--l-form-field-gap)] border-0 p-0"
         :disabled="disabled"
       >
+        <!-- The colour is a ternary, not two stacked classes: both are arbitrary
+             utilities of equal specificity, so leaving the enabled one in place
+             would leave the winner up to Tailwind's output order. Emitting one
+             at a time also lets `fieldset:disabled` own the disabled case. -->
         <legend
-          class="p-0 text-sm font-medium [color:var(--l-form-control-label-color)]"
-          :class="
+          class="p-0 text-sm font-medium"
+          :class="[
+            disabled
+              ? '[color:var(--l-form-control-disabled-color)]'
+              : '[color:var(--l-form-control-label-color)]',
             required &&
-            'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]'
-          "
+              'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]',
+          ]"
         >
           Notification preference
         </legend>
@@ -353,16 +374,25 @@ const attr = (on) => (on ? '' : null);
            radio fieldset with a manual label, required marker and error. The
            shared size maps to --icon-size and the accent to --active-color.
            Error clears a required rating (value 0) so it reads as invalid. -->
-      <div class="grid gap-[var(--l-form-field-gap)]">
-        <span
-          class="text-sm font-medium [color:var(--l-form-control-label-color)]"
-          :class="
+      <!-- A real `<fieldset>`, not a div dressed as one: `fieldset:disabled`
+           greys the legend and the hint for free, exactly like the radio group,
+           instead of hand-rolling the disabled colour a third time. -->
+      <fieldset
+        class="m-0 grid gap-[var(--l-form-field-gap)] border-0 p-0"
+        :disabled="disabled"
+      >
+        <legend
+          class="p-0 text-sm font-medium"
+          :class="[
+            disabled
+              ? '[color:var(--l-form-control-disabled-color)]'
+              : '[color:var(--l-form-control-label-color)]',
             required &&
-            'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]'
-          "
+              'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]',
+          ]"
         >
           Overall rating
-        </span>
+        </legend>
         <l-rating
           name="overview-rating"
           edit-mode
@@ -379,7 +409,7 @@ const attr = (on) => (on ? '' : null);
         >
           {{ error }}
         </p>
-      </div>
+      </fieldset>
 
       <!-- Slider — form-associated; `label` drives the thumb accessible name. -->
       <l-form-field :invalid="attr(invalid)">

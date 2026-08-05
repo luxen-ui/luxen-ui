@@ -43,6 +43,12 @@ thumb's hit box is ≥24px (WCAG 2.5.8) while the visible disc stays smaller.
   --thumb-size: 1.5rem;
 }
 
+/* Disabled: faded, like the checked checkbox and the on switch. The thumb is a
+   disc ringed in the accent sitting on an accent-filled indicator — a mark on a
+   fill, which is the case the fade is for. Repainting it in neutral tokens keeps
+   the thumb crisper, but a grey bar across the full width reads as a styled,
+   still-live control, and it drops the accent tint every other faded control
+   keeps. Consistency wins here: see checkbox-appearance.css for the trade. */
 :host([disabled]) {
   opacity: 0.5;
   pointer-events: none;
