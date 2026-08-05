@@ -1,6 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
-import { uniqueId } from '../../registry.js';
+import { cls, uniqueId } from '../../registry.js';
 
 type NativeControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 /** A form-associated custom element (e.g. `l-slider`) exposes the same constraint
@@ -103,8 +103,10 @@ export class FormField extends LuxenElement {
     this._wired = true;
     const control = this._control;
 
-    this._hint = this.querySelector('.l-hint');
-    this._error = this.querySelector('.l-error');
+    // Consumer-authored markup, so these carry the consumer's configured
+    // `cssPrefix` — match on `cls()`, not a hardcoded `.l-hint` / `.l-error`.
+    this._hint = this.querySelector(`.${cls('hint')}`);
+    this._error = this.querySelector(`.${cls('error')}`);
     // The error is announced when revealed; the field owns this (the message is
     // a plain element with no JS of its own).
     if (this._error && !this._error.hasAttribute('role')) {

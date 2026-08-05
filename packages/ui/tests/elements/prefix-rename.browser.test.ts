@@ -25,14 +25,22 @@ describe('A consumer who rebrands the prefix', () => {
     await import('../../src/html/elements/alert-dialog/index.js');
     await import('../../src/html/elements/input-otp/index.js');
     await import('../../src/html/elements/input-stepper/index.js');
+    await import('../../src/html/elements/form-field/index.js');
+    await import('../../src/html/elements/stories-viewer/index.js');
 
     const host = document.createElement('div');
     host.innerHTML = `
       <x-tree selection="multiple"><x-tree-item>Item</x-tree-item></x-tree>
       <x-story label="Story"></x-story>
-      <x-alert-dialog></x-alert-dialog>
+      <x-alert-dialog loading></x-alert-dialog>
       <x-input-otp digits="4"><input /></x-input-otp>
-      <x-input-stepper with-roller><input type="number" value="1" /></x-input-stepper>`;
+      <x-input-stepper with-roller><input type="number" value="1" /></x-input-stepper>
+      <x-form-field>
+        <label for="e">Email</label>
+        <input id="e" type="email" />
+        <p class="x-hint">Hint text</p>
+        <p class="x-error">Error text</p>
+      </x-form-field>`;
     document.body.appendChild(host);
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -69,6 +77,29 @@ describe('A consumer who rebrands the prefix', () => {
     expect(stepper.querySelector('.x-input-stepper-value')).toBeTruthy();
     expect(stepper.querySelector('.x-input-stepper-track')).toBeTruthy();
     expect(stepper.querySelector('.l-input-stepper-value')).toBeNull();
+
+    // Consumer-authored `.x-hint` / `.x-error` must still be found and wired.
+    const field = await settle(host.querySelector('x-form-field')!);
+    const input = field.querySelector('input')!;
+    const describedBy = input.getAttribute('aria-describedby') ?? '';
+    expect(describedBy).not.toBe('');
+    expect(field.querySelector('.x-error')!.getAttribute('role')).toBe('alert');
+    for (const id of describedBy.split(/\s+/)) {
+      expect(field.querySelector(`#${CSS.escape(id)}`)).toBeTruthy();
+    }
+
+    // Child custom elements render through `staticTag()`, so they upgrade.
+    const dialogSpinner = dialog.shadowRoot!.querySelector('x-spinner');
+    expect(dialogSpinner).toBeTruthy();
+    expect(dialogSpinner!.shadowRoot).toBeTruthy();
+    expect(dialog.shadowRoot!.querySelector('l-spinner')).toBeNull();
+
+    // The module-scope scroll-lock sheet targets the renamed tag.
+    const lock = document.adoptedStyleSheets
+      .flatMap((s) => [...s.cssRules].map((r) => r.cssText))
+      .filter((t) => t.includes('scrollbar-gutter'));
+    expect(lock.some((t) => t.includes('x-stories-viewer'))).toBe(true);
+    expect(lock.some((t) => t.includes('l-stories-viewer'))).toBe(false);
 
     host.remove();
   });

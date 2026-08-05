@@ -436,9 +436,3 @@ export interface Slider {
     options?: boolean | EventListenerOptions,
   ): void;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-slider': Slider;
-  }
-}
