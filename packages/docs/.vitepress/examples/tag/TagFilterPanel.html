@@ -1,0 +1,69 @@
+<div class="flex max-w-md flex-col gap-4">
+  <div class="flex flex-col gap-2">
+    <span class="text-xs font-medium text-[var(--l-color-text-secondary)]">Category</span>
+    <div class="flex flex-wrap gap-2">
+      <l-tag
+        selectable
+        control="checkbox"
+      >
+        <l-icon
+          slot="prefix"
+          name="mdi:camera-outline"
+        ></l-icon>
+        Cameras <span slot="suffix">128</span>
+      </l-tag>
+      <l-tag
+        selectable
+        control="checkbox"
+        selected
+      >
+        <l-icon
+          slot="prefix"
+          name="mdi:circle-outline"
+        ></l-icon>
+        Lenses <span slot="suffix">54</span>
+      </l-tag>
+      <l-tag
+        selectable
+        control="checkbox"
+      >
+        <l-icon
+          slot="prefix"
+          name="mdi:tripod"
+        ></l-icon>
+        Tripods <span slot="suffix">12</span>
+      </l-tag>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <span class="text-xs font-medium text-[var(--l-color-text-secondary)]">Brand</span>
+    <div class="flex flex-wrap gap-2">
+      <l-tag
+        selectable
+        control="checkbox"
+        >Acme <span slot="suffix">86</span></l-tag
+      >
+      <l-tag
+        selectable
+        control="checkbox"
+        >Globex <span slot="suffix">41</span></l-tag
+      >
+      <l-tag
+        selectable
+        control="checkbox"
+        >Initech <span slot="suffix">23</span></l-tag
+      >
+      <l-tag
+        selectable
+        control="checkbox"
+        >Umbrella <span slot="suffix">12</span></l-tag
+      >
+      <l-tag
+        selectable
+        control="checkbox"
+        >Vandelay <span slot="suffix">9</span></l-tag
+      >
+    </div>
+  </div>
+</div>
