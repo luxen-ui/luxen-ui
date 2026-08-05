@@ -180,10 +180,15 @@
     ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
     */
 
+    /* A cell is a text control, so it greys out like one — same three tokens as
+       `input`/`select`/`textarea`. The opacity fade this replaces was applied on
+       top of the disabled ink, diluting the token to 40% of its calibrated
+       value and washing the border out with it. */
     :scope:has(input:disabled) .l-input-otp-cell {
-      opacity: 0.4;
+      --cell-bg-color: var(--l-form-control-disabled-background);
+      --cell-border-color: var(--l-form-control-disabled-border);
       cursor: not-allowed;
-      color: var(--l-color-text-disabled);
+      color: var(--l-form-control-disabled-color);
     }
 
     /*

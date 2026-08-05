@@ -369,9 +369,17 @@
         z-index: 1;
       }
 
+      /* A bare adornment carries nothing but a currentColor icon (no fill, no
+         border), so the disabled ink token is the whole treatment — same as the
+         stepper's buttons. `l-input-group` mirrors the input's `disabled` onto
+         the injected toggle, so this fires exactly when the group around it
+         greys out; an opacity fade there left a token-greyed field wrapping an
+         opacity-faded icon. Note this rule does NOT reach an authored
+         `.l-button` adornment: that selector outranks this one and keeps its own
+         secondary skin, disabled state included. */
       &:disabled {
         cursor: not-allowed;
-        opacity: 0.4;
+        color: var(--l-form-control-disabled-color);
       }
     }
 
@@ -414,6 +422,16 @@
       border-color: var(--l-form-control-disabled-border);
       background-color: var(--l-form-control-disabled-background);
       color: var(--l-form-control-disabled-color);
+
+      /* Static adornments (icons, unit text) set their own colour above, so the
+         `color` on the group never reaches them — a disabled group ended up with
+         an adornment DARKER than the value beside it (tertiary grey against the
+         lighter disabled ink). Buttons are excluded: an authored action can stay
+         live next to a disabled field, and the injected toggle already mirrors
+         the input's `disabled` and greys through its own rule. */
+      & > :not(input, button) {
+        color: var(--l-form-control-disabled-color);
+      }
     }
   }
 

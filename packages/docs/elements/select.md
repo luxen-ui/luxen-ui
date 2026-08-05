@@ -41,6 +41,20 @@ Add `class="l-select"` to a native `<select>` — its `<option>`s are styled aut
 <<< @/.vitepress/examples/select/Select.html [HTML]
 :::
 
+### Disabled
+
+Native `disabled` attribute, on the `<select>` for the whole control or on an individual `<option>`. To disable a group of fields at once, wrap them in `<fieldset disabled>` — see [Form field](./form-field.md#disabled-group).
+
+```html
+<select
+  class="l-select"
+  disabled
+>
+  <option>France</option>
+  <option disabled>Germany</option>
+</select>
+```
+
 ### Rich options
 
 Put markup inside each `<option>` — wrap a `.l-select-item-title` over a `.l-select-item-description` in `.l-select-item-text` (add a `.l-select-item-media` image or icon before it). A `<button><selectedcontent></button>` trigger mirrors the chosen option.

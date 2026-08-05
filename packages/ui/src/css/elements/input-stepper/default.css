@@ -17,10 +17,12 @@
       border-radius: 0 var(--border-radius) var(--border-radius) 0;
     }
 
+    /* Uses the form-control disabled tokens, not the generic aliases: a stepper
+       is a text control and must grey out identically to the input next to it. */
     :scope:has(input:disabled) {
-      --_track-bg: var(--l-color-bg-disabled);
-      border-color: var(--l-color-border-disabled);
-      background-color: var(--l-color-bg-disabled);
+      --_track-bg: var(--l-form-control-disabled-background);
+      border-color: var(--l-form-control-disabled-border);
+      background-color: var(--l-form-control-disabled-background);
     }
   }
 

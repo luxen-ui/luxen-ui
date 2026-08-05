@@ -75,12 +75,6 @@
     --_height: var(--l-size-control-xl);
   }
 
-  /* Whole-control disabled (host `disabled` attribute, form-associated). */
-  l-segmented-control[disabled] {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
   /*
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
    Segments
@@ -129,7 +123,7 @@
     &:disabled,
     &[aria-disabled='true'] {
       cursor: not-allowed;
-      opacity: 0.4;
+      color: var(--l-color-text-disabled);
     }
 
     &:focus-visible {
@@ -137,6 +131,31 @@
       outline-offset: -2px;
       border-radius: var(--l-radius-sm);
     }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   Whole-control disabled (host `disabled` attribute, form-associated)
+   Placed after the segments so it outranks the `[aria-checked]` label colour;
+   JS also mirrors `aria-disabled` onto each segment, so the rule above covers
+   the same ground once upgraded. No opacity fade — fading the group washed the
+   surface pill into the track and hid which segment was selected. The pill
+   stays, minus its shadow, so the control reads flat but still answers "which
+   one is on?".
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  l-segmented-control[disabled] {
+    pointer-events: none;
+
+    &::before {
+      box-shadow: none;
+    }
+  }
+
+  l-segmented-control[disabled] button {
+    cursor: not-allowed;
+    color: var(--l-color-text-disabled);
   }
 
   /*

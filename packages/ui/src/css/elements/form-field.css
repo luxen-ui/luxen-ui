@@ -49,6 +49,56 @@
     }
   }
 
+  /* A disabled control takes its label, hint and required marker with it —
+     otherwise a greyed-out control sits under a full-strength label and the
+     field still reads as available. Greying the label alone would invert the
+     hierarchy: `.l-hint` is `text-secondary`, darker than the disabled ink, so
+     the helper text would end up more prominent than the label it explains.
+
+     Matches a native control anywhere in the field, not just a direct child —
+     `l-input-group`, `l-input-stepper` and `l-input-otp` keep the real `<input>`
+     one level down — plus a form-associated element carrying `disabled` on the
+     host (`l-segmented-control`). Placed after the layout block so it outranks
+     the inline label rule at equal specificity. */
+  l-form-field:has(:is(input, select, textarea):disabled),
+  l-form-field:has(> [disabled]) {
+    & > label,
+    & > .l-hint {
+      color: var(--l-form-control-disabled-color);
+    }
+
+    /* The marker is decorative once nothing can be submitted; a red asterisk on
+       an inert field reads as an unmet requirement the user could act on. */
+    &[required] > label::after {
+      color: var(--l-form-control-disabled-color);
+    }
+
+    /* Undo the inline layout's `cursor: pointer` — clicking the label would
+       focus a control that can't be operated. */
+    & > label {
+      cursor: not-allowed;
+    }
+  }
+
+  /* `<fieldset disabled>` is the platform's way to disable a group — the usual
+     shape for a radio set, where the legend is the group's label and each option
+     carries its own. The browser disables the controls inside and Luxen greys
+     them, but none of the surrounding text: the legend, the option labels and
+     the hint all stayed at full strength, so a disabled group read as available.
+     `l-form-field` cannot cover this — the legend lives inside the fieldset, not
+     beside the control — so the rule keys off the fieldset itself and applies
+     wherever the pattern is used, with or without a field wrapper. */
+  fieldset:disabled {
+    & :is(legend, label),
+    & .l-hint {
+      color: var(--l-form-control-disabled-color);
+    }
+
+    & label {
+      cursor: not-allowed;
+    }
+  }
+
   .l-hint {
     display: block;
     margin: 0;

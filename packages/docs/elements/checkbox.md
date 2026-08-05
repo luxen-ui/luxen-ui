@@ -48,6 +48,8 @@ Native `checked` attribute.
 
 Native `disabled` attribute.
 
+To disable a whole group at once, wrap it in `<fieldset disabled>` — see [Form field](./form-field.md#disabled-group).
+
 ### States
 
 <ComponentWrapper :html="statesExample" />
