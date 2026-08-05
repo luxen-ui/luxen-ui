@@ -122,6 +122,13 @@ export class Tag extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   accessor disabled = false;
 
+  constructor() {
+    super();
+    // The chip is operated from inside the shadow root, which a click
+    // dispatched on the host never reaches — see `_onHostClick`.
+    this.addEventListener('click', this._onHostClick);
+  }
+
   override willUpdate() {
     // A checkbox is only ever rendered on a selectable chip, so the attribute
     // (which every selectable style rule keys off) is derived rather than
@@ -160,6 +167,26 @@ export class Tag extends LuxenElement {
     // Toggling, not setting: re-activating a selected tag releases it.
     this.selected = !this.selected;
     this.dispatchEvent(new TagChangeEvent(this.selected));
+  };
+
+  /**
+   * Events do not propagate *down* into a shadow tree, so a click dispatched on
+   * the host — `tag.click()`, a test runner resolving the chip by its test id,
+   * a runner computing the chip's centre (`elementFromPoint()` retargets shadow
+   * content back to the host) — never reaches the toggle button or the
+   * checkbox, and silently does nothing. Delegate it.
+   *
+   * Only when the host *is* the target: a real gesture originates at the inner
+   * button, at the checkbox, or at slotted content, and is already handled
+   * where it lands — so this never double-toggles. `removable` stays out of it;
+   * removing is the × button's own gesture.
+   */
+  private _onHostClick = (e: Event) => {
+    if (!this.selectable || this.disabled) return;
+    if (e.composedPath()[0] !== this) return;
+    // Right for `control="checkbox"` too: `_toggle()` flips `selected` and
+    // fires `change`, and `updated()` re-asserts `box.checked` from it.
+    this._toggle();
   };
 
   private _onCheckboxChange = (e: Event) => {

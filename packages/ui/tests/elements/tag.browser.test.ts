@@ -245,6 +245,79 @@ describe('A user can toggle a tag that carries a checkbox', () => {
   });
 });
 
+// The host is the only handle the outside world holds: `HTMLElement.click()` is
+// the standard programmatic activation path, and a test runner resolves the chip
+// by a `data-testid` that lives on the host. Events do not propagate into a
+// shadow tree, so these cases deliberately break the "userEvent only" rule —
+// `el.click()` *is* the gesture under test. The real-click cases next to them
+// are the regression guard: the delegation must not toggle twice.
+describe('A consumer can activate the chip through its host', () => {
+  it('toggles a selectable chip when the click is dispatched on the host', async () => {
+    const el = await mount(`<l-tag selectable>A3</l-tag>`);
+    let changes = 0;
+    el.addEventListener('change', () => changes++);
+    el.click();
+    await settle(el);
+    expect(el.selected).toBe(true);
+    expect(changes).toBe(1);
+    expect(page.getByRole('button', { name: 'A3', pressed: true }).elements()).toHaveLength(1);
+  });
+
+  it('checks the box when the click is dispatched on the host', async () => {
+    const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+    let changes = 0;
+    el.addEventListener('change', () => changes++);
+    el.click();
+    await settle(el);
+    expect(el.selected).toBe(true);
+    expect(changes).toBe(1);
+    expect(page.getByRole('checkbox', { name: 'Color', checked: true }).elements()).toHaveLength(1);
+  });
+
+  it('releases it again on a second host click', async () => {
+    const el = await mount(`<l-tag selectable selected>A3</l-tag>`);
+    el.click();
+    await settle(el);
+    expect(el.selected).toBe(false);
+  });
+
+  it('fires exactly one `change` when a user clicks the chip for real', async () => {
+    // Asserting the count, not the state: a double toggle lands back on the
+    // same value and would otherwise pass.
+    const el = await mount(`<l-tag selectable>A3</l-tag>`);
+    let changes = 0;
+    el.addEventListener('change', () => changes++);
+    await userEvent.click(page.getByRole('button', { name: 'A3' }));
+    await settle(el);
+    expect(changes).toBe(1);
+    expect(el.selected).toBe(true);
+  });
+
+  it('fires exactly one `change` when a user clicks a checkbox chip for real', async () => {
+    const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
+    let changes = 0;
+    el.addEventListener('change', () => changes++);
+    await userEvent.click(chipLabel(el));
+    await settle(el);
+    expect(changes).toBe(1);
+    expect(el.selected).toBe(true);
+  });
+
+  it('ignores a host click on a disabled chip', async () => {
+    const el = await mount(`<l-tag selectable disabled>A3</l-tag>`);
+    el.click();
+    await settle(el);
+    expect(el.selected).toBe(false);
+  });
+
+  it('never removes the tag — that gesture belongs to the × button alone', async () => {
+    const el = await mount(`<l-tag removable>Design</l-tag>`);
+    el.click();
+    await settle(el);
+    expect(el.isConnected).toBe(true);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Accessibility (APG: no dedicated pattern — a chip with a remove button)
 // ---------------------------------------------------------------------------

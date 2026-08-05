@@ -161,6 +161,12 @@ tag.querySelector('input'); // ❌ null — the checkbox is in the shadow root
 tag.getAttribute('aria-pressed'); // ❌ null — it is on the inner button
 ```
 
+Activation goes through the host, so a test runner clicks the chip it resolved by `data-testid` — no reaching into the shadow root, and no custom command.
+
+```js
+tag.click(); // ✅ toggles a selectable chip (does not remove a removable one)
+```
+
 ```css
 /* Style by the reflected attribute; ::part() reaches the inner nodes. */
 l-tag[selected]::part(base) {
