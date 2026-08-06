@@ -93,6 +93,12 @@ const FIXTURE = `
   </l-dropdown>
 `;
 
+/** Adds a click target outside the menu, for the light-dismiss paths. */
+const OUTSIDE_FIXTURE = `
+  <button id="elsewhere">Elsewhere</button>
+  ${FIXTURE}
+`;
+
 // ---------------------------------------------------------------------------
 // Opening and closing the menu
 // ---------------------------------------------------------------------------
@@ -120,6 +126,63 @@ describe('Opening and closing the menu', () => {
     await settle();
     expect(isOpen()).toBe(false);
     expect(trigger().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('emits hide before after-hide when a click outside dismisses the menu', async () => {
+    await mount(OUTSIDE_FIXTURE);
+    const ready = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await ready;
+    await settle();
+
+    const seen: string[] = [];
+    el().addEventListener('hide', () => seen.push('hide'));
+    el().addEventListener('after-hide', () => seen.push('after-hide'));
+    await userEvent.click(page.getByRole('button', { name: 'Elsewhere' }));
+    await settle();
+
+    // A consumer syncing state on `hide` must not be left behind by the
+    // light-dismiss path, which the platform closes on its own.
+    expect(seen).toEqual(['hide', 'after-hide']);
+    expect(el().open).toBe(false);
+    expect(isOpen()).toBe(false);
+  });
+
+  it('respects a canceled hide and stays open when clicked outside', async () => {
+    await mount(OUTSIDE_FIXTURE);
+    const ready = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await ready;
+    await settle();
+
+    el().addEventListener('hide', (e) => e.preventDefault());
+    await userEvent.click(page.getByRole('button', { name: 'Elsewhere' }));
+    await settle();
+
+    expect(el().open).toBe(true);
+    expect(isOpen()).toBe(true);
+  });
+
+  it('emits hide once per trigger click, canceled or not', async () => {
+    await mount(FIXTURE);
+    const ready = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await ready;
+    await settle();
+
+    const seen: string[] = [];
+    el().addEventListener('hide', (e) => {
+      seen.push('hide');
+      e.preventDefault();
+    });
+    // The pointerdown light-dismisses the panel and the click that follows would
+    // close it a second time — one gesture still owes the consumer one event.
+    await userEvent.click(menuTrigger());
+    await settle();
+
+    expect(seen).toEqual(['hide']);
+    expect(el().open).toBe(true);
+    expect(isOpen()).toBe(true);
   });
 
   it('respects a canceled show event and stays closed', async () => {
@@ -812,6 +875,47 @@ describe('Accessibility', () => {
       await settle();
       expect(isOpen()).toBe(false);
       expect(document.activeElement).toBe(trigger());
+    });
+
+    it('Escape closes a pointer-opened menu, whose focus never left the trigger (WCAG 2.1.2 / RGAA 12.9)', async () => {
+      await mount(FIXTURE);
+      const shown = waitForEvent(el(), 'after-show');
+      await userEvent.click(menuTrigger());
+      await shown;
+      await settle();
+
+      const hidden = waitForEvent(el(), 'after-hide');
+      await userEvent.keyboard('{Escape}');
+      await hidden;
+      await settle();
+      expect(isOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(trigger());
+    });
+
+    it('Escape still closes the menu when the page cancels the keydown (WCAG 2.1.2 / RGAA 12.9)', async () => {
+      await mount(FIXTURE);
+      const shown = waitForEvent(el(), 'after-show');
+      await userEvent.click(menuTrigger());
+      await shown;
+      await settle();
+
+      // An app-level shortcut handler that calls preventDefault() suppresses the
+      // platform's own popover close request — the menu must close regardless,
+      // or a keyboard user who opened it with a pointer is stuck.
+      const cancelEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') e.preventDefault();
+      };
+      document.addEventListener('keydown', cancelEscape);
+      try {
+        const hidden = waitForEvent(el(), 'after-hide');
+        await userEvent.keyboard('{Escape}');
+        await hidden;
+        await settle();
+      } finally {
+        document.removeEventListener('keydown', cancelEscape);
+      }
+      expect(isOpen()).toBe(false);
+      expect(trigger().getAttribute('aria-expanded')).toBe('false');
     });
 
     it('typeahead reaches a matching item by typing its initial letters (WCAG 2.1.1 / RGAA 7.3)', async () => {

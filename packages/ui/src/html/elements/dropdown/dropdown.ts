@@ -366,6 +366,12 @@ export class Dropdown extends LuxenElement {
 
   private _onTriggerClick = (e: MouseEvent) => {
     if (this.disabled) return;
+    // The pointerdown that produced this click already light-dismissed the panel:
+    // `open` still reads true, but the panel has left the top layer and the
+    // queued `toggle` owns the close (and its `hide` event). Closing here too
+    // would emit a second one. A keyboard activation never gets here — no
+    // light-dismiss, so the panel is still open.
+    if (this.open && !this._panelEl?.matches(':popover-open')) return;
     this.toggle();
     // Space/Enter on a native button dispatches click with detail=0; focus the
     // first item so the menu is keyboard-navigable immediately on open.
@@ -377,7 +383,18 @@ export class Dropdown extends LuxenElement {
   private _onTriggerKeyDown = (e: KeyboardEvent) => {
     if (this.disabled) return;
 
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'Escape') {
+      // A pointer-opened menu leaves focus on the trigger, so `_onPanelKeyDown`
+      // never sees the key. The platform's popover light-dismiss normally covers
+      // that, but it runs as a close request the page can suppress — any
+      // `preventDefault()` on the Escape keydown (a common app-level shortcut
+      // handler) leaves the menu stuck open. Close it here, and preventDefault
+      // so the close request doesn't race our animated hide.
+      if (!this.open) return;
+      e.preventDefault();
+      this.hide();
+      // Focus is already on the trigger — nothing to restore.
+    } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       this.show();
       requestAnimationFrame(() => this._focusFirstItem());
@@ -507,13 +524,34 @@ export class Dropdown extends LuxenElement {
     }
   }
 
-  /** Sync `open` when popover="auto" light-dismiss fires. */
+  /**
+   * Route `popover="auto"` light-dismiss through the same close path as every
+   * other user-driven close (trigger click, Escape, item selection), so the
+   * cancelable `hide` event fires for it too. Assigning `open` here directly
+   * would skip it and desync anything a consumer syncs on `hide`.
+   *
+   * Driving `open` as a property or attribute still closes the menu with only
+   * `after-hide` — `l-dialog` mediates that path from `updated()`, this element
+   * does not. A gap worth closing on its own.
+   *
+   * The platform makes a popover's close non-cancelable (`beforetoggle` is only
+   * cancelable when opening), so a vetoed `hide` is honored by putting the panel
+   * back. `toggle` is the right hook for that: it is queued after the hide has
+   * actually been applied, whereas during `beforetoggle` the panel is still
+   * `:popover-open` and `showPopover()` would be a no-op the pending hide undoes.
+   */
   private _onToggle = (e: Event) => {
     const toggleEvent = e as ToggleEvent;
-    if (toggleEvent.newState === 'closed' && this.open) {
+    // Our own close path flips `open` before hiding the popover, so this guard
+    // keeps it from emitting a second `hide` for the same close.
+    if (toggleEvent.newState !== 'closed' || !this.open) return;
+
+    if (this.dispatchEvent(new HideEvent())) {
       this.open = false;
-      this._triggerEl?.setAttribute('aria-expanded', 'false');
+      return;
     }
+    const panel = this._panelEl;
+    if (panel?.isConnected) panel.showPopover();
   };
 
   override render() {
