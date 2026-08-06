@@ -23,6 +23,41 @@
 
     & > :first-child button {
       padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+
+      /* `isolation` keeps the pill's negative z-index inside the button: it
+         paints above the button background but under the label, and can never
+         slip behind an ancestor's background (a card wrapping the tabs). */
+      position: relative;
+      isolation: isolate;
+
+      /* Hover pill, detached from the track: inset on the block axis so it
+         never touches the bottom border or the sliding indicator. A 4px inset
+         on a 44px tab leaves a 36px pill — same height as a medium control. */
+      &::after {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        inset-block: var(--hover-inset, calc(var(--spacing) * 1));
+        inset-inline: 0;
+        border-radius: var(--l-radius-md);
+        background: transparent;
+        transition: background-color var(--_duration) var(--_easing);
+      }
+
+      /* Applies to the selected tab too — the fill is click feedback, not a
+         selection cue (the underline carries that), so it would read as dead
+         if the active tab were the one place it stopped responding. */
+      @media (hover: hover) {
+        &:hover::after {
+          background: var(--hover-color, var(--l-color-bg-state-hover));
+        }
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    l-tabs[variant='line'] > :first-child button::after {
+      transition-duration: 0ms;
     }
   }
 }
