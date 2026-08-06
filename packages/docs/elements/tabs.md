@@ -40,7 +40,7 @@ Add `variant="line"` for a tablist with a sliding underline indicator.
 <<< @/.vitepress/examples/tabs/TabsLine.html [HTML]
 :::
 
-Restyle the active underline and the static bottom border with `--indicator-color`, `--indicator-thickness`, `--track-color` and `--track-thickness`.
+Hovering a tab reveals a subtle pill behind its label, detached from the bottom border. Restyle it with `--hover-color` (and `--hover-inset` for the gap), along with the active underline and the static bottom border via `--indicator-color`, `--indicator-thickness`, `--track-color` and `--track-thickness`.
 
 <ComponentWrapper :html="tabsLineColors" />
 

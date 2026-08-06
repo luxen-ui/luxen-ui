@@ -44,6 +44,8 @@ interface TabsEventMap {
  * @cssproperty [--indicator-thickness=2px] - `line` variant: thickness of the active underline.
  * @cssproperty [--track-color=var(--l-color-border)] - `line` variant: color of the static bottom border the tabs sit on.
  * @cssproperty [--track-thickness=1px] - `line` variant: thickness of the static bottom border.
+ * @cssproperty [--hover-color=var(--l-color-bg-state-hover)] - `line` variant: fill of the pill that appears behind a hovered tab label.
+ * @cssproperty [--hover-inset=4px] - `line` variant: block-axis gap between the hover pill and the tab edges, keeping it detached from the bottom border.
  *
  * @customElement l-tabs
  */
