@@ -24,5 +24,16 @@ export default defineA11yFixture({
         <div>General settings</div>
         <div>Advanced settings</div>
       </l-tabs>`,
+    disabled: `
+      <l-tabs>
+        <div>
+          <button>Account</button>
+          <button disabled>Billing</button>
+          <button aria-disabled="true">Password</button>
+        </div>
+        <div>Account settings</div>
+        <div>Billing settings</div>
+        <div>Password settings</div>
+      </l-tabs>`,
   },
 });

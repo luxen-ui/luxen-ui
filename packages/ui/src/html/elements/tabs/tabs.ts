@@ -38,7 +38,15 @@ interface TabsEventMap {
  * </l-tabs>
  * ```
  *
- * @event change - Fired when the active tab changes. Bubbles. Properties: `index: number`, `name: string | null`.
+ * @example
+ * A tab button marked `disabled` (or `aria-disabled="true"`) is skipped by
+ * arrow keys, `Home` and `End`, and cannot be selected by a click or by
+ * `value` — it still owns its panel, so the tab/panel order is unchanged.
+ * ```html
+ * <button disabled>Billing</button>
+ * ```
+ *
+ * @event change - Fired when the active tab changes. Bubbles. Not cancelable. Properties: `index: number`, `name: string | null`.
  *
  * @cssproperty [--indicator-color=var(--l-color-text-primary)] - `line` variant: color of the active underline that slides under the selected tab.
  * @cssproperty [--indicator-thickness=2px] - `line` variant: thickness of the active underline.
@@ -107,7 +115,19 @@ export class Tabs extends LuxenElement {
 
   override updated(changed: Map<string, unknown>) {
     if (changed.has('value') && this._tabs.length) {
-      this._selectTab(Number(this.value), false);
+      const requested = Number(this.value);
+      if (this._isSelectable(requested)) {
+        this._selectTab(requested, false);
+      } else {
+        // The target is disabled or out of range, so the selection stays put —
+        // and `value` must not keep claiming a tab that was never selected.
+        // Reverting here would schedule an update from within an update, so
+        // defer it (same reason as a vetoed dialog `show`).
+        const current = this._activeIndex();
+        queueMicrotask(() => {
+          this.value = String(current);
+        });
+      }
     }
     if (changed.has('orientation') && this._tablistEl) {
       this._tablistEl.setAttribute('aria-orientation', this.orientation);
@@ -129,10 +149,12 @@ export class Tabs extends LuxenElement {
     // Buttons inside tablist become tabs
     this._tabs = Array.from(this._tablistEl.querySelectorAll('button'));
 
-    // Remaining children become panels
+    // Remaining children become panels. Disabled buttons stay in `_tabs` so the
+    // tab↔panel pairing keeps following DOM order — they are filtered out at
+    // navigation time, not here.
     this._panels = children.slice(1);
 
-    const activeIndex = Number(this.value) || 0;
+    const activeIndex = this._resolveActiveIndex();
 
     // Enhance tabs
     for (let i = 0; i < this._tabs.length; i++) {
@@ -161,6 +183,10 @@ export class Tabs extends LuxenElement {
       }
     }
 
+    // `value` may have pointed at a disabled tab: canonicalize it to the tab
+    // that is actually selected.
+    if (Number(this.value) !== activeIndex) this.value = String(activeIndex);
+
     // Attach listeners
     this._tablistEl.addEventListener('click', this._onClick);
     this._tablistEl.addEventListener('keydown', this._onKeyDown);
@@ -185,7 +211,15 @@ export class Tabs extends LuxenElement {
   // --- Tab selection ---
 
   private _selectTab(index: number, emitEvent = true) {
-    if (index < 0 || index >= this._tabs.length) return;
+    // A disabled tab is never selectable: it cannot take focus, so selecting it
+    // would move the roving tabindex entry point onto an unfocusable button and
+    // drop the whole tablist out of the tab sequence (WCAG 2.1.1).
+    if (!this._isSelectable(index)) return;
+
+    // Whether this is an actual change — re-selecting the current tab must not
+    // re-fire `change` (the event is documented as firing when the active tab
+    // changes, and this matches native `change` on radios / `<select>`).
+    const changed = this._tabs[index].getAttribute('aria-selected') !== 'true';
 
     for (let i = 0; i < this._tabs.length; i++) {
       const tab = this._tabs[i];
@@ -203,17 +237,72 @@ export class Tabs extends LuxenElement {
     this.value = String(index);
     this._updateIndicator();
 
-    if (emitEvent) {
+    if (emitEvent && changed) {
       const name = this._tabs[index]?.getAttribute('name') ?? null;
       this.dispatchEvent(new TabsChangeEvent(index, name));
     }
+  }
+
+  // --- Disabled tabs ---
+
+  /**
+   * Both spellings count: native `disabled` (unfocusable) and `aria-disabled`
+   * (focusable, so a user can still land on it — navigation must move off it).
+   */
+  private _isDisabled(tab: HTMLButtonElement): boolean {
+    return tab.disabled || tab.getAttribute('aria-disabled') === 'true';
+  }
+
+  private _isSelectable(index: number): boolean {
+    return (
+      Number.isInteger(index) &&
+      index >= 0 &&
+      index < this._tabs.length &&
+      !this._isDisabled(this._tabs[index])
+    );
+  }
+
+  /** Index of the currently selected tab, read back from the DOM. */
+  private _activeIndex(): number {
+    const i = this._tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+    return i >= 0 ? i : 0;
+  }
+
+  /** Resolve the initial selection from `value`, falling back to the first enabled tab. */
+  private _resolveActiveIndex(): number {
+    const requested = Number(this.value) || 0;
+    if (this._isSelectable(requested)) return requested;
+    const firstEnabled = this._tabs.findIndex((t) => !this._isDisabled(t));
+    // Every tab disabled: nothing is focusable anyway, so index 0 is as good as
+    // any and the tablist is simply unreachable — which is what was asked for.
+    return firstEnabled >= 0 ? firstEnabled : 0;
+  }
+
+  /** Index of the next enabled tab from `from`, moving by `dir`, wrapping. */
+  private _nextEnabled(from: number, dir: 1 | -1): number {
+    const len = this._tabs.length;
+    for (let step = 1; step <= len; step++) {
+      const i = (from + dir * step + len * step) % len;
+      if (!this._isDisabled(this._tabs[i])) return i;
+    }
+    return from;
+  }
+
+  /** Index of the first (`dir` 1) or last (`dir` -1) enabled tab. */
+  private _edgeEnabled(dir: 1 | -1): number {
+    const len = this._tabs.length;
+    const start = dir === 1 ? 0 : len - 1;
+    for (let i = start; i >= 0 && i < len; i += dir) {
+      if (!this._isDisabled(this._tabs[i])) return i;
+    }
+    return start;
   }
 
   // --- Indicator ---
 
   private _updateIndicator() {
     if (!this._tablistEl) return;
-    const activeTab = this._tabs[Number(this.value)];
+    const activeTab = this._tabs[this._activeIndex()];
     if (!activeTab) return;
 
     const isVertical = this.orientation === 'vertical';
@@ -233,10 +322,12 @@ export class Tabs extends LuxenElement {
     const tab = (e.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
     if (!tab) return;
     const index = this._tabs.indexOf(tab);
-    if (index >= 0) {
-      this._selectTab(index);
-      tab.focus();
-    }
+    // A native `disabled` button dispatches no click at all, but an
+    // `aria-disabled` one does — `_selectTab` refuses it, and focus must not
+    // follow either.
+    if (index < 0 || this._isDisabled(tab)) return;
+    this._selectTab(index);
+    tab.focus();
   };
 
   private _onKeyDown = (e: KeyboardEvent) => {
@@ -247,32 +338,35 @@ export class Tabs extends LuxenElement {
     const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
     const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
 
-    let index = this._tabs.indexOf(target as HTMLButtonElement);
+    const current = this._tabs.indexOf(target as HTMLButtonElement);
+    if (current < 0) return;
 
+    // Every move lands on an enabled tab: selection follows focus here
+    // (automatic activation), so a disabled target would split the two apart.
+    let index: number;
     switch (e.key) {
       case nextKey:
-        e.preventDefault();
-        index = (index + 1) % this._tabs.length;
-        this._selectTab(index);
-        this._tabs[index].focus();
+        index = this._nextEnabled(current, 1);
         break;
       case prevKey:
-        e.preventDefault();
-        index = (index - 1 + this._tabs.length) % this._tabs.length;
-        this._selectTab(index);
-        this._tabs[index].focus();
+        index = this._nextEnabled(current, -1);
         break;
       case 'Home':
-        e.preventDefault();
-        this._selectTab(0);
-        this._tabs[0].focus();
+        index = this._edgeEnabled(1);
         break;
       case 'End':
-        e.preventDefault();
-        this._selectTab(this._tabs.length - 1);
-        this._tabs[this._tabs.length - 1].focus();
+        index = this._edgeEnabled(-1);
         break;
+      default:
+        return;
     }
+
+    e.preventDefault();
+    // Only reachable when every tab is disabled — then there is nowhere to go
+    // and focus must not be dragged onto a disabled tab.
+    if (!this._isSelectable(index)) return;
+    this._selectTab(index);
+    this._tabs[index].focus();
   };
 }
 
