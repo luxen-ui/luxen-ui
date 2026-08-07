@@ -73,9 +73,17 @@
     }
 
     @media (hover: hover) {
-      &:hover:not([aria-selected='true']) {
+      &:hover:not([aria-selected='true']):not(:disabled):not([aria-disabled='true']) {
         color: var(--l-color-text-primary);
       }
+    }
+
+    /* Placed after the selected and hover rules so a disabled tab still greys
+       out when it is the selected one — equal specificity, source order wins. */
+    &:disabled,
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+      color: var(--l-color-text-disabled);
     }
 
     &:focus-visible {

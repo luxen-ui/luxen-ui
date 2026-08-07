@@ -46,9 +46,12 @@
 
       /* Applies to the selected tab too — the fill is click feedback, not a
          selection cue (the underline carries that), so it would read as dead
-         if the active tab were the one place it stopped responding. */
+         if the active tab were the one place it stopped responding. A disabled
+         tab is the exception: `:hover` still matches it (the platform does not
+         gate hover on `disabled`), and promising click feedback where no click
+         will ever register is the wrong signal. */
       @media (hover: hover) {
-        &:hover::after {
+        &:hover:not(:disabled):not([aria-disabled='true'])::after {
           background: var(--hover-color, var(--l-color-bg-state-hover));
         }
       }

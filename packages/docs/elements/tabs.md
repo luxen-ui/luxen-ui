@@ -8,6 +8,7 @@ import tabsLine from '../.vitepress/examples/tabs/TabsLine.html?raw'
 import tabsFullWidth from '../.vitepress/examples/tabs/TabsFullWidth.html?raw'
 import tabsDefaultValue from '../.vitepress/examples/tabs/TabsDefaultValue.html?raw'
 import tabsLineColors from '../.vitepress/examples/tabs/TabsLineColors.html?raw'
+import tabsDisabled from '../.vitepress/examples/tabs/TabsDisabled.html?raw'
 </script>
 
 # Tabs <Badge type="tip">&lt;l-tabs&gt;</Badge>
@@ -71,6 +72,17 @@ Set `value="1"` to activate a specific tab on load (0-based index).
 <<< @/.vitepress/examples/tabs/TabsDefaultValue.html [HTML]
 :::
 
+### Disabled tab
+
+Add `disabled` to a tab button to take it out of play. It is skipped by arrow keys, `Home` and `End`, it cannot be selected by a click or by `value`, and it never shows the hover pill. Use `aria-disabled="true"` instead if the tab should stay focusable so keyboard users can still discover it.
+
+<ComponentWrapper :html="tabsDisabled" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tabs/TabsDisabled.html [HTML]
+:::
+
 ## Accessibility
 
 ### Criteria
@@ -80,6 +92,7 @@ Set `value="1"` to activate a specific tab on load (0-based index).
   { Check: 'Linked controls', Description: 'Each tab has `aria-controls` pointing to its panel; each panel has `aria-labelledby` pointing back to its tab', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
   { Check: 'Selection state', Description: 'Active tab has `aria-selected=&quot;true&quot;`; inactive tabs have `aria-selected=&quot;false&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Focus management', Description: 'Roving tabindex — active tab has `tabindex=&quot;0&quot;`, others `tabindex=&quot;-1&quot;`. Panels have `tabindex=&quot;0&quot;` for keyboard access', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.13)' },
+  { Check: 'Disabled tabs', Description: 'Tabs marked `disabled` or `aria-disabled=&quot;true&quot;` are skipped by arrow keys, `Home` and `End`, and never take the roving `tabindex=&quot;0&quot;` — so the tablist always keeps a reachable entry point', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
   { Check: 'Hidden content', Description: 'Inactive panels use the `hidden` attribute', WCAG: '[WCAG 1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence)' },
   { Check: 'Motion', Description: 'Indicator animation respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
@@ -91,12 +104,12 @@ Set `value="1"` to activate a specific tab on load (0-based index).
 ### Keyboard interactions
 
 <KeyboardTable :data="[
-  { Key: 'ArrowRight', Description: 'Moves focus to the next tab and activates it (horizontal orientation)' },
-  { Key: 'ArrowLeft', Description: 'Moves focus to the previous tab and activates it (horizontal orientation)' },
-  { Key: 'ArrowDown', Description: 'Moves focus to the next tab and activates it (vertical orientation)' },
-  { Key: 'ArrowUp', Description: 'Moves focus to the previous tab and activates it (vertical orientation)' },
-  { Key: 'Home', Description: 'Moves focus to the first tab and activates it' },
-  { Key: 'End', Description: 'Moves focus to the last tab and activates it' },
+  { Key: 'ArrowRight', Description: 'Moves focus to the next enabled tab and activates it (horizontal orientation)' },
+  { Key: 'ArrowLeft', Description: 'Moves focus to the previous enabled tab and activates it (horizontal orientation)' },
+  { Key: 'ArrowDown', Description: 'Moves focus to the next enabled tab and activates it (vertical orientation)' },
+  { Key: 'ArrowUp', Description: 'Moves focus to the previous enabled tab and activates it (vertical orientation)' },
+  { Key: 'Home', Description: 'Moves focus to the first enabled tab and activates it' },
+  { Key: 'End', Description: 'Moves focus to the last enabled tab and activates it' },
   { Key: 'Tab', Description: 'Moves focus out of the tablist to the active panel' },
 ]" />
 

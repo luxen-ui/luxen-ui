@@ -34,7 +34,7 @@ async function settle() {
 const el = () => host.querySelector<Tabs>('l-tabs')!;
 
 // Locator helpers — match what assistive tech sees
-const tab = (name: string, opts?: { selected?: boolean }) =>
+const tab = (name: string, opts?: { selected?: boolean; disabled?: boolean }) =>
   page.getByRole('tab', { name, ...opts });
 const tablist = () => page.getByRole('tablist');
 const tabpanel = (name: string) => page.getByRole('tabpanel', { name });
@@ -305,6 +305,208 @@ describe('A keyboard user can navigate tabs with arrow keys', () => {
     await settle();
     expect(tab('Tab 3', { selected: true }).elements()).toHaveLength(1);
     expect(document.activeElement?.textContent?.trim()).toBe('Tab 3');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Disabled tabs
+// ---------------------------------------------------------------------------
+
+// A natively-disabled button cannot take focus. If selection lands on one, the
+// roving tabindex entry point moves to an unfocusable element and the whole
+// tablist drops out of the tab sequence — so a disabled tab must never be
+// reachable by arrow keys, Home/End, a click, or the `value` property.
+
+const DISABLED_MIDDLE = `
+  <l-tabs>
+    <div>
+      <button>Tab 1</button>
+      <button disabled>Tab 2</button>
+      <button>Tab 3</button>
+    </div>
+    <div>Content 1</div>
+    <div>Content 2</div>
+    <div>Content 3</div>
+  </l-tabs>
+`;
+
+const DISABLED_FIRST = `
+  <l-tabs>
+    <div>
+      <button disabled>Tab 1</button>
+      <button>Tab 2</button>
+      <button>Tab 3</button>
+    </div>
+    <div>Content 1</div>
+    <div>Content 2</div>
+    <div>Content 3</div>
+  </l-tabs>
+`;
+
+const ARIA_DISABLED_MIDDLE = `
+  <l-tabs>
+    <div>
+      <button>Tab 1</button>
+      <button aria-disabled="true">Tab 2</button>
+      <button>Tab 3</button>
+    </div>
+    <div>Content 1</div>
+    <div>Content 2</div>
+    <div>Content 3</div>
+  </l-tabs>
+`;
+
+describe('A keyboard user cannot land on a disabled tab', () => {
+  it('ArrowRight skips over the disabled tab', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    const changed = waitForEvent(el(), 'change');
+    await userEvent.keyboard('{ArrowRight}');
+    await changed;
+    await settle();
+    expect(tab('Tab 3', { selected: true }).elements()).toHaveLength(1);
+    expect(document.activeElement?.textContent?.trim()).toBe('Tab 3');
+  });
+
+  it('ArrowLeft skips over the disabled tab', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 3'));
+    await settle();
+    const changed = waitForEvent(el(), 'change');
+    await userEvent.keyboard('{ArrowLeft}');
+    await changed;
+    await settle();
+    expect(tab('Tab 1', { selected: true }).elements()).toHaveLength(1);
+    expect(document.activeElement?.textContent?.trim()).toBe('Tab 1');
+  });
+
+  it('Home selects the first enabled tab, not a disabled first tab', async () => {
+    await mount(DISABLED_FIRST);
+    await userEvent.click(tab('Tab 3'));
+    await settle();
+    const changed = waitForEvent(el(), 'change');
+    await userEvent.keyboard('{Home}');
+    await changed;
+    await settle();
+    expect(tab('Tab 2', { selected: true }).elements()).toHaveLength(1);
+    expect(document.activeElement?.textContent?.trim()).toBe('Tab 2');
+  });
+
+  it('End selects the last enabled tab, not a disabled last tab', async () => {
+    await mount(`
+      <l-tabs>
+        <div>
+          <button>Tab 1</button>
+          <button>Tab 2</button>
+          <button disabled>Tab 3</button>
+        </div>
+        <div>Content 1</div>
+        <div>Content 2</div>
+        <div>Content 3</div>
+      </l-tabs>
+    `);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    const changed = waitForEvent(el(), 'change');
+    await userEvent.keyboard('{End}');
+    await changed;
+    await settle();
+    expect(tab('Tab 2', { selected: true }).elements()).toHaveLength(1);
+    expect(document.activeElement?.textContent?.trim()).toBe('Tab 2');
+  });
+
+  it('keeps selection and focus together, so the tab sequence is never lost (WCAG 2.1.1 / RGAA 7.3)', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    // The single roving entry point must be the tab that actually has focus.
+    const tabbable = [...el().querySelectorAll<HTMLElement>('[role="tab"]')].filter(
+      (t) => t.getAttribute('tabindex') === '0',
+    );
+    expect(tabbable).toHaveLength(1);
+    expect(tabbable[0]).toBe(document.activeElement);
+  });
+
+  it('never gives a disabled tab the roving tabindex entry point', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    const disabledTab = el().querySelectorAll<HTMLElement>('[role="tab"]')[1];
+    expect(disabledTab.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('moves off an aria-disabled tab that still holds focus', async () => {
+    await mount(ARIA_DISABLED_MIDDLE);
+    // aria-disabled leaves the button focusable, so a user can arrive on it.
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    expect(tab('Tab 3', { selected: true }).elements()).toHaveLength(1);
+  });
+});
+
+describe('A disabled tab cannot be selected', () => {
+  it('exposes the disabled state to assistive tech (WCAG 4.1.2 / RGAA 7.1)', async () => {
+    await mount(DISABLED_MIDDLE);
+    expect(tab('Tab 2', { disabled: true }).elements()).toHaveLength(1);
+  });
+
+  it('does not fire change when arrowing past a disabled tab', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    const events: Array<{ index: number }> = [];
+    el().addEventListener('change', (e) => events.push({ index: e.index }));
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    // One event, for Tab 3 — never an intermediate one for the disabled Tab 2.
+    expect(events).toEqual([{ index: 2 }]);
+  });
+
+  // A click on a disabled tab is not covered here: userEvent refuses to click an
+  // element the browser reports as not enabled (it retries until it times out),
+  // for both `disabled` and `aria-disabled`. The click path is still guarded in
+  // the element — a real pointer can reach an `aria-disabled` button.
+
+  it('falls back to the first enabled tab when the initial value points at a disabled one', async () => {
+    await mount(`
+      <l-tabs value="0">
+        <div>
+          <button disabled>Tab 1</button>
+          <button>Tab 2</button>
+        </div>
+        <div>Content 1</div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tab('Tab 2', { selected: true }).elements()).toHaveLength(1);
+    const panels = el().querySelectorAll<HTMLElement>('[role="tabpanel"]');
+    expect(panels[0].hidden).toBe(true);
+    expect(panels[1].hidden).toBe(false);
+  });
+
+  it('leaves the selection untouched when value is set to a disabled index', async () => {
+    await mount(DISABLED_MIDDLE);
+    el().value = '1';
+    await settle();
+    expect(tab('Tab 1', { selected: true }).elements()).toHaveLength(1);
+    // The property must not keep lying about a selection that never happened.
+    expect(el().value).toBe('0');
+  });
+
+  it('keeps each tab wired to its own panel when a middle tab is disabled', async () => {
+    await mount(DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 3'));
+    await settle();
+    const panels = el().querySelectorAll<HTMLElement>('[role="tabpanel"]');
+    expect(panels[2].hidden).toBe(false);
+    expect(panels[2].textContent?.trim()).toBe('Content 3');
   });
 });
 
