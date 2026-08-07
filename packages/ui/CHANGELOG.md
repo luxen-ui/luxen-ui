@@ -1,5 +1,15 @@
 # luxen-ui
 
+## 0.18.2
+
+### Patch Changes
+
+- c2147b9: `l-dropdown` now emits the cancelable `hide` event on every close path. Closing the menu by clicking outside it previously fired only `after-hide`, which left any state synced on `@hide` stale — a trigger kept its open styling in front of a closed menu — and made that close impossible to cancel.
+
+  Escape also closes a menu that was opened with the pointer, even on pages whose own keyboard shortcuts call `preventDefault()` on the Escape key and so suppress the browser's built-in dismissal.
+
+- f5664ed: Tabs with `variant="line"` now show a subtle rounded fill behind the hovered tab label, detached from the bottom border so it never touches the underline indicator. The fill also appears when hovering the currently selected tab. Restyle it with the new `--hover-color` and `--hover-inset` custom properties.
+
 ## 0.18.1
 
 ### Patch Changes
