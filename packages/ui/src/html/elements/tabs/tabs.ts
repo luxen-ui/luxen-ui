@@ -246,8 +246,13 @@ export class Tabs extends LuxenElement {
   // --- Disabled tabs ---
 
   /**
-   * Both spellings count: native `disabled` (unfocusable) and `aria-disabled`
-   * (focusable, so a user can still land on it — navigation must move off it).
+   * Both spellings count, and they behave identically here. `aria-disabled`
+   * leaves the button focusable in principle, but a roving tabindex hands
+   * `tabindex="0"` to the selected tab only — so a tab that can never be
+   * selected is never in the tab sequence either, and the arrow keys skip it
+   * like a native one. It is the escape hatch for consumers who cannot set the
+   * native attribute (a framework binding, a non-`button` element), not a
+   * "reachable but inert" variant.
    */
   private _isDisabled(tab: HTMLButtonElement): boolean {
     return tab.disabled || tab.getAttribute('aria-disabled') === 'true';

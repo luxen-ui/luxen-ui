@@ -440,14 +440,27 @@ describe('A keyboard user cannot land on a disabled tab', () => {
     expect(disabledTab.getAttribute('tabindex')).toBe('-1');
   });
 
-  it('moves off an aria-disabled tab that still holds focus', async () => {
+  it('skips an aria-disabled tab with the arrow keys, exactly like a native one', async () => {
     await mount(ARIA_DISABLED_MIDDLE);
-    // aria-disabled leaves the button focusable, so a user can arrive on it.
     await userEvent.click(tab('Tab 1'));
     await settle();
     await userEvent.keyboard('{ArrowRight}');
     await settle();
     expect(tab('Tab 3', { selected: true }).elements()).toHaveLength(1);
+  });
+
+  it('leaves an aria-disabled tab out of the tab sequence too', async () => {
+    await mount(ARIA_DISABLED_MIDDLE);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    // `aria-disabled` keeps the button focusable in principle, but the roving
+    // tabindex only ever promotes the selected tab — so Tab walks straight past
+    // it and out of the tablist, onto the open panel. There is no keyboard
+    // route to an aria-disabled tab, same as a native disabled one.
+    await userEvent.tab();
+    const panel = tabpanel('Tab 1').query();
+    expect(panel).not.toBeNull();
+    expect(document.activeElement).toBe(panel);
   });
 });
 
