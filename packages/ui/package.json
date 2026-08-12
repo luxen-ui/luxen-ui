@@ -117,6 +117,10 @@
       "types": "./dist/shared/localize.d.ts",
       "import": "./dist/shared/localize.js"
     },
+    "./color-scheme": {
+      "types": "./dist/color-scheme.d.ts",
+      "import": "./dist/color-scheme.js"
+    },
     "./translations/*": {
       "types": "./dist/translations/*.d.ts",
       "import": "./dist/translations/*.js"

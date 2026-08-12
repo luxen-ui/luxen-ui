@@ -46,6 +46,25 @@ export interface LuxenEmitTypesConfig {
   force?: boolean;
 }
 
+/** Build-time defaults for the `luxen-ui/color-scheme` store. */
+export interface LuxenColorSchemeConfig {
+  /**
+   * `localStorage` key holding the light/dark override. Default
+   * `'luxen-color-scheme'`. Set to `''` to disable persistence entirely.
+   *
+   * Change it here and the before-first-paint snippet in your `<head>` has to
+   * read the same key — that snippet runs before any module and cannot be
+   * rewritten by the build.
+   */
+  storageKey?: string;
+  /**
+   * Have the store write `color-scheme` on `<html>` itself. Default `false`,
+   * because most applications already own a color-mode story; `'root'` is the
+   * batteries-included path for a plain page.
+   */
+  apply?: 'root' | false;
+}
+
 /**
  * Shape of `luxen.config.mjs`. Both the Vite plugin and the CLI read this
  * file; each tool ignores the fields that don't apply to it.
@@ -74,6 +93,13 @@ export interface LuxenConfig {
   cssImportPath?: string;
   /** npm specifier used in `import` examples in `references/`. Default `'luxen-ui'`. */
   jsImportPath?: string;
+
+  // ── Color scheme — Vite plugin only ────────────────────────────────────────
+  /**
+   * Defaults for `luxen-ui/color-scheme`, baked in at build time so a project
+   * never has to call `colorScheme.configure()` from its entry point.
+   */
+  colorScheme?: LuxenColorSchemeConfig;
 
   // ── Dev tooling — Vite plugin only ─────────────────────────────────────────
   /**

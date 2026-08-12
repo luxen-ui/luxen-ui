@@ -13,7 +13,7 @@ const styles = unsafeCSS(rawStyles);
  * A menu item for use inside `<l-dropdown>`.
  *
  * @slot - Label text.
- * @slot prefix - Leading content (e.g. icon).
+ * @slot prefix - Leading content (e.g. icon). A `type="checkbox"` item ignores it unless `check-placement="end"` frees the leading column.
  * @slot suffix - Trailing content.
  * @slot submenu - Nested `l-dropdown-item` elements rendered in a submenu panel anchored to this item. Drop an `<hr>` between them for a separator.
  *
@@ -57,6 +57,15 @@ export class DropdownItem extends LuxenElement {
   /** Whether this item's submenu is open. Managed by the parent `l-dropdown`. */
   @property({ type: Boolean, reflect: true, attribute: 'submenu-open' })
   accessor submenuOpen = false;
+
+  /**
+   * Which side of a `type="checkbox"` item carries the check mark. `start` (the
+   * default) puts it in the leading column, where it takes the place of any
+   * `prefix`. `end` moves it to the trailing edge, freeing that column so the
+   * item can show its own icon alongside the state.
+   */
+  @property({ reflect: true, attribute: 'check-placement' })
+  accessor checkPlacement: 'start' | 'end' = 'start';
 
   @state()
   private accessor _hasSubmenu = false;
@@ -150,6 +159,30 @@ export class DropdownItem extends LuxenElement {
     }
   }
 
+  private _renderCheck() {
+    return html`
+      <span
+        class="check"
+        aria-hidden="true"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+        >
+          <path
+            d="M3.5 8.5L6.5 11.5L12.5 4.5"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+    `;
+  }
+
   private _onSubmenuSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
     this._hasSubmenu = slot
@@ -159,6 +192,7 @@ export class DropdownItem extends LuxenElement {
 
   override render() {
     const isCheckbox = this.type === 'checkbox';
+    const leadingCheck = isCheckbox && this.checkPlacement === 'start';
 
     return html`
       <div
@@ -171,35 +205,22 @@ export class DropdownItem extends LuxenElement {
         aria-controls=${this._hasSubmenu ? 'submenu' : nothing}
         tabindex="-1"
       >
-        ${isCheckbox
-          ? html`
-              <span
-                class="check"
-                aria-hidden="true"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                >
-                  <path
-                    d="M3.5 8.5L6.5 11.5L12.5 4.5"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </span>
-            `
-          : html` <slot name="prefix"></slot> `}
+        <!-- The check owns the leading column by default, which is why a
+             checkbox item has no room for a prefix there. Moving it to the
+             trailing edge frees that column, so an item can carry its own icon
+             and still show whether it is on — a theme row with a sun/moon, a
+             Show-grid row with a grid glyph. The aria-checked above is what
+             assistive tech reads, and it is unaffected by where the mark sits.
+             (No backticks in this comment: it lives inside a template literal.) -->
+        ${leadingCheck ? this._renderCheck() : nothing}
+        ${leadingCheck ? nothing : html`<slot name="prefix"></slot>`}
         <span
           class="label"
           id="label"
           ><slot></slot
         ></span>
         <slot name="suffix"></slot>
+        ${isCheckbox && this.checkPlacement === 'end' ? this._renderCheck() : nothing}
         ${this._hasSubmenu
           ? html`<span
               class="submenu-indicator"

@@ -1,0 +1,98 @@
+/* Sun ↔ moon, morphed rather than swapped.
+
+   The two glyphs are one shape: a disc that grows, a mask circle that slides in
+   to bite a crescent out of it, and eight ray dots that collapse to nothing.
+   Nothing is added or removed between the states — which is the whole reason
+   this is authored SVG and not an `<l-icon>`. An Iconify icon is an opaque
+   document fetched from a set: you can cross-fade two of them, but you cannot
+   grow one into the other or animate a mask inside it.
+
+   Shadow DOM is doing real work here beyond encapsulation: the mask needs an
+   `id`, and ids are global in light DOM. Two icons on one page would collide and
+   the second would render through the first's mask. A shadow root scopes them
+   per instance for free. */
+
+:host {
+  --size: 1em;
+  --color: currentColor;
+
+  flex: none;
+  display: inline-flex;
+  inline-size: var(--size);
+  block-size: var(--size);
+  color: var(--color);
+}
+
+svg {
+  inline-size: 100%;
+  block-size: 100%;
+  fill: currentColor;
+  /* The tilt is what sells the transition: the glyph turns as it changes, so the
+     eye reads one object moving instead of two states cross-fading. */
+  rotate: 0deg;
+  transition: rotate 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Every animated part scales about its own centre. `fill-box` is what makes
+   `center` mean the shape's own box rather than the whole viewBox. */
+.disc,
+.ray,
+.biter {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.disc {
+  /* Sun-sized. The dark state grows it to the full radius; the mask then takes
+     the bite that turns it into a crescent. */
+  scale: 0.56;
+  transition: scale 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.biter {
+  /* Parked far enough out that it clears the sun entirely. The clearance must be
+     computed against the disc's *authored* r=9, not the 5.04 the sun appears to
+     be: masking happens in the element's own user space, before its `scale` is
+     applied, so the mask sees the full-size circle. 16px on both axes puts the
+     centres 22.6 apart against a 9+11 sum — the earlier 13px looked ample and
+     still bit a notch out of the sun's upper right.
+     It slides in rather than fading, so the crescent is carved, never dissolved. */
+  translate: 16px -16px;
+  transition: translate 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ray {
+  scale: 1;
+  transition: scale 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Staggered from the index each ray carries, so they retract and return as a
+     ripple around the disc instead of blinking in unison. */
+  transition-delay: calc(var(--i) * 18ms);
+}
+
+:host([data-scheme='dark']) {
+  svg {
+    rotate: 40deg;
+  }
+
+  .disc {
+    scale: 1;
+  }
+
+  .biter {
+    translate: 5px -5px;
+  }
+
+  .ray {
+    scale: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  svg,
+  .disc,
+  .biter,
+  .ray {
+    transition-duration: 0ms;
+    transition-delay: 0ms;
+  }
+}
