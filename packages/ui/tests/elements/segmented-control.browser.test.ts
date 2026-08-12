@@ -173,6 +173,24 @@ describe('A disabled segment', () => {
     expect(radio('Calendar', { checked: true }).elements()).toHaveLength(1);
   });
 
+  // The `aria-disabled` spelling is what a consumer reaches for when it cannot
+  // set the native attribute (a framework binding, a non-`button` element), so
+  // it has to survive the upgrade — not just be understood by `_isDisabled`.
+  it('is skipped by arrow-key navigation (aria-disabled)', async () => {
+    await mount(`
+      <l-segmented-control label="View" value="list">
+        <button value="list">List</button>
+        <button value="board" aria-disabled="true">Board</button>
+        <button value="calendar">Calendar</button>
+      </l-segmented-control>
+    `);
+    await userEvent.click(radio('List'));
+    await settle();
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    expect(radio('Calendar', { checked: true }).elements()).toHaveLength(1);
+  });
+
   it('defaults to the first enabled segment when the default one is disabled', async () => {
     await mount(`
       <l-segmented-control label="View">
@@ -218,6 +236,19 @@ describe('When the whole control is disabled', () => {
     await settle();
     expect(segment('board').getAttribute('tabindex')).toBe('0');
     expect(segment('list').getAttribute('tabindex')).toBe('-1');
+    expect(segment('board').hasAttribute('aria-disabled')).toBe(false);
+  });
+
+  it('leaves a segment the consumer disabled out of the re-enabled control', async () => {
+    await mount(`
+      <l-segmented-control label="View" value="board" disabled>
+        <button value="list" aria-disabled="true">List</button>
+        <button value="board">Board</button>
+      </l-segmented-control>
+    `);
+    el().disabled = false;
+    await settle();
+    expect(segment('list').getAttribute('aria-disabled')).toBe('true');
     expect(segment('board').hasAttribute('aria-disabled')).toBe(false);
   });
 });
