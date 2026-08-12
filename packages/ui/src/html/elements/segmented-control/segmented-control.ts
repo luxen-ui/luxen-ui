@@ -53,6 +53,8 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
   private _setupTimer = 0;
   private _buttons: HTMLButtonElement[] = [];
   private _resizeObserver: ResizeObserver | null = null;
+  /** Segments the consumer authored `aria-disabled` on — never ours to clear. */
+  private _authoredDisabled = new WeakSet<HTMLButtonElement>();
 
   /** Value of the selected segment (its `value` attribute, else its index). */
   @property({ reflect: true })
@@ -148,6 +150,11 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-checked', String(i === activeIndex));
       btn.setAttribute('tabindex', i === activeIndex ? '0' : '-1');
+
+      // Record an authored `aria-disabled` before the host-level state is
+      // mirrored onto the segments: `_applyDisabledState()` clears that mirror
+      // whenever the control is enabled, and must not take this one with it.
+      if (btn.getAttribute('aria-disabled') === 'true') this._authoredDisabled.add(btn);
 
       // A segment with no visible text is icon-only: square it and require an
       // accessible name (the icon itself is decorative to assistive tech).
@@ -257,7 +264,9 @@ export class SegmentedControl extends LuxenFormAssociatedElement {
         btn.setAttribute('aria-disabled', 'true');
         btn.setAttribute('tabindex', '-1');
       } else {
-        btn.removeAttribute('aria-disabled');
+        // Only clear the mirror this method set: a segment the consumer marked
+        // `aria-disabled` stays disabled when the control is re-enabled.
+        if (!this._authoredDisabled.has(btn)) btn.removeAttribute('aria-disabled');
         // Restore the roving tabindex (only the selected segment is tabbable).
         btn.setAttribute('tabindex', btn.getAttribute('aria-checked') === 'true' ? '0' : '-1');
       }
