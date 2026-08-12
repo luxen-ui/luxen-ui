@@ -78,7 +78,7 @@ const principles = [
 const railTags = metadata.elements
   .filter((el) => el.isCustomElement && !el.subItemOf)
   .map((el) => el.tag)
-  .sort();
+  .toSorted();
 </script>
 
 <template>
