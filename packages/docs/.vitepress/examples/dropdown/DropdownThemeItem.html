@@ -1,0 +1,36 @@
+<l-dropdown>
+  <l-avatar
+    slot="trigger"
+    interactive
+    name="Jane Cooper"
+    aria-label="Account"
+    style="--appearance: circle; --color: var(--color-purple-200)"
+  ></l-avatar>
+
+  <l-dropdown-item value="whats-new">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:megaphone"
+    ></iconify-icon>
+    What's new
+  </l-dropdown-item>
+
+  <l-dropdown-item
+    type="checkbox"
+    check-placement="end"
+    value="theme"
+  >
+    <l-color-scheme-icon slot="prefix"></l-color-scheme-icon>
+    Dark theme
+  </l-dropdown-item>
+
+  <l-divider></l-divider>
+
+  <l-dropdown-item value="signout">
+    <iconify-icon
+      slot="prefix"
+      icon="lucide:log-out"
+    ></iconify-icon>
+    Sign out
+  </l-dropdown-item>
+</l-dropdown>

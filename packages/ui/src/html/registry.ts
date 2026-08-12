@@ -33,6 +33,7 @@ export type ElementBaseName =
   | 'stories-viewer'
   | 'tabs'
   | 'tag'
+  | 'color-scheme-icon'
   | 'toast'
   | 'toast-item'
   | 'tooltip'

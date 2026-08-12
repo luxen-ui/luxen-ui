@@ -13,6 +13,7 @@ import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement
 import dropdownMinWidth from '../.vitepress/examples/dropdown/DropdownMinWidth.html?raw'
 import dropdownDisabled from '../.vitepress/examples/dropdown/DropdownDisabled.html?raw'
 import dropdownAccountMenu from '../.vitepress/examples/dropdown/DropdownAccountMenu.html?raw'
+import dropdownThemeItem from '../.vitepress/examples/dropdown/DropdownThemeItem.html?raw'
 </script>
 
 # Dropdown <Badge type="tip">&lt;l-dropdown&gt;</Badge>
@@ -134,6 +135,23 @@ Use the `header` slot for a profile row, the `prefix` slot on each `<l-dropdown-
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownAccountMenu.html [HTML]
 :::
+
+### Theme row {#theme-row}
+
+A display setting belongs in the menu as a `type="checkbox"` item, not as a switch nested inside one. The whole row is then the control — one click target, `role="menuitemcheckbox"`, and the menu stays open so the change is visible immediately. A nested switch would give the row two competing targets, and `role="menu"` may only own `menuitem`, `menuitemcheckbox` and `menuitemradio` children.
+
+A checkbox item puts its check in the leading column, which leaves no room for an icon. Set `check-placement="end"` to move the check to the trailing edge and free that column, so the row keeps its icon **and** shows whether it is on — and its icon lines up with every other row in the menu.
+
+[`<l-color-scheme-icon>`](/elements/color-scheme-icon) in the `prefix` slot then morphs from sun to moon as the row toggles. It stays decorative: the row carries the name, the role and the state.
+
+<ComponentWrapper :html="dropdownThemeItem" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownThemeItem.html [HTML]
+:::
+
+The row reflects and changes the page's [color scheme](/overview/color-scheme); the same glyph works in a header button, outside any menu.
 
 ## Accessibility
 

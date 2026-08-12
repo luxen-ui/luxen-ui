@@ -418,6 +418,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="shadow" href="/elements/stories-viewer"><code>&lt;l-stories-viewer&gt;</code></a>
 <a class="luxen-tag" data-type="progressive" href="/elements/tabs"><code>&lt;l-tabs&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/tag"><code>&lt;l-tag&gt;</code></a>
+<a class="luxen-tag" data-type="shadow" href="/elements/color-scheme-icon"><code>&lt;l-color-scheme-icon&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/toast"><code>&lt;l-toast&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/tooltip"><code>&lt;l-tooltip&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/tree"><code>&lt;l-tree&gt;</code></a>

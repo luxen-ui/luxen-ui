@@ -374,6 +374,14 @@
       "selector": ".l-textarea"
     },
     {
+      "name": "color-scheme-icon",
+      "displayName": "Color scheme icon",
+      "kind": "element",
+      "type": "shadow",
+      "inSkill": true,
+      "inMockups": false
+    },
+    {
       "name": "toast",
       "displayName": "Toast",
       "kind": "element",

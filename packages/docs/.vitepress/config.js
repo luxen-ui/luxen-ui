@@ -102,7 +102,10 @@ export default defineConfig({
       {
         text: 'Foundations',
         collapsed: false,
-        items: [{ text: 'Design Tokens', link: '/overview/design-tokens' }],
+        items: [
+          { text: 'Design Tokens', link: '/overview/design-tokens' },
+          { text: 'Color scheme', link: '/overview/color-scheme' },
+        ],
       },
       {
         text: 'Elements',
@@ -117,6 +120,7 @@ export default defineConfig({
           el('Button', 'button', 'button'),
           el('Button group', 'l-button-group', 'button-group'),
           el('Close button', 'button', 'close-button'),
+          el('Color scheme icon', 'l-color-scheme-icon', 'color-scheme-icon'),
           el('Dialog', 'l-dialog', 'dialog'),
           el('Divider', 'l-divider', 'divider'),
           el('Disclosure', 'details', 'disclosure'),

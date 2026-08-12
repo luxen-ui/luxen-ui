@@ -83,11 +83,30 @@ export interface LuxenOptions {
    * commit it and edit freely.
    */
   emitTypes?: string | EmitTypesOptions;
+  /**
+   * Build-time defaults for the `luxen-ui/color-scheme` store, so a project
+   * never has to call `colorScheme.configure()` from its entry point.
+   */
+  colorScheme?: ColorSchemeOptions;
+}
+
+/** Build-time defaults for `luxen-ui/color-scheme`. */
+export interface ColorSchemeOptions {
+  /**
+   * `localStorage` key holding the light/dark override. Default
+   * `'luxen-color-scheme'`; `''` disables persistence. The before-first-paint
+   * snippet in your `<head>` must read the same key — it runs before any module
+   * and cannot be rewritten by the build.
+   */
+  storageKey?: string;
+  /** Have the store write `color-scheme` on `<html>` itself. Default `false`. */
+  apply?: 'root' | false;
 }
 
 export default function luxen(options: LuxenOptions = {}): Plugin {
   let elementPrefix = 'l';
   let cssPrefix = 'l';
+  let colorSchemeCfg: ColorSchemeOptions = {};
 
   return {
     name: 'luxen',
@@ -99,6 +118,7 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
       const fileCfg = await loadLuxenConfig();
       elementPrefix = options.elementPrefix ?? fileCfg?.elementPrefix ?? 'l';
       cssPrefix = options.cssPrefix ?? fileCfg?.cssPrefix ?? 'l';
+      colorSchemeCfg = { ...fileCfg?.colorScheme, ...options.colorScheme };
       const emitTypes = options.emitTypes ?? fileCfg?.emitTypes;
 
       if (emitTypes) {
@@ -127,18 +147,61 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
      * switching), but ordinary consumers don't need to call it.
      */
     transform(code, id) {
-      if (elementPrefix === 'l' && cssPrefix === 'l') return null;
-      if (!isLuxenRegistry(id)) return null;
-      let out = code;
-      if (elementPrefix !== 'l') {
-        out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
+      if (isLuxenRegistry(id)) {
+        if (elementPrefix === 'l' && cssPrefix === 'l') return null;
+        let out = code;
+        if (elementPrefix !== 'l') {
+          out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
+        }
+        if (cssPrefix !== 'l') {
+          out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
+        }
+        return out === code ? null : { code: out, map: null };
       }
-      if (cssPrefix !== 'l') {
-        out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
+
+      // Same trick for the color-scheme store: rewrite the two literal
+      // initialisers in `color-scheme.js` so a project's `luxen.config.mjs`
+      // defaults are baked in. `configure()` remains the runtime path.
+      if (isLuxenColorScheme(id)) {
+        const { storageKey, apply } = colorSchemeCfg;
+        if (storageKey === undefined && apply === undefined) return null;
+        let out = code;
+        if (storageKey !== undefined) {
+          out = bakeInitialiser(out, '_storageKey', "'luxen-color-scheme'", storageKey);
+        }
+        if (apply !== undefined) out = bakeInitialiser(out, '_apply', 'false', apply);
+        return out === code ? null : { code: out, map: null };
       }
-      return out === code ? null : { code: out, map: null };
+
+      return null;
     },
   };
+}
+
+/**
+ * Rewrite `let <name>[: Type] = <literal>;` to hold `value`.
+ *
+ * The optional type annotation is what makes this a helper rather than a plain
+ * `String.replace`: the module resolves to the compiled `let _apply = false;` in
+ * `dist`, but to `let _apply: ColorSchemeApply = false;` when a project points at
+ * the TypeScript source — which `isLuxenColorScheme` accepts. A pattern that only
+ * matched the compiled shape would drop half a project's configuration there,
+ * silently and with no build error.
+ */
+function bakeInitialiser(code: string, name: string, literal: string, value: unknown): string {
+  const pattern = new RegExp(
+    `${name}(\\s*:\\s*[\\w.<>|'" ]+?)? = ${literal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')};`,
+    'g',
+  );
+  return code.replace(
+    pattern,
+    (_match, annotation) => `${name}${annotation ?? ''} = ${JSON.stringify(value)};`,
+  );
+}
+
+function isLuxenColorScheme(id: string): boolean {
+  const path = id.replace(/\\/g, '/').split('?')[0] ?? '';
+  return /\/luxen-ui\/(?:dist|src\/html)\/color-scheme\.(?:js|ts)$/.test(path);
 }
 
 function isLuxenRegistry(id: string): boolean {

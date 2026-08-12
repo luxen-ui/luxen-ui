@@ -4,5 +4,7 @@ export * from './events/index.js';
 export { define } from './define.js';
 export { setPrefix, getPrefix, tagName, cls } from './registry.js';
 export type { ElementBaseName } from './registry.js';
+export { colorScheme } from './color-scheme.js';
+export type { ColorScheme, ColorSchemeConfig, ColorSchemeListener } from './color-scheme.js';
 export { defineConfig } from './config.js';
 export type { LuxenConfig, LuxenEmitTypesConfig } from './config.js';

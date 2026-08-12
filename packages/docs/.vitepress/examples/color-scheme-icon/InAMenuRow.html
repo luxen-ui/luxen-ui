@@ -1,0 +1,64 @@
+<header
+  class="flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-3 border-[var(--l-color-border)] bg-[var(--l-color-surface)]"
+>
+  <div class="flex items-center gap-6">
+    <span class="text-sm font-semibold text-[var(--l-color-text-primary)]">Acme</span>
+
+    <nav class="flex gap-4 text-sm text-[var(--l-color-text-secondary)]">
+      <a href="#">Dashboard</a>
+      <a href="#">Reports</a>
+    </nav>
+  </div>
+
+  <l-dropdown placement="bottom-end">
+    <l-avatar
+      slot="trigger"
+      interactive
+      name="Jane Cooper"
+      aria-label="Account"
+      class="[--appearance:circle] [--color:var(--l-color-blue-200)]"
+    ></l-avatar>
+
+    <div
+      slot="header"
+      class="flex flex-col px-2 py-1.5"
+    >
+      <span class="text-sm font-medium text-[var(--l-color-text-primary)]">Jane Cooper</span>
+      <span class="text-xs text-[var(--l-color-text-secondary)]">jane.cooper@acme.com</span>
+    </div>
+
+    <l-divider></l-divider>
+
+    <l-dropdown-item
+      type="checkbox"
+      check-placement="end"
+      value="theme"
+    >
+      <l-color-scheme-icon slot="prefix"></l-color-scheme-icon>
+      Dark theme
+    </l-dropdown-item>
+
+    <l-dropdown-item
+      type="checkbox"
+      check-placement="end"
+      value="compact"
+      checked
+    >
+      <iconify-icon
+        slot="prefix"
+        icon="lucide:rows-3"
+      ></iconify-icon>
+      Compact rows
+    </l-dropdown-item>
+
+    <l-divider></l-divider>
+
+    <l-dropdown-item value="signout">
+      <iconify-icon
+        slot="prefix"
+        icon="lucide:log-out"
+      ></iconify-icon>
+      Sign out
+    </l-dropdown-item>
+  </l-dropdown>
+</header>
