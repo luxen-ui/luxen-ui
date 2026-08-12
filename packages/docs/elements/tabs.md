@@ -74,7 +74,7 @@ Set `value="1"` to activate a specific tab on load (0-based index).
 
 ### Disabled tab
 
-Add `disabled` to a tab button to take it out of play. It is skipped by arrow keys, `Home` and `End`, it cannot be selected by a click or by `value`, and it never shows the hover pill. Use `aria-disabled="true"` instead if the tab should stay focusable so keyboard users can still discover it.
+Add `disabled` to a tab button to take it out of play. It is skipped by arrow keys, `Home` and `End`, it cannot be selected by a click or by `value`, and it never shows the hover pill. `aria-disabled="true"` behaves identically — reach for it only when the native attribute is out of reach (a framework binding, a non-`button` element).
 
 `l-tabs` itself takes no `disabled` attribute. To freeze tab switching — while a page loads, say — put `inert` on the tablist `div`: the tabs leave the tab sequence and stop answering clicks, and the active panel stays reachable.
 
