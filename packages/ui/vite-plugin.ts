@@ -6,29 +6,45 @@ import postcssPrefix from './postcss-plugin-prefix.js';
 
 /**
  * Map of element base name → class name as exported by `luxen-ui/<name>/element`.
- * Keep in sync with `src/html/registry.ts` `ElementBaseName`.
  *
- * Still missing (an element absent here silently emits no typing, so `emitTypes`
- * consumers get an untyped `Element` for it): alert-dialog, button-group,
- * combobox, dropdown-label, form-field, input-group, prose-editor,
- * segmented-control, select, tag.
+ * Every custom element the library defines must appear here: an element absent
+ * from this map emits no typing at all (`emitTypes` consumers get an untyped
+ * `Element`), and an entry naming a class that isn't exported at
+ * `<name>/element` emits an import with no file behind it. Neither is
+ * observable at runtime, so `scripts/check-metadata.mjs` (check 6) validates
+ * both directions against `dist/custom-elements.json` on every build — that is
+ * why this map is exported. The same check ties each element back to
+ * `ElementBaseName` in `src/html/registry.ts`, so all three stay in step.
+ *
+ * `toast-item` is deliberately absent: it is registered from `toast/index.ts`
+ * and has no `dist/elements/toast-item/` module to import a type from.
  */
-const ELEMENT_CLASSES: Record<string, string> = {
+export const ELEMENT_CLASSES: Record<string, string> = {
   alert: 'Alert',
+  'alert-dialog': 'AlertDialog',
   avatar: 'Avatar',
   badge: 'Badge',
+  'button-group': 'ButtonGroup',
   carousel: 'Carousel',
   'carousel-item': 'CarouselItem',
+  'color-scheme-icon': 'ColorSchemeIcon',
+  combobox: 'Combobox',
   dialog: 'Dialog',
   divider: 'Divider',
   drawer: 'Drawer',
   dropdown: 'Dropdown',
   'dropdown-item': 'DropdownItem',
+  'dropdown-label': 'DropdownLabel',
+  'form-field': 'FormField',
   icon: 'Icon',
+  'input-group': 'InputGroup',
   'input-otp': 'InputOtp',
   'input-stepper': 'InputStepper',
   popover: 'Popover',
+  'prose-editor': 'ProseEditor',
   rating: 'Rating',
+  'segmented-control': 'SegmentedControl',
+  select: 'Select',
   skeleton: 'Skeleton',
   slider: 'Slider',
   spinner: 'Spinner',
@@ -37,8 +53,8 @@ const ELEMENT_CLASSES: Record<string, string> = {
   'stories-viewer': 'LuxenStoriesViewer',
   story: 'LuxenStory',
   tabs: 'Tabs',
+  tag: 'Tag',
   toast: 'Toast',
-  'toast-item': 'ToastItem',
   tooltip: 'Tooltip',
   tree: 'Tree',
   'tree-item': 'TreeItem',
@@ -241,12 +257,19 @@ async function loadLuxenConfig(): Promise<Partial<LuxenOptions> | null> {
 function syncTypesFile(prefix: string, cfg: EmitTypesOptions): void {
   const target = resolve(process.cwd(), cfg.path);
   const names = cfg.elements ?? Object.keys(ELEMENT_CLASSES);
-  const unknown = names.filter((n) => !(n in ELEMENT_CLASSES));
+  // Own-property lookup, not `in`: a hand-written `elements` subset is consumer
+  // input, and `'toString' in ELEMENT_CLASSES` is true — the prototype chain
+  // would smuggle `Object`'s own members into the emitted file. (`Object.hasOwn`
+  // would read better but is ES2022; this file compiles against `lib: ES2020`.)
+  const isElement = (n: string): boolean =>
+    Object.prototype.hasOwnProperty.call(ELEMENT_CLASSES, n);
+
+  const unknown = names.filter((n) => !isElement(n));
   if (unknown.length > 0) {
     console.warn(`[luxen] emitTypes: unknown element(s) ignored — ${unknown.join(', ')}`);
   }
 
-  const known = names.filter((n) => n in ELEMENT_CLASSES);
+  const known = names.filter(isElement);
   const pkg = cfg.packageName || 'luxen-ui';
   const content =
     cfg.target === 'vue'
@@ -323,16 +346,23 @@ import type { DefineComponent } from 'vue';
 import type { LuxenElement } from '${pkg}/luxen-element';
 ${imports}
 
-// Keep only each element's OWN data props (subtract everything inherited from
-// LuxenElement / Lit / HTMLElement), drop methods, and allow any \`on*\`
-// listener. Autocomplete stays on the real props while unknown attributes and
-// bad values still error.
+// Keep only each element's OWN settable data props: subtract everything
+// inherited from LuxenElement / Lit / HTMLElement, drop methods, and drop
+// read-only members — get-only accessors (\`validity\`, \`willValidate\`) and
+// \`readonly\` fields (\`_internals\`) are element state a template cannot set,
+// and several elements inherit a stack of them from the form-associated base.
+// Any \`on*\` listener stays allowed. Autocomplete lands on the real props while
+// unknown attributes and bad values still error.
+type Writable<T, K extends keyof T> = (<G>() => G extends { [P in K]: T[K] } ? 1 : 2) extends
+  <G>() => G extends { -readonly [P in K]: T[K] } ? 1 : 2
+  ? K
+  : never;
 type OwnKeys<T> = {
   [K in keyof T]-?: K extends keyof LuxenElement
     ? never
     : T[K] extends (...args: never[]) => unknown
       ? never
-      : K;
+      : Writable<T, K>;
 }[keyof T];
 type ElementProps<T> = Partial<Pick<T, OwnKeys<T>>> &
   Record<\`on\${string}\`, ((event: Event) => void) | undefined>;
