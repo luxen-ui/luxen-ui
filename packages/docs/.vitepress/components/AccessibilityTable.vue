@@ -1,4 +1,6 @@
 <script setup>
+import { useId } from 'vue';
+
 const props = defineProps({
   data: {
     type: Array,
@@ -36,6 +38,8 @@ const parseInlineMarkdown = (text) => {
   }
   return parts.join('');
 };
+
+const rulesLabelId = useId();
 
 const parseCriteriaGroups = (wcag) => {
   if (!wcag) return [];
@@ -110,6 +114,29 @@ const parseCriteriaGroups = (wcag) => {
       </dd>
     </div>
   </dl>
+
+  <div
+    v-if="rules.length"
+    class="vp-raw a11y-rules"
+  >
+    <p
+      :id="rulesLabelId"
+      class="a11y-rules-title"
+    >
+      Rules
+    </p>
+    <ul
+      class="a11y-rules-list"
+      :aria-labelledby="rulesLabelId"
+    >
+      <li
+        v-for="(rule, i) in rules"
+        :key="i"
+        class="a11y-rule"
+        v-html="parseInlineMarkdown(rule)"
+      />
+    </ul>
+  </div>
 </template>
 
 <style>
@@ -157,7 +184,8 @@ const parseCriteriaGroups = (wcag) => {
   line-height: 1.5;
 }
 
-.a11y-list dd code {
+.a11y-list dd code,
+.a11y-rule code {
   font-weight: 500;
   font-size: 0.8125rem;
   padding: 2px 6px;
@@ -165,7 +193,8 @@ const parseCriteriaGroups = (wcag) => {
   border-radius: 4px;
 }
 
-.a11y-list dd a:not(.a11y-criterion) {
+.a11y-list dd a:not(.a11y-criterion),
+.vp-raw .a11y-rule a {
   font-weight: 500;
   color: var(--vp-c-brand-1);
   text-decoration: underline;
@@ -219,5 +248,50 @@ const parseCriteriaGroups = (wcag) => {
 
 .vp-raw .a11y-criterion:hover {
   text-decoration-color: var(--vp-c-brand-1);
+}
+
+.a11y-rules {
+  margin: 16px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.a11y-rules-title {
+  margin: 0 0 8px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--vp-c-text-3);
+}
+
+.vp-raw .a11y-rules-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vp-raw .a11y-rule {
+  position: relative;
+  padding-left: 30px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+}
+
+.vp-raw .a11y-rule + .a11y-rule {
+  margin-top: 6px;
+}
+
+.a11y-rule::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0.75em;
+  width: 6px;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background-color: var(--vp-c-text-3);
 }
 </style>
