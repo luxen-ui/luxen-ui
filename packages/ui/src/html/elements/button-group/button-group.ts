@@ -4,16 +4,21 @@ import { LuxenElement } from '../../shared/luxen-element.js';
 export type ButtonGroupOrientation = 'horizontal' | 'vertical';
 
 /**
- * @summary Visually joins related `.l-button` elements into a single segmented
- * control. The joined appearance is pure CSS; this element adds the group
- * semantics (`role="group"`, `aria-label`).
+ * @summary A wrapper for multiple related buttons, joined into a single unit
+ * with shared borders. The joined appearance is pure CSS; this element only
+ * adds the group semantics (`role="group"`, `aria-label`).
+ *
+ * The group never manages the selection: buttons that carry state expose it
+ * themselves with `aria-pressed`, and the group holds no value. For a
+ * single-choice control that owns a value and submits it with a form, use
+ * `l-segmented-control` instead.
  *
  * @example
  * ```html
- * <l-button-group label="Alignment">
- *   <button class="l-button">Left</button>
- *   <button class="l-button">Center</button>
- *   <button class="l-button">Right</button>
+ * <l-button-group label="Record actions">
+ *   <button class="l-button">Edit</button>
+ *   <button class="l-button">Duplicate</button>
+ *   <button class="l-button">Archive</button>
  * </l-button-group>
  * ```
  *

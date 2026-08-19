@@ -5,16 +5,14 @@ outline: deep
 <script setup>
 import basic from '../.vitepress/examples/segmented-control/Basic.html?raw'
 import icons from '../.vitepress/examples/segmented-control/Icons.html?raw'
-import iconOnly from '../.vitepress/examples/segmented-control/IconOnly.html?raw'
 import sizes from '../.vitepress/examples/segmented-control/Sizes.html?raw'
 import fullWidth from '../.vitepress/examples/segmented-control/FullWidth.html?raw'
-import form from '../.vitepress/examples/segmented-control/Form.html?raw'
 import toolbar from '../.vitepress/examples/segmented-control/Toolbar.html?raw'
 </script>
 
 # Segmented control <Badge type="tip">&lt;l-segmented-control&gt;</Badge>
 
-A single-select switch between a few mutually-exclusive options, with a sliding pill behind the selected segment.
+A hybrid between a button group, radio buttons, and tabs: pick one of a few closely related options or views, and **the selection applies immediately**. A sliding pill marks the active segment.
 
 <ElementSpec element="segmented-control" />
 
@@ -34,6 +32,8 @@ A single-select switch between a few mutually-exclusive options, with a sliding 
 :::
 
 Each segment is a native `<button>`. Set `value` on the control to the `value` of the initially-selected segment; the control emits a `change` event with the new `value` when the selection changes.
+
+The immediate effect is the point: act on `change` and switch the view or re-run the query right away. For a value the user confirms later by submitting a form, native radios (`.l-radio`) are the lighter choice — the platform already gives them arrow-key selection, submission, reset and validation.
 
 ## Options
 
@@ -70,22 +70,11 @@ Add `full-width` to stretch the segments to fill the container.
 <<< @/.vitepress/examples/segmented-control/FullWidth.html [HTML]
 :::
 
-### Form field
-
-It is form-associated: add `name` and the selected `value` is submitted with the form, like a native radio group. Reset restores the initial selection, and `disabled` opts the control out of submission.
-
-<ComponentWrapper :html="form" />
-
-::: details Code
-::: code-group
-<<< @/.vitepress/examples/segmented-control/Form.html [HTML]
-:::
-
 ## Examples
 
 ### With icons
 
-Place an `<l-icon>` before the label inside a segment.
+Place an `<l-icon>` before the label inside a segment. A segment with no text at all is squared automatically — give each one an `aria-label`.
 
 <ComponentWrapper :html="icons" />
 
@@ -94,20 +83,9 @@ Place an `<l-icon>` before the label inside a segment.
 <<< @/.vitepress/examples/segmented-control/Icons.html [HTML]
 :::
 
-### Icon-only
-
-A segment with no text is squared automatically. Give each one an `aria-label`.
-
-<ComponentWrapper :html="iconOnly" />
-
-::: details Code
-::: code-group
-<<< @/.vitepress/examples/segmented-control/IconOnly.html [HTML]
-:::
-
 ### Filter toolbar
 
-Segmented controls line up with `.l-button` triggers and `l-select` at the same `size`, so a filter bar stays visually consistent. Here the dropdowns take a quiet neutral fill (`bg-fill-neutral-subtle`) so the chrome recedes and the active selections carry the emphasis.
+Several controls can share one filter bar. Give each its own `label` so assistive tech announces which filter a segment belongs to, and keep them at the same `size` so the bar stays even. A segment can hold any inline content — here a colour swatch before the label.
 
 <ComponentWrapper :html="toolbar" />
 

@@ -1,7 +1,7 @@
 @layer components {
   /**
-   * Visually joins a set of `.l-button` elements into a single segmented
-   * control. Pure CSS: it targets direct `.l-button` children and buttons
+   * Visually joins a set of `.l-button` elements into a single unit.
+   * Pure CSS: it targets direct `.l-button` children and buttons
    * nested one level inside a wrapper (e.g. an `l-dropdown` trigger, for split
    * buttons), so it works without JavaScript. `<l-button-group>` only adds the
    * `role="group"` / `aria-orientation` semantics on top.
@@ -26,7 +26,8 @@
   }
 
   l-button-group .l-button:hover,
-  l-button-group .l-button:active {
+  l-button-group .l-button:active,
+  l-button-group .l-button[aria-pressed='true'] {
     z-index: 1;
   }
 

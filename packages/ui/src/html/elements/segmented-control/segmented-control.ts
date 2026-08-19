@@ -19,11 +19,15 @@ interface SegmentedControlEventMap {
 }
 
 /**
- * @summary A single-select segmented control: a compact, mutually-exclusive
- * switch between a few options (radio-group semantics with a sliding pill).
+ * @summary A hybrid between a button group, radio buttons, and tabs: pick one
+ * of a few closely related options or views, and the selection applies
+ * immediately (radio-group semantics with a sliding pill).
  * Progressively enhances light-DOM `<button>`s so it works before JS runs.
- * Form-associated: give it a `name` and its selected `value` is submitted with
- * the form (and restored on reset), like a native radio group.
+ *
+ * The immediate effect is the point — act on `change`. The control is
+ * form-associated as well (`name` submits the selected `value`, reset restores
+ * it), but a value the user confirms by submitting is better served by native
+ * radios, which get keyboard, submission and validation from the platform.
  *
  * @example
  * Mark the initially-selected segment with `aria-checked="true"` (or set
