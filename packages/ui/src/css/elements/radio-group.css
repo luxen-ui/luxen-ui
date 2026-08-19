@@ -1,0 +1,206 @@
+@layer components {
+  /**
+   * Radio group — a set of native `<input type="radio">` controls, each wrapped
+   * in the `<label>` that names it, in one of two appearances:
+   *
+   *   default   the radio primitive (`.l-radio` on the input): a dot in a
+   *             circle, with its label beside it.
+   *   button    the segments wear the `.l-button` look and are joined into a
+   *             single unit, like `l-button-group`.
+   *
+   * There is no JavaScript because there is nothing to implement. Radios
+   * sharing a `name` already give single selection, arrow-key navigation, a
+   * single tab stop, form submission, reset and validation. This file only
+   * decides what the group looks like.
+   *
+   * The host is the `<fieldset>` itself, captioned by its `<legend>`: that is
+   * the platform's own way to group and name a set of radios, so no ARIA is
+   * needed. A rendered legend is taken out of flow, so it sits above the group
+   * and never becomes a flex item — verified in Chrome 148, and what the HTML
+   * rendering spec requires. (Making the fieldset a flex container used to be
+   * ignored by Chrome and Safari; that was fixed years ago.)
+   *
+   * Kept as one flat file rather than an appearance directory: the default
+   * appearance adds layout and nothing else — the dot itself lives in
+   * radio.css — so there is no second visual treatment to isolate, and a
+   * consumer wanting both appearances on one page keeps a single import.
+   *
+   * - https://www.w3.org/WAI/ARIA/apg/patterns/radio/
+   */
+
+  .l-radio-group {
+    display: inline-flex;
+    align-items: stretch;
+
+    /* Fieldset defaults, cleared so the group is the only visible chrome.
+       `min-inline-size: 0` overrides the UA's `min-content`, which would
+       otherwise stop the group from ever shrinking. */
+    margin: 0;
+    border: 0;
+    padding: 0;
+    min-inline-size: 0;
+  }
+
+  /* The group's caption. Out of flow, so it needs no flex handling — only the
+     gap below it. Typography matches an `l-form-field` label, so a radio group
+     and a labelled field read as the same thing in a form. */
+  .l-radio-group > legend {
+    margin-block-end: var(--l-spacing-2);
+    padding: 0;
+    color: var(--l-form-control-label-color);
+    font-size: var(--l-text-sm);
+    font-weight: var(--l-font-weight-medium);
+  }
+
+  .l-radio-group[data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Default appearance — the radio primitive. Layout only: put `.l-radio` on each
+  input and radio.css draws the dot.
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-radio-group:not([data-appearance='button']) {
+    gap: var(--l-spacing-4);
+
+    /* Luxen tokens, never `var(--spacing)`: that one belongs to Tailwind's base
+       layer, so outside a Tailwind project the calc() is invalid and the gap
+       collapses to zero. That is not cosmetic — a zero gap puts two stacked
+       radio boxes close enough to fail the WCAG 2.5.8 target-size spacing
+       exception (the boxes are under the 24px minimum on their own). There is
+       an axe fixture on the stacked group. */
+    &[data-orientation='vertical'] {
+      gap: var(--l-spacing-3);
+    }
+
+    & > label {
+      display: inline-flex;
+      gap: var(--l-spacing-2);
+      align-items: center;
+      cursor: pointer;
+    }
+
+    & > label:has(:disabled) {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  /*
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  Button appearance — `.l-button` on each label, segments joined.
+  The checked fill is NOT defined here: `.l-button:has(input:checked)` in
+  button-core.css already gives it the same look as a pressed toggle button.
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  */
+
+  .l-radio-group[data-appearance='button'] {
+    /* Segments overlap their neighbour's border, so the interacted one has to
+       be raised or its border and focus ring get clipped. */
+    & > .l-button {
+      position: relative;
+    }
+
+    & > .l-button:hover,
+    & > .l-button:has(:checked) {
+      z-index: 1;
+    }
+
+    /*
+     * The input covers its label and is transparent, rather than being sized to
+     * zero: a zero-size focusable control is occasionally skipped by assistive
+     * tech. It must never be `display: none` or `visibility: hidden` either —
+     * both drop it from the accessibility tree AND the tab order, which would
+     * take the group's whole keyboard model with them.
+     */
+    & > .l-button > input[type='radio'] {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+      appearance: none;
+      border: 0;
+      background: none;
+      opacity: 0;
+      cursor: inherit;
+    }
+
+    /* A `<label>` is never focused itself — the ring has to be mirrored from
+       the input inside it. */
+    & > .l-button:has(:focus-visible) {
+      z-index: 2;
+      outline: 2px solid var(--l-focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* A `<label>` is never `:disabled` either, so the button's own
+       `:not(:disabled)` guards all pass and a disabled segment would still
+       react to the pointer. Rebinding the hover knobs (rather than overriding
+       `background-color`) keeps it inert on hover in every variant, and
+       resolves to the checked fill when it is the selected one. */
+    & > .l-button:has(:disabled) {
+      --background-color-hover: var(--background-color);
+      --border-color-hover: var(--border-color);
+      --text-color-hover: var(--text-color);
+
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    /* `:active` needs its own rule: button-core sets `background-color`
+       directly there, so rebinding the knobs above does not reach it and the
+       segment flashed the pressed fill on mousedown. `data-press-effect` is
+       opt-in per button but would move it for the same reason. There is a
+       browser test on this, with an enabled segment as its control. */
+    & > .l-button:has(:disabled):active {
+      background-color: var(--background-color);
+      scale: none;
+      translate: none;
+    }
+
+    &[data-orientation='vertical'] {
+      align-items: stretch;
+    }
+  }
+
+  /*
+  Seam collapsing. Deliberately duplicated from button-group.css: sharing it
+  would need one selector list covering both hosts, so importing
+  `luxen-ui/css/button-group` alone would ship the radio-group selectors too.
+  Per-element files stay self-contained; keep the two in sync by hand.
+  */
+
+  .l-radio-group[data-appearance='button']:not([data-orientation='vertical']) {
+    /* Overlap the shared 1px border. Sibling selectors rather than
+       `:not(:first-child)` / `:not(:last-child)`: the group's first child is
+       the `<legend>`, so the positional pseudo-classes would be off by one and
+       square the first segment's leading corners. */
+    & > .l-button + .l-button {
+      margin-inline-start: -1px;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    & > .l-button:has(+ .l-button) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+
+  .l-radio-group[data-appearance='button'][data-orientation='vertical'] {
+    & > .l-button + .l-button {
+      margin-block-start: -1px;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+
+    & > .l-button:has(+ .l-button) {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+}

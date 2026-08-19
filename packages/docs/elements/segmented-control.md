@@ -33,7 +33,7 @@ A hybrid between a button group, radio buttons, and tabs: pick one of a few clos
 
 Each segment is a native `<button>`. Set `value` on the control to the `value` of the initially-selected segment; the control emits a `change` event with the new `value` when the selection changes.
 
-The immediate effect is the point: act on `change` and switch the view or re-run the query right away. For a value the user confirms later by submitting a form, native radios (`.l-radio`) are the lighter choice — the platform already gives them arrow-key selection, submission, reset and validation.
+The immediate effect is the point: act on `change` and switch the view or re-run the query right away. For a value the user confirms later by submitting a form, use a [radio group](./radio-group.md) instead — same look, native radios, so arrow-key selection, submission, reset and validation come from the platform.
 
 ## Options
 

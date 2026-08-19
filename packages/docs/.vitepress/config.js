@@ -166,6 +166,7 @@ export default defineConfig({
           el('Input OTP', 'l-input-otp', 'input-otp'),
           el('Input stepper', 'l-input-stepper', 'input-stepper'),
           el('Radio', 'input', 'radio'),
+          el('Radio group', 'fieldset', 'radio-group'),
           el('Rating', 'l-rating', 'rating'),
           el('Select', 'l-select', 'select'),
           el('Slider', 'l-slider', 'slider'),

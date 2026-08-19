@@ -12,7 +12,7 @@ import sizes from '../.vitepress/examples/button-group/Sizes.html?raw'
 
 # Button group <Badge type="tip">&lt;l-button-group&gt;</Badge>
 
-A wrapper for multiple related buttons, joined into a single unit with shared borders. Buttons keep their own state; the group never manages the selection — for a single-choice control that owns a value and submits it with a form, see [segmented control](./segmented-control.md).
+A wrapper for multiple related buttons, joined into a single unit with shared borders. Buttons keep their own state; the group never manages the selection — for a single choice, see [segmented control](./segmented-control.md) when it applies immediately, or [radio group](./radio-group.md) when the value is submitted with a form.
 
 <ElementSpec element="button-group" />
 
@@ -104,7 +104,7 @@ Add `data-icon-only` to a button with no visible text to square it, and give it 
 
 The wrapper is a plain element, not `role="toolbar"`: that role expects arrow-key navigation across the whole bar, which the groups do not implement — each button stays a `Tab` stop.
 
-For a single-choice control that owns a `value` and submits it with a form, use [segmented control](./segmented-control.md) instead.
+For a single choice, reach for [segmented control](./segmented-control.md) when it applies immediately, or [radio group](./radio-group.md) when the value is submitted with a form.
 
 ::: details Code
 ::: code-group
