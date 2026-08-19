@@ -125,3 +125,24 @@
   --border-color: transparent;
   --border-color-hover: transparent;
 }
+
+/* Toggle button in the pressed state (APG toggle pattern): the button keeps its
+   `:active` fill for as long as it is on. Rebinding the knobs rather than
+   setting `background-color` is what makes this variant-agnostic — every
+   variant inherits the pressed look from the active/hover colors it already
+   defines. Hover mixes that fill toward the variant's own text color so a
+   pressed button still answers the pointer: darker for the secondary button,
+   lighter for `primary`, a deeper red for `destructive`.
+
+   MUST stay after the variant rules: `.l-button[aria-pressed='true']` and
+   `.l-button[data-variant='…']` have the same specificity, so source order is
+   what lets the pressed state win over a variant's base fill. */
+.l-button[aria-pressed='true'] {
+  --background-color: var(--background-color-active);
+  --background-color-hover: color-mix(
+    in oklab,
+    var(--background-color-active) 88%,
+    var(--text-color)
+  );
+  --border-color: var(--border-color-hover);
+}

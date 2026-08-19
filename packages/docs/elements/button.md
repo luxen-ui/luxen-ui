@@ -125,7 +125,7 @@ Add an `<l-spinner>` inside the button. The spinner inherits the button's text c
 
 ### Button group
 
-Wrap related buttons in [`<l-button-group>`](./button-group) to join them into a single segmented control.
+Wrap related buttons in [`<l-button-group>`](./button-group) to join them into a single unit.
 
 <ComponentWrapper :html="buttonGroup" />
 
