@@ -22,7 +22,7 @@
     }
 
     & > :first-child button {
-      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+      padding: var(--l-spacing-2) var(--l-spacing-3);
 
       /* `isolation` keeps the pill's negative z-index inside the button: it
          paints above the button background but under the label, and can never
@@ -37,7 +37,7 @@
         content: '';
         position: absolute;
         z-index: -1;
-        inset-block: var(--hover-inset, calc(var(--spacing) * 1));
+        inset-block: var(--hover-inset, var(--l-spacing-1));
         inset-inline: 0;
         border-radius: var(--l-radius-md);
         background: transparent;

@@ -5,8 +5,8 @@
 
   .l-kbd {
     display: inline-block;
-    padding-block: calc(var(--spacing) * 1);
-    padding-inline: calc(var(--spacing) * 2);
+    padding-block: var(--l-spacing-1);
+    padding-inline: var(--l-spacing-2);
     font-family: var(--l-font-mono);
     font-size: var(--l-text-xs);
     font-weight: 600;

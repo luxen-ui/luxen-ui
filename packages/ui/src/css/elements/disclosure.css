@@ -23,7 +23,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+      padding: var(--l-spacing-3) var(--l-spacing-4);
       font-weight: 600;
       font-size: var(--l-text-base);
       line-height: 1;
@@ -46,7 +46,7 @@
     }
 
     & > :last-child:not(summary) {
-      padding: calc(var(--spacing) * 4);
+      padding: var(--l-spacing-4);
       color: var(--l-color-text-secondary);
     }
 
@@ -144,7 +144,7 @@
   .l-disclosure[data-marker-placement='start'] summary {
     justify-content: flex-start;
     /* Match the summary's inline padding so the space around the marker is symmetric */
-    gap: calc(var(--spacing) * 4);
+    gap: var(--l-spacing-4);
   }
 
   .l-disclosure[data-marker-placement='start'] summary::after {
