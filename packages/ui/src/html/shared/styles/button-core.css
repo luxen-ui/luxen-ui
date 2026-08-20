@@ -46,7 +46,7 @@
   display: inline-flex;
   place-items: center;
   justify-content: center;
-  gap: calc(var(--spacing) * 2);
+  gap: var(--l-spacing-2);
   height: var(--height);
   padding-inline: var(--padding-inline);
   border: 1px solid var(--border-color);
