@@ -134,10 +134,16 @@
    pressed button still answers the pointer: darker for the secondary button,
    lighter for `primary`, a deeper red for `destructive`.
 
+   `:has(input:checked)` gives the same look to a `.l-button` wrapping a checked
+   radio or checkbox — the shape `.l-radio-group` uses, where the visible segment
+   is a `<label class="l-button">`. Same state, same look, defined once.
+
    MUST stay after the variant rules: `.l-button[aria-pressed='true']` and
    `.l-button[data-variant='…']` have the same specificity, so source order is
-   what lets the pressed state win over a variant's base fill. */
-.l-button[aria-pressed='true'] {
+   what lets the pressed state win over a variant's base fill. (The `:has()`
+   selector scores one higher and would win either way.) */
+.l-button[aria-pressed='true'],
+.l-button:has(input:checked) {
   --background-color: var(--background-color-active);
   --background-color-hover: color-mix(
     in oklab,

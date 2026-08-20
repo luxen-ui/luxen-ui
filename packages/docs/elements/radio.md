@@ -84,7 +84,7 @@ Override `--size` for the box and `--accent` for the selected fill.
 
 ### Group
 
-Wrap the group in a `<fieldset>` with a `<legend>` so assistive tech announces the shared question.
+Wrap the group in a `<fieldset class="l-radio-group">` with a `<legend>` so assistive tech announces the shared question. See [radio group](./radio-group.md) for the layout options and the joined-button appearance.
 
 <ComponentWrapper :html="groupExample" />
 

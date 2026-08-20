@@ -254,6 +254,15 @@
       "selector": ".l-radio"
     },
     {
+      "name": "radio-group",
+      "displayName": "Radio group",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-radio-group"
+    },
+    {
       "name": "rating",
       "displayName": "Rating",
       "kind": "element",

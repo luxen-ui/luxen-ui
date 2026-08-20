@@ -55,6 +55,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Progress          | `<progress>`            | ⏣ Native HTML Element                   |
 | Prose editor      | `<l-prose-editor>`      | ⬢ Custom HTML Element (with Shadow DOM) |
 | Radio             | `<input>`               | ⏣ Native HTML Element                   |
+| Radio group       | `<fieldset>`            | ⏣ Native HTML Element                   |
 | Rating            | `<l-rating>`            | ⬢ Custom HTML Element (with Shadow DOM) |
 | Segmented control | `<l-segmented-control>` | ⬡ Progressive Custom HTML Element       |
 | Select            | `<l-select>`            | ⬢ Custom HTML Element (with Shadow DOM) |
