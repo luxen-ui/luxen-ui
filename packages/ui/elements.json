@@ -210,7 +210,7 @@
       "type": "progressive",
       "inSkill": true,
       "inMockups": true,
-      "appearances": ["default", "rounded"]
+      "appearances": ["default", "rounded", "pill"]
     },
     {
       "name": "kbd",

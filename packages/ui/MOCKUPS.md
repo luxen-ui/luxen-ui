@@ -64,7 +64,7 @@ A few light-DOM elements (`l-badge`, `l-divider`, `l-toast`, `l-input-stepper`, 
 Some have appearance-variant subdirectories (load the variant you use):
 
 - `cdn/styles/elements/close-button/{ring,square,circle}.css`
-- `cdn/styles/elements/input-stepper/{default,rounded}.css`
+- `cdn/styles/elements/input-stepper/{default,rounded,pill}.css`
 - `cdn/styles/elements/tabs/{line,enclosed}.css`
 
 If unsure which elements need a CSS link, fetch the authoritative file listing:

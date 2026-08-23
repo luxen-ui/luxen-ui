@@ -1,0 +1,165 @@
+@import './_base.css';
+
+@layer components {
+  /*
+  A capsule track carrying the fill, with the two circular buttons inset into it
+  and lifted off by a shadow — the iOS-style quantity picker. Where `rounded`
+  drops the container entirely and outlines each button, `pill` does the
+  opposite: the container is the only painted edge and the buttons are solid.
+  */
+  @scope (l-input-stepper[appearance='pill']) {
+    :scope {
+      /* Space between the track edge and the buttons. Applied as padding on the
+         host, so it grows the capsule *around* the content row and leaves the row
+         itself exactly --_button-size tall — which the roller depends on, since
+         its rows and its JS-computed translate are both sized off that variable. */
+      --_inset: 0.25rem;
+
+      /* Hairline around each button, drawn as a ring rather than a border: the
+         buttons compute their size from --_button-size with the content-box
+         sizing `all: unset` leaves them, so a real border would add 2px to every
+         one and desync the capsule from the space the FOUCE rules reserve.
+         `divider` resolves to the track's own colour in dark mode, where it
+         disappears — correct, since a gray-900 disc on a gray-700 track needs no
+         help; the ring earns its keep in light mode, where a white disc sits on
+         a near-white track and the shadow alone cannot hold its top edge. */
+      --_ring: 0 0 0 1px var(--l-color-divider);
+
+      /* Capsule fill, and asymmetric on purpose: the relationship between the
+         track and the buttons inverts between modes. In dark the buttons are
+         *darker* than the track, so the track has to stand well clear of the
+         page for them to read as sitting in it — neutral-subtle (gray-700 on a
+         gray-900 page) already does that. In light the buttons are *lighter*
+         than the track, so the same token lands at gray-100, barely 0.03 from
+         white, and the capsule dissolves against any near-white surface. Light
+         therefore steps off the surface itself, which also keeps the capsule
+         correct on a themed page rather than pinned to one grey. */
+      --_fill: light-dark(
+        color-mix(in oklab, var(--l-color-surface) 92%, var(--l-color-text-primary)),
+        var(--l-color-bg-fill-neutral-subtle)
+      );
+
+      /* The roller overlay paints over the input, so it has to match the track
+         it sits on rather than the page surface it defaults to. */
+      --_track-bg: var(--_fill);
+
+      min-height: calc(var(--_button-size) + var(--_inset) * 2);
+      border-radius: var(--l-radius-full);
+      background-color: var(--_fill);
+
+      /* Capsule edge, inset so it paints inside the border box. A real border
+         would add 2px to a host that is box-sizing: border-box with a min-height
+         computed from --_button-size and the inset, breaking the pre-hydration
+         parity the :not(:defined) rule maintains. Weighted above the buttons'
+         hairline on purpose — a container boundary should not read lighter than
+         the lines inside it — and it lands on the same token as the box
+         `default` draws, so the two appearances sit at the same edge weight.
+         Reading --border-color also means the shared invalid rule in `_base.css`
+         recolours this capsule for free, exactly as it does default's box. */
+      box-shadow: inset 0 0 0 1px var(--border-color);
+    }
+
+    /* Both padding rules restate a `padding-inline` the base sets at the same
+       specificity (it reserves button space before JS loads, then clears it) —
+       they win on source order, since `_base.css` is imported above. */
+    :scope:defined {
+      padding: var(--_inset);
+    }
+
+    /* FOUCE: the reserved space has to clear the inset too, so the capsule keeps
+       its hydrated width and the buttons mount without shifting anything. */
+    :scope:not(:defined) {
+      padding: var(--_inset) calc(var(--_button-size) + var(--_inset));
+    }
+
+    /* Every rule that re-styles a shared internal is qualified with `:scope ` — see
+       the note above the button block in `_base.css`. Without it, the base copy
+       inlined by a *later*-imported appearance would win on source order. */
+    :scope button {
+      border-radius: var(--l-radius-full);
+      background-color: var(--l-form-control-background-color);
+      box-shadow: var(--_ring), var(--l-shadow-sm);
+      transition: box-shadow 0.15s ease-out;
+
+      /* Both the ring and the shadow are drawn *outside* the button's box, so
+         they spill 1px into the value area next door. With `with-roller` that
+         area holds an absolutely-positioned, opaque overlay, which paints above
+         non-positioned content and sliced the spill clean off — the disc looked
+         cut on the side facing the number. Lifting the buttons puts them back on
+         top; `_base.css` already does exactly this for the focus outline, which
+         is outset for the same reason. Works without `position` because these are
+         flex items, which honour z-index on their own. */
+      z-index: 1;
+    }
+
+    /* Same gesture as `rounded`: on hover the button's outline steps up. That
+       appearance has nothing but an outline to work with, so it was already the
+       house signal for "this disc is live" — matching it here keeps the two from
+       teaching different vocabularies for the same control, and both now land on
+       the token the system names for exactly this state on a form control. It
+       sits at gray-500 in both modes: unmistakable against the divider hairline
+       it replaces, without the near-black (gray-700) / near-white (gray-200)
+       edge that reaching all the way to the ink draws on a 36px disc. Elevation is deliberately left alone — the
+       ring carries the state, and shadow-sm to shadow-md was never the part
+       anyone noticed. */
+    @media (hover: hover) {
+      :scope button:hover:not(:disabled) {
+        /* Pinned so the base's --_button-bg-hover cannot slip a tint in behind
+           the ring — `rounded` pins its own fill on hover for the same reason.
+           The ring is the whole signal; nothing else moves. */
+        background-color: var(--l-form-control-background-color);
+        box-shadow:
+          0 0 0 1px var(--l-form-control-border-color-hover),
+          var(--l-shadow-sm);
+      }
+    }
+
+    /* Press holds hover's outline rather than hardening it again — `rounded` does
+       the same — and adds what only this appearance can say: the disc drops the
+       elevation it rests on and shrinks, pressing down into the capsule. That
+       shrink is load-bearing now that hover and press share one ring colour: it
+       is the only thing separating the two states, and on touch, where no hover
+       exists at all, the only feedback a tap gets. `.l-button[data-press-effect]`
+       presses instantly for the same reason. */
+    :scope button:active:not(:disabled) {
+      /* Cancels the hover easing for the duration of the press. Without it the
+         elevation would fade out over 150ms while the scale snaps, so the two
+         halves of the same gesture arrive at different times. Releasing still
+         eases back, since the rule above carries the transition again. */
+      transition: none;
+      box-shadow: 0 0 0 1px var(--l-form-control-border-color-hover);
+      scale: 0.94;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :scope button {
+        transition: none;
+      }
+
+      :scope button:active:not(:disabled) {
+        scale: none;
+      }
+    }
+
+    /* At a bound, the button sinks into the track instead of sitting on it as a
+       dead white disc. The base already dims the icon to the disabled ink. */
+    :scope button:disabled {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    /* Deliberately *not* the --l-form-control-disabled-* tokens the `default`
+       appearance greys out with: those are translucent, and the roller overlay
+       paints --_track-bg on top of the host that already carries the same tint,
+       so the value area composites it twice and shows as a lighter rectangle.
+       An opaque fill on both sides can only ever land on one exact colour. Soft
+       lands between the page and the enabled fill in both modes — gray-50 under
+       a white page, gray-800 over a gray-900 one — so the capsule recedes toward
+       the surface instead of standing off it. Overriding --_fill carries the
+       roller overlay with it, since --_track-bg reads from the same variable. */
+    :scope:has(input:disabled) {
+      --_fill: var(--l-color-bg-fill-neutral-soft);
+      --border-color: var(--l-form-control-disabled-border);
+    }
+  }
+}

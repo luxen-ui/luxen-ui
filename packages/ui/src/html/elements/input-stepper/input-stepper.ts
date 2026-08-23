@@ -33,7 +33,7 @@ interface InputStepperEventMap {
  *
  * @event change - Fired when the value changes. Bubbles. Properties: `value: number`.
  *
- * @cssproperty --border-color - Border color of the stepper container (default appearance) and of each button (rounded appearance). Defaults to `--l-color-border`.
+ * @cssproperty --border-color - Edge color of the stepper container (default and pill appearances) and of each button (rounded appearance). Defaults to `--l-color-border`.
  * @cssproperty --border-radius - Border radius of the stepper container (default appearance). Defaults to `--radius-md`.
  *
  * @customElement l-input-stepper
