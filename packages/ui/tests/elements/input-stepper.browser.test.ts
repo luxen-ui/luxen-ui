@@ -250,8 +250,10 @@ describe('Accessibility', () => {
           <input type="number" min="0" max="10" value="5" />
         </l-input-stepper>
       `);
-      // The roller overlay uses visibility:hidden on focus-within and display:none
-      // without [with-roller] — it never applies aria-hidden to the input itself.
+      // Nothing here applies aria-hidden or removes the input from the DOM. That
+      // the *stylesheet* also keeps it in the a11y tree — it fades the input with
+      // opacity, not visibility/display — is asserted in
+      // input-stepper-roller-style.browser.test.ts, which loads the CSS.
       expect(spinbutton().elements()).toHaveLength(1);
     });
 
