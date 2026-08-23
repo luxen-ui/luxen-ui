@@ -59,16 +59,18 @@
       box-shadow: inset 0 0 0 1px var(--border-color);
     }
 
-    /* Both padding rules restate a `padding-inline` the base sets at the same
-       specificity (it reserves button space before JS loads, then clears it) —
-       they win on source order, since `_base.css` is imported above. */
-    :scope:defined {
+    /* Both rules restate a `padding-inline` the base sets (it reserves button
+       space before JS loads, then clears it), and `:scope:defined` alone ties
+       with it — leaving these to win on source order only holds while `pill` is
+       the last appearance a page imports. Repeating the attribute breaks the tie
+       outright, the same guard `rounded.css` uses on its own FOUCE rule. */
+    :scope:defined[appearance='pill'] {
       padding: var(--_inset);
     }
 
     /* FOUCE: the reserved space has to clear the inset too, so the capsule keeps
        its hydrated width and the buttons mount without shifting anything. */
-    :scope:not(:defined) {
+    :scope:not(:defined)[appearance='pill'] {
       padding: var(--_inset) calc(var(--_button-size) + var(--_inset));
     }
 
@@ -156,8 +158,14 @@
        lands between the page and the enabled fill in both modes — gray-50 under
        a white page, gray-800 over a gray-900 one — so the capsule recedes toward
        the surface instead of standing off it. Overriding --_fill carries the
-       roller overlay with it, since --_track-bg reads from the same variable. */
-    :scope:has(input:disabled) {
+       roller overlay with it, since --_track-bg reads from the same variable.
+
+       Attribute repeated for the same reason the padding rules above repeat it:
+       --border-color is also claimed by the base's invalid rule at identical
+       specificity, so without it a disabled *and* aria-invalid stepper draws a
+       danger-red capsule whenever another appearance is imported after this
+       one. */
+    :scope:has(input:disabled)[appearance='pill'] {
       --_fill: var(--l-color-bg-fill-neutral-soft);
       --border-color: var(--l-form-control-disabled-border);
     }
