@@ -3,29 +3,82 @@
 @layer components {
   @scope (l-input-stepper[appearance='rounded']) {
     :scope {
-      gap: 0.25rem;
+      --_gap: 0.25rem;
+
+      gap: var(--_gap);
     }
 
-    button {
+    /* FOUCE: the base reserves two bare button widths, which is right for an
+       appearance whose buttons sit flush against the value. These do not — each
+       carries a 1px border and a gap — so the reserved box has to grow by both
+       or the stepper jumps 12px wider and 12px taller the moment it hydrates.
+       Qualified with the attribute so it outranks the base rule (equal
+       specificity otherwise) whichever order the appearance sheets load in. */
+    :scope:not(:defined)[appearance='rounded'] {
+      padding-inline: calc(var(--_button-size) + 2px + var(--_gap));
+      min-height: calc(var(--_button-size) + 2px);
+    }
+
+    /* Every rule that re-styles a shared internal is qualified with `:scope ` — see
+       the note above the button block in `_base.css`. Without it, the base copy
+       inlined by a *later*-imported appearance would win on source order. */
+    :scope button {
       border: 1px solid var(--border-color);
       border-radius: var(--l-radius-full);
       background-color: var(--l-form-control-background-color);
     }
 
     @media (hover: hover) {
-      button:hover:not(:disabled) {
-        border-color: var(--l-color-text-primary);
+      :scope button:hover:not(:disabled) {
+        border-color: var(--l-form-control-border-color-hover);
         background-color: transparent;
       }
     }
 
-    button:active:not(:disabled) {
-      border-color: var(--l-color-text-primary);
+    /* Hover and press share one border token, the system's own for a hovered
+       form control. It reads at gray-500 in both modes; --l-color-text-primary,
+       which these two states used to reach for, lands near-black on a white page
+       and near-white on a dark one — too hard an edge for a hairline circle. The
+       press is told apart by its fill and by the same shrink `pill` uses: both
+       appearances hang their buttons as free-standing discs, so both can afford
+       to press one into the surface. `default` cannot — its buttons sit flush
+       inside the container's border, and shrinking one opens a gap in the corner
+       of the box — which is why the shrink lives in these two files and not in
+       `_base.css`. */
+    :scope button:active:not(:disabled) {
+      border-color: var(--l-form-control-border-color-hover);
       background-color: var(--_button-bg-active);
+      scale: 0.94;
     }
 
-    button:disabled {
+    @media (prefers-reduced-motion: reduce) {
+      :scope button:active:not(:disabled) {
+        scale: none;
+      }
+    }
+
+    :scope button:disabled {
       border-color: var(--l-form-control-disabled-border);
+    }
+
+    /*
+    The roller overlay paints an opaque --_track-bg to mask the input beneath it,
+    defaulting to --l-color-surface — a guess the other two appearances make good
+    by painting that same colour on the host. This one has no container at all,
+    so on anything that is not the page surface (a card, a sunken panel, a
+    toolbar) the guess shows as a hard rectangle around the value.
+
+    Nothing here can know what is behind it, so it stops guessing: the overlay
+    goes transparent and the input it was masking is hidden directly. `opacity`,
+    never `visibility` or `display` — those would drop the input out of the tab
+    order, and `:focus-within` (which swaps the two back) could then never fire.
+    */
+    :scope[with-roller] .l-input-stepper-value {
+      --_track-bg: transparent;
+    }
+
+    :scope[with-roller] .l-input-stepper-value:not(:focus-within) input {
+      opacity: 0;
     }
   }
 }

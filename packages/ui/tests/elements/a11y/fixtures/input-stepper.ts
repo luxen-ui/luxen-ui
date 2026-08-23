@@ -17,5 +17,12 @@ export default defineA11yFixture({
           <input type="number" min="1" max="8" value="2" />
         </l-input-stepper>
       </l-form-field>`,
+    pill: `
+      <l-form-field>
+        <label>Tickets</label>
+        <l-input-stepper appearance="pill">
+          <input type="number" min="1" max="8" value="5" />
+        </l-input-stepper>
+      </l-form-field>`,
   },
 });

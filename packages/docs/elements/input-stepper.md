@@ -7,9 +7,23 @@ import stepperDefault from '../.vitepress/examples/input-stepper/InputStepperDef
 import stepperMinMax from '../.vitepress/examples/input-stepper/InputStepperMinMax.html?raw'
 import stepperDisabled from '../.vitepress/examples/input-stepper/InputStepperDisabled.html?raw'
 import stepperRounded from '../.vitepress/examples/input-stepper/InputStepperRounded.html?raw'
+import stepperPill from '../.vitepress/examples/input-stepper/InputStepperPill.html?raw'
 import stepperSizes from '../.vitepress/examples/input-stepper/InputStepperSizes.html?raw'
 import stepperRoller from '../.vitepress/examples/input-stepper/InputStepperRoller.html?raw'
-import notDefinedCss from 'luxen-ui/css/input-stepper/default?raw'
+import stepperNotDefined from '../.vitepress/examples/input-stepper/InputStepperNotDefined.html?raw'
+import defaultRawCss from 'luxen-ui/css/input-stepper/default?raw'
+import roundedRawCss from 'luxen-ui/css/input-stepper/rounded?raw'
+import pillRawCss from 'luxen-ui/css/input-stepper/pill?raw'
+
+// The preview renders inside an isolated iframe with no Tailwind, so the column
+// layout has to travel with the stylesheet rather than as utility classes.
+const notDefinedCss = [
+  defaultRawCss,
+  roundedRawCss,
+  pillRawCss,
+  `.cols { display: flex; gap: 24px; align-items: flex-start; }
+   .col { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }`,
+].join('\n')
 </script>
 
 # Input stepper <Badge type="tip">&lt;l-input-stepper&gt;</Badge>
@@ -19,13 +33,6 @@ A stepper control that enhances a native `<input type="number">` with decrement/
 <ElementSpec element="input-stepper" />
 
 ## Options
-
-<ComponentWrapper :html="stepperDefault" />
-
-::: details Code
-::: code-group
-<<< @/.vitepress/examples/input-stepper/InputStepperDefault.html [HTML]
-:::
 
 ### Appearance
 
@@ -43,6 +50,8 @@ Bordered box with inline buttons.
 @import 'luxen-ui/css/input-stepper/default';
 ```
 
+<<< @/.vitepress/examples/input-stepper/InputStepperDefault.html [HTML]
+
 :::
 
 #### Rounded
@@ -57,11 +66,29 @@ Circular standalone buttons with no container border — Airbnb-style.
 @import 'luxen-ui/css/input-stepper/rounded';
 ```
 
+<<< @/.vitepress/examples/input-stepper/InputStepperRounded.html [HTML]
+
+:::
+
+#### Pill
+
+Circular buttons inset into a filled capsule track — iOS-style quantity picker.
+
+<ComponentWrapper :html="stepperPill" />
+
+::: code-group
+
+```css [CSS]
+@import 'luxen-ui/css/input-stepper/pill';
+```
+
+<<< @/.vitepress/examples/input-stepper/InputStepperPill.html [HTML]
+
 :::
 
 ### Size
 
-Set the `size` attribute: `xs`, `sm`, `md` (default), `lg`, `xl`.
+Set the `size` attribute: `xs`, `sm`, `md` (default), `lg`, `xl`. All three appearances scale from the same control-height tokens, so their buttons match a button or input of the same size. `pill` then adds its inset around that row, which makes the capsule itself 8px taller than the other two at every size — give it its own line rather than a shared one when you put it in a row of form controls.
 
 <ComponentWrapper :html="stepperSizes" />
 
@@ -74,7 +101,11 @@ Set the `size` attribute: `xs`, `sm`, `md` (default), `lg`, `xl`.
 
 Before JS loads (`:not(:defined)`), CSS provides a styled fallback with zero layout shift.
 
-<NotDefinedPreview :css="notDefinedCss" html='<l-input-stepper size="xs"><input type="number" value="1" /></l-input-stepper><l-input-stepper size="sm"><input type="number" value="1" /></l-input-stepper><l-input-stepper><input type="number" value="1" /></l-input-stepper><l-input-stepper size="lg"><input type="number" value="1" /></l-input-stepper><l-input-stepper size="xl"><input type="number" value="1" /></l-input-stepper>' />
+<NotDefinedPreview
+  :css="notDefinedCss"
+  :html="stepperNotDefined"
+  :height="360"
+/>
 
 ::: details Code
 ::: code-group
@@ -160,6 +191,8 @@ import 'luxen-ui/input-stepper';
 @import 'luxen-ui/css/input-stepper/default';
 /* or */
 @import 'luxen-ui/css/input-stepper/rounded';
+/* or */
+@import 'luxen-ui/css/input-stepper/pill';
 ```
 
 :::
