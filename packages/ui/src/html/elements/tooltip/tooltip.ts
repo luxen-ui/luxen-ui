@@ -96,13 +96,15 @@ export class Tooltip extends LuxenElement {
   }
 
   private get _trigger(): HTMLElement | null {
-    if (!this.for) return null;
+    return this._triggerFor(this.for);
+  }
+
+  private _triggerFor(id: string): HTMLElement | null {
+    if (!id) return null;
     // A detached tooltip's root is a plain element with no getElementById —
     // async open/close work (e.g. an eviction) may land after removal.
     const root = this.getRootNode();
-    return root instanceof Document || root instanceof ShadowRoot
-      ? root.getElementById(this.for)
-      : null;
+    return root instanceof Document || root instanceof ShadowRoot ? root.getElementById(id) : null;
   }
 
   private get _popover(): HTMLElement {
@@ -129,18 +131,26 @@ export class Tooltip extends LuxenElement {
     tooltipInstances.delete(this);
     if (activeTooltip === this) activeTooltip = null;
     this._clearTimers();
+    // `aria-describedby` is dropped by the controller's hostDisconnected: our
+    // id stops resolving once we leave the tree.
     this._removeTriggerListeners();
   }
 
   override updated(changed: PropertyValues<this>) {
-    if (changed.has('open')) {
-      void this._handleOpenChange();
-    }
+    // `for` before `open`: retargeting an already-open bubble has to settle
+    // against the new anchor, and when both change in the same update the open
+    // path owns the positioning outright (see the guard below).
     if (changed.has('for')) {
       // A queued show/hide targets the old trigger — drop it before rewiring.
       this._clearTimers();
       this._removeTriggerListeners(changed.get('for') as string);
       this._addTriggerListeners();
+      if (this.open && !changed.has('open')) {
+        void this._repositionToTrigger();
+      }
+    }
+    if (changed.has('open')) {
+      void this._handleOpenChange();
     }
   }
 
@@ -164,11 +174,56 @@ export class Tooltip extends LuxenElement {
     this.open = !this.open;
   }
 
+  /**
+   * Recompute the position against the current trigger. Use it when you move
+   * the anchor yourself and the tooltip has to follow. No-op when closed;
+   * hides if the anchor is gone.
+   */
+  // Worth calling even though positioning is otherwise automatic: the
+  // underlying observers detect a moved anchor a frame late, and an anchor
+  // driven at frame rate (a marker following the pointer) can starve them for
+  // as long as a second. An explicit call bypasses them.
+  async reposition() {
+    if (!this.open) return;
+    await this._repositionToTrigger();
+  }
+
+  /**
+   * Move the open bubble onto whatever `for` names now — a move, not a
+   * re-open, so it deliberately bypasses `_handleOpenChange` and its show
+   * animation. Shared by the public `reposition()` and the retarget path so
+   * the two cannot drift apart.
+   */
+  private async _repositionToTrigger() {
+    // The polygon was armed against the anchor's previous geometry.
+    this._floating.cleanupSafePolygon();
+    const openFor = this.for;
+    const result = await this._floating.reposition(
+      this._positionOptions(),
+      () => this.open && this.for === openFor,
+    );
+    // Closed or retargeted again while `computePosition` was in flight —
+    // whatever superseded us owns the bubble and its ARIA now.
+    if (result === 'stale') return;
+    // Retargeted onto an id that resolves to nothing — a virtualised row
+    // recycled between `pointerenter` and here, say. A bubble left floating
+    // over unrelated content while describing no element is worse than none.
+    if (result === 'no-anchor') {
+      this.hide();
+      return;
+    }
+    this._floating.markTrigger('aria-describedby', this._tooltipId, null);
+  }
+
+  private _positionOptions() {
+    return { placement: this.placement, distance: this.distance };
+  }
+
   private async _handleOpenChange() {
     const popover = this._popover;
     if (!popover) return;
 
-    const posOpts = { placement: this.placement, distance: this.distance };
+    const posOpts = this._positionOptions();
 
     if (this.open) {
       // Single-open invariant: opening a non-manual tooltip evicts the current
@@ -183,12 +238,12 @@ export class Tooltip extends LuxenElement {
       if (!this.open) return;
       await this._floating.animateShow(popover, this._getDuration('--show-duration'));
       this._floating.startPositioning(posOpts);
-      this._trigger?.setAttribute('aria-describedby', this._tooltipId);
+      this._floating.markTrigger('aria-describedby', this._tooltipId, null);
     } else {
       if (activeTooltip === this) activeTooltip = null;
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
-      this._trigger?.removeAttribute('aria-describedby');
+      this._floating.releaseTrigger(null);
       await this._floating.animateHide(popover, this._getDuration('--hide-duration'));
       if (popover.matches(':popover-open')) popover.hidePopover();
     }
@@ -291,10 +346,7 @@ export class Tooltip extends LuxenElement {
   }
 
   private _removeTriggerListeners(forId?: string) {
-    const trigger = forId
-      ? (this.getRootNode() as Document | ShadowRoot).getElementById(forId)
-      : undefined;
-    this._floating.removeTriggerListeners(trigger);
+    this._floating.removeTriggerListeners(forId ? this._triggerFor(forId) : undefined);
   }
 
   override render() {

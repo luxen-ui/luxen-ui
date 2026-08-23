@@ -74,7 +74,15 @@ export class Popover extends LuxenElement {
   }
 
   private get _trigger(): HTMLElement | null {
-    return this.for ? (this.getRootNode() as Document | ShadowRoot).getElementById(this.for) : null;
+    return this._triggerFor(this.for);
+  }
+
+  private _triggerFor(id: string): HTMLElement | null {
+    if (!id) return null;
+    // A detached popover's root is a plain element with no getElementById —
+    // async open/close work may land after removal.
+    const root = this.getRootNode();
+    return root instanceof Document || root instanceof ShadowRoot ? root.getElementById(id) : null;
   }
 
   private get _popoverEl(): HTMLElement {
@@ -97,16 +105,24 @@ export class Popover extends LuxenElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    // `aria-expanded` is dropped (not set to "false") by the controller's
+    // hostDisconnected: with the panel gone the trigger expands nothing.
     this._removeTriggerListeners();
   }
 
   override updated(changed: PropertyValues<this>) {
-    if (changed.has('open')) {
-      void this._handleOpenChange();
-    }
+    // `for` before `open`: retargeting an already-open panel has to settle
+    // against the new anchor, and when both change in the same update the open
+    // path owns the positioning outright (see the guard below).
     if (changed.has('for')) {
       this._removeTriggerListeners(changed.get('for') as string);
       this._addTriggerListeners();
+      if (this.open && !changed.has('open')) {
+        void this._repositionToTrigger();
+      }
+    }
+    if (changed.has('open')) {
+      void this._handleOpenChange();
     }
   }
 
@@ -122,15 +138,53 @@ export class Popover extends LuxenElement {
     this.open = !this.open;
   }
 
-  private async _handleOpenChange() {
-    const popover = this._popoverEl;
-    if (!popover) return;
+  /**
+   * Recompute the position against the current trigger. Use it when you move
+   * the anchor yourself and the panel has to follow. No-op when closed; hides
+   * if the anchor is gone.
+   */
+  async reposition() {
+    if (!this.open) return;
+    await this._repositionToTrigger();
+  }
 
-    const posOpts = {
+  /**
+   * Move the open panel onto whatever `for` names now — a move, not a re-open,
+   * so it deliberately bypasses `_handleOpenChange` and its show animation.
+   * Shared by the public `reposition()` and the retarget path so the two
+   * cannot drift apart.
+   */
+  private async _repositionToTrigger() {
+    this._floating.cleanupSafePolygon();
+    const openFor = this.for;
+    const result = await this._floating.reposition(
+      this._positionOptions(),
+      () => this.open && this.for === openFor,
+    );
+    // Closed or retargeted again while `computePosition` was in flight.
+    if (result === 'stale') return;
+    // Retargeted onto an id that resolves to nothing: a panel left floating
+    // over unrelated content is worse than none.
+    if (result === 'no-anchor') {
+      this.hide();
+      return;
+    }
+    this._floating.markTrigger('aria-expanded', 'true', 'false');
+  }
+
+  private _positionOptions() {
+    return {
       placement: this.placement,
       distance: this.distance,
       fullWidth: this.fullWidth,
     };
+  }
+
+  private async _handleOpenChange() {
+    const popover = this._popoverEl;
+    if (!popover) return;
+
+    const posOpts = this._positionOptions();
 
     if (this.open) {
       popover.showPopover();
@@ -138,14 +192,14 @@ export class Popover extends LuxenElement {
       if (!this.open) return;
       await this._floating.animateShow(popover, this._getDuration('--show-duration'));
       this._floating.startPositioning(posOpts);
-      this._trigger?.setAttribute('aria-expanded', 'true');
+      this._floating.markTrigger('aria-expanded', 'true', 'false');
       // No aria-controls: the panel's id lives in this element's shadow root and
       // IDREFs don't cross shadow boundaries, so the reference would never
       // resolve (invalid per WCAG 4.1.2). aria-expanded alone conveys the state.
     } else {
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
-      this._trigger?.setAttribute('aria-expanded', 'false');
+      this._floating.releaseTrigger('false');
       await this._floating.animateHide(popover, this._getDuration('--hide-duration'));
       if (popover.matches(':popover-open')) popover.hidePopover();
     }
@@ -201,10 +255,7 @@ export class Popover extends LuxenElement {
   }
 
   private _removeTriggerListeners(forId?: string) {
-    const trigger = forId
-      ? (this.getRootNode() as Document | ShadowRoot).getElementById(forId)
-      : undefined;
-    this._floating.removeTriggerListeners(trigger);
+    this._floating.removeTriggerListeners(forId ? this._triggerFor(forId) : undefined);
   }
 
   override render() {
