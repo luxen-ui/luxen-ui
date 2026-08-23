@@ -39,10 +39,6 @@
         var(--l-color-bg-fill-neutral-subtle)
       );
 
-      /* The roller overlay paints over the input, so it has to match the track
-         it sits on rather than the page surface it defaults to. */
-      --_track-bg: var(--_fill);
-
       min-height: calc(var(--_button-size) + var(--_inset) * 2);
       border-radius: var(--l-radius-full);
       background-color: var(--_fill);
@@ -151,14 +147,13 @@
     }
 
     /* Deliberately *not* the --l-form-control-disabled-* tokens the `default`
-       appearance greys out with: those are translucent, and the roller overlay
-       paints --_track-bg on top of the host that already carries the same tint,
-       so the value area composites it twice and shows as a lighter rectangle.
-       An opaque fill on both sides can only ever land on one exact colour. Soft
-       lands between the page and the enabled fill in both modes — gray-50 under
-       a white page, gray-800 over a gray-900 one — so the capsule recedes toward
-       the surface instead of standing off it. Overriding --_fill carries the
-       roller overlay with it, since --_track-bg reads from the same variable.
+       appearance greys out with: those are translucent, and this capsule needs
+       one flat colour rather than a tint laid over whatever it happens to sit
+       on. Soft lands between the page and the enabled fill in both modes —
+       gray-50 under a white page, gray-800 over a gray-900 one — so the capsule
+       recedes toward the surface instead of standing off it. The roller follows
+       on its own: its overlay paints nothing, so whatever --_fill puts on the
+       host is what shows through the value area.
 
        Attribute repeated for the same reason the padding rules above repeat it:
        --border-color is also claimed by the base's invalid rule at identical

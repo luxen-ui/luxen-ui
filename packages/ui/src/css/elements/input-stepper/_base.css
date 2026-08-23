@@ -180,6 +180,12 @@
       min-width: 0;
     }
 
+    /* No background: the overlay REPLACES the input's digits (see the opacity rule
+       below) instead of masking them behind an opaque fill, so whatever the host
+       paints — the form-control fill in `default`, nothing at all in `rounded` —
+       shows through untouched. A fill here would composite a second time over the
+       host's own and read as a tinted rectangle over the value area wherever either
+       one is translucent, e.g. --l-form-control-disabled-background. */
     .l-input-stepper-track-display {
       position: absolute;
       inset: 0;
@@ -187,7 +193,6 @@
       overflow: hidden;
       pointer-events: none;
       font-variant-numeric: tabular-nums;
-      background: var(--_track-bg, var(--l-color-surface));
     }
 
     .l-input-stepper-track {
@@ -199,6 +204,17 @@
       align-items: center;
       justify-content: center;
       height: var(--_button-size);
+    }
+
+    /* Hide the real digits while the roller is the thing on screen. `opacity`, NOT
+       `visibility`/`display` — those drop the input out of the tab order, so the
+       :focus-within rule below could never fire to swap the two back. Gated on both
+       the attribute and the overlay's presence because the overlay is built once at
+       setup: toggling `with-roller` afterwards must not blank the value. */
+    :scope[with-roller]
+      .l-input-stepper-value:has(.l-input-stepper-track-display):not(:focus-within)
+      input {
+      opacity: 0;
     }
 
     .l-input-stepper-value:focus-within .l-input-stepper-track-display {

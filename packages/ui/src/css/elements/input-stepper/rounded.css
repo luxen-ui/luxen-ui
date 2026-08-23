@@ -60,32 +60,5 @@
     :scope button:disabled {
       border-color: var(--l-form-control-disabled-border);
     }
-
-    /*
-    The roller overlay paints an opaque --_track-bg to mask the input beneath it,
-    defaulting to --l-color-surface — a guess the other two appearances make good
-    by painting that same colour on the host. This one has no container at all,
-    so on anything that is not the page surface (a card, a sunken panel, a
-    toolbar) the guess shows as a hard rectangle around the value.
-
-    Nothing here can know what is behind it, so it stops guessing: the overlay
-    goes transparent and the input it was masking is hidden directly. `opacity`,
-    never `visibility` or `display` — those would drop the input out of the tab
-    order, and `:focus-within` (which swaps the two back) could then never fire.
-
-    Both rules also require the overlay to actually be in the DOM. `withRoller`
-    is read once, in `_setup()`, and nothing rebuilds the track when it changes
-    later — so the attribute can be present with no overlay behind it, and
-    hiding the input then would leave the value invisible rather than rolled.
-    */
-    :scope[with-roller] .l-input-stepper-value:has(.l-input-stepper-track-display) {
-      --_track-bg: transparent;
-    }
-
-    :scope[with-roller]
-      .l-input-stepper-value:has(.l-input-stepper-track-display):not(:focus-within)
-      input {
-      opacity: 0;
-    }
   }
 }
