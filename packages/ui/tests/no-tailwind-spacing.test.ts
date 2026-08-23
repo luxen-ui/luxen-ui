@@ -28,6 +28,11 @@ import { describe, expect, it } from 'vitest';
  * the same file — `rating.ts` builds inline styles that read the knob its
  * co-located `rating.css` defines — so the exemption is checked across the
  * files an element is made of: same directory, same basename.
+ *
+ * Comments are stripped before matching. The rule is worth explaining where it
+ * bites, and an explanation has to name the pattern it forbids — `radio-group`
+ * spells out why its gap avoids `--spacing`, and that prose alone was enough to
+ * trip a raw substring search.
  */
 
 const SRC = fileURLToPath(new URL('../src', import.meta.url));
@@ -40,7 +45,65 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-const files = [...walk(SRC)].map((path) => ({ path, source: readFileSync(path, 'utf8') }));
+/*
+ * One pass rather than a regex per comment style, because either regex alone
+ * gets the other case wrong: a line-anchored `//` pattern misses a trailing
+ * `// never var(--spacing)` and keeps failing the build on prose, while a
+ * `/* … *\/` pattern run over raw source lets a `/*` inside a string swallow
+ * the declarations after it — a guard that fails open.
+ *
+ * String contents are kept, only recognised. `rating.ts` builds inline styles
+ * holding `var(--spacing)` inside template literals, and those must stay
+ * visible to the search or the exemption below would be the only thing
+ * covering them.
+ */
+function stripComments(source: string, path: string) {
+  const isTs = path.endsWith('.ts');
+  let out = '';
+  let i = 0;
+
+  while (i < source.length) {
+    const pair = source.slice(i, i + 2);
+
+    if (pair === '/*') {
+      const end = source.indexOf('*/', i + 2);
+      i = end === -1 ? source.length : end + 2;
+      continue;
+    }
+
+    // `//` opens a comment in TypeScript only; in CSS it is not one, and a bare
+    // `url(https://…)` must survive.
+    if (isTs && pair === '//') {
+      const end = source.indexOf('\n', i + 2);
+      i = end === -1 ? source.length : end;
+      continue;
+    }
+
+    const char = source[i];
+    if (char === '"' || char === "'" || (isTs && char === '`')) {
+      out += char;
+      i += 1;
+      while (i < source.length && source[i] !== char) {
+        const step = source[i] === '\\' ? 2 : 1;
+        out += source.slice(i, i + step);
+        i += step;
+      }
+      out += source[i] ?? '';
+      i += 1;
+      continue;
+    }
+
+    out += char;
+    i += 1;
+  }
+
+  return out;
+}
+
+const files = [...walk(SRC)].map((path) => ({
+  path,
+  code: stripComments(readFileSync(path, 'utf8'), path),
+}));
 
 /** Every file making up the same element: same directory, same basename. */
 const declaresSpacing = (path: string) =>
@@ -48,11 +111,11 @@ const declaresSpacing = (path: string) =>
     (other) =>
       dirname(other.path) === dirname(path) &&
       basename(other.path).replace(/\.\w+$/, '') === basename(path).replace(/\.\w+$/, '') &&
-      other.source.includes('--spacing:'),
+      other.code.includes('--spacing:'),
   );
 
 const offenders = files
-  .filter(({ source }) => source.includes('var(--spacing)'))
+  .filter(({ code }) => code.includes('var(--spacing)'))
   .filter(({ path }) => !declaresSpacing(path))
   .map(({ path }) => relative(SRC, path));
 
