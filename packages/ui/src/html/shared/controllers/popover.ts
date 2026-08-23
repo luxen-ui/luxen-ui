@@ -238,6 +238,13 @@ export interface PopoverControllerConfig {
   onPlacementChange?: (placement: string) => void;
 }
 
+/**
+ * Outcome of {@link PopoverController.reposition}. `stale` means the host
+ * closed or retargeted again while `computePosition` was in flight — the caller
+ * must not act on it, because whatever superseded it owns the element now.
+ */
+export type RepositionResult = 'repositioned' | 'no-anchor' | 'stale';
+
 export interface PositionOptions {
   placement: Placement;
   distance: number;
@@ -277,7 +284,52 @@ export class PopoverController implements ReactiveController {
   hostDisconnected() {
     this.stopPositioning();
     this.cleanupSafePolygon();
+    // The floating element is leaving the tree, so the state we wrote on the
+    // trigger describes nothing any more — drop the attribute rather than
+    // leave a resting value claiming a relationship that no longer exists.
+    this.releaseTrigger(null);
     this.removeTriggerListeners();
+  }
+
+  // --- Trigger ARIA state ---
+
+  private _markedTrigger: HTMLElement | null = null;
+  private _markedAttribute: string | null = null;
+
+  /**
+   * Write an ARIA attribute on the current trigger, remembering the element
+   * written to and settling the previously marked one at `resting`.
+   *
+   * Remembering matters: re-resolving the trigger from `for` at teardown time
+   * is wrong the moment `for` moved in between — the attribute gets stripped
+   * from the new anchor, which never had it, and stays on the old one for good.
+   */
+  markTrigger(attribute: string, value: string, resting: string | null) {
+    const next = this._config.getTriggerElement();
+    if (this._markedTrigger === next && this._markedAttribute === attribute) return;
+    this._settleMarked(resting);
+    next?.setAttribute(attribute, value);
+    this._markedTrigger = next;
+    this._markedAttribute = attribute;
+  }
+
+  /**
+   * Undo `markTrigger` on the element that actually received it. Pass a resting
+   * value when the trigger keeps its relationship in a closed state
+   * (`aria-expanded="false"`), or `null` to remove the attribute outright.
+   */
+  releaseTrigger(value: string | null) {
+    this._settleMarked(value);
+    this._markedTrigger = null;
+    this._markedAttribute = null;
+  }
+
+  private _settleMarked(value: string | null) {
+    const el = this._markedTrigger;
+    const attribute = this._markedAttribute;
+    if (!el || !attribute) return;
+    if (value === null) el.removeAttribute(attribute);
+    else el.setAttribute(attribute, value);
   }
 
   get currentPlacement() {
@@ -348,6 +400,30 @@ export class PopoverController implements ReactiveController {
 
     this._cleanupAutoUpdate?.();
     this._cleanupAutoUpdate = autoUpdate(trigger, floating, () => this.updatePosition(options));
+  }
+
+  /**
+   * Re-anchor an already-open floating element onto the current trigger.
+   *
+   * `startPositioning`'s `autoUpdate` observers are bound to whichever element
+   * was the trigger when it ran, so they never see a retarget — the loop keeps
+   * watching the old anchor while `updatePosition` resolves the new one. Tear
+   * it down before recomputing, or the stale cleanup leaks and two loops drive
+   * the same floating element.
+   *
+   * `isCurrent` is re-checked after the await, which is a real gap:
+   * `computePosition` is async, so the host may have closed or retargeted again
+   * meanwhile. Re-arming `autoUpdate` past that point would strand a loop on a
+   * hidden element — the host's close path has already run its own
+   * `stopPositioning` and will never run another.
+   */
+  async reposition(options: PositionOptions, isCurrent: () => boolean): Promise<RepositionResult> {
+    if (!this._config.getTriggerElement()) return 'no-anchor';
+    this.stopPositioning();
+    await this.updatePosition(options);
+    if (!isCurrent()) return 'stale';
+    this.startPositioning(options);
+    return 'repositioned';
   }
 
   stopPositioning() {

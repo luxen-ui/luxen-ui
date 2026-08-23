@@ -493,3 +493,216 @@ describe('Accessibility', () => {
     });
   });
 });
+
+// Two widely spaced anchors and one manually driven tooltip: the shape a
+// consumer uses when a single instance serves a whole chart. Spacing is what
+// makes "did the bubble actually move?" assertable by rect rather than by
+// implementation detail — but both must stay inside the 414px-wide test
+// viewport, or `shift()` clamps the bubble and the rect stops matching the
+// anchor for a legitimate reason.
+const RETARGET = `
+  <div style="padding: 160px 40px 240px">
+    <button id="anchor-a" style="position: fixed; top: 120px; left: 40px; width: 40px; height: 24px">A</button>
+    <button id="anchor-b" style="position: fixed; top: 120px; left: 280px; width: 40px; height: 24px">B</button>
+    <l-tooltip id="tip" for="anchor-a" trigger="manual" style="--show-duration: 0ms; --hide-duration: 0ms">Detail</l-tooltip>
+  </div>
+`;
+
+/** Centre-x of the bubble, in viewport pixels. */
+const bubbleX = () => {
+  const el = tip('tip').shadowRoot!.querySelector('[popover]') as HTMLElement;
+  const rect = el.getBoundingClientRect();
+  return rect.left + rect.width / 2;
+};
+const anchorX = (id: string) => {
+  const rect = cell(id).getBoundingClientRect();
+  return rect.left + rect.width / 2;
+};
+
+describe('Retargeting a shared instance', () => {
+  it('follows `for` to the new anchor without closing (no reposition on retarget)', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await waitUntil(() => t.open);
+    await settle();
+    expect(bubbleX()).toBeCloseTo(anchorX('anchor-a'), 0);
+
+    t.for = 'anchor-b';
+    // Deliberately no long poll. `updatePosition` resolves the trigger freshly,
+    // so any incidental observer tick would eventually land the bubble on B
+    // even unfixed — polling for two seconds tests luck, not the fix. What has
+    // to be true is that retargeting *schedules* the move, so assert as soon as
+    // the update has settled.
+    await settle();
+    await settle();
+
+    // The move must not have gone through a close/reopen.
+    expect(t.open).toBe(true);
+    expect(bubbleX()).toBeCloseTo(anchorX('anchor-b'), 0);
+  });
+
+  it('moves aria-describedby to the new anchor (a screen reader must not describe the old one)', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+    expect(cell('anchor-a').getAttribute('aria-describedby')).toBeTruthy();
+
+    t.for = 'anchor-b';
+    await settle();
+    await waitUntil(() => cell('anchor-b').hasAttribute('aria-describedby'));
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('clears aria-describedby from the anchor that received it, not from whatever `for` names at close time', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+    t.for = 'anchor-b';
+    await settle();
+    await settle();
+    // Prove the retarget actually moved it before asserting the close clears it
+    // — otherwise this passes on code that never retargets ARIA at all.
+    expect(cell('anchor-b').getAttribute('aria-describedby')).toBeTruthy();
+
+    t.open = false;
+    await settle();
+    // Both must be clean: re-resolving `for` at close time used to strand the
+    // attribute on the anchor that actually had it.
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+    expect(cell('anchor-b').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('hides instead of floating over unrelated content when the new anchor does not exist', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+
+    t.for = 'anchor-gone';
+    await settle();
+    await waitUntil(() => !t.open);
+
+    expect(t.open).toBe(false);
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('opens on the new anchor when `for` and `open` change in the same update', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    // The common consumer pattern: point at the hovered datum and show, in one
+    // tick. The open path must own positioning — no competing retarget.
+    t.for = 'anchor-b';
+    t.open = true;
+    await settle();
+    await waitUntil(() => Math.abs(bubbleX() - anchorX('anchor-b')) < 1);
+
+    expect(t.open).toBe(true);
+    expect(cell('anchor-b').getAttribute('aria-describedby')).toBeTruthy();
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('drops aria-describedby when the tooltip itself leaves the DOM', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+    expect(cell('anchor-a').getAttribute('aria-describedby')).toBeTruthy();
+
+    t.remove();
+    await settle();
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+  });
+});
+
+describe('reposition()', () => {
+  it('follows an anchor moved by CSS, which Floating UI misses at frame rate', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+
+    // Move once per frame, the cadence that starves floating-ui's IntersectionObserver
+    // move detector and leaves the bubble a full second behind.
+    const a = cell('anchor-a');
+    /* oxlint-disable eslint/no-await-in-loop -- the per-frame cadence is the
+       point: each reposition must land before the next move. */
+    for (let i = 1; i <= 10; i++) {
+      a.style.left = `${40 + i * 20}px`;
+      await new Promise((r) => requestAnimationFrame(r));
+      await t.reposition();
+    }
+    /* oxlint-enable eslint/no-await-in-loop */
+    expect(bubbleX()).toBeCloseTo(anchorX('anchor-a'), 0);
+  });
+
+  it('is a no-op when closed', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    await expect(t.reposition()).resolves.toBeUndefined();
+    expect(t.open).toBe(false);
+  });
+
+  it('hides when the anchor has gone', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+
+    cell('anchor-a').remove();
+    await t.reposition();
+    expect(t.open).toBe(false);
+  });
+});
+
+describe('Repositioning that races a close', () => {
+  it('does not re-apply aria-describedby when the tooltip closes mid-flight', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+    expect(cell('anchor-a').getAttribute('aria-describedby')).toBeTruthy();
+
+    // `reposition()` awaits `computePosition`, which is async. Close inside
+    // that gap: the close path clears the attribute, and the resuming
+    // reposition must not write it back onto a now-hidden bubble.
+    const inFlight = t.reposition();
+    t.open = false;
+    await inFlight;
+    await settle();
+
+    expect(t.open).toBe(false);
+    expect(cell('anchor-a').hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('lands on the final anchor when `for` is written twice in one tick', async () => {
+    await mount(RETARGET);
+    const t = tip('tip');
+
+    t.open = true;
+    await settle();
+
+    t.for = 'anchor-b';
+    t.for = 'anchor-a';
+    await settle();
+    await settle();
+
+    // Lit coalesces both writes into a single update, so the bubble must end
+    // up on the last value written rather than on the intermediate one.
+    expect(cell('anchor-a').getAttribute('aria-describedby')).toBeTruthy();
+    expect(cell('anchor-b').hasAttribute('aria-describedby')).toBe(false);
+    expect(bubbleX()).toBeCloseTo(anchorX('anchor-a'), 0);
+  });
+});
