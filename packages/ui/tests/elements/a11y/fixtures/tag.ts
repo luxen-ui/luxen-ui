@@ -13,6 +13,11 @@ export default defineA11yFixture({
     default: `<l-tag>Design</l-tag>`,
     removable: `<l-tag removable>Design</l-tag>`,
     disabled: `<l-tag removable disabled>Locked</l-tag>`,
+    // A filter chip repainted from a consumer's own tokens — background, ink,
+    // and an explicit `--border-color`. Contrast is the check that matters: the
+    // 12px label owes 4.5:1 over the tint it now sits on, not over the neutral
+    // fill the other states use.
+    themed: `<l-tag removable style="--background: var(--l-color-bg-fill-success-soft); --color: var(--l-color-text-success); --border-color: color-mix(in oklab, var(--l-color-text-success) 35%, transparent)">Lyon branch</l-tag>`,
     sm: `<l-tag size="sm" removable>QA</l-tag>`,
     lg: `<l-tag size="lg" removable>Development</l-tag>`,
     selectable: `<l-tag selectable>A3</l-tag>`,

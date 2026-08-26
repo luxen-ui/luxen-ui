@@ -74,6 +74,124 @@ describe('l-tag renders a chip', () => {
     await mount(`<l-tag removable>Design</l-tag>`);
     expect(removeButton().elements()).toHaveLength(1);
   });
+
+  it.each(['sm', 'md', 'lg'])(
+    'gives the remove segment a 24px target at size=%s (WCAG 2.5.8 / RGAA 13.10)',
+    async (size: string) => {
+      // The segment stretches to `.base`, whose content box is two pixels
+      // shorter than the chip — so it has to reach over the border to clear 24,
+      // and the chip is never allowed below that even if `--height` is tuned
+      // down. Measured, not declared: the geometry comes from three separate
+      // rules and any of them can lose it.
+      const el = await mount(
+        `<l-tag size="${size}" removable style="--height: 1rem">Design</l-tag>`,
+      );
+      const chip = el.shadowRoot!.querySelector('[part="base"]')!.getBoundingClientRect();
+      const segment = removeButton().element().getBoundingClientRect();
+      expect(segment.width).toBeGreaterThanOrEqual(24);
+      expect(segment.height).toBeGreaterThanOrEqual(24);
+      // Flush with the chip's end, so the delete zone is a corner of the chip
+      // rather than a mark floating inside it.
+      expect(Math.round(segment.right)).toBe(Math.round(chip.right));
+    },
+  );
+
+  it.each(['sm', 'md', 'lg'])(
+    'gives the label the same air on both sides at size=%s',
+    async (size: string) => {
+      // `.base`'s `gap` spaces slotted items and is tighter than the chip's
+      // padding, so using it to front the rule too left the label with a full
+      // padding on its left and a bare gap on its right — measured 8px vs 4px at
+      // md, and the last glyph visibly touching the divider.
+      const el = await mount(`<l-tag size="${size}" removable>LEASE-2025-001</l-tag>`);
+      const base = el.shadowRoot!.querySelector('[part="base"]')!;
+      const content = el.shadowRoot!.querySelector('[part="content"]')!;
+      const border = parseFloat(getComputedStyle(base).borderInlineStartWidth);
+      const left =
+        content.getBoundingClientRect().left - (base.getBoundingClientRect().left + border);
+      const right =
+        removeButton().element().getBoundingClientRect().left -
+        content.getBoundingClientRect().right;
+      expect(right).toBeCloseTo(left, 1);
+    },
+  );
+
+  it('draws the chip line and the rule before the × from --border-color', async () => {
+    // The chip's own border and the remove segment's rule are one decision: a
+    // consumer that hands over a line token gets both, or the rule reads as an
+    // unrelated seam.
+    const el = await mount(
+      `<l-tag removable style="--border-color: rgb(0, 128, 0)">Design</l-tag>`,
+    );
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    expect(getComputedStyle(base).borderTopColor).toBe('rgb(0, 128, 0)');
+    expect(getComputedStyle(removeButton().element()).borderInlineStartColor).toBe(
+      'rgb(0, 128, 0)',
+    );
+  });
+
+  it('does not tint under the pointer when its × is the only target', async () => {
+    // A removable-only chip has exactly one control, and it is the segment. A
+    // tint spreading over the label promises a click that does nothing — and on
+    // a filter bar it competes with the segment for the eye. `--background` is
+    // set explicitly because the token stylesheet is absent from this suite:
+    // left to its token default both states compute to `transparent` and the
+    // assertion passes on any CSS at all.
+    const el = await mount(
+      `<l-tag removable style="--background: rgb(240, 240, 240)">Design</l-tag>`,
+    );
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    const rest = getComputedStyle(base).backgroundColor;
+    await userEvent.hover(el);
+    expect(getComputedStyle(base).backgroundColor).toBe(rest);
+  });
+
+  it('does tint under the pointer when the whole chip is the control', async () => {
+    const el = await mount(`<l-tag selectable style="--background: rgb(240, 240, 240)">A3</l-tag>`);
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    const rest = getComputedStyle(base).backgroundColor;
+    await userEvent.hover(el);
+    expect(getComputedStyle(base).backgroundColor).not.toBe(rest);
+  });
+
+  it('still marks selection on a chip themed with --border-color', async () => {
+    // Selection replaces the fill and the ink outright, so it has to replace the
+    // line too. Left coupled to `--border-color`, a themed chip drew the same
+    // border picked and unpicked, and the only "selected" signal left was the
+    // fill — the exact chip the Applied filters example teaches consumers to
+    // build. Colors are literal: this suite loads no token stylesheet.
+    const el = await mount(
+      `<l-tag selectable style="--border-color: rgb(0, 128, 0); --selected-color: rgb(0, 0, 255)">A3</l-tag>`,
+    );
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    expect(getComputedStyle(base).borderTopColor).toBe('rgb(0, 128, 0)');
+    el.selected = true;
+    await settle(el);
+    expect(getComputedStyle(base).borderTopColor).not.toBe('rgb(0, 128, 0)');
+  });
+
+  it('lets --selected-border-color pin the line a selected chip draws', async () => {
+    const el = await mount(
+      `<l-tag selectable selected style="--selected-border-color: rgb(255, 0, 0)">A3</l-tag>`,
+    );
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    expect(getComputedStyle(base).borderTopColor).toBe('rgb(255, 0, 0)');
+    // And it holds under the pointer, like `--border-color` does at rest.
+    await userEvent.hover(el);
+    expect(getComputedStyle(base).borderTopColor).toBe('rgb(255, 0, 0)');
+  });
+
+  it('holds an explicit --border-color on hover instead of drifting to a tint of the text', async () => {
+    // Left unset the line is derived from `--color` and strengthens under the
+    // pointer. Set explicitly it is the consumer's token, and a token that
+    // changes on hover is not the token they asked for.
+    const el = await mount(
+      `<l-tag removable style="--border-color: rgb(0, 128, 0)">Design</l-tag>`,
+    );
+    const base = el.shadowRoot!.querySelector('[part="base"]')!;
+    await userEvent.hover(el);
+    expect(getComputedStyle(base).borderTopColor).toBe('rgb(0, 128, 0)');
+  });
 });
 
 // ---------------------------------------------------------------------------
