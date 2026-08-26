@@ -1,5 +1,67 @@
 # luxen-ui
 
+## 0.20.0
+
+### Minor Changes
+
+- edf7755: `.l-button` now has a pressed state for toggle buttons. Set `aria-pressed="true"` and the button keeps its active fill for as long as it is on, so a formatting or alignment toolbar reads correctly at a glance instead of looking identical whether it is enabled or not. It works in every variant: the secondary button darkens, `primary` settles on its active brand fill, and `destructive` deepens its red tint. Hovering a pressed button still answers the pointer.
+
+  Inside `l-button-group`, a pressed button is raised above its neighbours so the border it shares with them is not clipped — the same treatment hover and focus already received.
+
+  Selection is still yours to manage: the group never sets `aria-pressed` itself. Both elements' descriptions have been rewritten to say so — `l-button-group` no longer describes itself as "a segmented control", which was the source of the confusion between the two. For a single-choice control that owns a `value` and submits it with a form, reach for `l-segmented-control` instead. The button group docs now lead with a single toolbar example combining stateless actions, independent toggles, and a single-choice set.
+
+- a0e8bdd: New `pill` appearance for `<l-input-stepper>`: the two round buttons sit inside a filled capsule instead of a bordered box — the quantity picker a cart row or a booking widget asks for. Select it with `appearance="pill"` and import `luxen-ui/css/input-stepper/pill`.
+
+  `rounded` gets a softer hover and press, and its buttons now shrink when pressed. Three fixes land with it: its button borders no longer disappear when a page imports another input-stepper appearance after it, it no longer jumps 12px on hydration, and its animated roller no longer paints a rectangle behind the value.
+
+- 2db8f2e: New `.l-radio-group`: a `<fieldset>` of native radios captioned by its `<legend>`, each input wrapped in the `<label>` that names it. That is the platform's own way to group and name a set of radios — the technique WCAG H71 and RGAA 11.6 ask for — so there is no ARIA to add and no `for`/`id` pair to keep in sync. When no visible caption fits, name the fieldset with `aria-label` instead.
+
+  Two appearances. Left alone it renders the radio primitive: put `.l-radio` on each input and you get the dot with its label beside it. Add `data-appearance="button"` on the group and `.l-button` on each label and the items become joined buttons, the form counterpart of a segmented control. `data-orientation="vertical"` stacks either one.
+
+  It ships **no JavaScript**, because there is nothing to implement. Radios sharing a `name` already give single selection, arrow-key navigation, a single tab stop, form submission, reset and validation — this is a stylesheet, not a component. A disabled item is skipped by the arrow keys and drops out of the tab order, again from the browser rather than from us.
+
+  Reach for the button appearance when the value is submitted with a form, and for `l-segmented-control` when the choice takes effect immediately.
+
+  `.l-button` also gains the checked state that goes with it: a button wrapping a checked radio or checkbox now gets the same fill as a pressed toggle button, defined once for both.
+
+- bb09766: `<l-tag removable>` now draws its remove button as a full-height segment at the end of the chip, split off by a rule, instead of a faint glyph that only grows a tint disc under the pointer. The affordance is there at rest — which is the only state a touch or keyboard user ever sees, and the difference between a filter bar you can scan and a row of chips with marks floating near their edges. The hover and press states fill that segment; the hit target, the `remove` event, the Backspace/Delete path and the focus ring are unchanged.
+
+  Hovering is now scoped to what is actually clickable: a display or removable-only chip no longer tints under the pointer, because its label is not a target — only the remove segment reacts. A `selectable` chip is a control in its own right and still hovers as a whole.
+
+  The label is also re-centred in its own compartment. The chip's `gap` spaces slotted items and is tighter than its padding, so fronting the remove rule with it left the label a full padding on its left and a bare gap on its right — 8px against 4px at `md`, with the last glyph touching the divider. Both sides now get `--padding-inline`, at every size.
+
+  The target floor is now enforced rather than merely defaulted: a removable chip stays at least 24px tall (WCAG 2.5.8) even when `--height` is tuned below it, so the segment can never fall under 24×24.
+
+  New `--border-color` sets the chip's line and the rule before the remove button in one declaration. Left unset it keeps deriving from `--color` and strengthens on hover, exactly as before. Set explicitly it holds in every state — a consumer handing over its own line token gets that token, not a hover-shifted mix of its text colour. With `--background` and `--color`, a chip can now be repainted from a design system's own tokens:
+
+  ```css
+  l-tag.location {
+    --background: var(--color-location-soft);
+    --color: var(--color-location-ink);
+    --border-color: var(--color-location-line);
+  }
+  ```
+
+  `--selected-border-color` completes the selected trio beside `--selected-color` and `--selected-background`. Selecting a chip replaces its fill and its ink outright, and now its line too, so a chip themed with `--border-color` keeps the emphasis step that says "picked" instead of drawing the same border either way. It defaults to the 45% tint of `--selected-color` the derived line always used, so nothing moves for a chip that does not set it.
+
+  Chips in a `multiple` `<l-select>` trigger are fixed too: the select's `--height`, `--border-radius` and `--background` were inheriting into them, so every chip rendered at the trigger's height, corner and fill instead of its own.
+
+- 3c986cb: `l-tooltip` and `l-popover` now follow their anchor. Both positioned themselves once, when they opened, so pointing an open tooltip at a different element by changing `for` left the bubble over the previous one. Retargeting a single shared instance across a chart's bars or cells now works without closing and reopening it on every move.
+
+  Two accessibility fixes come with it, in the same situation — any tooltip whose `for` differs between opening and closing, whether you retargeted it deliberately or a re-render swapped the id under you. `aria-describedby` was removed from whatever `for` named at close time rather than from the element that actually received it, stranding it on the original anchor for good: a screen reader keeps describing an element the bubble no longer points at, and nothing in manual testing shows it. `l-popover` had the same bug with `aria-expanded`. Retargeting onto an id that no longer exists now hides the bubble instead of leaving it open over unrelated content.
+
+  A tooltip with a static `for` sees none of that. One thing does reach every instance: removing an `l-tooltip` or `l-popover` from the DOM now cleans the attribute off its trigger, where before an `l-popover` left `aria-expanded="false"` behind — a button still advertising a panel that no longer exists.
+
+  **New:** `reposition()` on both elements. Positioning stays automatic — reach for this only when you move the anchor yourself, such as a marker tracking the pointer along a chart, where the built-in observers lag behind. No-op when closed.
+
+### Patch Changes
+
+- 8a1db62: Element spacing no longer depends on Tailwind. Six stylesheets read `--spacing` — a variable that belongs to Tailwind's base layer, not to Luxen — so outside a Tailwind project the surrounding `calc()` was invalid at computed-value time, the declaration was dropped, and the gap or padding silently fell back to zero.
+
+  Affected: `.l-button` (and every element built on it), `l-kbd`, `l-disclosure`, `l-segmented-control`, and both tab variants. They now use the `--l-spacing-*` tokens, which ship with `luxen-ui/css/tokens` — a required dependency of every element — and hold the same values, so nothing moves in a Tailwind project.
+
+  It is worth more than the cosmetics: the collapse first surfaced as a real WCAG 2.5.8 target-size failure, where stacked controls ended up close enough together to breach the minimum spacing once their gap vanished. A test now fails the build if any stylesheet reads `--spacing` without defining it — `l-divider` and `l-rating` expose their own as a public custom property and keep it.
+
 ## 0.19.1
 
 ### Patch Changes
