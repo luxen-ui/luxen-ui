@@ -75,7 +75,7 @@ declare global {
  * @csspart content - The label wrapper.
  * @csspart toggle - The toggle button rendered by `selectable` (not with `control="checkbox"`).
  * @csspart checkbox - The native checkbox rendered by `control="checkbox"`.
- * @csspart remove - The remove button.
+ * @csspart remove - The remove button — a full-height segment at the end of the chip.
  *
  * @cssproperty [--border-radius] - Corner radius. Defaults to a full pill.
  * @cssproperty [--height] - Chip height. Defaults to the `size` step (a selectable chip is taller, to keep a comfortable target).
@@ -83,8 +83,10 @@ declare global {
  * @cssproperty [--padding-inline] - Horizontal padding. Defaults to the `size` step.
  * @cssproperty [--background] - Chip background.
  * @cssproperty [--color] - Text color.
+ * @cssproperty [--border-color] - Chip border, and the rule that splits off the remove button. Defaults to a tint of `--color`; setting it pins the line in every state, so a token-based theme keeps its own value on hover.
  * @cssproperty [--selected-color] - Text, border, and checkbox accent when selected. Defaults to the library's form-control accent, lightened in dark mode.
  * @cssproperty [--selected-background] - Chip background when selected. Defaults to a tint of `--selected-color`.
+ * @cssproperty [--selected-border-color] - Chip border when selected. Defaults to a 45% tint of `--selected-color`. Selection replaces the line the same way it replaces the fill and the ink, so a chip themed with `--border-color` still gets its emphasis step; set this to theme that step too.
  *
  * @customElement l-tag
  */

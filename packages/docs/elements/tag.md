@@ -4,6 +4,7 @@ outline: deep
 
 <script setup>
 import tagDefault from '../.vitepress/examples/tag/TagDefault.html?raw'
+import tagAppliedFilters from '../.vitepress/examples/tag/TagAppliedFilters.html?raw'
 import tagSizes from '../.vitepress/examples/tag/TagSizes.html?raw'
 import tagPrefix from '../.vitepress/examples/tag/TagPrefix.html?raw'
 import tagSelectable from '../.vitepress/examples/tag/TagSelectable.html?raw'
@@ -31,13 +32,35 @@ Tags are compact chips for tokens, filters, and selected values, with an optiona
 
 ### Removable
 
-Add `removable` for a × button. The user can also press `Backspace` or `Delete` while it is focused. Each removal fires a cancelable `remove` event; if nothing calls `preventDefault()`, the tag removes itself from the DOM.
+Add `removable` for a remove button. It is a full-height segment at the end of the chip, split off by a rule, so the affordance is **drawn at rest** — touch and keyboard users never get a hover state, and a row of chips has to say where to click before the pointer arrives.
+
+The user can also press `Backspace` or `Delete` while the tag is focused. Each removal fires a cancelable `remove` event; if nothing calls `preventDefault()`, the tag removes itself from the DOM.
+
+Only the segment reacts to the pointer. A removable tag has exactly one target, so the label is left alone — a tint spreading over the whole chip would promise a click that does nothing. Add `selectable` and the chip becomes a control in its own right, and then it does hover as a whole.
 
 <ComponentWrapper :html="tagDefault" />
 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/tag/TagDefault.html [HTML]
+:::
+
+#### Applied filters
+
+The pattern removable tags exist for: every criterion the user has applied, named and individually revocable, above the results they narrow.
+
+Colour carries meaning here — a chip's tint says what kind of criterion it is (a site, a department, a plain attribute), which is what lets someone scan the bar instead of reading it. Three custom properties cover it: `--background`, `--color`, and `--border-color`, which sets the chip's line **and** the rule in front of the remove button. Left alone, that line is derived from `--color`; set it and it holds on hover, so a themed chip keeps its own value rather than drifting toward a tint of its text. Selecting a chip still replaces it, along with the fill and the ink — `--selected-border-color` themes that step.
+
+`--border-radius` inherits, so setting it once on the group trades the pill for a rectangle — the remove segment follows the corner either way.
+
+<ComponentWrapper
+  vertical
+  :html="tagAppliedFilters"
+/>
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tag/TagAppliedFilters.html [HTML]
 :::
 
 ### Sizes
@@ -110,7 +133,7 @@ One tag per facet value: a checkbox for a multi-select axis, the count in the `s
 
 ### Theming the selected state
 
-`--selected-color` sets the text, border, and checkbox accent at once, and the background is derived from it. Add `--selected-background` for a different fill, and `--border-radius` to trade the pill for a softer rectangle. Every custom property inherits, so setting them on the group themes each chip inside.
+`--selected-color` sets the text, border, and checkbox accent at once, and the background is derived from it. Add `--selected-background` for a different fill, `--selected-border-color` for a different line, and `--border-radius` to trade the pill for a softer rectangle. Every custom property inherits, so setting them on the group themes each chip inside.
 
 A dense filter drawer usually wants a step between `md` and `lg`: `--height` and `--font-size` (and `--padding-inline` if needed) land anywhere between them, so `::part(base)` stays out of it. The example below sits at 26px / 13px.
 

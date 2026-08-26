@@ -16,6 +16,26 @@
     --_background: var(--background, var(--l-color-bg-fill-neutral-subtle));
     --_color: var(--color, var(--l-color-text-neutral));
     --_border-strength: 14%;
+    /* By default the line is a tint of the ink, so a chip stays coherent under
+       any `--color` with one declaration. `--border-color` replaces that
+       derivation outright rather than shifting it: a consumer with a token
+       system wants *its* line token, not a 14% mix of its text color — and
+       wants it to hold in every state, which is why it is the fallback in both
+       of the pair below rather than a value the hover rule mixes further.
+       `--_border-strength` stays private. Selecting a chip swaps the pair
+       wholesale, the same way it swaps the fill and the ink. */
+    --_border-color: var(
+      --border-color,
+      color-mix(in oklab, currentColor var(--_border-strength), transparent)
+    );
+    --_border-color-hover: var(
+      --border-color,
+      color-mix(in oklab, currentColor calc(var(--_border-strength) + 12%), transparent)
+    );
+    /* Resolved here rather than at `.base`, because the × segment has to round
+       its outer end to the same curve. */
+    --_border-radius: var(--border-radius, var(--l-radius-full));
+    --_remove-glyph: 0.75rem;
 
     display: inline-flex;
     vertical-align: middle;
@@ -31,6 +51,7 @@
     --_height: var(--height, 1.75rem);
     --_font-size: var(--font-size, var(--l-text-sm));
     --_padding-inline: var(--padding-inline, 0.625rem);
+    --_remove-glyph: 0.875rem;
   }
 
   /* Disabled is conveyed by the greyed × button + cursor, NOT by washing out
@@ -53,10 +74,8 @@
     gap: var(--_gap);
     min-block-size: var(--_height);
     padding-inline: var(--_padding-inline);
-    /* Discreet border + hover tint derive from the text color, so they adapt to
-       any consumer `--color`. */
-    border: 1px solid color-mix(in oklab, currentColor var(--_border-strength), transparent);
-    border-radius: var(--border-radius, var(--l-radius-full));
+    border: 1px solid var(--_border-color);
+    border-radius: var(--_border-radius);
     background-color: var(--_background);
     color: var(--_color);
     font-family: var(--l-font-neo-grotesque);
@@ -69,14 +88,24 @@
       border-color 120ms ease;
   }
 
-  /* Whole-chip hover: a touch more presence, without competing with the ×. */
-  :host(:hover:not([disabled])) .base {
-    background-color: color-mix(in oklab, var(--_background), currentColor 7%);
-    border-color: color-mix(
-      in oklab,
-      currentColor calc(var(--_border-strength) + 12%),
-      transparent
-    );
+  /* The remove segment is exactly as tall as the chip, so the chip is where the
+     target floor has to live: `--height` still tunes a removable chip, but not
+     under the 24px minimum (WCAG 2.5.8). Without this the promise held only for
+     the default value. */
+  :host([removable]) .base {
+    min-block-size: max(1.5rem, var(--_height));
+  }
+
+  /* Whole-chip hover — only on a chip that is *wholly* a control. A display chip
+     has no target at all, and a removable one has exactly its × segment: tinting
+     the label under the pointer there promises a click that does nothing, and on
+     a filter bar it fights the segment for the eye. `[selectable]` also covers
+     `control="checkbox"`, which derives the attribute. */
+  @media (hover: hover) {
+    :host([selectable]:hover:not([disabled])) .base {
+      background-color: color-mix(in oklab, var(--_background), currentColor 7%);
+      border-color: var(--_border-color-hover);
+    }
   }
 
   .content {
@@ -152,6 +181,16 @@
       --selected-background,
       color-mix(in oklab, var(--_selected-color) 10%, var(--l-color-surface))
     );
+    /* The third member of the trio, beside `--selected-color` and
+       `--selected-background`. Selection already replaces the fill and the ink
+       outright, so the line has to be replaceable the same way — without this,
+       a chip that sets `--border-color` keeps that exact line when picked and
+       the emphasis step that says "selected" never happens. 45% by default, the
+       strength the derived line has always used here. */
+    --_selected-border-color: var(
+      --selected-border-color,
+      color-mix(in oklab, var(--_selected-color) 45%, transparent)
+    );
   }
 
   :host([selectable][size='lg']) {
@@ -161,7 +200,13 @@
   :host([selectable][selected]) {
     --_background: var(--_selected-background);
     --_color: var(--_selected-color);
-    --_border-strength: 45%;
+    --_border-color: var(--_selected-border-color);
+    /* Same +12 step the resting line takes on hover, and pinned in the same way
+       when the consumer supplies the value. */
+    --_border-color-hover: var(
+      --selected-border-color,
+      color-mix(in oklab, var(--_selected-color) 57%, transparent)
+    );
   }
 
   :host([selectable]) .base {
@@ -277,64 +322,98 @@
     flex: none;
     display: grid;
     place-items: center;
-    /* 24px hit target (WCAG 2.5.8); the visible tint circle is inset to ~18px. */
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
-    margin-inline: calc(var(--_gap) * -0.5) calc(var(--_padding-inline) * -0.5);
+    /* Full height, and split off by a rule: the affordance is drawn *at rest*
+       rather than conjured on hover. Keyboard and touch users never get a hover
+       state, and a filter bar of chips whose delete zone only appears under the
+       pointer is a row of faint marks until you go hunting. */
+    align-self: stretch;
+    /* Square, and never under the 24px hit target (WCAG 2.5.8) however a
+       consumer tunes `--height`. */
+    inline-size: max(1.5rem, var(--_height));
+    /* The segment spans `.base`'s *border* box, not its content box: the −1px
+       block margins cancel the border on each side (a stretched flex item is
+       sized by the line minus its own margins), which both lands the target on
+       a full 24px — 22px otherwise, one short — and runs the rule edge to edge
+       so it meets the chip's own border instead of stopping just inside it. */
+    margin-block: -1px;
+    /* End: flush to the chip's inner edge. Start: pushed off the label so it
+       gets the same air on both sides. `.base`'s `gap` spaces *slotted items*
+       (icon ↔ label) and is deliberately tighter than the chip's padding, so
+       letting it also front the rule left the label with 8px on its left and
+       4px on its right — visibly crammed against the divider. This tops the gap
+       back up to a full `--_padding-inline`, at every size. */
+    margin-inline: calc(var(--_padding-inline) - var(--_gap))
+      calc(var(--_padding-inline) * -1 - 1px);
     padding: 0;
-    border: 0;
-    border-radius: var(--l-radius-full);
+    /* Transparent on three sides, so `background-clip` below keeps the hover
+       fill off the 1px the chip's own border occupies. */
+    border: 1px solid transparent;
+    border-inline-start-color: var(--_border-color);
+    /* The chip's own curve — the padding box rounds to one pixel less on its
+       own, so the fill stops on the arc rather than squaring off the pill. */
+    border-start-end-radius: var(--_border-radius);
+    border-end-end-radius: var(--_border-radius);
+    background-color: transparent;
+    background-clip: padding-box;
     color: inherit;
     cursor: pointer;
-    /* Tint circle behind the glyph — a gradient disc kept smaller than the 24px
-       hit area, grown from 0 on hover so it reads as a neat ~18px dot. */
-    background: radial-gradient(
-        circle at center,
-        color-mix(in oklab, currentColor 15%, transparent) 60%,
-        transparent 62%
-      )
-      no-repeat center / 0 0;
-    transition:
-      scale 120ms ease,
-      background-size 140ms ease;
+    transition: background-color 120ms ease;
+    /* The press dip goes through a variable so the reduced-motion block can
+       cancel it by re-declaring *this* one line. Pairing the two `:active`
+       selectors instead is a trap: the override only wins on source order while
+       the specificities tie, and adding the `:not(:disabled)` guard below was
+       enough to silently break it. */
+    --_press-scale: 0.86;
 
     &::after {
       content: '';
-      inline-size: 0.875rem;
-      block-size: 0.875rem;
+      inline-size: var(--_remove-glyph);
+      block-size: var(--_remove-glyph);
       background-color: currentColor;
-      opacity: 0.55;
-      transition: opacity 120ms ease;
+      transition: scale 120ms ease;
       /* https://pictogrammers.com/library/mdi/icon/close */
       mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>')
         center / contain no-repeat;
     }
 
-    &:hover {
-      background-size: 1.125rem 1.125rem;
-    }
-    &:hover::after {
-      opacity: 1;
-    }
-
-    /* Tactile press — the button dips and the disc deepens. */
-    &:active {
-      scale: 0.86;
-      background-image: radial-gradient(
-        circle at center,
-        color-mix(in oklab, currentColor 26%, transparent) 60%,
-        transparent 62%
-      );
+    /* The whole segment fills. The chip already tints under the pointer (7%),
+       so this has to read as the stronger of the two — it is what will actually
+       be clicked. */
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background-color: color-mix(in oklab, transparent, currentColor 12%);
+      }
     }
 
+    &:active:not(:disabled) {
+      background-color: color-mix(in oklab, transparent, currentColor 22%);
+    }
+
+    /* The glyph dips, not the segment: scaling the box would shrink the rule
+       and pull it away from the chip's border. */
+    &:active:not(:disabled)::after {
+      scale: var(--_press-scale);
+    }
+
+    /* Inset, unlike the library's usual +2px: the segment is flush with the
+       chip's border on three sides, so an outset ring would sit half outside
+       the chip and clip against its neighbour in a wrapped filter bar. */
     &:focus-visible {
       outline: 2px solid var(--l-focus-ring);
-      outline-offset: 1px;
+      outline-offset: -2px;
     }
 
     &:disabled {
       cursor: not-allowed;
       opacity: 0.4;
+    }
+
+    /* `background-color` is forced to Canvas in high contrast, which would erase
+       a masked glyph entirely — repaint it in the system button color. */
+    @media (forced-colors: active) {
+      &::after {
+        background-color: ButtonText;
+      }
     }
   }
 
@@ -345,8 +424,8 @@
     .remove::after {
       transition-duration: 0ms;
     }
-    .remove:active {
-      scale: 1;
+    .remove {
+      --_press-scale: 1;
     }
   }
 }

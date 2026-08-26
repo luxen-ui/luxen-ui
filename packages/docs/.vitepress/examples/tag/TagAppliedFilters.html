@@ -1,0 +1,52 @@
+<style>
+  /* The colour of a chip says what kind of criterion it is. Three custom
+     properties per kind — no ::part(), no wrapper component. */
+  #demo-applied-filters .criterion {
+    --border-radius: var(--l-radius-md);
+  }
+  #demo-applied-filters .criterion-site {
+    --background: var(--l-color-bg-fill-success-soft);
+    --color: var(--l-color-text-success);
+    --border-color: color-mix(in oklab, var(--l-color-text-success) 35%, transparent);
+  }
+  #demo-applied-filters .criterion-department {
+    --background: var(--l-color-bg-fill-warning-soft);
+    --color: var(--l-color-text-warning);
+    --border-color: color-mix(in oklab, var(--l-color-text-warning) 35%, transparent);
+  }
+</style>
+
+<div
+  id="demo-applied-filters"
+  class="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[var(--l-radius-md)] border border-divider bg-surface px-3 py-2"
+>
+  <span class="text-[11px] font-medium uppercase tracking-wider text-tertiary">Filtered by</span>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <l-tag
+      class="criterion criterion-site"
+      removable
+    >
+      <l-icon
+        slot="prefix"
+        name="mdi:map-marker-outline"
+      ></l-icon>
+      Lyon branch
+    </l-tag>
+    <l-tag
+      class="criterion criterion-department"
+      removable
+    >
+      <l-icon
+        slot="prefix"
+        name="mdi:sitemap-outline"
+      ></l-icon>
+      Facilities
+    </l-tag>
+    <l-tag
+      class="criterion"
+      removable
+      >LEASE-2025-001</l-tag
+    >
+  </div>
+</div>
