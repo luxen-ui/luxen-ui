@@ -77,16 +77,16 @@ declare global {
  * @csspart checkbox - The native checkbox rendered by `control="checkbox"`.
  * @csspart remove - The remove button — a full-height segment at the end of the chip.
  *
- * @cssproperty [--border-radius] - Corner radius. Defaults to a full pill.
+ * @cssproperty [--text-color] - Label color.
+ * @cssproperty [--background-color] - Chip fill.
+ * @cssproperty [--border-color] - Chip border, and the rule that splits off the remove button. Defaults to a tint of `--text-color`; setting it pins the line in every state, so a token-based theme keeps its own value on hover.
+ * @cssproperty [--selected-text-color] - Label, border, and checkbox accent when selected. Defaults to the library's form-control accent, lightened in dark mode.
+ * @cssproperty [--selected-background-color] - Chip fill when selected. Defaults to a tint of `--selected-text-color`.
+ * @cssproperty [--selected-border-color] - Chip border when selected. Defaults to a 45% tint of `--selected-text-color`. Selection replaces the line the same way it replaces the fill and the ink, so a chip themed with `--border-color` still gets its emphasis step; set this to theme that step too.
  * @cssproperty [--height] - Chip height. Defaults to the `size` step (a selectable chip is taller, to keep a comfortable target).
  * @cssproperty [--font-size] - Label size. Defaults to the `size` step — 12px, or 14px at `size="lg"`. Set it with `--height` to land between the two steps in a dense filter panel.
  * @cssproperty [--padding-inline] - Horizontal padding. Defaults to the `size` step.
- * @cssproperty [--background] - Chip background.
- * @cssproperty [--color] - Text color.
- * @cssproperty [--border-color] - Chip border, and the rule that splits off the remove button. Defaults to a tint of `--color`; setting it pins the line in every state, so a token-based theme keeps its own value on hover.
- * @cssproperty [--selected-color] - Text, border, and checkbox accent when selected. Defaults to the library's form-control accent, lightened in dark mode.
- * @cssproperty [--selected-background] - Chip background when selected. Defaults to a tint of `--selected-color`.
- * @cssproperty [--selected-border-color] - Chip border when selected. Defaults to a 45% tint of `--selected-color`. Selection replaces the line the same way it replaces the fill and the ink, so a chip themed with `--border-color` still gets its emphasis step; set this to theme that step too.
+ * @cssproperty [--border-radius] - Corner radius. Defaults to a full pill.
  *
  * @customElement l-tag
  */

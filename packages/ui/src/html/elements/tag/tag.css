@@ -13,11 +13,11 @@
 
     /* Skin, resolved once so `[selected]` can swap all three at the source
        instead of re-declaring the properties that consume them. */
-    --_background: var(--background, var(--l-color-bg-fill-neutral-subtle));
-    --_color: var(--color, var(--l-color-text-neutral));
+    --_background: var(--background-color, var(--l-color-bg-fill-neutral-subtle));
+    --_color: var(--text-color, var(--l-color-text-neutral));
     --_border-strength: 14%;
     /* By default the line is a tint of the ink, so a chip stays coherent under
-       any `--color` with one declaration. `--border-color` replaces that
+       any `--text-color` with one declaration. `--border-color` replaces that
        derivation outright rather than shifting it: a consumer with a token
        system wants *its* line token, not a 14% mix of its text color — and
        wants it to hold in every state, which is why it is the fallback in both
@@ -166,23 +166,23 @@
        on the dark tint, and both modes clear 6:1. `color-mix()` resolves
        reliably inside `light-dark()` — `oklch(from …)` does not. */
     --_selected-color: var(
-      --selected-color,
+      --selected-text-color,
       light-dark(
         color-mix(in oklab, var(--_accent), black 14%),
         color-mix(in oklab, var(--_accent), white 45%)
       )
     );
-    /* Derived from the text color, so overriding `--selected-color` alone
+    /* Derived from the text color, so overriding `--selected-text-color` alone
        repaints the whole chip coherently. Kept at 10%: a consumer accent skips
        the mode correction above, so the tint has to stay pale enough for a
        semantic token (`--l-color-text-success` and friends) to clear 4.5:1 on
        it unaided. The border carries the rest of the emphasis. */
     --_selected-background: var(
-      --selected-background,
+      --selected-background-color,
       color-mix(in oklab, var(--_selected-color) 10%, var(--l-color-surface))
     );
-    /* The third member of the trio, beside `--selected-color` and
-       `--selected-background`. Selection already replaces the fill and the ink
+    /* The third member of the trio, beside `--selected-text-color` and
+       `--selected-background-color`. Selection already replaces the fill and the ink
        outright, so the line has to be replaceable the same way — without this,
        a chip that sets `--border-color` keeps that exact line when picked and
        the emphasis step that says "selected" never happens. 45% by default, the
@@ -277,7 +277,7 @@
      accent follows the selected color, so a themed chip keeps its checkbox in
      the same hue. */
   .checkbox {
-    --accent: var(--selected-color, var(--l-form-control-activated-color));
+    --accent: var(--selected-text-color, var(--l-form-control-activated-color));
     /* Hover halo — same ratio and same token flip as the light-DOM
        `.l-checkbox`, which keeps this rule out of the shared partial (see
        `css/elements/checkbox.css`). Repeated here rather than moved into the

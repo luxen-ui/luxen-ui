@@ -50,6 +50,43 @@ Use any icon from the Iconify library with the `prefix:name` format.
 <<< @/.vitepress/examples/icon/IconSets.html [HTML]
 :::
 
+### Your own icon set
+
+Icons outside the Iconify CDN — a house collection generated from your own SVGs — must be registered first. On npm, use the `addCollection()` **this package re-exports**; on the CDN build, assign `window.IconifyPreload` before the script tag.
+
+::: code-group
+
+```js [JS]
+import { addCollection } from 'luxen-ui/icon';
+import acmeIcons from './icons/acme.json'; // { prefix: 'acme', icons: { … } }
+
+addCollection(acmeIcons);
+```
+
+```html [CDN]
+<script>
+  // Read when the module loads, so it has to come first.
+  window.IconifyPreload = [{ prefix: 'acme', icons: {} }];
+</script>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/luxen-ui/cdn/elements/icon/index.js"
+></script>
+```
+
+:::
+
+```html
+<l-icon name="acme:location"></l-icon>
+```
+
+Two rules, because both fail silently:
+
+- **This `addCollection`, not a framework binding's.** Icon storage belongs to the `iconify-icon` module and every copy of it has its own, so a collection registered through `@iconify/vue` or `@iconify/react` is invisible here — the icon renders nothing, at zero width, with no error.
+- **Before the first icon mounts.** Registering writes to storage; it does not re-render icons already on the page.
+
+`addIcon()` and `setCustomIconLoader()` are re-exported the same way. A name that resolves to nothing logs one warning per name.
+
 ### Accessible icons
 
 Icons are decorative by default (`aria-hidden="true"`). Add `label` for meaningful icons.
