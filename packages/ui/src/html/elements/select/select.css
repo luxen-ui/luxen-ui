@@ -89,18 +89,19 @@
   white-space: nowrap;
 }
 
-/* This element's public knobs and the chip's share three names — `--height`,
-   `--border-radius`, `--background` — and custom properties inherit straight
-   through a shadow boundary. Left alone, every chip in the trigger renders at
-   the *select's* height, corner and fill rather than its own: a 36px chip with
-   a 6px corner on a white ground, when `size="sm"` asked for a 24px pill on the
-   neutral fill. `initial` is the guaranteed-invalid value, so each `var(--x, …)`
-   inside the chip falls back to its own default. Matched on the part, not on
-   the tag name, so a renamed `elementPrefix` can't miss it. */
+/* This element's public knobs and the chip's share two names — `--height` and
+   `--border-radius` — and custom properties inherit straight through a shadow
+   boundary. Left alone, every chip in the trigger renders at the *select's*
+   height and corner rather than its own: a 36px chip with a 6px corner, when
+   `size="sm"` asked for a 24px pill. `initial` is the guaranteed-invalid value,
+   so each `var(--x, …)` inside the chip falls back to its own default. Matched
+   on the part, not on the tag name, so a renamed `elementPrefix` can't miss it.
+
+   The fill used to collide too, back when the chip read `--background`; it now
+   reads `--background-color`, which this element does not expose. */
 [part='tag'] {
   --height: initial;
   --border-radius: initial;
-  --background: initial;
 }
 
 .placeholder {

@@ -95,8 +95,8 @@ the platform genuinely can't express the behavior (a modal, a combobox, a toast)
 | ---------------------------------------------------- | ---------------------------------------- |
 | Persistent inline message tied to a section          | `<l-alert>`                              |
 | Ephemeral notification that auto-dismisses           | `<l-toast>`                              |
-| A small count or status label                        | `<l-badge>`                              |
-| A removable / categorizing chip                      | `<l-tag>`                                |
+| A count, status or category label the user reads     | `<l-badge>`                              |
+| A chip the user selects or removes                   | `<l-tag>`                                |
 | Determinate progress of a task                       | `<progress class="l-progress">`          |
 | Indeterminate "working…" indicator                   | `<l-spinner>`                            |
 | Placeholder while content loads                      | `<l-skeleton>`                           |
@@ -142,8 +142,12 @@ the platform genuinely can't express the behavior (a modal, a combobox, a toast)
   a glance and it must stay until acknowledged, it's an alert. If it's a transient
   "saved!", it's a toast.
 - **`.l-switch` vs `.l-checkbox`** — instant-apply setting vs form field submitted later.
-- **`<l-badge>` vs `<l-tag>`** — a badge is a small, non-interactive status/count label;
-  a tag is interactive (selectable, removable) and used for categorization or chips.
+- **`<l-badge>` vs `<l-tag>`** — decide on interaction, not on meaning. A chip the user
+  only reads is a badge, *including* a categorizing one (a site, a department, an asset
+  class); a chip the user selects or removes is a tag. Colour is not the tiebreaker: both
+  take the same `--text-color` / `--background-color` / `--border-color` trio, and on both it
+  overrides the variant. Prefer the badge when either would do — it is light DOM, so it
+  renders without its script, and it is 2px shorter at the same size step.
 - **`<l-select>` vs `<l-combobox>`** — pick from a fixed list vs type-to-filter / free
   text with suggestions.
 - **`<l-popover>` vs `<l-tooltip>`** — a popover holds interactive content; a tooltip is

@@ -133,12 +133,12 @@ describe('l-tag renders a chip', () => {
   it('does not tint under the pointer when its × is the only target', async () => {
     // A removable-only chip has exactly one control, and it is the segment. A
     // tint spreading over the label promises a click that does nothing — and on
-    // a filter bar it competes with the segment for the eye. `--background` is
+    // a filter bar it competes with the segment for the eye. `--background-color` is
     // set explicitly because the token stylesheet is absent from this suite:
     // left to its token default both states compute to `transparent` and the
     // assertion passes on any CSS at all.
     const el = await mount(
-      `<l-tag removable style="--background: rgb(240, 240, 240)">Design</l-tag>`,
+      `<l-tag removable style="--background-color: rgb(240, 240, 240)">Design</l-tag>`,
     );
     const base = el.shadowRoot!.querySelector('[part="base"]')!;
     const rest = getComputedStyle(base).backgroundColor;
@@ -147,7 +147,9 @@ describe('l-tag renders a chip', () => {
   });
 
   it('does tint under the pointer when the whole chip is the control', async () => {
-    const el = await mount(`<l-tag selectable style="--background: rgb(240, 240, 240)">A3</l-tag>`);
+    const el = await mount(
+      `<l-tag selectable style="--background-color: rgb(240, 240, 240)">A3</l-tag>`,
+    );
     const base = el.shadowRoot!.querySelector('[part="base"]')!;
     const rest = getComputedStyle(base).backgroundColor;
     await userEvent.hover(el);
@@ -161,7 +163,7 @@ describe('l-tag renders a chip', () => {
     // fill — the exact chip the Applied filters example teaches consumers to
     // build. Colors are literal: this suite loads no token stylesheet.
     const el = await mount(
-      `<l-tag selectable style="--border-color: rgb(0, 128, 0); --selected-color: rgb(0, 0, 255)">A3</l-tag>`,
+      `<l-tag selectable style="--border-color: rgb(0, 128, 0); --selected-text-color: rgb(0, 0, 255)">A3</l-tag>`,
     );
     const base = el.shadowRoot!.querySelector('[part="base"]')!;
     expect(getComputedStyle(base).borderTopColor).toBe('rgb(0, 128, 0)');
@@ -182,7 +184,7 @@ describe('l-tag renders a chip', () => {
   });
 
   it('holds an explicit --border-color on hover instead of drifting to a tint of the text', async () => {
-    // Left unset the line is derived from `--color` and strengthens under the
+    // Left unset the line is derived from `--text-color` and strengthens under the
     // pointer. Set explicitly it is the consumer's token, and a token that
     // changes on hover is not the token they asked for.
     const el = await mount(

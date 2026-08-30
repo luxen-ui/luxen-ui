@@ -1,0 +1,31 @@
+<style>
+  /* Your own families. `--text-color` carries the border with it, so an outlined
+     chip needs one declaration; a filled one adds `--background-color`.
+
+     These stand in for a consumer's token families. The point is that they are
+     not interface states: the emerald here means "this is a place", not
+     "success" — and the day one of the two moves, the other can stay. */
+  .chip-site {
+    --text-color: light-dark(oklch(45% 0.11 165), oklch(87% 0.09 165));
+    --background-color: light-dark(oklch(95% 0.04 165), oklch(28% 0.05 165));
+  }
+  .chip-department {
+    --text-color: light-dark(oklch(46% 0.1 95), oklch(88% 0.1 95));
+    --background-color: light-dark(oklch(96% 0.05 95), oklch(29% 0.06 95));
+  }
+  .chip-machine {
+    --text-color: light-dark(oklch(48% 0.12 250), oklch(87% 0.09 250));
+  }
+</style>
+
+<div class="flex flex-wrap items-center gap-2">
+  <l-badge class="chip-site">
+    <l-icon name="mdi:map-marker-outline"></l-icon>
+    Lyon branch
+  </l-badge>
+  <l-badge class="chip-department">
+    <l-icon name="mdi:sitemap-outline"></l-icon>
+    Facilities
+  </l-badge>
+  <l-badge class="chip-machine">MX-3070-014</l-badge>
+</div>

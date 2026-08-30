@@ -4,10 +4,36 @@
     https://blog.jim-nielsen.com/2021/custom-elements-without-js/
   */
   l-badge {
-    /* Per-variant primitives — set by [variant], consumed by appearance */
+    /* Per-variant primitives — set by [variant], consumed by appearance. The
+       public hooks that override them are threaded at the declaration sites
+       below rather than here, so this whole machinery stays untouched: a
+       consumer value is not competing with `[variant]` / `[appearance]` /
+       `[pill]` on specificity, it sits under them.
+
+       Four hooks, and each one earns its place by hiding something a consumer
+       would otherwise have to know:
+
+         --text-color        the line is a tint of it, so one declaration
+                             repaints the whole chip
+         --background-color  which per-appearance token it is replacing
+         --border-color      the 30% mix, and that it holds through `filled`,
+                             whose default line is transparent
+         --border-radius     that the corner is a squircle, not a plain arc
+
+       Size and spacing get no hook on purpose. `--height` / `--font-size` /
+       `--padding-inline` would be pass-throughs to the identically named
+       properties declared a few lines below, hiding nothing — and `size` is
+       already the API for that axis. Three steps are the design; a badge that
+       can be dialled to any height stops being a size step and starts being a
+       box.
+
+       The line derives from `currentColor` rather than from `--_text-color`, so
+       it follows the ink whoever set it — the hook, a variant, or a consumer's
+       own `color` declaration. */
     --_text-color: var(--l-color-text-neutral);
     --_background-color: transparent;
-    --_border-color: color-mix(in oklab, var(--_text-color) 30%, transparent);
+    --_border-color: color-mix(in oklab, currentColor 30%, transparent);
+    --_border-radius: var(--l-radius-md);
 
     /* Size defaults (md) */
     --_height: 1.375rem;
@@ -21,11 +47,11 @@
     min-height: var(--_height);
     padding-block: 0.25rem;
     padding-inline: var(--_padding-inline);
-    border: 1px solid var(--_border-color);
-    border-radius: var(--l-radius-md);
+    border: 1px solid var(--border-color, var(--_border-color));
+    border-radius: var(--border-radius, var(--_border-radius));
     corner-shape: squircle;
-    background-color: var(--_background-color);
-    color: var(--_text-color);
+    background-color: var(--background-color, var(--_background-color));
+    color: var(--text-color, var(--_text-color));
     font-family: var(--l-font-neo-grotesque);
     font-size: var(--_font-size);
     font-weight: var(--l-font-weight-medium);
@@ -136,8 +162,10 @@
     ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
     */
 
+    /* `--border-radius` keeps the squircle; `pill` is what trades it for a true
+       arc, because a squircle at a full radius reads as a blob. */
     &[pill] {
-      border-radius: var(--l-radius-full);
+      --_border-radius: var(--l-radius-full);
       corner-shape: unset;
     }
 
@@ -153,7 +181,29 @@
     }
   }
 
-  l-badge:has(iconify-icon:first-child) {
+  /* A glyph against an edge earns a tighter padding on that side: its bounding
+     box already reads as air, so the label keeps the full gutter and the chip
+     does not go lopsided.
+
+     Matches whichever icon element the consumer composes — the library's own
+     `l-icon`, a raw `iconify-icon`, or the inline `<svg>` a framework Iconify
+     binding renders. `l-icon` needs naming explicitly: its `iconify-icon` sits
+     in a shadow root this selector cannot see, so matching the inner element
+     alone silently skipped the correction (the icon still laid out — `l-icon`
+     is `display: contents` — it just sat 2px too far in). Same element set
+     `toast.css` and `story.css` already use. */
+  l-badge:has(:is(iconify-icon, l-icon, svg):first-child) {
     padding-inline-start: 0.25rem;
+  }
+
+  /* `:not(:first-child)` is what makes a trailing icon addressable at all.
+     `:first-child` and `:last-child` count elements, not text, so an icon that
+     is the badge's only element child matches both — `<l-badge>Lyon <l-icon/>`
+     is indistinguishable from `<l-badge><l-icon/>Lyon`, and the rule above
+     already claims it. Requiring a preceding element keeps that case exactly as
+     it was and makes this one exact: wrap the label (`<span>Lyon</span>`) and
+     the icon is unambiguously at the end. */
+  l-badge:has(:is(iconify-icon, l-icon, svg):last-child:not(:first-child)) {
+    padding-inline-end: 0.25rem;
   }
 }
