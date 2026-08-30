@@ -42,11 +42,16 @@ const MEASURED_TOKENS = [
   '--l-form-control-disabled-mark-color',
 ];
 
+// Two causes produce an unresolved `--l-*`, and naming only one sends the reader
+// the wrong way: a typo'd token in an element skin passes the preconditions below
+// (the real token exists) and fails inside `parse()` instead, where "rebuild the
+// tokens" is advice that changes nothing.
 const STALE_TOKENS_HINT =
-  'A `--l-*` token resolved to nothing. That is almost always a stale ' +
-  '@luxen-ui/design-tokens build (its `dist/` is a gitignored artifact) — rebuild it with ' +
-  '`vp run @luxen-ui/design-tokens#build`, or run the suite as `vp run luxen-ui#test`, ' +
-  'which builds its dependencies first.';
+  'A `--l-*` token resolved to nothing. Either the reference is misspelt — check the ' +
+  '`var(--l-…)` names in the element CSS this suite imports against ' +
+  "@luxen-ui/design-tokens — or that package's `dist/` is stale (it is a gitignored " +
+  'build artifact): rebuild it with `vp run @luxen-ui/design-tokens#build`, or run the ' +
+  'suite as `vp run luxen-ui#test`, which builds its dependencies first.';
 
 let host: HTMLElement;
 
@@ -186,10 +191,11 @@ function paintedPair(el: Element, mark: string, fill: string, surface: Rgba) {
 // not one the committed CSS has. On current tokens the pair measures 3.20:1 in
 // dark and 4.38:1 in light, both above the floor.
 //
-// `globalSetup` in vitest.browser.config.ts now rebuilds the tokens before every
-// browser run, so the stale case should be unreachable. These assertions are the
-// backstop: if an input ever goes missing again, the suite names the token in one
-// line instead of reporting a contrast ratio for a colour that never resolved.
+// The `designTokens()` plugin in vitest.browser.config.ts now rebuilds the tokens
+// before every browser run and again on every token-source edit, so the stale case
+// should be unreachable. These assertions are the backstop: if an input ever goes
+// missing again, the suite names the token in one line instead of reporting a
+// contrast ratio for a colour that never resolved.
 describe('The suite is measuring a real token build', () => {
   it.each(MEASURED_TOKENS)('resolves %s', (token: string) => {
     const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
