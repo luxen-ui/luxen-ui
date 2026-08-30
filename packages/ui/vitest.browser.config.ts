@@ -11,6 +11,9 @@ export default defineConfig({
   publicDir: 'tests/fixtures/public',
   test: {
     include: ['tests/elements/**/*.test.ts'],
+    // Rebuilds the design-token CSS the light-DOM skins import — see the file
+    // for why a direct `vitest run` would otherwise read a stale build.
+    globalSetup: ['tests/build-design-tokens.ts'],
     browser: {
       enabled: true,
       provider: playwright(),
