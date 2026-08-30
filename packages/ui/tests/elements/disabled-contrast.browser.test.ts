@@ -34,6 +34,20 @@ import '../../src/css/elements/textarea.css';
 /** WCAG 1.4.11 floor for a non-text graphic that carries meaning. */
 const MIN_MARK_CONTRAST = 3;
 
+/** Every token this suite measures through — see the preconditions below. */
+const MEASURED_TOKENS = [
+  '--l-color-surface',
+  '--l-form-control-disabled-background',
+  '--l-form-control-disabled-border',
+  '--l-form-control-disabled-mark-color',
+];
+
+const STALE_TOKENS_HINT =
+  'A `--l-*` token resolved to nothing. That is almost always a stale ' +
+  '@luxen-ui/design-tokens build (its `dist/` is a gitignored artifact) — rebuild it with ' +
+  '`vp run @luxen-ui/design-tokens#build`, or run the suite as `vp run luxen-ui#test`, ' +
+  'which builds its dependencies first.';
+
 let host: HTMLElement;
 
 afterEach(() => host?.remove());
@@ -49,11 +63,30 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 
 type Rgba = [number, number, number, number];
 
-/** Parse any CSS colour (oklch, oklab, color-mix, light-dark…) into sRGB + alpha. */
+/**
+ * Parse any CSS colour (oklch, oklab, color-mix, light-dark…) into sRGB + alpha.
+ *
+ * A canvas silently keeps its previous `fillStyle` when handed a string it
+ * cannot parse — including the empty string a custom property computes to once
+ * one of its `var()`s is missing. Seeding twice with different colours turns
+ * that silence into a throw: anything the canvas accepted resolves to the same
+ * value from either seed, anything it rejected keeps the two seeds apart.
+ *
+ * Without this the suite measures a token that failed to resolve as opaque
+ * black and reports the result as a contrast number, which is how a missing
+ * `--l-form-control-disabled-mark-color` once read as "1.43:1, below the 3:1
+ * floor" instead of "there is no thumb colour here at all".
+ */
 function parse(color: string): Rgba {
+  const seededWith = (seed: string) => {
+    ctx.fillStyle = seed;
+    ctx.fillStyle = color;
+    return ctx.fillStyle;
+  };
+  if (seededWith('#000') !== seededWith('#fff')) {
+    throw new Error(`Not a colour: ${JSON.stringify(color)}. ${STALE_TOKENS_HINT}`);
+  }
   ctx.clearRect(0, 0, 1, 1);
-  ctx.fillStyle = '#000';
-  ctx.fillStyle = color;
   ctx.fillRect(0, 0, 1, 1);
   const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
   return [r, g, b, a / 255];
@@ -129,6 +162,40 @@ function paintedPair(el: Element, mark: string, fill: string, surface: Rgba) {
   };
   return { mark: onSurface(mark), fill: onSurface(fill) };
 }
+
+// ---------------------------------------------------------------------------
+// Preconditions
+// ---------------------------------------------------------------------------
+
+// Why this suite could fail locally while CI stayed green.
+//
+// `src/css/tokens.css` imports `@luxen-ui/design-tokens/css`, which resolves to
+// that package's `dist/` — a gitignored *build artifact*, not source. CI never
+// reads a stale one: `.github/workflows/ci.yml` runs `vp run --filter
+// 'luxen-ui...' build` (the `...` pulls in dependencies) before `vp run
+// luxen-ui#test`. A bare `vitest run` skips the task graph and consumes whatever
+// `dist/` happens to be on disk, which can predate the tokens under test by
+// months.
+//
+// Against a `dist/` built before `--l-form-control-disabled-mark-color` existed,
+// `--_thumb-color: var(--l-form-control-disabled-mark-color)` is invalid at
+// computed-value time: the custom property computes to nothing, `--_thumb-img`
+// collapses to `background-image: none`, and the disabled switch really does
+// paint as an empty pill. `parse()` used to read that empty string as opaque
+// black and score it 1.43:1 in dark mode — a genuine break in *that* build, but
+// not one the committed CSS has. On current tokens the pair measures 3.20:1 in
+// dark and 4.38:1 in light, both above the floor.
+//
+// `globalSetup` in vitest.browser.config.ts now rebuilds the tokens before every
+// browser run, so the stale case should be unreachable. These assertions are the
+// backstop: if an input ever goes missing again, the suite names the token in one
+// line instead of reporting a contrast ratio for a colour that never resolved.
+describe('The suite is measuring a real token build', () => {
+  it.each(MEASURED_TOKENS)('resolves %s', (token: string) => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+    expect(value, STALE_TOKENS_HINT).not.toBe('');
+  });
+});
 
 // ---------------------------------------------------------------------------
 // Toggles
