@@ -1,5 +1,11 @@
 # luxen-ui
 
+## 0.21.1
+
+### Patch Changes
+
+- 387a266: Add a Korean (`ko`) translation for the built-in element labels. Activate it with a side-effect import: `import 'luxen-ui/translations/ko'`.
+
 ## 0.21.0
 
 ### Minor Changes
