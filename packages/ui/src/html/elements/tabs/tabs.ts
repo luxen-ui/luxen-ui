@@ -21,6 +21,149 @@ interface TabsEventMap {
 }
 
 /**
+ * Elements that take a tab stop of their own. `tabindex="-1"` is deliberately
+ * absent: it makes an element programmatically focusable but leaves it out of
+ * the tab sequence, and the tab sequence is what the APG rule below is about.
+ *
+ * A selector is the wrong shape for this question and the platform offers
+ * nothing better yet. `el.tabIndex >= 0` looks like the answer and is not: it
+ * reports 0 for `<a>` without `href`, `<input type="hidden">` and `<video>`
+ * without `controls`, none of which take focus, and -1 for `[contenteditable]`,
+ * which does. `:focusable` / `:tabbable` would settle it, but they are not in
+ * Selectors Level 4 and no engine ships them (checked against Chrome 152) —
+ * when they land, this whole list collapses to `:tabbable` and `takesTabStop`
+ * becomes one `matches` call. Probing with `focus()` is the only exact answer
+ * available today, and it is unusable here: this runs inside a MutationObserver
+ * callback, where moving focus would be destructive.
+ *
+ * Two clauses are narrower than their element name suggests:
+ * - `input[type="hidden"]` renders nothing and takes no focus, yet is a routine
+ *   first child of a form panel (a CSRF field).
+ * - Only the first `summary` child of a `details` is the disclosure control; a
+ *   `summary` anywhere else is inert content.
+ */
+const TAB_STOP_SELECTOR = [
+  'a[href]',
+  'area[href]',
+  'button',
+  'input:not([type="hidden"])',
+  'select',
+  'textarea',
+  'details > summary:first-of-type',
+  'audio[controls]',
+  'video[controls]',
+  // Focus enters an iframe's content, so it is a tab stop rather than the
+  // opaque box it looks like.
+  'iframe',
+  '[contenteditable]:not([contenteditable="false"])',
+  '[tabindex]:not([tabindex^="-"])',
+].join(',');
+
+/**
+ * Content that is not focusable and not text — the walk has to stop on these
+ * rather than skip ahead, or a panel opening with an illustration would be read
+ * as opening with whatever link happens to follow it.
+ */
+const OPAQUE_CONTENT_SELECTOR = 'img, picture, svg, canvas, video, object, embed, hr';
+
+/**
+ * Markup that is never rendered. Only consulted for a panel that is itself
+ * off-screen, where real visibility cannot be measured — see `panelIsRendered`.
+ */
+const NOT_RENDERED_SELECTOR = '[hidden], template, script, style';
+
+/**
+ * Is this element actually rendered right now?
+ *
+ * Asking the platform rather than pattern-matching markup is what keeps
+ * `display: none` content — a Tailwind `hidden` class, a framework's collapsed
+ * block, a hidden input — from being mistaken for the panel's first content.
+ * The option was renamed mid-standardisation and unknown keys are ignored, so
+ * both spellings are passed; `getClientRects` covers engines without the method.
+ */
+function isRendered(el: Element): boolean {
+  const check = (el as Element & { checkVisibility?: (options?: object) => boolean })
+    .checkVisibility;
+  if (typeof check === 'function') {
+    return check.call(el, { checkVisibilityCSS: true, visibilityProperty: true });
+  }
+  return el.getClientRects().length > 0;
+}
+
+function takesTabStop(el: Element): boolean {
+  if (el.matches(TAB_STOP_SELECTOR) && !el.matches(':disabled')) return true;
+  // A custom element keeps its control inside a shadow root, out of reach of a
+  // light-DOM selector — `l-select` and `l-slider` both put their tab stop on a
+  // shadow node.
+  return Boolean(el.shadowRoot?.querySelector(TAB_STOP_SELECTOR));
+}
+
+interface FirstContentVerdict {
+  /** Whether the panel's first content already offers a tab stop. */
+  takesTabStop: boolean;
+  /**
+   * Tag name of a custom element met before reaching a verdict whose shadow
+   * root was not attached yet, so the verdict has to be retaken once it is.
+   */
+  pendingTag: string | null;
+}
+
+/**
+ * Does the first thing a reader meets in this panel take a tab stop of its own?
+ *
+ * The APG asks for `tabindex="0"` on a tabpanel "when the tabpanel does not
+ * contain any focusable elements **or the first element with content is not
+ * focusable**". One walk answers both clauses: stop at the first content and ask
+ * whether it is focusable; a panel holding nothing focusable runs off the end
+ * and returns false, which is the first clause.
+ *
+ * The walk descends through wrappers on purpose. The APG's own manual-activation
+ * example is `<p><a href>…`, where the link is the first content even though the
+ * `<p>` is visited first — and that example's panels carry no `tabindex`.
+ *
+ * `measured` says whether real visibility can be trusted. It cannot for a panel
+ * that is itself hidden — every descendant would report invisible — so that case
+ * falls back to the markup heuristic and is remeasured when the panel is shown.
+ */
+function firstContentTakesTabStop(panel: Element, measured: boolean): FirstContentVerdict {
+  const skipSubtree = (el: Element) =>
+    measured ? !isRendered(el) : el.matches(NOT_RENDERED_SELECTOR);
+
+  const walker = document.createTreeWalker(panel, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) =>
+      node.nodeType === Node.ELEMENT_NODE && skipSubtree(node as Element)
+        ? // REJECT, not SKIP: a TreeWalker drops the whole subtree, so text
+          // inside an unrendered block never reads as prose.
+          NodeFilter.FILTER_REJECT
+        : NodeFilter.FILTER_ACCEPT,
+  });
+
+  let pendingTag: string | null = null;
+
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      // Whitespace between tags is not content. Real text is — and is not focusable.
+      if (node.nodeValue?.trim()) return { takesTabStop: false, pendingTag };
+      continue;
+    }
+    const el = node as Element;
+    if (takesTabStop(el)) return { takesTabStop: true, pendingTag: null };
+    // Inert content is visible content that cannot be focused, so it settles the
+    // question: this panel needs a stop of its own. (Unlike an unrendered block,
+    // which is genuinely absent and is skipped above.)
+    if (el.matches('[inert]')) return { takesTabStop: false, pendingTag };
+    if (el.matches(OPAQUE_CONTENT_SELECTOR)) return { takesTabStop: false, pendingTag };
+    // An un-upgraded custom element cannot be judged yet: its control may be
+    // about to appear in a shadow root. Keep walking — it may be a light-DOM
+    // element whose children answer the question — but remember to come back.
+    if (!pendingTag && el.tagName.includes('-') && !el.shadowRoot) {
+      pendingTag = el.tagName.toLowerCase();
+    }
+  }
+  return { takesTabStop: false, pendingTag };
+}
+
+/**
  * @summary A tabs component that progressively enhances light DOM markup
  * with ARIA roles, keyboard navigation, and animated indicators.
  *
@@ -70,6 +213,16 @@ export class Tabs extends LuxenElement {
   private _tabs: HTMLButtonElement[] = [];
   private _panels: HTMLElement[] = [];
   private _resizeObserver: ResizeObserver | null = null;
+  private _mutationObserver: MutationObserver | null = null;
+  /** Custom-element tags already scheduled for a re-check once they upgrade. */
+  private _pendingTags = new Set<string>();
+  /**
+   * Whether this element owns a panel's `tabindex`, decided the first time the
+   * panel is seen and never revisited: a panel that already carried one belongs
+   * to the consumer. Re-deciding on every setup would misread our own attribute
+   * after a detach/reattach and freeze the panel out of the sync.
+   */
+  private _ownsPanelTabindex = new WeakMap<Element, boolean>();
 
   /** Visual variant. */
   @property({ reflect: true })
@@ -174,7 +327,9 @@ export class Tabs extends LuxenElement {
         panel.setAttribute('role', 'tabpanel');
         panel.setAttribute('id', panelId);
         panel.setAttribute('aria-labelledby', tabId);
-        panel.setAttribute('tabindex', '0');
+        if (!this._ownsPanelTabindex.has(panel)) {
+          this._ownsPanelTabindex.set(panel, !panel.hasAttribute('tabindex'));
+        }
         if (i !== activeIndex) {
           panel.hidden = true;
         } else {
@@ -198,6 +353,107 @@ export class Tabs extends LuxenElement {
     this._updateIndicator();
     this._resizeObserver = new ResizeObserver(() => this._updateIndicator());
     this._resizeObserver.observe(this._tablistEl);
+
+    // Panels are routinely filled after mount — a framework rendering into them
+    // once its data lands — and whether a panel belongs in the tab sequence
+    // depends on what arrives. So the decision is re-run on content changes
+    // rather than frozen at setup. `childList` does not report attribute
+    // mutations, so writing `tabindex` back cannot feed this.
+    //
+    // Two scopes, deliberately: our own child list (panels added or removed,
+    // which needs the whole pairing rebuilt) and each panel's subtree (content
+    // changes, which only need the stops retaken). The tablist is left out —
+    // relabelling a tab cannot change any panel's verdict.
+    this._syncPanelTabStops();
+    this._mutationObserver = new MutationObserver((records) => this._onMutation(records));
+    this._mutationObserver.observe(this, { childList: true });
+    for (const panel of this._panels) {
+      this._mutationObserver.observe(panel, { childList: true, subtree: true });
+    }
+  }
+
+  private _onMutation(records: MutationRecord[]) {
+    // Lit renders into this element's light DOM (`createRenderRoot` returns
+    // `this`), so its marker comments land in our child list too — compare the
+    // element children we wired instead of trusting the record's target.
+    if (records.some((r) => r.target === this) && this._structureChanged()) {
+      this._rewire();
+      return;
+    }
+    this._syncPanelTabStops();
+  }
+
+  /** Have panels been added, removed or reordered since setup? */
+  private _structureChanged(): boolean {
+    const children = Array.from(this.children);
+    if (children.length !== this._panels.length + 1) return true;
+    if (children[0] !== this._tablistEl) return true;
+    return this._panels.some((panel, i) => children[i + 1] !== panel);
+  }
+
+  /**
+   * Rebuild the tab↔panel pairing after a structural change: a panel added
+   * later has no role, no id and no stop until it is wired.
+   */
+  private _rewire() {
+    // Too few children to pair up — keep the observer alive so the element
+    // recovers when they arrive, rather than tearing down into an inert state.
+    if (this.children.length < 2) return;
+    this._teardown();
+    this._setup();
+  }
+
+  /**
+   * A panel joins the tab sequence unless its first content already takes a tab
+   * stop of its own — then `Tab` out of the tablist reaches that control
+   * directly, instead of stopping on the panel box first. Per the APG Tabs
+   * pattern; `firstContentTakesTabStop` carries the reasoning.
+   */
+  private _syncPanelTabStops() {
+    for (const panel of this._panels) {
+      if (!this._ownsPanelTabindex.get(panel)) continue;
+
+      const verdict = firstContentTakesTabStop(panel, isRendered(panel));
+      if (verdict.pendingTag) this._recheckOnUpgrade(verdict.pendingTag);
+
+      const wanted = verdict.takesTabStop ? null : '0';
+      // Only write on a real change: an unconditional `setAttribute` would queue
+      // a mutation record for every consumer observing this panel's attributes,
+      // on every batch of DOM changes inside it.
+      if (panel.getAttribute('tabindex') === wanted) continue;
+
+      if (wanted === null) {
+        // Taking `tabindex` off the focused panel blurs it and drops the user at
+        // the top of the document. Keep the stop and retake the decision once
+        // focus has moved on (WCAG 2.4.3).
+        if (document.activeElement === panel) {
+          panel.addEventListener('focusout', this._onPanelFocusOut, { once: true });
+          continue;
+        }
+        panel.removeAttribute('tabindex');
+      } else {
+        panel.setAttribute('tabindex', wanted);
+      }
+    }
+  }
+
+  private _onPanelFocusOut = () => this._syncPanelTabStops();
+
+  /**
+   * A custom element rendering into its shadow root produces no light-DOM
+   * mutation, so nothing would otherwise retake a verdict that was blocked on
+   * it. Wait for the definition, then a task for the first render (Lit schedules
+   * its initial update on a microtask).
+   */
+  private _recheckOnUpgrade(tag: string) {
+    if (this._pendingTags.has(tag)) return;
+    this._pendingTags.add(tag);
+    void customElements.whenDefined(tag).then(() => {
+      setTimeout(() => {
+        this._pendingTags.delete(tag);
+        if (this._initialized) this._syncPanelTabStops();
+      }, 0);
+    });
   }
 
   private _teardown() {
@@ -205,6 +461,11 @@ export class Tabs extends LuxenElement {
     this._tablistEl?.removeEventListener('keydown', this._onKeyDown);
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
+    this._mutationObserver?.disconnect();
+    this._mutationObserver = null;
+    for (const panel of this._panels) {
+      panel.removeEventListener('focusout', this._onPanelFocusOut);
+    }
     this._initialized = false;
   }
 
@@ -236,6 +497,10 @@ export class Tabs extends LuxenElement {
 
     this.value = String(index);
     this._updateIndicator();
+    // The panel just shown can be measured for real now; the one just hidden
+    // keeps whatever it had, which is moot while `hidden` holds it out of the
+    // tab sequence anyway.
+    this._syncPanelTabStops();
 
     if (emitEvent && changed) {
       const name = this._tabs[index]?.getAttribute('name') ?? null;

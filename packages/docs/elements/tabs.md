@@ -9,6 +9,7 @@ import tabsFullWidth from '../.vitepress/examples/tabs/TabsFullWidth.html?raw'
 import tabsDefaultValue from '../.vitepress/examples/tabs/TabsDefaultValue.html?raw'
 import tabsLineColors from '../.vitepress/examples/tabs/TabsLineColors.html?raw'
 import tabsDisabled from '../.vitepress/examples/tabs/TabsDisabled.html?raw'
+import tabsPanelFocus from '../.vitepress/examples/tabs/TabsPanelFocus.html?raw'
 </script>
 
 # Tabs <Badge type="tip">&lt;l-tabs&gt;</Badge>
@@ -85,6 +86,21 @@ Add `disabled` to a tab button to take it out of play. It is skipped by arrow ke
 <<< @/.vitepress/examples/tabs/TabsDisabled.html [HTML]
 :::
 
+### Panels with interactive content
+
+`Tab` moves focus out of the tablist and into the active panel, so the content at the top of the panel is reachable. A panel that _opens_ with something focusable needs no stop of its own: `l-tabs` leaves its `tabindex` off and `Tab` reaches that first control directly, instead of stopping on the panel box first.
+
+Every other panel keeps `tabindex="0"` — including one that opens with text and holds a button further down. Dropping the stop there would send a keyboard user past everything above that button.
+
+<ComponentWrapper :html="tabsPanelFocus" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/tabs/TabsPanelFocus.html [HTML]
+:::
+
+The check runs again whenever a panel's content changes, so a panel filled after mount — a framework rendering into it once its data lands — is treated the same as one present in the initial markup. A `tabindex` you write on a panel yourself is left alone.
+
 ## Accessibility
 
 ### Criteria
@@ -93,7 +109,7 @@ Add `disabled` to a tab button to take it out of play. It is skipped by arrow ke
   { Check: 'Role', Description: 'First child div gets `role=&quot;tablist&quot;`, buttons get `role=&quot;tab&quot;`, remaining divs get `role=&quot;tabpanel&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Linked controls', Description: 'Each tab has `aria-controls` pointing to its panel; each panel has `aria-labelledby` pointing back to its tab', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
   { Check: 'Selection state', Description: 'Active tab has `aria-selected=&quot;true&quot;`; inactive tabs have `aria-selected=&quot;false&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Roving tabindex — active tab has `tabindex=&quot;0&quot;`, others `tabindex=&quot;-1&quot;`. Panels have `tabindex=&quot;0&quot;` for keyboard access', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.13)' },
+  { Check: 'Focus management', Description: 'Roving tabindex — active tab has `tabindex=&quot;0&quot;`, others `tabindex=&quot;-1&quot;`. A panel takes `tabindex=&quot;0&quot;` unless its first content is already focusable, per the APG', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.13)' },
   { Check: 'Disabled tabs', Description: 'Tabs marked `disabled` or `aria-disabled=&quot;true&quot;` are skipped by arrow keys, `Home` and `End`, and never take the roving `tabindex=&quot;0&quot;` — so the tablist always keeps a reachable entry point', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
   { Check: 'Hidden content', Description: 'Inactive panels use the `hidden` attribute', WCAG: '[WCAG 1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence)' },
   { Check: 'Motion', Description: 'Indicator animation respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
@@ -113,7 +129,7 @@ Add `disabled` to a tab button to take it out of play. It is skipped by arrow ke
   { Key: 'ArrowUp', Description: 'Moves focus to the previous enabled tab and activates it (vertical orientation)' },
   { Key: 'Home', Description: 'Moves focus to the first enabled tab and activates it' },
   { Key: 'End', Description: 'Moves focus to the last enabled tab and activates it' },
-  { Key: 'Tab', Description: 'Moves focus out of the tablist to the active panel' },
+  { Key: 'Tab', Description: 'Moves focus out of the tablist — to the active panel, or straight to its first control when the panel opens with one' },
 ]" />
 
 ## API reference

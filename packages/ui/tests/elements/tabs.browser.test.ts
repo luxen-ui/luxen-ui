@@ -550,6 +550,367 @@ describe('A keyboard user navigates a vertical tab list with up/down arrows', ()
 });
 
 // ---------------------------------------------------------------------------
+// Panel tab stop (APG: conditional tabindex)
+// ---------------------------------------------------------------------------
+
+const LINK_FIRST = `
+  <l-tabs>
+    <div>
+      <button>Tab 1</button>
+      <button>Tab 2</button>
+    </div>
+    <div><p><a href="#report">Jump to the report</a> — updated hourly.</p></div>
+    <div>Content 2</div>
+  </l-tabs>
+`;
+
+const PROSE_FIRST = `
+  <l-tabs>
+    <div>
+      <button>Tab 1</button>
+      <button>Tab 2</button>
+    </div>
+    <div>
+      <p>Usage for the current period.</p>
+      <a href="#report">Jump to the report</a>
+    </div>
+    <div>Content 2</div>
+  </l-tabs>
+`;
+
+describe('A panel joins the tab sequence only when its first content is not focusable', () => {
+  it('drops the panel tab stop when the panel opens with a link', async () => {
+    await mount(LINK_FIRST);
+    const panel = tabpanel('Tab 1').query()!;
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('sends Tab straight to that link instead of stopping on the panel box', async () => {
+    await mount(LINK_FIRST);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.tab();
+    expect(document.activeElement?.textContent?.trim()).toBe('Jump to the report');
+  });
+
+  it('keeps the panel tab stop when the panel opens with prose, link below or not', async () => {
+    // The APG's second clause: a link lower down is no reason to strand the
+    // paragraph above it outside the tab sequence.
+    await mount(PROSE_FIRST);
+    const panel = tabpanel('Tab 1').query()!;
+    expect(panel.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('lands on the panel first when the panel opens with prose', async () => {
+    await mount(PROSE_FIRST);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(tabpanel('Tab 1').query());
+  });
+
+  it('drops the panel tab stop when the panel opens with a button', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><button class="l-button" type="button">Refresh</button><p>Then some text.</p></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('sends Tab straight to that button', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><button class="l-button" type="button">Refresh</button><p>Then some text.</p></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    await userEvent.click(tab('Tab 1'));
+    await settle();
+    await userEvent.tab();
+    expect(document.activeElement?.textContent?.trim()).toBe('Refresh');
+  });
+
+  it('keeps the stop when that first button is disabled', async () => {
+    // A disabled button takes no tab stop, so the panel still needs one of its
+    // own — otherwise nothing in the panel is reachable from the tablist.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><button class="l-button" type="button" disabled>Refresh</button><p>Then some text.</p></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('descends through wrappers, so a link nested in a heading still counts', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><h2><span><a href="#x">Linked heading</a></span></h2></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('does not mistake a style block for the panel content', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><style>.x { color: red }</style><a href="#x">A link</a></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('stops on an image rather than skipping ahead to a link below it', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><img alt="Chart" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><a href="#x">A link</a></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('keeps the stop on a panel holding nothing focusable at all', async () => {
+    await mount(TABS);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('re-decides when the panel is filled after mount', async () => {
+    // Hosts render into a panel once their data lands, long after setup — the
+    // decision cannot be frozen at connectedCallback.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    const panel = tabpanel('Tab 1').query()!;
+    expect(panel.getAttribute('tabindex')).toBe('0');
+
+    panel.innerHTML = '<p><a href="#x">Arrived late</a></p>';
+    await new Promise((r) => setTimeout(r, 0));
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('gives the stop back when the focusable content is removed again', async () => {
+    await mount(LINK_FIRST);
+    const panel = tabpanel('Tab 1').query()!;
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+
+    panel.innerHTML = '<p>Nothing to click here.</p>';
+    await new Promise((r) => setTimeout(r, 0));
+    expect(panel.getAttribute('tabindex')).toBe('0');
+  });
+
+  it("does not count a hidden input as the panel's first content", async () => {
+    // A CSRF field is a routine first child of a form panel; it renders nothing
+    // and takes no focus, so the prose after it still needs the panel stop.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><input type="hidden" name="csrf" value="x"><p>Visible prose.</p><a href="#z">link</a></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it("does not count display:none content as the panel's first content", async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><div style="display:none"><a href="#x">Hidden link</a></div><p>Visible prose.</p></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('keeps the stop when the first content is inert', async () => {
+    // Inert content is visible but unfocusable, so it settles the question —
+    // unlike an unrendered block, which is skipped.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><div inert><p>Saving…</p></div><a href="#x">A link</a></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('does not blur the panel when content arrives while it holds focus', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div>Prose only for now.</div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    const panel = tabpanel('Tab 1').query()!;
+    panel.focus();
+    expect(document.activeElement).toBe(panel);
+
+    panel.innerHTML = '<p><a href="#y">Arrived late</a></p>';
+    await new Promise((r) => setTimeout(r, 0));
+
+    // The stop is kept while focus is on it — losing it would drop the user at
+    // the top of the document.
+    expect(document.activeElement).toBe(panel);
+    expect(panel.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('retakes the decision once focus leaves the panel', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div>Prose only for now.</div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    const panel = tabpanel('Tab 1').query()!;
+    panel.focus();
+    panel.innerHTML = '<p><a href="#y">Arrived late</a></p>';
+    await new Promise((r) => setTimeout(r, 0));
+
+    tab('Tab 1').element().focus();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('retakes the decision when a custom element upgrades later', async () => {
+    const tag = `x-late-${Math.random().toString(36).slice(2, 8)}`;
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><${tag}></${tag}></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    const panel = tabpanel('Tab 1').query()!;
+    // Undecidable while the element is unknown, so the panel keeps its stop.
+    expect(panel.getAttribute('tabindex')).toBe('0');
+
+    customElements.define(
+      tag,
+      class extends HTMLElement {
+        connectedCallback() {
+          this.attachShadow({ mode: 'open' }).innerHTML = '<button>Shadow control</button>';
+        }
+      },
+    );
+    await customElements.whenDefined(tag);
+    await new Promise((r) => setTimeout(r, 10));
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('wires a panel added after setup', async () => {
+    await mount(TABS);
+    const tabs = el();
+    tabs.querySelector('div')!.insertAdjacentHTML('beforeend', '<button>Tab 3</button>');
+    tabs.insertAdjacentHTML('beforeend', '<div><a href="#x">Third panel link</a></div>');
+    await new Promise((r) => setTimeout(r, 0));
+
+    const panels = tabs.querySelectorAll('[role="tabpanel"]');
+    expect(panels).toHaveLength(3);
+    expect(tabs.querySelectorAll('[role="tab"]')).toHaveLength(3);
+    // And the new panel gets the same verdict as one present from the start.
+    expect(panels[2].hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('does not churn the attribute when nothing changed', async () => {
+    await mount(TABS);
+    const panel = tabpanel('Tab 1').query()!;
+    const writes: string[] = [];
+    const spy = new MutationObserver((records) => {
+      for (const r of records) if (r.attributeName === 'tabindex') writes.push('write');
+    });
+    spy.observe(panel, { attributes: true });
+
+    panel.insertAdjacentHTML('beforeend', '<span> more prose</span>');
+    await new Promise((r) => setTimeout(r, 0));
+    spy.disconnect();
+
+    // The verdict is unchanged (still prose-first), so no attribute write.
+    expect(writes).toEqual([]);
+  });
+
+  it('hands the stop to an iframe the panel opens with', async () => {
+    // Tab moves into an iframe's content, so the panel needs no stop of its own.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><iframe title="Map" src="about:blank"></iframe></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('drops the stop when the panel opens with a details disclosure', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><details><summary>More detail</summary><p>Body.</p></details></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('keeps the stop for a summary that is not a disclosure control', async () => {
+    // Only the first summary child of a details takes focus; anywhere else it is
+    // inert content, so the panel still needs its own stop.
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div><summary>Not a disclosure</summary></div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('leaves a tabindex the consumer wrote alone', async () => {
+    await mount(`
+      <l-tabs>
+        <div><button>Tab 1</button><button>Tab 2</button></div>
+        <div tabindex="-1">Content 1</div>
+        <div>Content 2</div>
+      </l-tabs>
+    `);
+    expect(tabpanel('Tab 1').query()!.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('still manages the tab stop after a detach and reattach', async () => {
+    // By then the panel carries our own tabindex; that must not be mistaken for
+    // a consumer-authored one and freeze the panel out of the sync.
+    await mount(TABS);
+    const tabs = el();
+    const parent = tabs.parentElement!;
+    tabs.remove();
+    parent.append(tabs);
+    await settle();
+
+    const panel = tabpanel('Tab 1').query()!;
+    panel.innerHTML = '<p><a href="#x">A link</a></p>';
+    await new Promise((r) => setTimeout(r, 0));
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility
 // ---------------------------------------------------------------------------
 
@@ -690,10 +1051,11 @@ describe('Accessibility', () => {
       expect(document.activeElement?.textContent?.trim()).toBe('Tab 2');
     });
 
-    it('the active panel is focusable (tabindex="0") so Tab moves into its content (WCAG 2.4.3 / RGAA 12.8)', async () => {
+    it('the active panel is focusable (tabindex="0") when its content is not (WCAG 2.4.3 / RGAA 12.8)', async () => {
       await mount(TABS);
       const panels = el().querySelectorAll<HTMLElement>('[role="tabpanel"]');
-      // The active panel (index 0) must have tabindex="0"
+      // These panels are plain text, so nothing inside them takes a tab stop and
+      // the panel needs one of its own for Tab to reach the content at all.
       expect(panels[0].getAttribute('tabindex')).toBe('0');
       // Inactive panel is still in the DOM but hidden
       expect(panels[1].hidden).toBe(true);
