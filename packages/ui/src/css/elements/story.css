@@ -128,7 +128,7 @@
       width: 100%;
       color: var(--label-color);
       font-size: 0.8125rem;
-      font-weight: 500;
+      font-weight: var(--l-font-weight-medium);
       line-height: 1.2;
       /* Wrap onto multiple lines, centered. `text-wrap: balance` evens out the line lengths (e.g. "Questions / fréquentes" instead of "Questions fréquentes / "). */
       text-align: center;

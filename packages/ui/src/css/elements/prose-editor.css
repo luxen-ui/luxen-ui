@@ -78,7 +78,7 @@
 
   l-prose-editor .ProseMirror :is(h1, h2, h3, h4) {
     margin-block: 1em 0.5em;
-    font-weight: 600;
+    font-weight: var(--l-font-weight-semibold);
     line-height: 1.25;
   }
 

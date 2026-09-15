@@ -317,6 +317,20 @@ A fallback is worse than dead code: it silently masks a typo'd or renamed token.
 
 Fallbacks remain correct for **public component variables**, which consumers may legitimately not set: `var(--padding, 0.25rem)`, `var(--border-radius, 6px)`.
 
+### Never hardcode a numeric `font-weight`
+
+Weights come from the scale — `var(--l-font-weight-medium)`, `-semibold`, … —
+never as a literal `500` or `600`. The two render identically at the default
+token values, so a literal looks correct right up until a consumer recalibrates
+the scale (two families at the same nominal weight do not carry the same ink);
+then that one declaration stays behind while the rest of the page follows.
+
+Keywords are fine: `inherit`, `normal` and `bold` are relative or inherited
+rather than a point on the scale.
+
+`tests/font-weight-tokens.test.ts` enforces this across every `.css` and `.ts`
+under `src/` — inline `style="font-weight:…"` in a template included.
+
 ### Naming convention
 
 | Scope                      | Prefix           | Example                                  | Where defined                                                |

@@ -245,7 +245,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-weight: 600;
+    font-weight: var(--l-font-weight-semibold);
   }
 
   .l-select-item-description {

@@ -194,7 +194,7 @@
 .option-label mark {
   background: transparent;
   color: inherit;
-  font-weight: 600;
+  font-weight: var(--l-font-weight-semibold);
 }
 
 /* Rich options — same authoring classes as l-select, styled inside the shadow. */

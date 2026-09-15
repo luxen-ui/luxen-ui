@@ -24,7 +24,7 @@
       align-items: center;
       justify-content: space-between;
       padding: var(--l-spacing-3) var(--l-spacing-4);
-      font-weight: 600;
+      font-weight: var(--l-font-weight-semibold);
       font-size: var(--l-text-base);
       line-height: 1;
       color: var(--l-color-text-primary);

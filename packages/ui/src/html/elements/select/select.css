@@ -303,7 +303,7 @@
 .option-label mark {
   background: transparent;
   color: inherit;
-  font-weight: 600;
+  font-weight: var(--l-font-weight-semibold);
 }
 
 .option-rich {
@@ -336,7 +336,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 600;
+  font-weight: var(--l-font-weight-semibold);
 }
 
 .option-rich .l-select-item-description {

@@ -61,7 +61,7 @@
     height: var(--l-size-control-xl);
     white-space: nowrap;
     font-family: inherit;
-    font-weight: 500;
+    font-weight: var(--l-font-weight-medium);
     font-size: var(--l-text-sm);
     line-height: 1;
     color: var(--l-color-text-secondary);

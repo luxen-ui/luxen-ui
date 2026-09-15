@@ -193,7 +193,7 @@ dialog {
 
 .header-label {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: var(--l-font-weight-semibold);
   line-height: 1.2;
   color: white;
   overflow: hidden;

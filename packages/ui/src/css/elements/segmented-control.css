@@ -97,7 +97,7 @@
     color: var(--l-color-text-secondary);
     font-family: inherit;
     font-size: var(--l-text-sm);
-    font-weight: 500;
+    font-weight: var(--l-font-weight-medium);
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
