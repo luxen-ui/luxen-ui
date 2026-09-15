@@ -63,7 +63,7 @@ img {
   box-shadow: 0 0 0 2px var(--l-color-surface);
   background-color: var(--l-color-surface);
   font-size: 0.625rem;
-  font-weight: 500;
+  font-weight: var(--l-font-weight-medium);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--l-color-text-primary);
@@ -119,7 +119,7 @@ img {
   );
   color: var(--text-color, rgb(from var(--color) var(--_on) var(--_on) var(--_on)));
   font-size: var(--_font-size);
-  font-weight: 500;
+  font-weight: var(--l-font-weight-medium);
   line-height: 1;
   text-transform: uppercase;
   padding: 0;

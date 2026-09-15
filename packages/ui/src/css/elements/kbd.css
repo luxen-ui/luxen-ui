@@ -9,7 +9,7 @@
     padding-inline: var(--l-spacing-2);
     font-family: var(--l-font-mono);
     font-size: var(--l-text-xs);
-    font-weight: 600;
+    font-weight: var(--l-font-weight-semibold);
     line-height: 1;
     text-box: trim-both cap alphabetic;
     color: var(--l-color-text-primary);
