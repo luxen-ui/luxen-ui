@@ -97,6 +97,21 @@ Native `disabled` attribute.
 
 By default options are matched case- and accent-insensitively (every space-separated keyword must appear). Override the `filter` property — `(item, query) => boolean` — for `startsWith`, fuzzy, or remote-driven filtering.
 
+### Dynamic options
+
+The `<datalist>` is watched: re-labelling, adding, removing, or disabling an `<option>` after mount updates the input and the listbox immediately — no reopen, no remount. Text the user is typing is left alone.
+
+::: code-group
+
+```js [JS]
+const option = document.querySelector('l-combobox option[value="fr"]');
+
+// The input re-renders on its own — nothing to call, nothing to remount.
+option.label = 'Français';
+```
+
+:::
+
 ## Accessibility
 
 ### Criteria
