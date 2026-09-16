@@ -135,6 +135,95 @@ describe('l-combobox participates in forms', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Options that change after mount
+// ---------------------------------------------------------------------------
+
+describe('The input follows the options it was given', () => {
+  const displayed = (el: Combobox) =>
+    el.shadowRoot!.querySelector<HTMLInputElement>('.input')!.value;
+
+  const language = () => page.getByRole('combobox', { name: 'Language' });
+
+  const LANGUAGES = `
+    <l-combobox label="Language" name="language" value="fr">
+      <datalist>
+        <option value="fr" label="French"></option>
+        <option value="en" label="English"></option>
+      </datalist>
+    </l-combobox>
+  `;
+
+  it('re-labels the closed input when an option label is rewritten in place', async () => {
+    const el = await mount(LANGUAGES);
+    expect(displayed(el)).toBe('French');
+    // The form the docs recommend: the `label` IDL attribute, which reflects.
+    el.querySelector<HTMLOptionElement>('option[value="fr"]')!.label = 'Francais';
+    await settle(el);
+    expect(displayed(el)).toBe('Francais');
+  });
+
+  it('keeps the highlighted option under the cursor when the list grows', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    await settle(el);
+    expect(page.getByRole('option', { name: 'France', selected: true }).elements()).toHaveLength(1);
+    // A background refresh pushes a new option in above the highlighted one.
+    const added = document.createElement('option');
+    added.value = 'at';
+    added.textContent = 'Austria';
+    el.querySelector('datalist')!.prepend(added);
+    await settle(el);
+    expect(page.getByRole('option', { name: 'France', selected: true }).elements()).toHaveLength(1);
+    await userEvent.keyboard('{Enter}');
+    await settle(el);
+    expect(el.value).toBe('fr');
+  });
+
+  it('catches up on labels that changed while it was detached', async () => {
+    const el = await mount(LANGUAGES);
+    expect(displayed(el)).toBe('French');
+    const parent = el.parentElement!;
+    el.remove();
+    el.querySelector('option[value="fr"]')!.setAttribute('label', 'Francais');
+    parent.append(el);
+    await settle(el);
+    expect(displayed(el)).toBe('Francais');
+  });
+
+  it('keeps text the user is typing when the panel was kept closed', async () => {
+    const el = await mount(FIXTURE);
+    // A consumer vetoes `show`, so the panel never opens while the user types.
+    el.addEventListener('show', (e) => e.preventDefault());
+    await userEvent.click(combobox());
+    await userEvent.keyboard('ger');
+    await settle(el);
+    expect(displayed(el)).toBe('ger');
+    el.querySelector('option[value="fr"]')!.setAttribute('label', 'Francais');
+    await settle(el);
+    expect(displayed(el)).toBe('ger');
+  });
+
+  it('leaves the query alone while the user is typing', async () => {
+    const el = await mount(`
+      <l-combobox label="Language" name="language">
+        <datalist>
+          <option value="fr" label="French"></option>
+          <option value="en" label="English"></option>
+        </datalist>
+      </l-combobox>
+    `);
+    await userEvent.click(language());
+    await userEvent.keyboard('eng');
+    await settle(el);
+    el.querySelector('option[value="fr"]')!.setAttribute('label', 'Francais');
+    await settle(el);
+    expect(displayed(el)).toBe('eng');
+    expect(page.getByRole('option', { name: 'English' }).elements()).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility details (APG combobox)
 // ---------------------------------------------------------------------------
 

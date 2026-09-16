@@ -177,6 +177,90 @@ describe('Selection state', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Options that change after mount
+// ---------------------------------------------------------------------------
+
+describe('The closed trigger follows the options it was given', () => {
+  const valueText = (el: Select) =>
+    el.shadowRoot!.querySelector('.value-text')?.textContent?.trim();
+
+  it('re-labels the trigger when an option label is rewritten in place', async () => {
+    const el = await mount(`
+      <l-select label="Language" name="language" value="fr">
+        <datalist>
+          <option value="fr" label="French"></option>
+          <option value="en" label="English"></option>
+        </datalist>
+      </l-select>
+    `);
+    expect(valueText(el)).toBe('French');
+    el.querySelector('option[value="fr"]')!.setAttribute('label', 'Francais');
+    await settle(el);
+    expect(valueText(el)).toBe('Francais');
+  });
+
+  it('re-labels the trigger when the text of an option is rewritten', async () => {
+    const el = await mount(`
+      <l-select label="Language" name="language" value="fr">
+        <datalist>
+          <option value="fr">French</option>
+        </datalist>
+      </l-select>
+    `);
+    el.querySelector('option[value="fr"]')!.textContent = 'Francais';
+    await settle(el);
+    expect(valueText(el)).toBe('Francais');
+  });
+
+  it('keeps the highlighted option under the cursor when the list grows', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(trigger());
+    await settle(el);
+    // Arrow to the third option, then let a background refresh push a new
+    // option in above it.
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    await settle(el);
+    expect(el.shadowRoot!.querySelector('[data-active]')?.textContent?.trim()).toBe('Germany');
+    const added = document.createElement('option');
+    added.value = 'at';
+    added.textContent = 'Austria';
+    el.querySelector('datalist')!.prepend(added);
+    await settle(el);
+    expect(el.shadowRoot!.querySelector('[data-active]')?.textContent?.trim()).toBe('Germany');
+    await userEvent.keyboard('{Enter}');
+    await settle(el);
+    expect(el.value).toBe('de');
+  });
+
+  it('drops the highlight when the highlighted option disappears', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(trigger());
+    await settle(el);
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    await settle(el);
+    el.querySelector('option[value="de"]')!.remove();
+    await settle(el);
+    expect(el.shadowRoot!.querySelector('[data-active]')).toBeNull();
+    // No dangling aria-activedescendant pointing at a row that no longer exists.
+    const listbox = el.shadowRoot!.querySelector('.listbox')!;
+    expect(listbox.getAttribute('aria-activedescendant')).toBeNull();
+  });
+
+  it('re-labels the chips of a multiple select', async () => {
+    const el = await mount(`
+      <l-select multiple label="Tags" name="tags">
+        <datalist>
+          <option value="design" selected>Design</option>
+        </datalist>
+      </l-select>
+    `);
+    el.querySelector('option[value="design"]')!.setAttribute('label', 'Conception');
+    await settle(el);
+    expect(el.shadowRoot!.querySelector('[part="tag"]')?.textContent?.trim()).toBe('Conception');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility (APG: select-only / listbox popup)
 // ---------------------------------------------------------------------------
 

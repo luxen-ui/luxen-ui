@@ -7,6 +7,7 @@ import type { Placement } from '@floating-ui/dom';
 import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
+import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { cls, tagName, uniqueId } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -136,6 +137,10 @@ export class Select extends LuxenFormAssociatedElement {
     getOptionElements: () => this.shadowRoot?.querySelectorAll<HTMLElement>('.option'),
   });
 
+  // The `<datalist>` is light DOM the consumer owns and rewrites in place;
+  // re-read it so the closed trigger tracks the options it was given.
+  private _options = new DatalistObserverController(this, () => this._syncItems());
+
   /** Placeholder shown in the trigger when nothing is selected. */
   @property()
   accessor placeholder = '';
@@ -251,6 +256,21 @@ export class Select extends LuxenFormAssociatedElement {
         html: rich ? o.innerHTML : undefined,
       };
     });
+  }
+
+  /**
+   * Re-read the options after the light DOM changed underneath us. The active
+   * option is addressed by position in `_filtered`, so a list that grows or
+   * shrinks while the listbox is open would silently move the keyboard
+   * selection onto a different row (or off the end, leaving Enter dead).
+   * Re-anchor it on the option the user had highlighted, and drop it when that
+   * option is gone.
+   */
+  private _syncItems() {
+    const active = this._open ? this._filtered[this._nav.activeIndex] : undefined;
+    this._readItems();
+    if (!this._open) return;
+    this._nav.setActive(active ? this._filtered.findIndex((i) => i.value === active.value) : -1);
   }
 
   private _itemFor(value: string): SelectItem | undefined {

@@ -6,6 +6,7 @@ import type { Placement } from '@floating-ui/dom';
 import { LuxenFormAssociatedElement } from '../../shared/luxen-form-associated-element.js';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
+import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { cls, uniqueId } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -126,6 +127,10 @@ export class Combobox extends LuxenFormAssociatedElement {
     getOptionElements: () => this.shadowRoot?.querySelectorAll<HTMLElement>('.option'),
   });
 
+  // The `<datalist>` is light DOM the consumer owns and rewrites in place;
+  // re-read it so the input tracks the options it was given.
+  private _options = new DatalistObserverController(this, () => this._syncItems());
+
   /** Selected value (the chosen option's `value`). */
   @property({ reflect: true })
   accessor value = '';
@@ -177,7 +182,10 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this._readItems();
+    // Sync rather than plain-read: the observer is disconnected while detached,
+    // so options may have been re-labelled behind our back and the input — which
+    // holds its own text, not a render of `_items` — would stay on the old one.
+    this._syncItems();
     this._defaultFormValue = this.value;
     this._syncFormValue(this.value);
   }
@@ -215,6 +223,31 @@ export class Combobox extends LuxenFormAssociatedElement {
       const label = (o.getAttribute('label') || title || o.textContent || o.value).trim();
       return { value: o.value, label, disabled: o.disabled, html: rich ? o.innerHTML : undefined };
     });
+  }
+
+  /**
+   * Re-read the options after the light DOM changed underneath us.
+   *
+   * The input carries its own text rather than a render of `_items`, so it has
+   * to be refreshed by hand — but only when it is still showing the label we put
+   * there. Anything else in it is the user's (a query typed while the panel
+   * stayed closed, because a consumer vetoed `show`) and must survive. A closed
+   * panel is not on its own proof that nobody is typing.
+   *
+   * Open, the input is theirs by definition; what needs care there is the active
+   * option, addressed by position in `_filtered` — re-anchor it on the option the
+   * user had highlighted, or a list that grows or shrinks commits a different one.
+   */
+  private _syncItems() {
+    const active = this._open ? this._filtered[this._nav.activeIndex] : undefined;
+    const displayed = this._inputEl?.value;
+    const untouched = displayed === undefined || displayed === this._labelForValue(this.value);
+    this._readItems();
+    if (!this._open) {
+      if (untouched) this._resetDisplay();
+      return;
+    }
+    this._nav.setActive(active ? this._filtered.findIndex((i) => i.value === active.value) : -1);
   }
 
   private _labelForValue(value: string): string {

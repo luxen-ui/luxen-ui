@@ -124,6 +124,21 @@ select.filter = (item, query) => item.label.toLowerCase().startsWith(query.toLow
 
 :::
 
+### Dynamic options
+
+The `<datalist>` is watched: re-labelling, adding, removing, or disabling an `<option>` after mount updates the trigger and the listbox immediately — no reopen, no remount. Framework re-renders patch the existing `<option>` nodes in place, so a localized picker re-labels itself when the interface language changes.
+
+::: code-group
+
+```js [JS]
+const option = document.querySelector('l-select option[value="fr"]');
+
+// The closed trigger re-renders on its own — nothing to call, nothing to remount.
+option.label = 'Français';
+```
+
+:::
+
 ## Accessibility
 
 The native tier inherits the platform's `<select>` semantics — pair it with a `<label>`. The criteria below cover the `<l-select>` custom element.
