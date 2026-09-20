@@ -42,6 +42,33 @@ async function settle() {
     await dd.updateComplete;
   }
   await new Promise((r) => setTimeout(r, 0));
+  await animationsSettled();
+  await new Promise((r) => setTimeout(r, 0));
+}
+
+/**
+ * A panel only un-pops *after* its hide animation settles, and even a zero-duration
+ * animation needs a frame to finish — a frame that `updateComplete` plus one macrotask
+ * may or may not cover. Awaiting the animations themselves makes what we assert on
+ * committed rather than merely likely: without this `:popover-open` reads stale
+ * whenever the frame lands late, which is what a loaded CI runner does.
+ *
+ * `document.getAnimations()` does not reach into shadow roots, so collect from each
+ * panel directly. A cancelled animation rejects `finished`, and cancelled still means
+ * "no longer in flight" — which is all we are waiting for.
+ */
+async function animationsSettled() {
+  const panels: HTMLElement[] = [];
+  for (const owner of [
+    host.querySelector('l-dropdown'),
+    ...host.querySelectorAll('l-dropdown-item'),
+  ]) {
+    panels.push(...(owner?.shadowRoot?.querySelectorAll<HTMLElement>('[popover]') ?? []));
+  }
+
+  await Promise.all(
+    panels.flatMap((p) => p.getAnimations()).map((a) => a.finished.catch(() => undefined)),
+  );
 }
 
 /** Wait for rAF + macrotask — gives the element time to schedule initial focus after keyboard open. */
