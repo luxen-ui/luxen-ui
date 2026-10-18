@@ -586,6 +586,16 @@ export class ProseEditor extends LuxenFormAssociatedElement {
    * boundaries, so a click inside the picker's shadow tree still resolves to
    * the host element here.
    */
+  /**
+   * A press on a toolbar button leaves focus, and the selection, in the editor:
+   * the command then applies where the user was. Firefox otherwise keeps focus
+   * on the button after the command's own `focus()`, and typing goes nowhere.
+   * Keyboard users still reach the buttons with Tab and the arrows.
+   */
+  private _keepEditorFocus = (event: MouseEvent) => {
+    event.preventDefault();
+  };
+
   private _onDocumentPointerDown = (event: PointerEvent) => {
     const picker = this._emojiPicker;
     if (!picker?.matches(':popover-open')) return;
@@ -785,6 +795,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
         title=${label}
         tabindex=${tabIndex}
         @pointerdown=${onPointerDown}
+        @mousedown=${this._keepEditorFocus}
         @click=${onClick}
       >
         <${iconTag} name=${icon}></${iconTag}>
