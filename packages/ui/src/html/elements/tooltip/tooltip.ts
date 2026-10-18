@@ -4,6 +4,7 @@ import { property } from 'lit/decorators.js';
 import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { uniqueId } from '../../registry.js';
+import { lastInput } from '../../shared/input-modality.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './tooltip.css?inline';
 
@@ -309,7 +310,9 @@ export class Tooltip extends LuxenElement {
     // resurrect the tooltip when a modal (e.g. `l-dialog`) restores focus to
     // the trigger on close. `:focus-visible` is exactly "focus that warrants a
     // visible affordance", matching the platform's own `title`/APG behaviour.
-    if (!this._trigger?.matches(':focus-visible')) return;
+    // WebKit also matches it on focus a modal returns after a pointer close, so
+    // the last input is checked too.
+    if (!this._trigger?.matches(':focus-visible') || lastInput() === 'pointer') return;
     // Focus is a discrete affordance — show immediately, ignoring the dwell delay.
     clearTimeout(this._hideTimer);
     this._hideTimer = undefined;

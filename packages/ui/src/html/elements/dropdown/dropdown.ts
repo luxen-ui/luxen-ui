@@ -4,6 +4,7 @@ import { property } from 'lit/decorators.js';
 import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { tagName } from '../../registry.js';
+import { focusFromInput } from '../../shared/input-modality.js';
 import type { DropdownItem } from '../dropdown-item/dropdown-item.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -285,7 +286,9 @@ export class Dropdown extends LuxenElement {
     }
 
     itemEl.setAttribute('tabindex', '0');
-    itemEl.focus();
+    // From the keyboard, ask for the ring: Firefox drops it when the trigger
+    // was clicked before the key that opened the menu.
+    focusFromInput(itemEl);
 
     // APG: moving focus within a level collapses any sibling's open submenu, so
     // an unfocused parent never keeps aria-expanded="true". The active item's
