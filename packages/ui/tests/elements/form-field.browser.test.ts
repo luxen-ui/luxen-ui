@@ -88,6 +88,22 @@ describe('l-form-field wires a form-associated custom element control', () => {
     expect(slider.getAttribute('aria-describedby')).toContain(error.id);
   });
 
+  it('re-checks an invalid control without firing invalid at it', async () => {
+    const field = await mount(SLIDER_FIELD);
+    const slider = field.querySelector<HTMLElement & { setCustomValidity(m: string): void }>(
+      'l-slider',
+    )!;
+    let fired = 0;
+    slider.addEventListener('invalid', () => fired++);
+
+    slider.setCustomValidity('Pick a higher value.');
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
+    await settle(field);
+
+    expect(field.hasAttribute('invalid')).toBe(true);
+    expect(fired).toBe(0);
+  });
+
   it('leaves a standalone .l-error (outside a field) visible by default', async () => {
     host = document.createElement('div');
     host.innerHTML = `<p class="l-error">Standalone error</p>`;

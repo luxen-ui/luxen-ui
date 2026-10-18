@@ -185,6 +185,9 @@ export class FormField extends LuxenElement {
     control.removeEventListener('input', this._onInteract);
   }
 
+  /** Set while the fallback `checkValidity()` runs, whose `invalid` re-enters. */
+  private _checking = false;
+
   private _onInvalid = (event: Event) => {
     // Suppress the native validation bubble in favour of `l-error`.
     event.preventDefault();
@@ -200,7 +203,7 @@ export class FormField extends LuxenElement {
   private _updateValidity() {
     const control = this._control;
     if (!control) return;
-    const showError = this._hasInteracted && !control.checkValidity();
+    const showError = this._hasInteracted && !this._isValid(control);
 
     // `invalid` reflects to the host; CSS reveals `.l-error` from there.
     this.invalid = showError;
@@ -208,6 +211,24 @@ export class FormField extends LuxenElement {
     else control.removeAttribute('aria-invalid');
 
     this._updateDescribedby();
+  }
+
+  /**
+   * Reads validity without firing `invalid` where the control lets it:
+   * `checkValidity()` fires `invalid`, whose listener here re-checks, without
+   * end. A control with no `validity` falls back to it, guarded against
+   * re-entry.
+   */
+  private _isValid(control: FormControl): boolean {
+    const { validity } = control as { validity?: ValidityState };
+    if (validity) return validity.valid;
+    if (this._checking) return false;
+    this._checking = true;
+    try {
+      return control.checkValidity();
+    } finally {
+      this._checking = false;
+    }
   }
 
   private _updateDescribedby() {
