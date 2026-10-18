@@ -55,14 +55,20 @@ describe('l-tag renders a chip', () => {
   it.each(['sm', 'md', 'lg'])('shows descenders in full at size=%s', async (size: string) => {
     // The label sits in a one-em line box, so its descenders (g, j, p, q, y)
     // spill below it and a plain `overflow: hidden` shears them. The clip
-    // rectangle has to cover that spill — assert the invariant rather than the
-    // declaration, so it keeps holding if either side is retuned.
+    // rectangle has to cover the text's full ascent and descent — assert the
+    // painted invariant rather than a declaration, since engines differ on
+    // `overflow-clip-margin` (WebKit has none).
     const el = await mount(`<l-tag size="${size}">Language typography</l-tag>`);
     const content = el.shadowRoot!.querySelector('[part="content"]')!;
     const styles = getComputedStyle(content);
-    const spill = content.scrollHeight - content.clientHeight;
+    const margin = parseFloat(styles.overflowClipMargin) || 0;
+    const clip = content.getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const text = range.getBoundingClientRect();
     expect(styles.overflowY).toBe('clip');
-    expect(parseFloat(styles.overflowClipMargin)).toBeGreaterThanOrEqual(spill);
+    expect(text.top).toBeGreaterThanOrEqual(clip.top - margin - 0.5);
+    expect(text.bottom).toBeLessThanOrEqual(clip.bottom + margin + 0.5);
   });
 
   it('has no remove button unless removable', async () => {

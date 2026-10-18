@@ -516,9 +516,16 @@ describe('A row action in the default slot keeps its hover/focus decoration', ()
     );
     const label = item('a').shadowRoot!.querySelector<HTMLElement>('[part="label"]')!;
     const style = getComputedStyle(label);
-    // `clip`, not `hidden` — `overflow-clip-margin` only applies to `clip`.
-    expect(style.overflow).toBe('clip');
-    expect(parseFloat(style.overflowClipMargin)).toBeGreaterThan(0);
+    // The clip rectangle (wider by `overflow-clip-margin` where an engine has
+    // it) holds the slotted button with a 2px ring around it, on the block
+    // sides and the inline start where the label box is tight.
+    const margin = parseFloat(style.overflowClipMargin) || 0;
+    const clip = label.getBoundingClientRect();
+    const button = item('a').querySelector('button')!.getBoundingClientRect();
+    const ring = 2;
+    expect(button.top - ring).toBeGreaterThanOrEqual(clip.top - margin - 0.5);
+    expect(button.bottom + ring).toBeLessThanOrEqual(clip.bottom + margin + 0.5);
+    expect(button.left - ring).toBeGreaterThanOrEqual(clip.left - margin - 0.5);
     // Text truncation is preserved.
     expect(style.textOverflow).toBe('ellipsis');
     expect(style.whiteSpace).toBe('nowrap');

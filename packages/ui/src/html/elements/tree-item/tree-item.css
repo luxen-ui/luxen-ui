@@ -86,13 +86,16 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  /* `clip` (not `hidden`) so the label still truncates long text to an ellipsis
-     while `overflow-clip-margin` lets a slotted interactive control's hover/focus
-     decoration (a row-action button, an `<l-dropdown>` trigger) bleed past the
-     row-height label box instead of being cut on its top/bottom/left edges. The
-     margin is kept small so the bleed stays imperceptible for text. */
+  /* The label truncates long text to an ellipsis, yet a slotted interactive
+     control's hover/focus decoration (a row-action button, an `<l-dropdown>`
+     trigger) must bleed past the row-height label box instead of being cut on
+     its top/bottom/left edges. The clip follows the padding box, so padding
+     cancelled by an equal negative margin widens it without moving anything.
+     (`overflow-clip-margin` would too, but WebKit has none.) The bleed is kept
+     small so it stays imperceptible for text. */
   overflow: clip;
-  overflow-clip-margin: 0.375rem;
+  padding: 0.375rem;
+  margin: -0.375rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

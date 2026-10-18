@@ -120,12 +120,13 @@
        Fixed by widening the clip rectangle, not the box: growing the line box
        instead (`line-height: normal`) moves the text half a pixel against the ×
        and the prefix icon, since the font's ascent and descent are not
-       symmetrical. `clip` keeps the geometry identical and simply paints the
-       tails. The margin applies to every side — there are no per-axis longhands
-       in any engine yet — but 0.2em of horizontal bleed is invisible next to a
-       label that is hard-cut at the edge anyway. */
+       symmetrical. The clip follows the padding box, so block padding cancelled
+       by an equal negative margin widens it on the block axis only and leaves
+       the layout as it was. (`overflow-clip-margin` would too, but WebKit has
+       none, so Safari sheared the text.) */
     overflow: clip;
-    overflow-clip-margin: 0.2em;
+    padding-block: 0.2em;
+    margin-block: -0.2em;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
