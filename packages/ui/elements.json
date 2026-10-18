@@ -357,6 +357,16 @@
       "selector": ".l-switch"
     },
     {
+      "name": "table",
+      "displayName": "Table",
+      "kind": "native",
+      "type": "native",
+      "inSkill": true,
+      "inMockups": true,
+      "selector": ".l-table",
+      "appearances": ["lines", "grid"]
+    },
+    {
       "name": "tabs",
       "displayName": "Tabs",
       "kind": "element",
