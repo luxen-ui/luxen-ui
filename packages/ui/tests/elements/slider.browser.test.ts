@@ -24,6 +24,16 @@ async function mount(html: string): Promise<Slider> {
   return el;
 }
 
+// Lands keyboard focus on the (first) thumb the way a user would: from a
+// focusable sentinel clicked before the slider, one Tab. A bare first Tab in a
+// fresh page can miss the page in Firefox.
+async function mountAndTab(html: string): Promise<Slider> {
+  const el = await mount(`<button type="button">before</button>${html}`);
+  await userEvent.click(page.getByRole('button', { name: 'before' }));
+  await userEvent.tab();
+  return el;
+}
+
 async function settle(el: Slider) {
   await el.updateComplete;
   await new Promise((r) => setTimeout(r, 0));
@@ -82,8 +92,7 @@ describe('Range mode exposes two ordered thumbs', () => {
 
 describe('A keyboard user can change the value (WCAG 2.1.1 / RGAA 7.3)', () => {
   it('increments on ArrowRight and emits a typed change', async () => {
-    const el = await mount(SINGLE);
-    await userEvent.tab(); // focus the thumb
+    const el = await mountAndTab(SINGLE);
     const changed = waitForEvent(el, 'change');
     await userEvent.keyboard('{ArrowRight}');
     const event = (await changed) as Event & { value: number };
@@ -93,8 +102,7 @@ describe('A keyboard user can change the value (WCAG 2.1.1 / RGAA 7.3)', () => {
   });
 
   it('jumps to the maximum on End and the minimum on Home', async () => {
-    const el = await mount(SINGLE);
-    await userEvent.tab();
+    const el = await mountAndTab(SINGLE);
     await userEvent.keyboard('{End}');
     await settle(el);
     expect(el.value).toBe(100);
@@ -141,9 +149,8 @@ describe('with-tooltip shows the current value', () => {
     el.shadowRoot!.querySelector('[part="tooltip"]')!.textContent.trim();
 
   it('renders the value in the tooltip and updates it on change', async () => {
-    const el = await mount(`<l-slider label="Volume" value="40" with-tooltip></l-slider>`);
+    const el = await mountAndTab(`<l-slider label="Volume" value="40" with-tooltip></l-slider>`);
     expect(tooltipText(el)).toBe('40');
-    await userEvent.tab();
     await userEvent.keyboard('{ArrowRight}');
     await settle(el);
     expect(tooltipText(el)).toBe('41');
