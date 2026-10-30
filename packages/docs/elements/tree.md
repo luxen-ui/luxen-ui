@@ -68,6 +68,13 @@ Set `selection="multiple"` to render a native checkbox on every item. Toggling a
 
 Add `independent` to decouple parents and children: a parent can be selected without ticking any of its descendants and vice-versa. Useful when nodes represent independent concepts (categories, tags, permissions) rather than aggregations.
 
+In independent mode the tree never writes `indeterminate` on its items: the property belongs to you. Set it to show a partial state computed your own way — for instance from the full data set, including rows hidden by a search or not yet loaded. The tree keeps it as you set it across clicks, item changes and mode switches, and the checkbox always reflects it. When `independent` is turned on, the tree clears only the partial states its cascade wrote; when it is turned off, the cascade recomputes every item.
+
+```js
+// Mark a branch as partially selected from your own data.
+item.indeterminate = someDescendantsSelected && !item.selected;
+```
+
 <ComponentWrapper vertical :html="treeIndependent" />
 
 ::: details Code
