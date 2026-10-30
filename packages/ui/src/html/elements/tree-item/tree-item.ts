@@ -1,5 +1,6 @@
 import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { cls, tagName } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
@@ -94,9 +95,35 @@ export class TreeItem extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   accessor selected = false;
 
-  /** Whether the checkbox is indeterminate (some descendants selected). */
+  /**
+   * Whether the checkbox is indeterminate (some descendants selected). Managed by
+   * `<l-tree>` in cascade mode; set it yourself with `independent`.
+   * @default false
+   */
   @property({ type: Boolean, reflect: true })
-  accessor indeterminate = false;
+  get indeterminate(): boolean {
+    return this._indeterminate;
+  }
+  set indeterminate(value: boolean) {
+    this._indeterminate = value;
+    // Any write from outside the cascade hands the state to the consumer.
+    this._cascadeIndeterminate = false;
+  }
+  private _indeterminate = false;
+
+  /**
+   * Whether the current `indeterminate` was written by `<l-tree>`'s cascade, so
+   * the tree can clear its own flags on leaving the cascade without touching the
+   * consumer's.
+   * @internal
+   */
+  _cascadeIndeterminate = false;
+
+  /** @internal Set by `<l-tree>`'s cascade. */
+  _setCascadeIndeterminate(value: boolean) {
+    this.indeterminate = value;
+    this._cascadeIndeterminate = value;
+  }
 
   /** Whether the item is disabled. */
   @property({ type: Boolean, reflect: true })
@@ -322,8 +349,8 @@ export class TreeItem extends LuxenElement {
           type="checkbox"
           tabindex="-1"
           aria-hidden="true"
-          .checked=${this.selected}
-          .indeterminate=${this.indeterminate}
+          .checked=${live(this.selected)}
+          .indeterminate=${live(this.indeterminate)}
           ?disabled=${this.disabled}
           @click=${(e: Event) => e.stopPropagation()}
           @change=${this._onCheckboxChange}

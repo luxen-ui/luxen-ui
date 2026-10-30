@@ -70,6 +70,10 @@ export class Tree extends LuxenElement {
    * When set with `selection="multiple"`, parent and children selection are decoupled:
    * toggling a parent does NOT toggle its descendants and vice versa.
    * Without it, selection cascades both ways and branches may become indeterminate.
+   *
+   * In independent mode the tree never writes `indeterminate`: the consumer owns
+   * it (e.g. to show a partial state computed from rows not in the DOM). On
+   * leaving the cascade, the tree clears only the flags its cascade wrote.
    */
   @property({ type: Boolean, reflect: true })
   accessor independent = false;
@@ -252,12 +256,12 @@ export class Tree extends LuxenElement {
     if (item.disabled) return;
     item.selected = value;
 
-    if (this.selection === 'multiple' && !this.independent) {
+    if (this._cascades) {
       // Cascade DOWN: toggling a branch toggles all descendants.
       this._setSubtreeSelection(item, value);
+      item._setCascadeIndeterminate(false);
     }
 
-    item.indeterminate = false;
     this._updateBranchStates();
     this._emitSelectionChange();
   }
@@ -266,22 +270,35 @@ export class Tree extends LuxenElement {
     for (const child of item.getChildrenItems()) {
       if (child.disabled) continue;
       child.selected = value;
-      child.indeterminate = false;
+      child._setCascadeIndeterminate(false);
       this._setSubtreeSelection(child, value);
     }
   }
 
+  /** Whether selection cascades between parents and children. */
+  private get _cascades(): boolean {
+    return this.selection === 'multiple' && !this.independent;
+  }
+
   /** Propagate child state UP to parents (indeterminate / auto-checked). */
   private _updateBranchStates() {
-    if (this.selection !== 'multiple' || this.independent) {
-      // In independent or non-multiple modes, clear any indeterminate flags.
-      for (const i of this.getAllItems()) i.indeterminate = false;
+    if (!this._cascades) {
+      // Outside the cascade the tree does not own `indeterminate` (the consumer
+      // drives it in independent mode): only clear the flags the cascade wrote,
+      // so a value the consumer set — even in the same tick as the mode switch —
+      // survives.
+      for (const i of this.getAllItems()) {
+        if (i._cascadeIndeterminate) i._setCascadeIndeterminate(false);
+      }
       return;
     }
 
     const recompute = (item: TreeItem): { all: boolean; any: boolean } => {
       const children = item.getChildrenItems({ includeDisabled: false });
       if (children.length === 0) {
+        // A leaf (or a branch with only disabled children) has no partial state;
+        // drop any flag the consumer left from independent mode.
+        item._setCascadeIndeterminate(false);
         return { all: item.selected, any: item.selected };
       }
 
@@ -294,7 +311,7 @@ export class Tree extends LuxenElement {
       }
 
       item.selected = all;
-      item.indeterminate = !all && any;
+      item._setCascadeIndeterminate(!all && any);
       return { all: all && (item.getChildrenItems().length > 0 ? all : item.selected), any };
     };
 

@@ -391,6 +391,98 @@ describe('A user selecting parents and children independently', () => {
   });
 });
 
+// In independent mode the consumer computes the partial state (often from data
+// the DOM does not hold — rows filtered out by a search, lazy children), so the
+// tree must leave `indeterminate` exactly as the consumer set it.
+// Component tests load no tokens, so the checkbox is given a size to be clickable.
+describe('A consumer driving the partial state in independent mode', () => {
+  const TREE = `<l-tree aria-label="F" selection="multiple" independent
+    style="--l-form-control-toggle-size: 1rem">
+    <l-tree-item id="docs" expanded>Documents
+      <l-tree-item id="a">a</l-tree-item>
+      <l-tree-item id="b">b</l-tree-item>
+    </l-tree-item>
+    <l-tree-item id="other">Other</l-tree-item>
+  </l-tree>`;
+
+  const checkbox = (id: string) =>
+    item(id).shadowRoot!.querySelector<HTMLInputElement>('[part="checkbox"]')!;
+
+  it('keeps a partial state when another row is clicked', async () => {
+    await mount(TREE);
+    item('docs').indeterminate = true;
+    await settle();
+    await userEvent.click(treeitem('Other'));
+    await settle();
+    expect(item('docs').indeterminate).toBe(true);
+    expect(checkbox('docs').indeterminate).toBe(true);
+  });
+
+  it('keeps a partial state when items are added or removed', async () => {
+    await mount(TREE);
+    item('docs').indeterminate = true;
+    await settle();
+    const added = document.createElement('l-tree-item');
+    added.textContent = 'c';
+    item('docs').append(added);
+    await settle();
+    item('b').remove();
+    await settle();
+    expect(item('docs').indeterminate).toBe(true);
+    expect(checkbox('docs').indeterminate).toBe(true);
+  });
+
+  it('keeps the checkbox in step with a consumer that vetoes the click', async () => {
+    await mount(TREE);
+    item('docs').indeterminate = true;
+    await settle();
+    // A native click clears the box's own indeterminate flag and ticks it. The
+    // consumer reverts the selection before the item re-renders, so neither
+    // property ends up changed — the box must still be re-synced to them.
+    host.querySelector<Tree>('l-tree')!.addEventListener('selection-change', () => {
+      item('docs').selected = false;
+    });
+    await userEvent.click(checkbox('docs'));
+    await settle();
+    expect(checkbox('docs').checked).toBe(false);
+    expect(checkbox('docs').indeterminate).toBe(true);
+  });
+
+  it('clears the partial states left by the cascade when switching to independent', async () => {
+    await mount(TREE.replace(' independent', ''));
+    await userEvent.click(treeitem('a'));
+    await settle();
+    expect(item('docs').indeterminate).toBe(true);
+    host.querySelector<Tree>('l-tree')!.independent = true;
+    await settle();
+    expect(item('docs').indeterminate).toBe(false);
+  });
+
+  it('keeps a partial state set in the same tick as the switch to independent', async () => {
+    await mount(TREE.replace(' independent', ''));
+    await userEvent.click(treeitem('a'));
+    await settle();
+    // A framework re-render patches the items and the tree in one pass.
+    item('docs').indeterminate = true;
+    item('other').indeterminate = true;
+    host.querySelector<Tree>('l-tree')!.independent = true;
+    await settle();
+    expect(item('docs').indeterminate).toBe(true);
+    expect(item('other').indeterminate).toBe(true);
+  });
+
+  it('drops the partial states the consumer left once the cascade is back', async () => {
+    await mount(TREE);
+    item('a').indeterminate = true;
+    item('other').indeterminate = true;
+    await settle();
+    host.querySelector<Tree>('l-tree')!.independent = false;
+    await settle();
+    expect(item('a').indeterminate).toBe(false);
+    expect(item('other').indeterminate).toBe(false);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Selection — leaf-only mode
 // ---------------------------------------------------------------------------
