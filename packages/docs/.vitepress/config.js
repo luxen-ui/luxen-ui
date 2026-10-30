@@ -143,6 +143,7 @@ export default defineConfig({
               el('Stories viewer', 'l-stories-viewer', 'stories-viewer'),
             ],
           },
+          el('Table', 'table', 'table'),
           el('Tabs', 'l-tabs', 'tabs'),
           el('Tag', 'l-tag', 'tag'),
           el('Toast', 'l-toast', 'toast'),
