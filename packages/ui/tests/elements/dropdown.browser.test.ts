@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/dropdown/index.js';
 import '../../src/html/elements/dropdown-item/index.js';
@@ -489,6 +489,23 @@ async function openMenu() {
   await settle();
 }
 
+/**
+ * Run `actions` while the 100ms hover-intent timer is held on a fake clock, then
+ * flush it past the delay. A couple of CDP round-trips can outlast 100ms on a
+ * loaded runner: on the real clock the timer would fire mid-sequence and the
+ * race these tests pin down would never happen — they'd pass without the fix.
+ */
+async function withHoverTimerHeld(actions: () => Promise<void>) {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  try {
+    await actions();
+    vi.advanceTimersByTime(200);
+  } finally {
+    vi.useRealTimers();
+  }
+  await settle();
+}
+
 describe('Submenus', () => {
   describe('Pointer interaction', () => {
     it('clicking a parent item opens its submenu without selecting or closing the menu', async () => {
@@ -527,10 +544,37 @@ describe('Submenus', () => {
       // must not fire afterwards and reopen it behind the user's back.
       await mount(SUBMENU_FIXTURE);
       await openMenu();
-      await userEvent.click(menuItem('Documents'));
-      await userEvent.click(menuItem('Documents'));
-      await new Promise((r) => setTimeout(r, 200));
-      await settle();
+      await withHoverTimerHeld(async () => {
+        await userEvent.click(menuItem('Documents'));
+        await userEvent.click(menuItem('Documents'));
+      });
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+    });
+
+    it('a pointer drifting across the row does not reopen a submenu a click just closed', async () => {
+      // Crossing from one part of the row to another (here, label text to a
+      // slotted icon) fires pointerout/pointerover without leaving the item.
+      // That must not read as a fresh hover and re-arm the timer.
+      await mount(`
+        <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+          <button slot="trigger">Menu</button>
+          <l-dropdown-item id="documents">
+            <span aria-hidden="true">★</span>
+            <span>Documents</span>
+            <l-dropdown-item slot="submenu">PDF</l-dropdown-item>
+          </l-dropdown-item>
+        </l-dropdown>
+      `);
+      await openMenu();
+      const label = page.getByText('Documents', { exact: true });
+      const icon = page.getByText('★');
+
+      await withHoverTimerHeld(async () => {
+        await userEvent.click(label);
+        await userEvent.click(label);
+        await userEvent.hover(icon);
+      });
       expect(isSubmenuOpen('documents')).toBe(false);
       expect(isOpen()).toBe(true);
     });
@@ -572,6 +616,18 @@ describe('Submenus', () => {
       await settle();
       expect(isSubmenuOpen('documents')).toBe(false);
       expect(isOpen()).toBe(true);
+    });
+
+    it('a bare modifier press does not cancel a pending hover-open', async () => {
+      // Shift, Meta and friends decide nothing on their own — unlike a real
+      // key, they must leave the hover timer running.
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await withHoverTimerHeld(async () => {
+        await userEvent.hover(menuItem('Documents'));
+        await userEvent.keyboard('{Shift}');
+      });
+      expect(isSubmenuOpen('documents')).toBe(true);
     });
 
     it('keeps focus inside the menu when a hovered sibling closes the focused submenu (WCAG 2.4.3 / RGAA 12.8)', async () => {
@@ -672,10 +728,10 @@ describe('Submenus', () => {
       await settle();
       expect(isSubmenuOpen('documents')).toBe(true);
 
-      await userEvent.hover(menuItem('Documents'));
-      await userEvent.keyboard('{ArrowLeft}');
-      await new Promise((r) => setTimeout(r, 200));
-      await settle();
+      await withHoverTimerHeld(async () => {
+        await userEvent.hover(menuItem('Documents'));
+        await userEvent.keyboard('{ArrowLeft}');
+      });
       expect(isSubmenuOpen('documents')).toBe(false);
       expect(isOpen()).toBe(true);
     });
