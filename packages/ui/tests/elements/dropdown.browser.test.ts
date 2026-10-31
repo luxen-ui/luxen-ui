@@ -521,6 +521,20 @@ describe('Submenus', () => {
       expect(isOpen()).toBe(true);
     });
 
+    it('a quick second click keeps the submenu closed once the hover delay has passed', async () => {
+      // Moving onto the row arms the 100ms hover-intent timer. Two clicks
+      // landing inside that window open then close the submenu — the timer
+      // must not fire afterwards and reopen it behind the user's back.
+      await mount(SUBMENU_FIXTURE);
+      await openMenu();
+      await userEvent.click(menuItem('Documents'));
+      await userEvent.click(menuItem('Documents'));
+      await new Promise((r) => setTimeout(r, 200));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+    });
+
     it('clicking the submenu panel padding does not select the parent item', async () => {
       // A pointer landing on the open panel's own padding (not on any nested
       // row) retargets to the parent's `.submenu` div, so the composed path

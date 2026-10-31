@@ -475,7 +475,10 @@ export class Dropdown extends LuxenElement {
     const item = this._itemFromEvent(e);
     if (!item || item.disabled) return;
     if (item.hasSubmenu) {
-      // A parent item toggles its submenu instead of selecting
+      // A parent item toggles its submenu instead of selecting. The click
+      // settles the intent: drop the pending hover timer, or it would reopen
+      // a submenu a quick second click just closed.
+      clearTimeout(this._hoverTimer);
       if (item.submenuOpen) item.closeSubmenu();
       else void this._openSubmenu(item);
       return;
