@@ -75,6 +75,7 @@ export class CancelEvent extends Event {
  * @cssproperty [--padding=1.5rem] - Padding applied to the header, footer, and inline-padding of the body.
  * @cssproperty [--show-duration=200ms] - Open transition duration.
  * @cssproperty [--hide-duration=200ms] - Close transition duration.
+ * @cssproperty [--easing=cubic-bezier(0.32, 0.72, 0, 1)] - Timing function of the open and close transitions, backdrop included.
  * @cssproperty --backdrop - Backdrop color.
  * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length).
  *
