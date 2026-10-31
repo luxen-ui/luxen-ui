@@ -11,6 +11,9 @@ import rawStyles from './dropdown.css?inline';
 
 const styles = unsafeCSS(rawStyles);
 
+/** Keys that decide nothing on their own — pressing one must not drop a pending hover. */
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'AltGraph', 'Meta']);
+
 /** Fired when a dropdown item is selected. Bubbles; not composed. */
 export class DropdownSelectEvent extends Event {
   readonly item: DropdownItem;
@@ -168,8 +171,7 @@ export class Dropdown extends LuxenElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    clearTimeout(this._hoverTimer);
-    this._hoverItem = null;
+    this._cancelHoverIntent({ forget: true });
   }
 
   override updated(changed: PropertyValues<this>) {
@@ -236,18 +238,19 @@ export class Dropdown extends LuxenElement {
   }
 
   /**
-   * A click or a key press is an explicit decision that supersedes a pending
-   * hover: drop the timer, or it would fire afterwards and reopen a submenu the
-   * user just closed. `_hoverItem` is kept so staying on the same row doesn't
-   * re-arm it.
+   * Drop the pending hover-open. A click or a key press is an explicit decision
+   * that supersedes it — left armed, the timer would fire afterwards and reopen
+   * a submenu the user just closed. By default `_hoverItem` is kept, so staying
+   * on the same row doesn't re-arm it; `forget` also clears it, for when the
+   * pointer leaves the row or the menu goes away.
    */
-  private _cancelHoverIntent() {
+  private _cancelHoverIntent({ forget = false } = {}) {
     clearTimeout(this._hoverTimer);
+    if (forget) this._hoverItem = null;
   }
 
   private _closeAllSubmenus() {
-    clearTimeout(this._hoverTimer);
-    this._hoverItem = null;
+    this._cancelHoverIntent({ forget: true });
     for (const item of this._getAllItems()) item.closeSubmenu();
   }
 
@@ -416,7 +419,7 @@ export class Dropdown extends LuxenElement {
   };
 
   private _onPanelKeyDown = (e: KeyboardEvent) => {
-    this._cancelHoverIntent();
+    if (!MODIFIER_KEYS.has(e.key)) this._cancelHoverIntent();
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -502,7 +505,7 @@ export class Dropdown extends LuxenElement {
     if (e.pointerType !== 'mouse') return;
     const item = this._itemFromEvent(e);
     if (item === this._hoverItem) return;
-    clearTimeout(this._hoverTimer);
+    this._cancelHoverIntent();
     this._hoverItem = item;
     if (!item || item.disabled) return;
     this._hoverTimer = window.setTimeout(() => {
@@ -510,9 +513,21 @@ export class Dropdown extends LuxenElement {
     }, 100);
   };
 
-  private _onPanelPointerOut = () => {
-    clearTimeout(this._hoverTimer);
-    this._hoverItem = null;
+  private _onPanelPointerOut = (e: PointerEvent) => {
+    // pointerout also fires between parts of the same row — a slotted icon and
+    // the row padding (the related target arrives retargeted to the item host).
+    // Forgetting the row there would let the next pointerover re-arm the timer
+    // and reopen a submenu a click just closed. Leaving the row is pointerover's
+    // call, or this one's once the pointer exits the panel.
+    const to = e.relatedTarget;
+    if (
+      this._hoverItem &&
+      to instanceof Element &&
+      to.closest(tagName('dropdown-item')) === this._hoverItem
+    ) {
+      return;
+    }
+    this._cancelHoverIntent({ forget: true });
   };
 
   private _selectCurrentItem() {
