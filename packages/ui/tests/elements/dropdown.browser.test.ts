@@ -662,6 +662,24 @@ describe('Submenus', () => {
       expect(item('pdf').shadowRoot!.activeElement).not.toBeNull();
     });
 
+    it('a submenu closed with ArrowLeft stays closed even if the pointer just moved onto its parent', async () => {
+      // Resting the mouse on the parent row arms the 100ms hover-intent timer.
+      // A key press inside that window is the newer decision — the timer must
+      // not fire afterwards and reopen the submenu ArrowLeft just closed.
+      await mount(SUBMENU_FIXTURE);
+      await openViaKey('{ArrowDown}');
+      await userEvent.keyboard('{ArrowRight}');
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(true);
+
+      await userEvent.hover(menuItem('Documents'));
+      await userEvent.keyboard('{ArrowLeft}');
+      await new Promise((r) => setTimeout(r, 200));
+      await settle();
+      expect(isSubmenuOpen('documents')).toBe(false);
+      expect(isOpen()).toBe(true);
+    });
+
     it('arrow keys navigate within the submenu level and wrap (WCAG 2.1.1 / RGAA 7.3)', async () => {
       await mount(SUBMENU_FIXTURE);
       await openViaKey('{ArrowDown}');
