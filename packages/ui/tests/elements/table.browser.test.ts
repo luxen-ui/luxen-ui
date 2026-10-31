@@ -12,6 +12,8 @@ import '../../src/css/preset.css';
 import '../../src/css/elements/button.css';
 import '../../src/css/elements/table/lines.css';
 import '../../src/css/elements/table/grid.css';
+// A shadow-DOM control, to check that a row link leaves it clickable.
+import '../../src/html/elements/tag/index.js';
 
 let host: HTMLElement;
 
@@ -278,6 +280,12 @@ describe('Row states come from the platform', () => {
 
     expect(style(cell('tbody td')).textAlign).toBe('center');
   });
+
+  it('leaves a spanning cell among other rows as data, not an empty state', () => {
+    mount(TABLE('', `${UNLINKED}<tr><td colspan="5" class="note">Prices exclude VAT.</td></tr>`));
+
+    expect(style(cell('.note')).textAlign).toBe('start');
+  });
 });
 
 describe('Row groups and totals are set apart', () => {
@@ -325,6 +333,32 @@ describe('Sortable headers show their state', () => {
     expect(style(link).textDecorationLine).toBe('none');
   });
 
+  it('leaves an .l-button in a header to its own look, with no sort glyph', () => {
+    mount(
+      TABLE().replace(
+        '<th scope="col" data-sticky="end" aria-label="Actions"></th>',
+        '<th scope="col" data-sticky="end"><button type="button" class="l-button" data-size="sm">Columns</button></th>',
+      ),
+    );
+
+    const button = page.getByRole('button', { name: 'Columns' }).element();
+    expect(style(button).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(style(button, '::after').maskImage).toBe('none');
+  });
+
+  it('dims the button of a column that cannot be sorted', () => {
+    mount(
+      TABLE().replace(
+        '<button type="button">Name</button>',
+        '<button type="button" disabled>Name</button>',
+      ),
+    );
+
+    const button = page.getByRole('button', { name: 'Name', exact: true }).element();
+    expect(style(button).cursor).toBe('not-allowed');
+    expect(style(button).opacity).toBe('0.4');
+  });
+
   it('draws the Luxen focus ring on a header button reached by keyboard (WCAG 2.4.7 / RGAA 10.7)', async () => {
     mount(TABLE());
 
@@ -367,6 +401,23 @@ describe('A row link opens the record from anywhere in the row', () => {
     mount(TABLE());
 
     expect(hitAt(cell('#row-9f1c [data-select]'), 'corner')?.closest('a')).toBeNull();
+  });
+
+  it('keeps a Luxen custom element clickable above the link', async () => {
+    mount(
+      TABLE(
+        '',
+        ROWS.replace(
+          '<td class="item">Desk lamp</td>',
+          '<td class="item"><l-tag removable>Lamp</l-tag></td>',
+        ),
+      ),
+    );
+    const tag = cell<HTMLElement & { updateComplete: Promise<unknown> }>('l-tag');
+    await tag.updateComplete;
+
+    const hit = hitAt(tag);
+    expect(hit === tag || tag.contains(hit)).toBe(true);
   });
 
   it('is a real link for keyboard users, with a visible focus ring (WCAG 2.1.1, 2.4.7 / RGAA 7.3, 10.7)', async () => {

@@ -130,8 +130,9 @@
       white-space: nowrap;
     }
 
-    /* An empty state: one cell spanning the row. */
-    & > tbody > tr > td[colspan]:only-child {
+    /* An empty state: a body whose only row is one cell spanning it. A spanning
+       cell among other rows (a detail row, a note) is ordinary data. */
+    & > tbody > tr:only-child > td[colspan]:only-child {
       padding-block: var(--l-spacing-8);
       color: var(--l-color-text-secondary);
       text-align: center;
@@ -157,8 +158,9 @@
 
     /* Sortable header: the button (or link) is the control, `aria-sort` on its
        `<th>` is the state. The glyph is a mask filled with a text color, so it
-       follows the scheme. */
-    & > thead > tr > th > :is(button, a) {
+       follows the scheme. An `.l-button` in a header is some other action
+       (column settings, a menu) and keeps its own look. */
+    & > thead > tr > th > :is(button, a):not(.l-button) {
       display: inline-flex;
       align-items: center;
       gap: var(--l-spacing-1);
@@ -189,18 +191,28 @@
       }
 
       @media (hover: hover) {
-        &:hover {
+        &:hover:not(:disabled) {
           color: var(--l-color-text-primary);
         }
+      }
+
+      /* A column the current query cannot sort by. */
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
       }
     }
 
     /* In a numeric column the label sits flush with the numbers below it. */
-    & > thead > tr > th[data-type='number'] > :is(button, a) {
+    & > thead > tr > th[data-type='number'] > :is(button, a):not(.l-button) {
       flex-direction: row-reverse;
     }
 
-    & > thead > tr > th:is([aria-sort='ascending'], [aria-sort='descending']) > :is(button, a) {
+    &
+      > thead
+      > tr
+      > th:is([aria-sort='ascending'], [aria-sort='descending'])
+      > :is(button, a):not(.l-button) {
       color: var(--l-color-text-primary);
 
       &::after {
@@ -208,11 +220,11 @@
       }
     }
 
-    & > thead > tr > th[aria-sort='ascending'] > :is(button, a)::after {
+    & > thead > tr > th[aria-sort='ascending'] > :is(button, a):not(.l-button)::after {
       --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 12.5v-9M4.5 7 8 3.5 11.5 7' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
-    & > thead > tr > th[aria-sort='descending'] > :is(button, a)::after {
+    & > thead > tr > th[aria-sort='descending'] > :is(button, a):not(.l-button)::after {
       --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3.5v9M4.5 9 8 12.5 11.5 9' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
@@ -270,12 +282,29 @@
 
     /* Every other control in a linked row stays reachable above the overlay —
        and so does the selection cell, so a click that just misses the
-       checkbox does not open the record. */
+       checkbox does not open the record. Controls drawn in a shadow root
+       are matched by their host: Luxen's are listed, and any other custom
+       element needs `position: relative; z-index: 1` of its own. */
     &
       > tbody
       > tr:has(> * a[data-row-link])
       > *
-      :is(a:not([data-row-link]), button, input, select, textarea, label, summary, [tabindex]),
+      :is(
+        a:not([data-row-link]),
+        button,
+        input,
+        select,
+        textarea,
+        label,
+        summary,
+        [tabindex],
+        [contenteditable],
+        l-rating,
+        l-select,
+        l-combobox,
+        l-slider,
+        l-tag
+      ),
     & > tbody > tr:has(> * a[data-row-link]) > :where([data-select]:not([data-sticky])) {
       position: relative;
       z-index: var(--_z-raised);

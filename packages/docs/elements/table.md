@@ -55,7 +55,7 @@ A stylesheet, no JavaScript. The states it shows are the platform's: `aria-sort`
 
 ### Appearance
 
-Pick a look with `data-appearance`. Each appearance has its own CSS import; the one imported is also the default.
+Pick a look with `data-appearance`. Each appearance has its own CSS import. Lines is the default; grid always needs `data-appearance="grid"`, even when it is the only one imported.
 
 #### Lines
 
@@ -124,7 +124,9 @@ Set `--stripe-color` to a tint, e.g. `var(--l-color-bg-state-hover)`: every othe
 
 ### Sticky header and columns
 
-The header sticks to the top of the nearest scroll container. Put `data-sticky="end"` (or `start`) on every cell of a column to keep it at that edge while the table scrolls sideways; a shadow marks content scrolling under it. Cells wrap by default; add `white-space: nowrap` to the table (`whitespace-nowrap` in Tailwind) so it scrolls sideways instead. Set `--header-offset` when a fixed bar sits above the table.
+The header sticks to the top of the nearest scroll container. Put `data-sticky="end"` (or `start`) on every cell of a column to keep it at that edge while the table scrolls sideways; a shadow marks content scrolling under it. Cells wrap by default; add `white-space: nowrap` to the table (`whitespace-nowrap` in Tailwind) so it scrolls sideways instead.
+
+A wrapper with `overflow-x: auto` scrolls on both axes, so the header sticks inside it, not to the page: give the wrapper a `max-block-size`, as in this example. Set `--header-offset` on the table only when the page itself scrolls and a fixed bar sits above it; inside a scroll container the header would sit that far down and cover the first rows.
 
 <ComponentWrapper :html="sticky" />
 
@@ -135,7 +137,7 @@ The header sticks to the top of the nearest scroll container. Put `data-sticky="
 
 ### Sortable columns
 
-Put a `<button>` in each sortable header, and `aria-sort="ascending"` or `"descending"` on the sorted one. The stylesheet shows the state; sorting is your script's job, as in this demo. When the server sorts, use a link to the sorted URL instead of the button (`<a href="?sort=-sku">`): it takes the same look, and needs no script.
+Put a `<button>` in each sortable header, and `aria-sort="ascending"` or `"descending"` on the sorted one. The stylesheet shows the state; sorting is your script's job, as in this demo. When the server sorts, use a link to the sorted URL instead of the button (`<a href="?sort=-sku">`): it takes the same look, and needs no script. Disable the button of a column the current query cannot sort by. Any other action in a header (column settings, a menu) is an `.l-button` and keeps its own look.
 
 <TableSortDemo />
 
@@ -160,7 +162,7 @@ Put a native checkbox in a `data-select` cell at the start of each row, and name
 
 Add `data-row-link` to the link in a row's header cell: a click anywhere in the row follows it, and it stays a real link — keyboard, middle-click, open in a new tab. The row's other controls and its selection cell stay clickable. Only a linked row is tinted under the pointer, since a hover tint promises a click.
 
-Two trade-offs: text in a linked row cannot be selected with the mouse, and the row link must stay out of a `data-sticky` cell, which would confine it to that cell.
+Two trade-offs: text in a linked row cannot be selected with the mouse, and the row link must stay out of a `data-sticky` cell, which would confine it to that cell. Native controls and Luxen's custom elements stay above the link; give any other custom element in a linked row `position: relative; z-index: 1` (`relative z-1` in Tailwind).
 
 <ComponentWrapper :html="rowLink" />
 
@@ -186,7 +188,7 @@ Put totals in a `<tfoot>`. A single rule sets them apart from the rows. Several 
 
 ### Empty
 
-Render a single row whose cell spans every column.
+Render a `<tbody>` with a single row whose one `<td>` spans every column.
 
 <ComponentWrapper :html="empty" />
 
