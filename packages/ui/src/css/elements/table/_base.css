@@ -1,0 +1,350 @@
+@layer components {
+  /**
+   * Table — `.l-table` on a native `<table>`: the structure and states every
+   * appearance shares. The appearances (`lines.css`, `grid.css`) add the rules
+   * between cells; each imports this file, so a page imports one of them.
+   *
+   * CSS only. Each state a data table shows is already a platform state, so this
+   * file styles those states instead of adding attributes of its own:
+   *
+   *   sort        `aria-sort` on a `<th>` holding a `<button>` (APG sortable
+   *               table example), or a link when the server sorts
+   *   selection   a native checkbox (or radio) in a `[data-select]` cell; the
+   *               row reads as selected while the input is `:checked`
+   *   jump-to     an `id` on the row and a URL fragment (`:target`)
+   *
+   * Rows are sized on the control scale (`--l-size-control-*`) plus a fixed
+   * block padding, so a control of the table's size fits a row exactly.
+   *
+   * Row tints (hover, selected, stripes, the jump-to mark) are background
+   * *images* layered over a background *color* that stays transparent except
+   * on sticky cells, which must be opaque to hide what scrolls under them. The
+   * jump-to mark is a layer too, not a box-shadow: the sticky-column shadow
+   * animation owns `box-shadow` on sticky cells.
+   *
+   * A row link stretches over its row with an absolutely positioned `::after`,
+   * the `<tr>` being its containing block. A sticky cell is a containing block
+   * as well, so a row link inside one covers only that cell: keep it in a cell
+   * that does not stick.
+   *
+   * Selectors walk `thead | tbody | tfoot > tr > cell` from the table so a table
+   * nested in a cell keeps its own styles.
+   *
+   * - https://www.w3.org/WAI/ARIA/apg/patterns/table/
+   * - https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/
+   */
+
+  .l-table {
+    /* Public knobs */
+    --row-height: calc(var(--_size) + 2 * var(--_padding-block));
+    --header-offset: 0px;
+    --background-color: var(--l-color-surface);
+    --border-color: var(--l-color-divider);
+    --stripe-color: transparent;
+
+    --_size: var(--l-size-control-md);
+    --_padding-block: var(--l-spacing-1);
+    --_padding-inline: var(--l-spacing-3);
+
+    /* Stacking inside the table: controls raised above a row link's overlay,
+       sticky body cells above those, the header above everything it scrolls
+       over, and the header's sticky corner on top. */
+    --_z-raised: 1;
+    --_z-sticky: 2;
+    --_z-header: 3;
+    --_z-corner: 4;
+
+    inline-size: 100%;
+    /* `separate`: sticky cells lose their borders under `collapse`. */
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--l-color-text-primary);
+    font-size: var(--l-text-sm);
+    line-height: var(--l-text-sm--line-height);
+
+    &[data-size='sm'] {
+      --_size: var(--l-size-control-sm);
+      --_padding-inline: var(--l-spacing-2);
+    }
+
+    &[data-size='lg'] {
+      --_size: var(--l-size-control-lg);
+      --_padding-inline: var(--l-spacing-4);
+    }
+
+    & > caption {
+      padding-block-end: var(--l-spacing-2);
+      color: var(--l-color-text-primary);
+      font-weight: var(--l-font-weight-semibold);
+      text-align: start;
+    }
+
+    /* ── Cells ───────────────────────────────────────────────────────────── */
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where(th, td) {
+      /* Per-cell layers; the row states below set them. */
+      --_row-tint: transparent;
+      --_row-stripe: transparent;
+      --_row-mark: transparent;
+      --_cell-background: transparent;
+
+      /* On a table cell a block size is a minimum: content still grows it.
+         Border-box, so the row height includes the padding. */
+      box-sizing: border-box;
+      block-size: var(--row-height);
+      padding-block: var(--_padding-block);
+      padding-inline: var(--_padding-inline);
+      background-color: var(--_cell-background);
+      background-image:
+        linear-gradient(var(--_row-mark), var(--_row-mark)),
+        linear-gradient(var(--_row-tint), var(--_row-tint)),
+        linear-gradient(var(--_row-stripe), var(--_row-stripe));
+      background-repeat: no-repeat;
+      background-size:
+        3px 100%,
+        100% 100%,
+        100% 100%;
+      background-position: left center;
+      text-align: start;
+      vertical-align: middle;
+
+      &:dir(rtl) {
+        background-position: right center;
+      }
+    }
+
+    /* A row header names its row; it reads as data, not as a column title. */
+    & > :where(tbody, tfoot) > :where(tr) > :where(th) {
+      font-weight: inherit;
+    }
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-type='number']) {
+      text-align: end;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* The selection column shrinks to its control. */
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-select]) {
+      inline-size: 1%;
+      padding-inline-end: 0;
+      white-space: nowrap;
+    }
+
+    /* An empty state: one cell spanning the row. */
+    & > tbody > tr > td[colspan]:only-child {
+      padding-block: var(--l-spacing-8);
+      color: var(--l-color-text-secondary);
+      text-align: center;
+    }
+
+    /* ── Totals ──────────────────────────────────────────────────────────── */
+
+    & > tfoot > tr:first-child > :where(th, td) {
+      font-weight: var(--l-font-weight-medium);
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+
+    & > thead > tr > :where(th) {
+      --_cell-background: var(--background-color);
+      position: sticky;
+      inset-block-start: var(--header-offset);
+      z-index: var(--_z-header);
+      color: var(--l-color-text-secondary);
+      font-weight: var(--l-font-weight-medium);
+      white-space: nowrap;
+    }
+
+    /* Sortable header: the button (or link) is the control, `aria-sort` on its
+       `<th>` is the state. The glyph is a mask filled with a text color, so it
+       follows the scheme. */
+    & > thead > tr > th > :is(button, a) {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--l-spacing-1);
+      margin: 0;
+      border: 0;
+      border-radius: var(--l-radius-sm);
+      padding: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: inherit;
+      text-decoration: none;
+      cursor: pointer;
+
+      &::after {
+        --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 6.5 8 3.5l3 3M5 9.5l3 3 3-3' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        content: '';
+        flex: none;
+        inline-size: 1em;
+        block-size: 1em;
+        background-color: var(--l-color-text-tertiary);
+        mask: var(--_sort-icon) center / contain no-repeat;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--l-focus-ring);
+        outline-offset: 2px;
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--l-color-text-primary);
+        }
+      }
+    }
+
+    /* In a numeric column the label sits flush with the numbers below it. */
+    & > thead > tr > th[data-type='number'] > :is(button, a) {
+      flex-direction: row-reverse;
+    }
+
+    & > thead > tr > th:is([aria-sort='ascending'], [aria-sort='descending']) > :is(button, a) {
+      color: var(--l-color-text-primary);
+
+      &::after {
+        background-color: currentColor;
+      }
+    }
+
+    & > thead > tr > th[aria-sort='ascending'] > :is(button, a)::after {
+      --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 12.5v-9M4.5 7 8 3.5 11.5 7' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    & > thead > tr > th[aria-sort='descending'] > :is(button, a)::after {
+      --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3.5v9M4.5 9 8 12.5 11.5 9' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    /* ── Row states ──────────────────────────────────────────────────────── */
+
+    /* Stripes are a token, so they combine with any appearance. */
+    & > tbody > tr:nth-child(even) > * {
+      --_row-stripe: var(--stripe-color);
+    }
+
+    /* Hover is click feedback, so only a row that opens something gets it. */
+    @media (hover: hover) {
+      & > tbody > tr:has(> * a[data-row-link]):hover > * {
+        --_row-tint: var(--l-color-bg-state-hover);
+      }
+    }
+
+    /* Selected beats hovered: it is the state the user has to keep track of. */
+    & > tbody > tr:has(> [data-select] input:checked) > * {
+      --_row-tint: var(--l-color-bg-state-selected);
+    }
+
+    /* Jump-to: land below the sticky header, and mark the row reached. */
+    & > tbody > tr {
+      scroll-margin-block-start: calc(
+        var(--header-offset) + var(--row-height) + var(--l-spacing-2)
+      );
+    }
+
+    & > tbody > tr:target > :first-child {
+      --_row-mark: var(--l-focus-ring);
+    }
+
+    /* ── Row link ────────────────────────────────────────────────────────── */
+
+    & > tbody > tr:has(> * a[data-row-link]) {
+      position: relative;
+      cursor: pointer;
+    }
+
+    & > tbody > tr > * a[data-row-link] {
+      border-radius: var(--l-radius-sm);
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--l-focus-ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* Every other control in a linked row stays reachable above the overlay —
+       and so does the selection cell, so a click that just misses the
+       checkbox does not open the record. */
+    &
+      > tbody
+      > tr:has(> * a[data-row-link])
+      > *
+      :is(a:not([data-row-link]), button, input, select, textarea, label, summary, [tabindex]),
+    & > tbody > tr:has(> * a[data-row-link]) > :where([data-select]:not([data-sticky])) {
+      position: relative;
+      z-index: var(--_z-raised);
+    }
+
+    /* ── Sticky columns ──────────────────────────────────────────────────── */
+
+    &
+      > :where(thead, tbody, tfoot)
+      > :where(tr)
+      > :where([data-sticky='start'], [data-sticky='end']) {
+      --_cell-background: var(--background-color);
+      /* Which way a shadow falls: towards the inline end of a start column. */
+      --_shadow-direction: 1;
+
+      position: sticky;
+      z-index: var(--_z-sticky);
+
+      &:dir(rtl) {
+        --_shadow-direction: -1;
+      }
+    }
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-sticky='start']) {
+      inset-inline-start: 0;
+    }
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-sticky='end']) {
+      inset-inline-end: 0;
+    }
+
+    & > thead > tr > :where([data-sticky='start'], [data-sticky='end']) {
+      z-index: var(--_z-corner);
+    }
+
+    /* A shadow where content scrolls under a sticky column. Decoration only:
+       without scroll-driven animations there is no shadow. */
+    @supports (animation-timeline: scroll()) {
+      & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-sticky='start']) {
+        animation: l-table-shadow-start linear both;
+        animation-timeline: scroll(nearest inline);
+        animation-range: 0 var(--l-spacing-4);
+      }
+
+      & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-sticky='end']) {
+        animation: l-table-shadow-end linear both;
+        animation-timeline: scroll(nearest inline);
+        animation-range: calc(100% - var(--l-spacing-4)) 100%;
+      }
+    }
+  }
+
+  @keyframes l-table-shadow-start {
+    from {
+      box-shadow: none;
+    }
+    to {
+      box-shadow: calc(var(--_shadow-direction) * 6px) 0 6px -6px
+        color-mix(in oklab, var(--l-color-text-primary) 14%, transparent);
+    }
+  }
+
+  @keyframes l-table-shadow-end {
+    from {
+      box-shadow: calc(var(--_shadow-direction) * -6px) 0 6px -6px
+        color-mix(in oklab, var(--l-color-text-primary) 14%, transparent);
+    }
+    to {
+      box-shadow: none;
+    }
+  }
+}

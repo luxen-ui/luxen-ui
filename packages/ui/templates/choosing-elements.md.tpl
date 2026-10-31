@@ -109,6 +109,7 @@ the platform genuinely can't express the behavior (a modal, a combobox, a toast)
 | A keyboard key                                        | `.l-kbd`                                 |
 | A separator between content                          | `<l-divider>`                            |
 | Hierarchical, expandable data                        | `<l-tree>`                               |
+| Records in rows and columns                          | `.l-table` (on `<table>`)                |
 
 ### Navigate or organize
 
