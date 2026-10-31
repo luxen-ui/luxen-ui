@@ -6,6 +6,9 @@
   --footer-padding: var(--padding);
   --show-duration: 200ms;
   --hide-duration: 200ms;
+  /* Fast start, soft landing: the surface is nearly in place early, the
+     tail only settles it. */
+  --easing: cubic-bezier(0.32, 0.72, 0, 1);
   --backdrop: var(--l-backdrop);
   --backdrop-blur: 0;
 
@@ -31,11 +34,19 @@ dialog {
 
   transition-property: opacity, display, overlay;
   transition-duration: var(--hide-duration);
+  transition-timing-function: var(--easing);
   transition-behavior: allow-discrete;
 
+  /* The backdrop does not inherit the dialog's opacity: without its own
+     transition it pops in and out at full strength. */
   &::backdrop {
     background: var(--backdrop);
     backdrop-filter: blur(var(--backdrop-blur));
+    opacity: 0;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--hide-duration);
+    transition-timing-function: var(--easing);
+    transition-behavior: allow-discrete;
   }
 
   /* OPEN STATE */
@@ -48,9 +59,15 @@ dialog {
     transition-duration: var(--show-duration);
   }
 
+  &[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--show-duration);
+  }
+
   /* BEFORE-OPEN STATE */
   @starting-style {
-    &[open] {
+    &[open],
+    &[open]::backdrop {
       opacity: 0;
     }
   }

@@ -28,8 +28,9 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @cssproperty --border-radius - Drawer border radius on the inner edges (all corners when `inset`). Default `0.375rem`.
  * @cssproperty --inset-gap - Gap between the drawer and the viewport edges when `inset` is set. Default `1rem`.
  * @cssproperty --shadow - Drop shadow applied to the floating panel when `inset` is set. Set to `none` to remove it.
- * @cssproperty --show-duration - Open transition duration. Default `200ms`.
+ * @cssproperty --show-duration - Open transition duration. Default `300ms`.
  * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
+ * @cssproperty --easing - Timing function of the open and close transitions, backdrop included. Default `cubic-bezier(0.32, 0.72, 0, 1)`.
  * @cssproperty --backdrop - Backdrop color.
  *
  * @event show - Fired when the drawer is about to open. Cancelable — call `event.preventDefault()` to keep it closed.

@@ -106,6 +106,16 @@ describe('Opening and closing the dialog', () => {
     expect(order).toEqual(['hide', 'after-hide']);
   });
 
+  it('the backdrop fades in with the dialog instead of appearing at full strength', async () => {
+    await mount(`<l-dialog title="Fade" style="--show-duration: 1000ms"><p>Body</p></l-dialog>`);
+    dialog().open = true;
+    await settle();
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const opacity = Number(getComputedStyle(nativeDialog(), '::backdrop').opacity);
+    expect(opacity).toBeGreaterThan(0);
+    expect(opacity).toBeLessThan(1);
+  });
+
   it('the open attribute reflects: mounting with open attribute opens the dialog', async () => {
     // Attach the listener BEFORE mount so we don't miss the event that fires
     // during the first Lit update triggered by the reflected `open` attribute.

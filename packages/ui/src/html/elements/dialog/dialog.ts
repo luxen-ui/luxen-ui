@@ -56,6 +56,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @cssproperty [--padding=1.5rem] - Padding applied to the header, footer, and inline-padding of the body. Set to `0` to remove all internal spacing (e.g. for edge-to-edge media).
  * @cssproperty [--show-duration=200ms] - Open transition duration.
  * @cssproperty [--hide-duration=200ms] - Close transition duration.
+ * @cssproperty [--easing=cubic-bezier(0.32, 0.72, 0, 1)] - Timing function of the open and close transitions, backdrop included.
  * @cssproperty --backdrop - Backdrop color.
  * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length). `0` means no blur; set e.g. `4px` for a subtle frost.
  *
