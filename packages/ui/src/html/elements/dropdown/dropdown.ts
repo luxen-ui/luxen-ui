@@ -235,6 +235,16 @@ export class Dropdown extends LuxenElement {
     }
   }
 
+  /**
+   * A click or a key press is an explicit decision that supersedes a pending
+   * hover: drop the timer, or it would fire afterwards and reopen a submenu the
+   * user just closed. `_hoverItem` is kept so staying on the same row doesn't
+   * re-arm it.
+   */
+  private _cancelHoverIntent() {
+    clearTimeout(this._hoverTimer);
+  }
+
   private _closeAllSubmenus() {
     clearTimeout(this._hoverTimer);
     this._hoverItem = null;
@@ -406,6 +416,7 @@ export class Dropdown extends LuxenElement {
   };
 
   private _onPanelKeyDown = (e: KeyboardEvent) => {
+    this._cancelHoverIntent();
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -475,10 +486,8 @@ export class Dropdown extends LuxenElement {
     const item = this._itemFromEvent(e);
     if (!item || item.disabled) return;
     if (item.hasSubmenu) {
-      // A parent item toggles its submenu instead of selecting. The click
-      // settles the intent: drop the pending hover timer, or it would reopen
-      // a submenu a quick second click just closed.
-      clearTimeout(this._hoverTimer);
+      // A parent item toggles its submenu instead of selecting
+      this._cancelHoverIntent();
       if (item.submenuOpen) item.closeSubmenu();
       else void this._openSubmenu(item);
       return;
