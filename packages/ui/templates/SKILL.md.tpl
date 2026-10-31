@@ -42,6 +42,7 @@ These rules apply across all elements; element-specific detail lives in the per-
 - **Variants and state use `data-*` attributes** (`data-variant`, `data-appearance`), not modifier classes.
 - **Show/hide overlays with the invoker pattern**: `command="--show"` / `command="--hide"` + `commandfor="<id>"` for dialog and drawer.
 - **Colors, spacing, and typography come from design tokens** — see [references/tokens.md](references/tokens.md). Use the semantic tokens and utility classes listed there rather than arbitrary values.
+- **Customize through the documented surface** — CSS custom properties, CSS parts, events. Before overriding an element's styles through `::part()` or working around one of its behaviours (motion, event timing), check its spec: the knob usually exists. When it does not, that is a gap in {{name}} — report it upstream rather than shipping a local workaround.
 
 ## Choosing an element
 
@@ -49,7 +50,7 @@ These rules apply across all elements; element-specific detail lives in the per-
 
 ## Per-element specs
 
-**ALWAYS read `references/<element>.md` before emitting that element** (e.g. `references/dialog.md`) — attribute conventions differ per element, so guessing from memory is unsafe. Each file describes attributes, slots, events, and CSS custom properties.
+**ALWAYS read `references/<element>.md` before emitting, styling, or working around that element** (e.g. `references/dialog.md`) — attribute conventions differ per element, so guessing from memory is unsafe. Each file describes attributes, slots, events, and CSS custom properties.
 
 ## Available elements
 
