@@ -145,8 +145,8 @@ Add `disabled` to a segment's input. Arrow keys skip it, and it drops out of the
 
 <KeyboardTable :data="[
   { Key: 'Tab', Description: 'Moves focus into the group, onto the checked segment' },
-  { Key: 'ArrowRight', Description: 'Selects and focuses the next segment, wrapping' },
-  { Key: 'ArrowLeft', Description: 'Selects and focuses the previous segment, wrapping' },
+  { Key: 'ArrowRight', Description: 'Selects and focuses the next segment; wraps at the end in Chrome and Firefox, stops there in Safari (the browser’s own radio behaviour)' },
+  { Key: 'ArrowLeft', Description: 'Selects and focuses the previous segment; wraps at the start in Chrome and Firefox, stops there in Safari' },
   { Key: 'ArrowDown', Description: 'Same as ArrowRight' },
   { Key: 'ArrowUp', Description: 'Same as ArrowLeft' },
   { Key: 'Space', Description: 'Selects the focused segment when none was selected' },
