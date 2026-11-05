@@ -599,21 +599,94 @@ describe('Roles and states stay targetable by CSS and test selectors', () => {
 // ---------------------------------------------------------------------------
 
 describe('A row action in the default slot keeps its hover/focus decoration', () => {
-  // The label box truncates long text using `overflow: clip` with a clip margin,
-  // so a slotted control's focus ring / hover background is not cut on the label
-  // edges (RFC-tree-item-label-clips-row-actions).
-  it('clips the label without hard-clipping slotted decorations', async () => {
+  // The label truncates long text, so it clips — but a slotted control's focus
+  // ring / hover background must not be cut on the label edges
+  // (RFC-tree-item-label-clips-row-actions). Hit-testing follows the same clip
+  // as painting, so a slotted box that overhangs the label stands in for a
+  // decoration: wherever it can still be hit, it is still painted.
+  const hit = (x: number, y: number) => document.elementFromPoint(x, y);
+
+  it('keeps a slotted decoration whole on every side of the label', async () => {
     await mount(
-      `<l-tree aria-label="F"><l-tree-item id="a"><button>x</button>Label</l-tree-item></l-tree>`,
+      `<l-tree aria-label="F" style="inline-size: 300px"><l-tree-item id="a">` +
+        `<span id="start" style="flex: none; inline-size: 20px; block-size: 30px; margin-block: -6px; margin-inline-start: -4px"></span>` +
+        `Label<span style="flex: 1"></span>` +
+        `<span id="end" style="flex: none; inline-size: 20px; block-size: 20px; margin-inline-end: -3px"></span>` +
+        `</l-tree-item></l-tree>`,
+    );
+    const label = item('a').shadowRoot!.querySelector<HTMLElement>('[part="label"]')!;
+    const border = label.getBoundingClientRect();
+    const s = getComputedStyle(label);
+    const box = {
+      top: border.top + parseFloat(s.paddingTop),
+      bottom: border.bottom - parseFloat(s.paddingBottom),
+      left: border.left + parseFloat(s.paddingLeft),
+      right: border.right - parseFloat(s.paddingRight),
+    };
+    const start = host.querySelector('#start')!.getBoundingClientRect();
+    const end = host.querySelector('#end')!.getBoundingClientRect();
+    // The fixtures really do overhang the label's content box…
+    expect(start.top).toBeLessThan(box.top - 2);
+    expect(start.bottom).toBeGreaterThan(box.bottom + 2);
+    expect(start.left).toBeLessThan(box.left - 2);
+    expect(end.right).toBeGreaterThan(box.right + 2);
+    // …and every overhanging edge is still there.
+    expect(hit(start.left + 10, start.top + 1)?.id).toBe('start');
+    expect(hit(start.left + 10, start.bottom - 1)?.id).toBe('start');
+    expect(hit(start.left + 1, start.top + 15)?.id).toBe('start');
+    expect(hit(end.right - 1, end.top + 10)?.id).toBe('end');
+  });
+
+  it('still truncates a long label to an ellipsis', async () => {
+    await mount(
+      `<l-tree aria-label="F" style="inline-size: 120px"><l-tree-item id="a">A label far too long for its row</l-tree-item></l-tree>`,
     );
     const label = item('a').shadowRoot!.querySelector<HTMLElement>('[part="label"]')!;
     const style = getComputedStyle(label);
-    // `clip`, not `hidden` — `overflow-clip-margin` only applies to `clip`.
-    expect(style.overflow).toBe('clip');
-    expect(parseFloat(style.overflowClipMargin)).toBeGreaterThan(0);
-    // Text truncation is preserved.
+    expect(label.scrollWidth).toBeGreaterThan(label.clientWidth);
+    expect(style.overflowX).toBe('clip');
     expect(style.textOverflow).toBe('ellipsis');
     expect(style.whiteSpace).toBe('nowrap');
+  });
+
+  it('keeps each label inside its own row', async () => {
+    await mount(
+      `<l-tree aria-label="F" style="inline-size: 300px">` +
+        `<l-tree-item id="a">Alpha</l-tree-item><l-tree-item id="b">Bravo</l-tree-item>` +
+        `</l-tree>`,
+    );
+    for (const id of ['a', 'b']) {
+      const row = item(id).shadowRoot!.querySelector('[part="base"]')!.getBoundingClientRect();
+      const label = item(id).shadowRoot!.querySelector('[part="label"]')!.getBoundingClientRect();
+      expect(label.top).toBeGreaterThanOrEqual(row.top);
+      expect(label.bottom).toBeLessThanOrEqual(row.bottom);
+      expect(label.left).toBeGreaterThanOrEqual(row.left);
+      expect(label.right).toBeLessThanOrEqual(row.right);
+    }
+  });
+
+  it('selects the row whose lower edge was clicked, not the next one', async () => {
+    await mount(
+      `<l-tree aria-label="F"><l-tree-item id="a">Alpha</l-tree-item><l-tree-item id="b">Bravo</l-tree-item></l-tree>`,
+    );
+    const row = item('a').shadowRoot!.querySelector('[part="base"]')!.getBoundingClientRect();
+    await userEvent.click(treeitem('Alpha'), {
+      position: { x: row.width / 2, y: row.height - 1.5 },
+    });
+    await settle();
+    expect(present(treeitem('Alpha', { selected: true }))).toBe(true);
+    expect(present(treeitem('Bravo', { selected: true }))).toBe(false);
+  });
+
+  it('does not make a scrolling container overflow', async () => {
+    await mount(
+      `<div id="scroller" style="inline-size: 300px; overflow: auto"><l-tree aria-label="F">` +
+        `<l-tree-item>Alpha</l-tree-item><l-tree-item>Bravo</l-tree-item>` +
+        `</l-tree></div>`,
+    );
+    const scroller = host.querySelector<HTMLElement>('#scroller')!;
+    expect(scroller.scrollHeight).toBe(scroller.clientHeight);
+    expect(scroller.scrollWidth).toBe(scroller.clientWidth);
   });
 });
 

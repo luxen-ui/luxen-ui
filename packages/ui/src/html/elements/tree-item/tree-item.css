@@ -86,13 +86,23 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  /* `clip` (not `hidden`) so the label still truncates long text to an ellipsis
-     while `overflow-clip-margin` lets a slotted interactive control's hover/focus
-     decoration (a row-action button, an `<l-dropdown>` trigger) bleed past the
-     row-height label box instead of being cut on its top/bottom/left edges. The
-     margin is kept small so the bleed stays imperceptible for text. */
-  overflow: clip;
-  overflow-clip-margin: 0.375rem;
+  /* The label truncates long text to an ellipsis, yet a slotted interactive
+     control's hover/focus decoration (a row-action button, an `<l-dropdown>`
+     trigger) must bleed past the row-height label box instead of being cut.
+
+     Only the inline axis is clipped — `clip`, unlike `hidden`, lets the block
+     axis stay `visible` — so nothing is ever cut above or below. On the inline
+     axis the clip follows the padding box, so padding cancelled by an equal
+     negative margin widens it without moving anything; it reaches exactly the
+     row's own spacing (the gap before the label, the row padding after it), so
+     the label never overlaps a sibling control, a neighbouring row, or the
+     tree's edge. Growing the box on the block axis instead would spill into the
+     rows above and below and steal their clicks; `overflow-clip-margin` would
+     not, but WebKit has no such property. */
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-inline: var(--item-gap) var(--row-padding-inline);
+  margin-inline: calc(-1 * var(--item-gap)) calc(-1 * var(--row-padding-inline));
   text-overflow: ellipsis;
   white-space: nowrap;
 }

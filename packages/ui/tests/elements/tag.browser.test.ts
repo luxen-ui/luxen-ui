@@ -53,16 +53,16 @@ describe('l-tag renders a chip', () => {
   });
 
   it.each(['sm', 'md', 'lg'])('shows descenders in full at size=%s', async (size: string) => {
-    // The label sits in a one-em line box, so its descenders (g, j, p, q, y)
-    // spill below it and a plain `overflow: hidden` shears them. The clip
-    // rectangle has to cover that spill — assert the invariant rather than the
-    // declaration, so it keeps holding if either side is retuned.
+    // The label sits in a one-em line box, so its ascenders and descenders
+    // (g, j, p, q, y) spill past it: any clip on the block axis shears them, and
+    // widening that clip with `overflow-clip-margin` does nothing in WebKit. The
+    // only clip the label needs is the inline one that draws the ellipsis.
     const el = await mount(`<l-tag size="${size}">Language typography</l-tag>`);
     const content = el.shadowRoot!.querySelector('[part="content"]')!;
     const styles = getComputedStyle(content);
-    const spill = content.scrollHeight - content.clientHeight;
-    expect(styles.overflowY).toBe('clip');
-    expect(parseFloat(styles.overflowClipMargin)).toBeGreaterThanOrEqual(spill);
+    expect(styles.overflowY).toBe('visible');
+    expect(styles.overflowX).toBe('clip');
+    expect(styles.textOverflow).toBe('ellipsis');
   });
 
   it('has no remove button unless removable', async () => {
