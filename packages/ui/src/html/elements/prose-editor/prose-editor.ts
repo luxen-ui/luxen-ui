@@ -127,6 +127,15 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * from roving management — they are consumer-controlled content and their
  * tab order is handled by the consumer.
  *
+ * ### Pointer — focus stays in the editor
+ * Pressing a generated formatting button keeps focus and the selection in the
+ * editor (Emoji excepted: it opens a picker). Slotted content keeps its native
+ * press behavior, so a slotted input or select still takes focus. A slotted
+ * button that runs an editor command should do the same as the generated ones
+ * and cancel its own `mousedown` default
+ * (`button.addEventListener('mousedown', (e) => e.preventDefault())`), so the
+ * editor doesn't blur and the command applies to the user's selection.
+ *
  * @customElement l-prose-editor
  *
  * @slot toolbar-start - Content placed before the generated toolbar buttons.
@@ -487,9 +496,10 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     // During roving-tabindex arrow navigation the toolbar is deliberately moving
     // focus to a button; skip the redirect-to-editor logic so focus stays there.
     if (this._rovingFocusActive) return;
-    // When a toolbar button has focus (user clicked or tabbed to it), respect
-    // that focus — do not redirect to the editor. The button's click handler will
-    // run the command and return focus to the editor on its own.
+    // When a toolbar button has focus (the user tabbed to it, or pressed Emoji —
+    // other presses never focus one, see `_onToolbarMouseDown`), respect that
+    // focus — do not redirect to the editor. The button's click handler will run
+    // the command and return focus to the editor on its own.
     const shadowActive = this.shadowRoot?.activeElement;
     if (shadowActive?.part?.contains('toolbar-button')) return;
     if (!this.disabled && document.activeElement !== this.editor?.view.dom) {
@@ -503,22 +513,35 @@ export class ProseEditor extends LuxenFormAssociatedElement {
    * Tab-in / Tab-out cycles return to the last-interacted button.
    */
   private _onToolbarClick = (event: MouseEvent) => {
-    const buttons = Array.from(
+    const buttons = this._generatedButtons();
+    const clicked = this._generatedButtonIn(event, buttons);
+    if (!clicked) return;
+    this._rovingIndex = buttons.indexOf(clicked);
+    // Plain field — Lit won't notice the change; request a re-render so the
+    // tabindex attributes update even when Tiptap doesn't fire a transaction.
+    this.requestUpdate();
+  };
+
+  /** The generated toolbar buttons, in toolbar order (slotted content excluded). */
+  private _generatedButtons(): HTMLElement[] {
+    return Array.from(
       this.shadowRoot?.querySelectorAll<HTMLElement>('[part="toolbar-button"]') ?? [],
     );
-    // Walk composedPath to find the first button in the generated set.
-    const clicked = event.composedPath().find((el) => buttons.includes(el as HTMLElement)) as
+  }
+
+  /**
+   * The generated toolbar button an event happened on, if any — walks
+   * `composedPath()` so a press on the button's icon still resolves to the
+   * button, and slotted `toolbar-start` / `toolbar-end` content never matches.
+   */
+  private _generatedButtonIn(
+    event: Event,
+    buttons = this._generatedButtons(),
+  ): HTMLElement | undefined {
+    return event.composedPath().find((el) => buttons.includes(el as HTMLElement)) as
       | HTMLElement
       | undefined;
-    if (!clicked) return;
-    const idx = buttons.indexOf(clicked);
-    if (idx !== -1) {
-      this._rovingIndex = idx;
-      // Plain field — Lit won't notice the change; request a re-render so the
-      // tabindex attributes update even when Tiptap doesn't fire a transaction.
-      this.requestUpdate();
-    }
-  };
+  }
 
   /**
    * APG Toolbar keyboard handler — roving tabindex navigation.
@@ -526,9 +549,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
    * toolbar-start / toolbar-end focusables are left to the consumer.
    */
   private _onToolbarKeyDown = (event: KeyboardEvent) => {
-    const buttons = Array.from(
-      this.shadowRoot?.querySelectorAll<HTMLElement>('[part="toolbar-button"]') ?? [],
-    );
+    const buttons = this._generatedButtons();
     if (buttons.length === 0) return;
 
     // `document.activeElement` stops at the shadow host; drill into the shadow
@@ -567,6 +588,32 @@ export class ProseEditor extends LuxenFormAssociatedElement {
       this._rovingFocusActive = false;
     });
     this.requestUpdate();
+  };
+
+  /**
+   * Delegated `mousedown` handler on the toolbar container: a press on a
+   * generated toolbar button never takes focus from the editor. Preventing
+   * `mousedown`'s default keeps focus and the selection where the user was, so
+   * the command applies there and the editor never blurs (no stray
+   * `blur`/`focusout` on every formatting click). It also covers engines that
+   * focus a button on click (Firefox on Windows/Linux, Chromium): there, the
+   * focus change otherwise has to be undone by the command's own `focus()`,
+   * which Tiptap defers to the next frame. `pointerdown` would not do:
+   * cancelling it doesn't stop the focus change, and it defeats native
+   * light-dismiss (see `firstUpdated`). Keyboard users still reach the buttons
+   * with Tab and the arrows.
+   *
+   * Two exceptions keep their native press behavior:
+   * - the Emoji button, which opens a popup instead of editing and never
+   *   refocuses the editor itself — keeping focus there would send the next
+   *   keystrokes into the document behind the open picker;
+   * - slotted `toolbar-start` / `toolbar-end` content, which may hold inputs or
+   *   selects that need the press to focus them (see the class docs).
+   */
+  private _onToolbarMouseDown = (event: MouseEvent) => {
+    const button = this._generatedButtonIn(event);
+    if (!button || button.dataset.command === 'emoji') return;
+    event.preventDefault();
   };
 
   private _onKeyDown = (event: KeyboardEvent) => {
@@ -990,6 +1037,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
           role="toolbar"
           aria-label=${this._localize.term('formatting')}
           @keydown=${this._onToolbarKeyDown}
+          @mousedown=${this._onToolbarMouseDown}
           @click=${this._onToolbarClick}
         >
           <slot name="toolbar-start"></slot>
