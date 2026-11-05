@@ -100,8 +100,10 @@ describe('A screen reader perceives a labelled, hierarchical tree', () => {
 
   it("hides a branch's children until it is opened, then groups them under it", async () => {
     await mount(FILES);
-    // Collapsed: nested items are not announced at all.
-    expect(present(treeitem('Photos'))).toBe(false);
+    // Collapsed: nested items are not rendered, so no browser exposes them to
+    // assistive technology. Asserted on the rendering itself: the test role
+    // query skips `checkVisibility()` in WebKit and can't see the hidden slot.
+    expect(item('photos').checkVisibility()).toBe(false);
 
     // Use the expand-button so only expansion (not selection) is triggered.
     await clickExpandButton('docs');
