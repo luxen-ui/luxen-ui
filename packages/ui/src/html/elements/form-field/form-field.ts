@@ -5,7 +5,9 @@ import { cls, uniqueId } from '../../registry.js';
 type NativeControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 /** A form-associated custom element (e.g. `l-slider`) exposes the same constraint
  * surface as a native control but doesn't match the native selector. */
-type FormControl = NativeControl | (HTMLElement & { checkValidity(): boolean });
+type FormControl =
+  | NativeControl
+  | (HTMLElement & { checkValidity(): boolean; readonly validity?: ValidityState });
 
 const CONTROL_SELECTOR = 'input, select, textarea';
 
@@ -189,7 +191,12 @@ export class FormField extends LuxenElement {
     // Suppress the native validation bubble in favour of `l-error`.
     event.preventDefault();
     this._hasInteracted = true;
-    this._updateValidity();
+    const control = this._control;
+    if (!control) return;
+    // Never `checkValidity()` here: it fires another `invalid`, landing back
+    // in this listener. `validity` reads the state without firing anything; a
+    // control without it is taken at the event's word.
+    this._showError(control, !(control.validity?.valid ?? false));
   };
 
   private _onInteract = () => {
@@ -200,8 +207,14 @@ export class FormField extends LuxenElement {
   private _updateValidity() {
     const control = this._control;
     if (!control) return;
-    const showError = this._hasInteracted && !control.checkValidity();
+    // `validity` reads the state without firing `invalid`. `checkValidity()`
+    // fires it, so it's only the fallback for a control without `validity`,
+    // and only once the user has interacted: on load it would reveal the error.
+    const showError = this._hasInteracted && !(control.validity?.valid ?? control.checkValidity());
+    this._showError(control, showError);
+  }
 
+  private _showError(control: FormControl, showError: boolean) {
     // `invalid` reflects to the host; CSS reveals `.l-error` from there.
     this.invalid = showError;
     if (showError) control.setAttribute('aria-invalid', 'true');
