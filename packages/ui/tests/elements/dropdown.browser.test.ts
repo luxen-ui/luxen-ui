@@ -325,6 +325,37 @@ describe('Typing jumps to a matching item', () => {
   });
 });
 
+describe('An item can show a keyboard shortcut', () => {
+  const SHORTCUTS = `
+    <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+      <button slot="trigger">Menu</button>
+      <l-dropdown-item id="copy" shortcut="Ctrl+C">Copy</l-dropdown-item>
+      <l-dropdown-item id="paste">Paste</l-dropdown-item>
+    </l-dropdown>
+  `;
+
+  it('reads the shortcut as part of the item name', async () => {
+    await mount(SHORTCUTS);
+    const shown = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await shown;
+    await settle();
+    expect(
+      page.getByRole('menuitem', { name: 'Copy Ctrl+C', exact: true }).elements(),
+    ).toHaveLength(1);
+    expect(page.getByRole('menuitem', { name: 'Paste', exact: true }).elements()).toHaveLength(1);
+  });
+
+  it('shows a shortcut set after the item is rendered', async () => {
+    await mount(SHORTCUTS);
+    item('paste').shortcut = 'Ctrl+V';
+    await settle();
+    expect(item('paste').shadowRoot!.querySelector('[part="shortcut"]')?.textContent).toBe(
+      'Ctrl+V',
+    );
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Selecting items
 // ---------------------------------------------------------------------------

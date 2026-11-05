@@ -8,6 +8,7 @@ import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabl
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
 import dropdownDestructive from '../.vitepress/examples/dropdown/DropdownDestructive.html?raw'
 import dropdownSections from '../.vitepress/examples/dropdown/DropdownSections.html?raw'
+import dropdownShortcuts from '../.vitepress/examples/dropdown/DropdownShortcuts.html?raw'
 import dropdownSubmenu from '../.vitepress/examples/dropdown/DropdownSubmenu.html?raw'
 import dropdownPlacement from '../.vitepress/examples/dropdown/DropdownPlacement.html?raw'
 import dropdownMinWidth from '../.vitepress/examples/dropdown/DropdownMinWidth.html?raw'
@@ -77,6 +78,17 @@ Add `<l-dropdown-label>` to caption a group of items. It is non-interactive — 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownSections.html [HTML]
+:::
+
+### Keyboard shortcuts
+
+Set `shortcut` on an item to show its keyboard shortcut as small muted text at the end of the row. The shortcut is read as part of the item's name ("Copy Ctrl+C") and is never matched by typeahead. The menu only displays it: bind the keys in your own code.
+
+<ComponentWrapper :html="dropdownShortcuts" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownShortcuts.html [HTML]
 :::
 
 ### Submenus
@@ -229,6 +241,10 @@ import 'luxen-ui/dropdown-label';
 ### `dropdown-item` Slots
 
 <ApiTable element="dropdown-item" section="slots" />
+
+### `dropdown-item` CSS parts
+
+<ApiTable element="dropdown-item" section="cssParts" />
 
 ### `dropdown-label` Slots
 
