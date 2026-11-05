@@ -11,6 +11,8 @@ import selectSearchable from '../.vitepress/examples/select/SelectSearchable.htm
 import selectMultiple from '../.vitepress/examples/select/SelectMultiple.html?raw'
 import selectRich from '../.vitepress/examples/select/SelectRich.html?raw'
 import selectFilter from '../.vitepress/examples/select/SelectFilter.html?raw'
+import selectNativeRichSuffix from '../.vitepress/examples/select/SelectRichSuffix.html?raw'
+import selectRichSuffix from '../.vitepress/examples/select/SelectRichSuffixEnhanced.html?raw'
 
 // `filter` is a JS property — set it for the Custom filter demo once the element is defined
 // (a value set before the upgrade is overwritten by the class field).
@@ -77,6 +79,19 @@ Put markup inside each `<option>` — wrap a `.l-select-item-title` over a `.l-s
 <<< @/.vitepress/examples/select/SelectRichOptions.html [HTML]
 :::
 
+### Suffix
+
+Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row. It keeps its natural width while the text column gives way, and a long title truncates with an ellipsis. Like the description, the suffix stays in the picker: `<selectedcontent>` mirrors only the media and the title into the trigger.
+
+Don't add a `label` attribute to native options: a labelled option paints its label instead of its rich children.
+
+<ComponentWrapper :html="selectNativeRichSuffix" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectRichSuffix.html [HTML]
+:::
+
 ## Enhanced: `<l-select>`
 
 When the native tier isn't enough, the `<l-select>` custom element adds in-popover search, multi-select with removable chips, and async options. It needs its JS module (`import 'luxen-ui/select'`). Options are authored as a native `<datalist>` of `<option>` — the same surface as [`<l-combobox>`](/elements/combobox) — with `<option selected>` for pre-selection.
@@ -116,6 +131,15 @@ With `searchable`, the query is highlighted inside `.l-select-item-title` and `.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/select/SelectRich.html [HTML]
+:::
+
+The [`.l-select-item-suffix`](#suffix) works the same way. Here too it stays out of the trigger, and an [`<l-badge>`](/elements/badge) inside it keeps its look in the popover. Keep the `label` (or `.l-select-item-title`) so the suffix text never leaks into filtering or the trigger.
+
+<ComponentWrapper :html="selectRichSuffix" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectRichSuffixEnhanced.html [HTML]
 :::
 
 ### Clearable

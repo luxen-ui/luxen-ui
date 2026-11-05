@@ -300,6 +300,40 @@ describe('Options can carry rich content', () => {
     expect(el.value).toBe('fr');
     expect(el.shadowRoot!.querySelector<HTMLInputElement>('.input')!.value).toBe('France');
   });
+
+  // A rich option with neither `label` nor `.l-select-item-title`.
+  const UNTITLED = `
+    <l-combobox label="Country">
+      <datalist>
+        <option value="fr">
+          <span class="l-select-item-text">France</span>
+          <span class="l-select-item-suffix">3 open</span>
+        </option>
+        <option value="de">
+          <span class="l-select-item-text">Germany</span>
+        </option>
+      </datalist>
+    </l-combobox>
+  `;
+
+  it('does not match the suffix of an untitled option', async () => {
+    const el = await mount(UNTITLED);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('open');
+    await settle(el);
+    expect(page.getByRole('option').elements()).toHaveLength(0);
+  });
+
+  it('writes an untitled option into the input without its suffix', async () => {
+    const el = await mount(UNTITLED);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('fra');
+    await settle(el);
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    await settle(el);
+    expect(el.value).toBe('fr');
+    expect(el.shadowRoot!.querySelector<HTMLInputElement>('.input')!.value).toBe('France');
+  });
 });
 
 describe('Typing highlights the match inside rich options', () => {

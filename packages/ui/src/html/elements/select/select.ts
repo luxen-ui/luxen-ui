@@ -9,8 +9,11 @@ import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
-import { cls, tagName, uniqueId } from '../../registry.js';
+import { tagName, uniqueId } from '../../registry.js';
+import { richOptionLabel } from '../../shared/rich-option.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import badgeStyles from '../../shared/styles/badge-core.styles.js';
+import suffixStyles from '../../shared/styles/select-item-suffix.styles.js';
 import rawStyles from './select.css?inline';
 // Registers the chip element used to render selected values in multiple mode.
 import '../tag/index.js';
@@ -110,7 +113,10 @@ interface SelectEventMap {
  */
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Select extends LuxenFormAssociatedElement {
-  static override styles = [hostStyles, styles];
+  // Rich option markup is copied into the shadow root, out of reach of the
+  // global stylesheets: badgeStyles keeps an l-badge in it styled, suffixStyles
+  // lays out the `.l-select-item-suffix` zone.
+  static override styles = [hostStyles, badgeStyles, suffixStyles, styles];
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('select-list');
@@ -240,8 +246,7 @@ export class Select extends LuxenFormAssociatedElement {
     const opts = list ? Array.from(list.options) : [];
     this._items = opts.map((o) => {
       const rich = o.childElementCount > 0;
-      const title = o.querySelector(`.${cls('select-item-title')}`)?.textContent?.trim();
-      const label = (o.getAttribute('label') || title || o.textContent || o.value).trim();
+      const label = richOptionLabel(o);
       return {
         value: o.value,
         label,

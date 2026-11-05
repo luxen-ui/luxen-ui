@@ -318,6 +318,39 @@ describe('The closed trigger follows the options it was given', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Rich options
+// ---------------------------------------------------------------------------
+
+describe('A rich option is named by its text, not its suffix', () => {
+  const UNTITLED = (attrs: string) => `
+    <l-select ${attrs} label="Country">
+      <datalist>
+        <option value="fr" selected>
+          <span class="l-select-item-text">France</span>
+          <span class="l-select-item-suffix">3 open</span>
+        </option>
+        <option value="de">
+          <span class="l-select-item-text">Germany</span>
+        </option>
+      </datalist>
+    </l-select>
+  `;
+
+  it('does not match the suffix text when searching', async () => {
+    const el = await mount(UNTITLED('searchable'));
+    await userEvent.click(trigger());
+    await userEvent.keyboard('open');
+    await settle(el);
+    expect(page.getByRole('option').elements()).toHaveLength(0);
+  });
+
+  it('labels the selected chip without the suffix', async () => {
+    const el = await mount(UNTITLED('multiple'));
+    expect(el.shadowRoot!.querySelector('[part="tag"]')?.textContent?.trim()).toBe('France');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility (APG: select-only / listbox popup)
 // ---------------------------------------------------------------------------
 
