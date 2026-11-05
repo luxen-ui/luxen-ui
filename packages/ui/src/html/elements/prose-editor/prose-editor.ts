@@ -617,8 +617,13 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   };
 
   private _onKeyDown = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape' || !this._emojiPicker?.matches(':popover-open')) return;
-    this._emojiPicker.hidePopover();
+    const picker = this._emojiPicker;
+    if (event.key !== 'Escape' || !picker?.matches(':popover-open')) return;
+    // Hand focus back to the trigger (APG popup pattern) — but only when it was
+    // inside the picker: a user who tabbed out to the page keeps their place.
+    const focusWasInside = picker.matches(':focus-within');
+    picker.hidePopover();
+    if (focusWasInside) this._emojiButton?.focus();
     // Consume the Escape so it dismisses only the picker, not the host dialog.
     event.preventDefault();
     event.stopPropagation();
@@ -675,8 +680,23 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     if (wasOpen) {
       if (picker.matches(':popover-open')) picker.hidePopover();
     } else if (!picker.matches(':popover-open')) {
-      picker.showPopover();
+      this._openEmojiPicker(picker);
     }
+  }
+
+  /**
+   * Open the picker and move focus into it — its search field, in the picker's
+   * shadow root — so keyboard and screen-reader users land inside the popup
+   * (APG popup pattern). Escape and choosing an emoji move focus back out; an
+   * outside click leaves it where the user clicked.
+   */
+  private _openEmojiPicker(picker: HTMLElement) {
+    picker.showPopover();
+    // `toggle` (which un-hides the picker, see `_ensureEmojiPicker`) is queued,
+    // so the picker is still `display: none` here — reveal it now, or the search
+    // field can't take focus. `preventScroll`: autoUpdate positions it on toggle.
+    picker.style.display = 'flex';
+    picker.shadowRoot?.querySelector<HTMLElement>('#search')?.focus({ preventScroll: true });
   }
 
   private _ensureEmojiPicker(): Promise<HTMLElement | null> {
@@ -703,6 +723,10 @@ export class ProseEditor extends LuxenFormAssociatedElement {
         const unicode = (event as CustomEvent<{ unicode?: string }>).detail.unicode;
         if (!unicode) return;
         this.editor.chain().focus().insertContent(unicode).run();
+        // tiptap's focus() lands a frame later. Focus the editor now, so hiding
+        // the popover doesn't first bounce focus back to the Emoji button (the
+        // popover's own focus restoration).
+        this.editor.view.focus();
         picker.hidePopover();
       });
       this._topLayerContainer().append(picker);
