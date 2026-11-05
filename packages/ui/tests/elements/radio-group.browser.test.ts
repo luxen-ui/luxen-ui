@@ -103,7 +103,9 @@ describe('A keyboard user can move through a radio group', () => {
     expect(input('board').checked).toBe(true);
   });
 
-  it('wraps around at the end', async () => {
+  // Wrapping is the browser's own radio behaviour: Chrome and Firefox wrap,
+  // Safari stops at the ends (see the docs' key table).
+  it('wraps from the first segment to the last', async () => {
     mount(BASIC);
     host.querySelector<HTMLAnchorElement>('#before')!.focus();
     await userEvent.tab();
@@ -112,6 +114,19 @@ describe('A keyboard user can move through a radio group', () => {
 
     expect(document.activeElement).toBe(input('calendar'));
     expect(input('calendar').checked).toBe(true);
+  });
+
+  it('wraps from the last segment to the first', async () => {
+    mount(BASIC);
+    host.querySelector<HTMLAnchorElement>('#before')!.focus();
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+    expect(document.activeElement).toBe(input('calendar'));
+
+    await userEvent.keyboard('{ArrowRight}');
+
+    expect(document.activeElement).toBe(input('list'));
+    expect(input('list').checked).toBe(true);
   });
 
   it('leaves the group on the next Tab rather than walking every segment (WCAG 2.4.3)', async () => {
