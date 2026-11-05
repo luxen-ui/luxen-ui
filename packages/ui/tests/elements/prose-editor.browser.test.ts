@@ -123,6 +123,19 @@ describe('Authoring content', () => {
     expect(el.getHTML()).toContain('<strong>');
   });
 
+  it('clicking Bold makes the selected word bold, and only that word', async () => {
+    const el = await mount(`<l-prose-editor></l-prose-editor>`);
+    await _userEvent.click(page.getByRole('textbox'));
+    await _userEvent.keyboard('Hello world');
+    // Select "world" with the keyboard, then press Bold with the mouse.
+    await _userEvent.keyboard(
+      '{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}',
+    );
+    await _userEvent.click(toolbarButton('Bold'));
+    await settleEl(el);
+    expect(el.getHTML()).toContain('Hello <strong>world</strong>');
+  });
+
   it('toolbar Bold button is keyboard-operable via Tab + Enter (WCAG 2.1.1 / RGAA 7.3)', async () => {
     // WCAG 2.1.1 requires all functionality to be keyboard-operable. Clicking
     // Bold via the mouse has already been tested; here we verify the button can
@@ -551,6 +564,35 @@ describe('Accessibility', () => {
       await settleEl(el);
       const active = deepActiveElement();
       expect(active).toBe(editorArea(el));
+    });
+
+    it('pressing a toolbar button never takes focus away from the editor area', async () => {
+      // A press must not move focus to the button at all — otherwise the editor
+      // blurs (consumers' blur/focusout handlers fire on every formatting click)
+      // and, in Firefox, the command's own focus() doesn't win it back.
+      const el = await mount(`<l-prose-editor toolbar-preset="minimal"></l-prose-editor>`);
+      await _userEvent.click(page.getByRole('textbox'));
+      let blurs = 0;
+      editorArea(el)!.addEventListener('blur', () => blurs++);
+      await _userEvent.click(toolbarButton('Bold'));
+      await settleEl(el);
+      expect(blurs).toBe(0);
+      expect(deepActiveElement()).toBe(editorArea(el));
+    });
+
+    it('a slotted toolbar control still takes focus when pressed', async () => {
+      // Only the generated buttons keep focus in the editor; consumer content in
+      // the toolbar slots keeps its native press behavior.
+      const el = await mount(`
+        <l-prose-editor toolbar-preset="minimal">
+          <input slot="toolbar-end" aria-label="Search the document" />
+        </l-prose-editor>
+      `);
+      await _userEvent.click(page.getByRole('textbox', { name: 'Search the document' }));
+      await settleEl(el);
+      expect(deepActiveElement()).toBe(
+        page.getByRole('textbox', { name: 'Search the document' }).element(),
+      );
     });
 
     it('exactly one toolbar button has tabindex="0" initially (WCAG 2.4.3 / RGAA 12.8)', async () => {
