@@ -9,6 +9,7 @@ import comboboxDefault from '../.vitepress/examples/combobox/ComboboxDefault.htm
 import comboboxClearable from '../.vitepress/examples/combobox/ComboboxClearable.html?raw'
 import comboboxCustom from '../.vitepress/examples/combobox/ComboboxCustom.html?raw'
 import comboboxRich from '../.vitepress/examples/combobox/ComboboxRich.html?raw'
+import comboboxRichSuffix from '../.vitepress/examples/combobox/ComboboxRichSuffix.html?raw'
 import comboboxDisabled from '../.vitepress/examples/combobox/ComboboxDisabled.html?raw'
 import comboboxFilter from '../.vitepress/examples/combobox/ComboboxFilter.html?raw'
 
@@ -93,6 +94,17 @@ As you type, the match is highlighted inside `.l-select-item-title` and `.l-sele
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/combobox/ComboboxRich.html [HTML]
+:::
+
+#### Suffix
+
+Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row, before the checkmark. It keeps its natural width while the title truncates, and an [`<l-badge>`](/elements/badge) inside it keeps its look in the popover. With a `label` (or `.l-select-item-title`) set, the suffix text is never matched by the filter or written into the input.
+
+<ComponentWrapper :html="comboboxRichSuffix" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/combobox/ComboboxRichSuffix.html [HTML]
 :::
 
 ### Disabled

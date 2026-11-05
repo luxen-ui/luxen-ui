@@ -162,15 +162,17 @@
   flex-direction: column;
   min-inline-size: 0;
 }
-/* Mirror the native trigger: show only the title, drop the secondary description
-   so the selected value stays compact and consistent across options. */
+/* Mirror the native trigger: show only the media and title, drop the secondary
+   description and the trailing suffix so the selected value stays compact and
+   consistent across options. */
 .value .l-select-item-title {
   font-weight: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.value .l-select-item-description {
+.value .l-select-item-description,
+.value .l-select-item-suffix {
   display: none;
 }
 

@@ -12,6 +12,10 @@
    - the picker (::picker(select)) and its items mirror the l-dropdown panel
      (--l-color-surface-overlay / --l-color-border-overlay / --l-shadow-md). */
 
+/* The rich-option suffix (`.l-select-item-suffix`) is shared with the
+   l-select / l-combobox shadow roots from select-item-suffix.css. */
+@import '../../html/shared/styles/select-item-suffix.css' layer(components);
+
 @layer components {
   .l-select {
     /* Public knobs — mirror l-input so a select sits consistently among the
@@ -111,9 +115,10 @@
       overflow: hidden;
     }
 
-    /* Keep the trigger compact when a rich option is selected: only the title
-       is mirrored into the value, the secondary description is dropped. */
-    & selectedcontent .l-select-item-description {
+    /* Keep the trigger compact when a rich option is selected: only the media
+       and title are mirrored into the value — the secondary description and the
+       suffix (badge, count, status icon) stay in the picker. */
+    & selectedcontent :is(.l-select-item-description, .l-select-item-suffix) {
       display: none;
     }
 
