@@ -2,6 +2,7 @@
 /// <reference path="./a11y/a11y-env.d.ts" />
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
+import { server } from 'vite-plus/test/browser';
 import { userEvent } from './support/user-event.js';
 
 // `.l-radio-group` ships no JavaScript: it is native radios, each wrapped in the
@@ -103,15 +104,18 @@ describe('A keyboard user can move through a radio group', () => {
     expect(input('board').checked).toBe(true);
   });
 
-  it('wraps around at the end', async () => {
+  // The arrows are the browser's own radio behaviour (the group has no script):
+  // Chromium and Firefox wrap at the ends, WebKit stops there.
+  it('wraps around at the end, or stops there in WebKit', async () => {
     mount(BASIC);
     host.querySelector<HTMLAnchorElement>('#before')!.focus();
     await userEvent.tab();
 
     await userEvent.keyboard('{ArrowLeft}');
 
-    expect(document.activeElement).toBe(input('calendar'));
-    expect(input('calendar').checked).toBe(true);
+    const expected = server.browser === 'webkit' ? 'list' : 'calendar';
+    expect(document.activeElement).toBe(input(expected));
+    expect(input(expected).checked).toBe(true);
   });
 
   it('leaves the group on the next Tab rather than walking every segment (WCAG 2.4.3)', async () => {
