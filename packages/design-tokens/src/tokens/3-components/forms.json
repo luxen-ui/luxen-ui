@@ -121,6 +121,16 @@
         "$type": "color",
         "$value": "{color.text.danger}",
         "$description": "Color of the required marker."
+      },
+      "match-background-color": {
+        "$type": "color",
+        "$value": { "light": "{color.yellow.100}", "dark": "{color.yellow.900}" },
+        "$description": "Background of the `<mark>` wrapping the part of an option that matches the search query, in the listbox of `l-combobox` and searchable `l-select` (plain label, or a rich option's title and description). A soft marker tint, light enough to keep the option text readable on a hovered or active row. Setting it to `transparent` leaves only --l-form-control-match-font-weight to mark the match — pick a weight above the option text's then, since a rich `l-select` title is already semibold."
+      },
+      "match-font-weight": {
+        "$type": "fontWeight",
+        "$value": "{font-weight-semibold}",
+        "$description": "Font weight of the search-query match in `l-combobox` and searchable `l-select` options. Pairs with --l-form-control-match-background-color; set to `inherit` to mark the match with the background alone."
       }
     },
     "field": {

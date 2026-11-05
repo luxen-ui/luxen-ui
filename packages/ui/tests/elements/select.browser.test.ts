@@ -107,6 +107,63 @@ describe('A user can open, search, and select', () => {
   });
 });
 
+describe('Searching highlights the match inside rich options', () => {
+  const RICH = `
+    <l-select searchable label="Country">
+      <datalist>
+        <option value="lu" label="Luxembourg">
+          <span class="l-select-item-media">🇱🇺</span>
+          <span class="l-select-item-text">
+            <span class="l-select-item-title">Luxembourg</span>
+            <span class="l-select-item-description">Capital: Luxembourg City</span>
+          </span>
+        </option>
+        <option value="ci" label="Côte d'Ivoire">
+          <span class="l-select-item-text">
+            <span class="l-select-item-title">Côte d'Ivoire</span>
+            <span class="l-select-item-description">West Africa</span>
+          </span>
+        </option>
+      </datalist>
+    </l-select>
+  `;
+
+  const marks = (el: Select) =>
+    Array.from(el.shadowRoot!.querySelectorAll('.option-rich mark'), (m) => m.textContent);
+
+  it('marks the match in the title and the description, keeping the markup', async () => {
+    const el = await mount(RICH);
+    await userEvent.click(trigger());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    expect(marks(el)).toEqual(['Lux', 'Lux']);
+    const option = el.shadowRoot!.querySelector('.option-rich')!;
+    expect(option.querySelector('.l-select-item-media')?.textContent).toBe('🇱🇺');
+    expect(option.querySelector('.l-select-item-title mark')).not.toBeNull();
+    expect(option.querySelector('.l-select-item-description mark')).not.toBeNull();
+    expect(option.querySelector('.l-select-item-title')?.textContent).toBe('Luxembourg');
+  });
+
+  it('matches regardless of case and accents', async () => {
+    const el = await mount(RICH);
+    await userEvent.click(trigger());
+    await userEvent.keyboard('cote');
+    await settle(el);
+    expect(marks(el)).toEqual(['Côte']);
+  });
+
+  it('shows the selected rich option in the trigger without marks', async () => {
+    const el = await mount(RICH);
+    await userEvent.click(trigger());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    await settle(el);
+    expect(el.value).toBe('lu');
+    expect(el.shadowRoot!.querySelector('.trigger mark')).toBeNull();
+  });
+});
+
 describe('Search is opt-in (off by default)', () => {
   const PLAIN = `
     <l-select label="Country" name="country">

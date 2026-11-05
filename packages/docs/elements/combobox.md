@@ -3,11 +3,22 @@ outline: deep
 ---
 
 <script setup>
+import { onMounted } from 'vue'
+import { titleAndDescriptionFilter } from '../.vitepress/examples/rich-option-filter.js'
 import comboboxDefault from '../.vitepress/examples/combobox/ComboboxDefault.html?raw'
 import comboboxClearable from '../.vitepress/examples/combobox/ComboboxClearable.html?raw'
 import comboboxCustom from '../.vitepress/examples/combobox/ComboboxCustom.html?raw'
 import comboboxRich from '../.vitepress/examples/combobox/ComboboxRich.html?raw'
 import comboboxDisabled from '../.vitepress/examples/combobox/ComboboxDisabled.html?raw'
+import comboboxFilter from '../.vitepress/examples/combobox/ComboboxFilter.html?raw'
+
+// `filter` is a JS property — set it for the Custom filter demo once the element is defined
+// (a value set before the upgrade is overwritten by the class field).
+onMounted(async () => {
+  await customElements.whenDefined('l-combobox')
+  const el = document.getElementById('demo-combobox-filter')
+  if (el) el.filter = titleAndDescriptionFilter
+})
 </script>
 
 # Combobox <Badge type="tip">&lt;l-combobox&gt;</Badge>
@@ -75,6 +86,8 @@ Add `allow-custom` to accept a typed value that matches no option.
 
 Put markup inside each `<option>` — the same `.l-select-item-media` / `.l-select-item-text` / `.l-select-item-title` / `.l-select-item-description` classes as [`<select>`](/elements/select). Set a `label` (or `.l-select-item-title`) so filtering and the input display use the title.
 
+As you type, the match is highlighted inside `.l-select-item-title` and `.l-select-item-description`, with the same accent/case-insensitive matching as plain options. Only the text is wrapped in `<mark>`; the option's markup is kept as authored.
+
 <ComponentWrapper :html="comboboxRich" />
 
 ::: details Code
@@ -96,6 +109,47 @@ Native `disabled` attribute.
 ### Custom filter
 
 By default options are matched case- and accent-insensitively (every space-separated keyword must appear). Override the `filter` property — `(item, query) => boolean` — for `startsWith`, fuzzy, or remote-driven filtering.
+
+The default filter only reads the label (a rich option's title). To search the description too, match against the text of `item.html` — the match is then highlighted in the description as well. Try a capital or a continent:
+
+<ComponentWrapper :html="comboboxFilter" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/combobox/ComboboxFilter.html [HTML]
+
+```js [JS]
+const combobox = document.querySelector('l-combobox');
+
+// `item.html` is the rich option's markup: compare against its text, not its tags.
+const textOf = (html) => {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template.content.textContent;
+};
+
+combobox.filter = (item, query) =>
+  `${item.label} ${item.html ? textOf(item.html) : ''}`
+    .toLowerCase()
+    .includes(query.trim().toLowerCase());
+```
+
+:::
+
+### Match highlight
+
+The part of each option that matches the query is wrapped in `<mark>`. Theme it with two form-control tokens, or set the `highlight` property to `false` to turn it off.
+
+::: code-group
+
+```css [CSS]
+:root {
+  --l-form-control-match-background-color: transparent;
+  --l-form-control-match-font-weight: var(--l-font-weight-bold);
+}
+```
+
+:::
 
 ### Dynamic options
 

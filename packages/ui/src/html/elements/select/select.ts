@@ -1,5 +1,4 @@
 import { html, nothing, unsafeCSS } from 'lit';
-import type { TemplateResult } from 'lit';
 import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
 import { property, state } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
@@ -9,6 +8,7 @@ import { PopoverController } from '../../shared/controllers/popover.js';
 import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
+import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
 import { cls, tagName, uniqueId } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './select.css?inline';
@@ -33,13 +33,6 @@ export interface SelectItem {
 
 /** Default filter: accent/case-insensitive, every space-separated keyword must match. */
 export type SelectFilter = (item: SelectItem, query: string) => boolean;
-
-function normalize(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
-}
 
 const defaultFilter: SelectFilter = (item, query) => {
   if (!query) return true;
@@ -121,6 +114,7 @@ export class Select extends LuxenFormAssociatedElement {
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('select-list');
+  private readonly _richHighlighter = new RichHighlighter();
 
   private _floating = new PopoverController(this, {
     getTriggerElement: () => this._triggerEl,
@@ -427,16 +421,6 @@ export class Select extends LuxenFormAssociatedElement {
 
   // --- Render ---
 
-  private _highlight(label: string): TemplateResult | string {
-    const q = this._query.trim();
-    if (!q) return label;
-    const idx = normalize(label).indexOf(normalize(q).split(/\s+/)[0]);
-    if (idx < 0) return label;
-    return html`${label.slice(0, idx)}<mark>${label.slice(idx, idx + q.length)}</mark>${label.slice(
-      idx + q.length,
-    )}`;
-  }
-
   private _renderSingleValue() {
     const selected = this._itemFor(this._values[0]);
     if (!selected) {
@@ -595,8 +579,12 @@ export class Select extends LuxenFormAssociatedElement {
                 @click=${() => this._select(item)}
               >
                 ${item.html
-                  ? html`<span class="option-rich">${unsafeHTML(item.html)}</span>`
-                  : html`<span class="option-label">${this._highlight(item.label)}</span>`}
+                  ? html`<span class="option-rich"
+                      >${unsafeHTML(this._richHighlighter.highlight(item.html, this._query))}</span
+                    >`
+                  : html`<span class="option-label"
+                      >${highlightText(item.label, this._query)}</span
+                    >`}
               </li>`,
             )}
           </ul>

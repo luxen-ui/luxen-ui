@@ -3,11 +3,22 @@ outline: deep
 ---
 
 <script setup>
+import { onMounted } from 'vue'
+import { titleAndDescriptionFilter } from '../.vitepress/examples/rich-option-filter.js'
 import selectNative from '../.vitepress/examples/select/Select.html?raw'
 import selectNativeRich from '../.vitepress/examples/select/SelectRichOptions.html?raw'
 import selectSearchable from '../.vitepress/examples/select/SelectSearchable.html?raw'
 import selectMultiple from '../.vitepress/examples/select/SelectMultiple.html?raw'
 import selectRich from '../.vitepress/examples/select/SelectRich.html?raw'
+import selectFilter from '../.vitepress/examples/select/SelectFilter.html?raw'
+
+// `filter` is a JS property — set it for the Custom filter demo once the element is defined
+// (a value set before the upgrade is overwritten by the class field).
+onMounted(async () => {
+  await customElements.whenDefined('l-select')
+  const el = document.getElementById('demo-select-filter')
+  if (el) el.filter = titleAndDescriptionFilter
+})
 </script>
 
 # Select <Badge type="tip">&lt;l-select&gt;</Badge>
@@ -98,6 +109,8 @@ Add `multiple` to select several values. The trigger shows a removable [`<l-tag>
 
 The same `.l-select-item-*` classes as the native tier work inside each `<option>`. Set a `label` (or `.l-select-item-title`) so filtering and the trigger display use the title.
 
+With `searchable`, the query is highlighted inside `.l-select-item-title` and `.l-select-item-description`, the same way as plain options. Only the text is wrapped in `<mark>`; the option's markup is kept as authored.
+
 <ComponentWrapper :html="selectRich" />
 
 ::: details Code
@@ -113,13 +126,43 @@ Add `with-clear` for a button that resets the value.
 
 Options are matched case- and accent-insensitively (every space-separated keyword must appear). Override the `filter` property — `(item, query) => boolean` — for `startsWith`, fuzzy, or remote-driven filtering.
 
+The default filter only reads the label (a rich option's title). To search the description too, match against the text of `item.html` — the match is then highlighted in the description as well. Try a capital or a continent:
+
+<ComponentWrapper :html="selectFilter" />
+
+::: details Code
 ::: code-group
+<<< @/.vitepress/examples/select/SelectFilter.html [HTML]
 
 ```js [JS]
 const select = document.querySelector('l-select');
 
-// Match from the start of the label instead of anywhere in it.
-select.filter = (item, query) => item.label.toLowerCase().startsWith(query.toLowerCase());
+// `item.html` is the rich option's markup: compare against its text, not its tags.
+const textOf = (html) => {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template.content.textContent;
+};
+
+select.filter = (item, query) =>
+  `${item.label} ${item.html ? textOf(item.html) : ''}`
+    .toLowerCase()
+    .includes(query.trim().toLowerCase());
+```
+
+:::
+
+### Match highlight
+
+With `searchable`, the part of each option that matches the query is wrapped in `<mark>`. Theme it with two form-control tokens.
+
+::: code-group
+
+```css [CSS]
+:root {
+  --l-form-control-match-background-color: transparent;
+  --l-form-control-match-font-weight: var(--l-font-weight-bold);
+}
 ```
 
 :::
