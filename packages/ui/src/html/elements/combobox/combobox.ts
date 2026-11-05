@@ -8,6 +8,7 @@ import { PopoverController } from '../../shared/controllers/popover.js';
 import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
+import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
 import { cls, uniqueId } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './combobox.css?inline';
@@ -28,13 +29,6 @@ export interface ComboboxItem {
 
 /** Default filter: accent/case-insensitive, every space-separated keyword must match. */
 export type ComboboxFilter = (item: ComboboxItem, query: string) => boolean;
-
-function normalize(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
-}
 
 const defaultFilter: ComboboxFilter = (item, query) => {
   if (!query) return true;
@@ -111,6 +105,7 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('combobox-list');
+  private readonly _richHighlighter = new RichHighlighter();
 
   private _floating = new PopoverController(this, {
     getTriggerElement: () => this._controlEl,
@@ -155,7 +150,10 @@ export class Combobox extends LuxenFormAssociatedElement {
   @property({ type: Boolean, reflect: true, attribute: 'allow-custom' })
   accessor allowCustom = false;
 
-  /** Wrap the matching substring of each option in `<mark>`. */
+  /**
+   * Wrap the matching substring of each option in `<mark>` — the label of a
+   * plain option, the title and description of a rich one.
+   */
   @property({ type: Boolean })
   accessor highlight = true;
 
@@ -409,14 +407,11 @@ export class Combobox extends LuxenFormAssociatedElement {
   // --- Render ---
 
   private _highlight(label: string): TemplateResult | string {
-    const q = this._query.trim();
-    if (!this.highlight || !q) return label;
-    const idx = normalize(label).indexOf(normalize(q).split(/\s+/)[0]);
-    if (idx < 0) return label;
-    const before = label.slice(0, idx);
-    const match = label.slice(idx, idx + q.length);
-    const after = label.slice(idx + q.length);
-    return html`${before}<mark>${match}</mark>${after}`;
+    return this.highlight ? highlightText(label, this._query) : label;
+  }
+
+  private _highlightRich(markup: string): string {
+    return this.highlight ? this._richHighlighter.highlight(markup, this._query) : markup;
   }
 
   override render() {
@@ -502,7 +497,9 @@ export class Combobox extends LuxenFormAssociatedElement {
                 @click=${() => this._commit(item)}
               >
                 ${item.html
-                  ? html`<span class="option-rich">${unsafeHTML(item.html)}</span>`
+                  ? html`<span class="option-rich"
+                      >${unsafeHTML(this._highlightRich(item.html))}</span
+                    >`
                   : html`<span class="option-label">${this._highlight(item.label)}</span>`}
               </li>`,
             )}

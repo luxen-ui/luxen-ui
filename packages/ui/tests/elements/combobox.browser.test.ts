@@ -301,3 +301,150 @@ describe('Options can carry rich content', () => {
     expect(el.shadowRoot!.querySelector<HTMLInputElement>('.input')!.value).toBe('France');
   });
 });
+
+describe('Typing highlights the match inside rich options', () => {
+  const RICH_HIGHLIGHT = `
+    <l-combobox label="Country">
+      <datalist>
+        <option value="lu" label="Luxembourg">
+          <span class="l-select-item-media">🇱🇺</span>
+          <span class="l-select-item-text">
+            <span class="l-select-item-title">Luxembourg</span>
+            <span class="l-select-item-description">Capital: Luxembourg City</span>
+          </span>
+        </option>
+        <option value="ci" label="Côte d'Ivoire">
+          <span class="l-select-item-text">
+            <span class="l-select-item-title">Côte d'Ivoire</span>
+            <span class="l-select-item-description">West Africa</span>
+          </span>
+        </option>
+        <option value="ag" label="Antigua &amp; Barbuda">
+          <span class="l-select-item-text">
+            <span class="l-select-item-title">Antigua &amp; Barbuda</span>
+            <span class="l-select-item-description">Caribbean</span>
+          </span>
+        </option>
+      </datalist>
+    </l-combobox>
+  `;
+
+  const marks = (el: Combobox, zone: 'title' | 'description') =>
+    Array.from(
+      el.shadowRoot!.querySelectorAll(`.option-rich .l-select-item-${zone} mark`),
+      (m) => m.textContent,
+    );
+
+  it('marks the match in the title and the description', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    expect(marks(el, 'title')).toEqual(['Lux']);
+    expect(marks(el, 'description')).toEqual(['Lux']);
+  });
+
+  it('keeps the option markup and its text as authored', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    const option = el.shadowRoot!.querySelector('.option-rich')!;
+    expect(option.querySelector('.l-select-item-media')?.textContent).toBe('🇱🇺');
+    expect(option.querySelector('.l-select-item-title')?.textContent).toBe('Luxembourg');
+    expect(option.querySelector('.l-select-item-description')?.textContent).toBe(
+      'Capital: Luxembourg City',
+    );
+    expect(page.getByRole('option', { name: /Luxembourg/ }).elements()).toHaveLength(1);
+  });
+
+  it('matches regardless of case and accents', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('COTE');
+    await settle(el);
+    expect(marks(el, 'title')).toEqual(['Côte']);
+  });
+
+  it('matches text that carries HTML-special characters as plain text', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('& b');
+    await settle(el);
+    // Each keyword is marked on its own.
+    expect(marks(el, 'title')).toEqual(['&', 'B']);
+    expect(el.shadowRoot!.querySelector('.option-rich .l-select-item-title')?.textContent).toBe(
+      'Antigua & Barbuda',
+    );
+  });
+
+  it('marks text nested in two zones once', async () => {
+    const el = await mount(`
+      <l-combobox label="Country">
+        <datalist>
+          <option value="fr" label="Paris">
+            <span class="l-select-item-title"
+              >Paris <span class="l-select-item-description">Paris area</span></span
+            >
+          </option>
+        </datalist>
+      </l-combobox>
+    `);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('paris');
+    await settle(el);
+    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(2);
+    expect(el.shadowRoot!.querySelector('.option-rich mark mark')).toBeNull();
+  });
+
+  it('leaves rich options untouched when `highlight` is off', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    el.highlight = false;
+    await userEvent.click(combobox());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(0);
+  });
+
+  it('clears the marks once the query is erased', async () => {
+    const el = await mount(RICH_HIGHLIGHT);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('lux');
+    await settle(el);
+    await userEvent.keyboard('{Backspace}{Backspace}{Backspace}');
+    await settle(el);
+    expect(page.getByRole('option').elements()).toHaveLength(3);
+    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(0);
+  });
+});
+
+describe('The highlight marks the characters that really match', () => {
+  const plainMarks = (el: Combobox) =>
+    Array.from(el.shadowRoot!.querySelectorAll('.option-label mark'), (m) => m.textContent);
+
+  it('marks every keyword of a multi-word query', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('united st');
+    await settle(el);
+    expect(plainMarks(el)).toEqual(['United', 'St']);
+  });
+
+  it('keeps its place in scripts whose letters decompose (kana, Hangul)', async () => {
+    const el = await mount(`
+      <l-combobox label="City">
+        <datalist>
+          <option value="kobe">神戸がいい</option>
+          <option value="seoul">대한민국</option>
+        </datalist>
+      </l-combobox>
+    `);
+    const city = page.getByRole('combobox', { name: 'City' });
+    await userEvent.fill(city, 'いい');
+    await settle(el);
+    expect(plainMarks(el)).toEqual(['いい']);
+    await userEvent.fill(city, '민국');
+    await settle(el);
+    expect(plainMarks(el)).toEqual(['민국']);
+  });
+});

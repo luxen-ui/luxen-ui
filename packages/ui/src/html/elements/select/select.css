@@ -300,10 +300,14 @@
   white-space: nowrap;
 }
 
-.option-label mark {
-  background: transparent;
+/* The part of an option that matches the search query. Scoped to the marks the
+ * highlight adds, so a `<mark>` authored in a rich option keeps its own look. */
+mark.match {
+  border-radius: 0.2em;
+  background-color: var(--l-form-control-match-background-color);
   color: inherit;
-  font-weight: var(--l-font-weight-semibold);
+  font-weight: var(--l-form-control-match-font-weight);
+  box-decoration-break: clone;
 }
 
 .option-rich {
