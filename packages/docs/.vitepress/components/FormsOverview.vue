@@ -222,8 +222,7 @@ const attr = (on) => (on ? '' : null);
           placeholder="Placeholder text"
           :required="required || invalid"
           :disabled="disabled"
-          >{{ invalid ? '' : 'This is a longer message.' }}</textarea
-        >
+          >{{ invalid ? '' : 'This is a longer message.' }}</textarea>
         <p class="l-hint">{{ hint }}</p>
         <p class="l-error">{{ error }}</p>
       </l-form-field>

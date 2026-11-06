@@ -28,8 +28,7 @@ import { waitUntil } from './support/timing.js';
 //                         pointerdown (capture, document).
 //   APG arrow-nav       — ArrowLeft/Right with wrap-around, Home/End (APG toolbar pattern).
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _userEvent: UserEvent = userEvent as unknown as UserEvent;
+const _userEvent: UserEvent = userEvent;
 
 let host: HTMLElement;
 

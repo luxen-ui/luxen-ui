@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "luxen-ui": "workspace:^",
-    "nuxt": "^4.4.8",
-    "vue": "^3.5.38"
+    "nuxt": "^4.6.4",
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:",

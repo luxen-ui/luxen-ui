@@ -3,7 +3,7 @@
 // oxlint-disable-next-line typescript/triple-slash-reference -- required: test files aren't in any tsconfig include.
 /// <reference path="./vitest.d.ts" />
 import { basename, dirname, relative } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { SRC, loadSources } from './helpers/source-files.js';
 
 /*

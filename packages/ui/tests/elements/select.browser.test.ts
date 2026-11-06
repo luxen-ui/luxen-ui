@@ -42,14 +42,14 @@ const FIXTURE = `
   </l-select>
 `;
 
-const trigger = () => page.getByRole('button', { name: 'Country' });
+const trigger = () => page.getByRole('combobox', { name: 'Country' });
 
 // ---------------------------------------------------------------------------
 // Roles and accessible names
 // ---------------------------------------------------------------------------
 
 describe('l-select exposes a listbox trigger to assistive tech', () => {
-  it('renders a button labelled by `label` that controls a listbox', async () => {
+  it('renders a combobox labelled by `label` that controls a listbox', async () => {
     await mount(FIXTURE);
     const btn = trigger().element();
     expect(btn.getAttribute('aria-haspopup')).toBe('listbox');
@@ -323,6 +323,14 @@ describe('The closed trigger follows the options it was given', () => {
 
 describe('Accessibility', () => {
   describe('Roles and accessible names', () => {
+    it('keeps `label` as its name while showing the chosen value (WCAG 2.5.3 / WCAG 4.1.2)', async () => {
+      const el = await mount(FIXTURE);
+      await userEvent.click(trigger());
+      await userEvent.click(page.getByRole('option', { name: 'France' }));
+      await settle(el);
+      expect(trigger().element().textContent).toContain('France');
+    });
+
     it('reflects required as aria-required on the trigger', async () => {
       await mount(
         `<l-select label="Country" required><datalist><option value="fr">France</option></datalist></l-select>`,

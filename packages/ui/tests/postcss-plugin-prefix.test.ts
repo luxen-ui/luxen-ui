@@ -2,7 +2,7 @@
 // Vite+ runner at runtime, so its types aren't resolvable to the lint checker).
 // oxlint-disable-next-line typescript/triple-slash-reference -- required: test files aren't in any tsconfig include.
 /// <reference path="./vitest.d.ts" />
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import postcss from 'postcss';
 import luxenPrefix from '../postcss-plugin-prefix.js';
 

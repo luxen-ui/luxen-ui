@@ -2,7 +2,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vite-plus/test';
 import luxen from '../vite-plugin.js';
 
 // `emitTypes` writes a declaration file into the consumer's source tree, once,

@@ -36,7 +36,7 @@ export default defineConfig({
       treeshake: false,
       output: {
         // Single output file, no chunk graph.
-        inlineDynamicImports: true,
+        codeSplitting: false,
       },
     },
   },

@@ -550,7 +550,7 @@ function buildTokensDoc(ctx) {
   const aliases = readFileSync(aliasesPath, 'utf-8');
   const entries = [];
   const varRe = /\/\*((?:(?!\*\/)[\s\S])*?)\*\/\s*(--l-[\w-]+)\s*:/g;
-  for (let m; (m = varRe.exec(aliases)); ) {
+  for (let m; (m = varRe.exec(aliases));) {
     entries.push({ name: m[2], desc: m[1].replace(/\s+/g, ' ').trim() });
   }
 

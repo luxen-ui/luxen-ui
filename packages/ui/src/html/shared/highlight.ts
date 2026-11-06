@@ -4,10 +4,7 @@ import { cls } from '../registry.js';
 
 /** Fold case and strip diacritics so matching is accent/case-insensitive. */
 export function normalize(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 /** Class on every `<mark>` the highlight adds, so styles never reach an authored one. */

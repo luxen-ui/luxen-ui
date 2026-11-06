@@ -133,7 +133,7 @@ export function resolveTerm<K extends TermKey>(
   ...args: LuxenTranslation[K] extends (...a: infer A) => string ? A : []
 ): string {
   const translation = getTranslation(lang);
-  const value = (translation[key] ?? en[key]) as LuxenTranslation[K];
+  const value = translation[key] ?? en[key];
   // `?? ''` only triggers if English itself omits an optional term — a bug, but
   // an empty label degrades better than a runtime `undefined`.
   return typeof value === 'function'

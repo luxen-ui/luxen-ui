@@ -261,19 +261,21 @@ export class Dialog extends LuxenElement {
         aria-label=${this.title || nothing}
         aria-describedby=${this._bodyId || nothing}
       >
-        ${this.withoutHeader
-          ? nothing
-          : html`
-              <header part="header">
-                <slot
-                  name="title"
-                  id="title-area"
-                >
-                  ${this.title ? html`<h2 part="title">${this.title}</h2>` : nothing}
-                </slot>
-                <slot name="close"></slot>
-              </header>
-            `}
+        ${
+          this.withoutHeader
+            ? nothing
+            : html`
+                <header part="header">
+                  <slot
+                    name="title"
+                    id="title-area"
+                  >
+                    ${this.title ? html`<h2 part="title">${this.title}</h2>` : nothing}
+                  </slot>
+                  <slot name="close"></slot>
+                </header>
+              `
+        }
         <div
           part="body"
           id=${this._bodyId || nothing}

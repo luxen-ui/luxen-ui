@@ -221,12 +221,14 @@ export class DropdownItem extends LuxenElement {
         ></span>
         <slot name="suffix"></slot>
         ${isCheckbox && this.checkPlacement === 'end' ? this._renderCheck() : nothing}
-        ${this._hasSubmenu
-          ? html`<span
-              class="submenu-indicator"
-              aria-hidden="true"
-            ></span>`
-          : nothing}
+        ${
+          this._hasSubmenu
+            ? html`<span
+                class="submenu-indicator"
+                aria-hidden="true"
+              ></span>`
+            : nothing
+        }
       </div>
       <div
         class="submenu"

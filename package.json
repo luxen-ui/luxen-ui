@@ -15,8 +15,8 @@
     "prepare": "vp config"
   },
   "devDependencies": {
-    "@changesets/changelog-git": "^0.2.1",
-    "@changesets/cli": "^2.31.0",
+    "@changesets/changelog-git": "^1.0.0",
+    "@changesets/cli": "^3.0.3",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "browserslist": "catalog:",
@@ -29,11 +29,5 @@
   "engines": {
     "node": ">=24.x"
   },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "rs-module-lexer"
-    ]
-  }
+  "packageManager": "pnpm@12.18.0+sha512.9d7882d5dc82147ecfc4e062aa34834e0ad0296710a1837a1115ae012127d36b7109e321ac1598a1dd0a65597681b1e99917e12ed0d749eae91187943363beb3"
 }

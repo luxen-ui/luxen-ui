@@ -34,10 +34,10 @@ let host: HTMLElement;
 
 beforeEach(() => {
   fakeMedia = new FakeMediaQueryList(false);
-  globalThis.matchMedia = ((query: string) =>
+  globalThis.matchMedia = (query: string) =>
     query.includes('prefers-color-scheme: dark')
       ? (fakeMedia as unknown as MediaQueryList)
-      : realMatchMedia(query)) as typeof globalThis.matchMedia;
+      : realMatchMedia(query);
 });
 
 afterEach(() => {

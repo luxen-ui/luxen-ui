@@ -37,10 +37,10 @@ let seen: Array<{ scheme: string; overridden: boolean }>;
 
 beforeEach(() => {
   fakeMedia = new FakeMediaQueryList(false);
-  globalThis.matchMedia = ((query: string) =>
+  globalThis.matchMedia = (query: string) =>
     query.includes('prefers-color-scheme: dark')
       ? (fakeMedia as unknown as MediaQueryList)
-      : realMatchMedia(query)) as typeof globalThis.matchMedia;
+      : realMatchMedia(query);
   localStorage.removeItem(STORAGE_KEY);
   document.documentElement.style.removeProperty('color-scheme');
   colorScheme.configure({ storageKey: STORAGE_KEY, apply: false });

@@ -34,3 +34,4 @@ Thumbs.db
 .claude/*.jpeg
 .claude/*.webp
 .codex/
+.vitest/

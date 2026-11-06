@@ -400,12 +400,14 @@ export class Slider extends LuxenFormAssociatedElement {
             style="--start:${start}%;--end:${end}%"
           ></div>
         </div>
-        ${this.range
-          ? html`${this._renderThumb('min', thumbLabel('rangeMinimum'))}${this._renderThumb(
-              'max',
-              thumbLabel('rangeMaximum'),
-            )}`
-          : this._renderThumb('value', this.label)}
+        ${
+          this.range
+            ? html`${this._renderThumb('min', thumbLabel('rangeMinimum'))}${this._renderThumb(
+                'max',
+                thumbLabel('rangeMaximum'),
+              )}`
+            : this._renderThumb('value', this.label)
+        }
       </div>
     `;
   }
