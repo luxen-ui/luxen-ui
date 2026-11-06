@@ -1,19 +1,14 @@
 // https://vitejs.dev/config/
-import type { PluginOption } from 'vite-plus';
 import { defineConfig } from 'vite-plus';
 import { fileURLToPath, URL } from 'url';
 import { extname, relative, resolve as pathResolve, dirname } from 'path';
-import dts from 'vite-plugin-dts';
 import { globSync } from 'tinyglobby';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// CDN JS only. Its `.d.ts` files are the ones `tsc -p tsconfig.build.json`
+// already emits to `dist/`, mirrored into `cdn/` by scripts/copy-cdn-assets.mjs.
 export default defineConfig({
-  // vite-plugin-dts types its plugin against upstream `vite`, which tsgolint
-  // (typescript-go) can't reconcile with vite-plus's rolldown-based
-  // `PluginOption` — the mismatch makes `defineConfig`'s overload blow the type
-  // comparison depth. The cast bridges the two equivalent plugin shapes.
-  plugins: [dts({ tsconfigPath: 'tsconfig.build.json' }) as PluginOption],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src/html', import.meta.url)),
