@@ -18,6 +18,7 @@ const styles = unsafeCSS(rawStyles);
  * @slot submenu - Nested `l-dropdown-item` elements rendered in a submenu panel anchored to this item. Drop an `<hr>` between them for a separator.
  *
  * @csspart submenu - The floating submenu panel.
+ * @csspart shortcut - The `<kbd>` that shows the `shortcut` text.
  *
  * @cssproperty --color - Text color.
  *
@@ -49,6 +50,14 @@ export class DropdownItem extends LuxenElement {
   /** Visual variant. `destructive` marks a delete-style action in red. */
   @property({ reflect: true })
   accessor variant: 'destructive' | undefined = undefined;
+
+  /**
+   * Keyboard shortcut shown at the end of the row, e.g. `Ctrl+C`. Display only:
+   * bind the keys in your own code. Read as part of the item's name, never
+   * matched by typeahead.
+   */
+  @property({ reflect: true })
+  accessor shortcut = '';
 
   /** Whether the checkbox item is checked. */
   @property({ type: Boolean, reflect: true })
@@ -220,6 +229,13 @@ export class DropdownItem extends LuxenElement {
           ><slot></slot
         ></span>
         <slot name="suffix"></slot>
+        ${this.shortcut
+          ? html`<kbd
+              class="shortcut"
+              part="shortcut"
+              >${this.shortcut}</kbd
+            >`
+          : nothing}
         ${isCheckbox && this.checkPlacement === 'end' ? this._renderCheck() : nothing}
         ${this._hasSubmenu
           ? html`<span

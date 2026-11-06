@@ -122,6 +122,20 @@ slot[name='submenu']::slotted(hr) {
   flex-shrink: 0;
 }
 
+/* The `shortcut` text, shown the way menus show it: small muted text in the
+   row's own font (not the UA monospace), with a little more room from the
+   label. Rendered here rather than slotted, so a page reset that styles `kbd`
+   (Tailwind preflight, normalize.css) cannot restyle it. It stays muted on a
+   destructive item, and fades with the row when the item is disabled. */
+.shortcut {
+  flex-shrink: 0;
+  margin-inline-start: 0.5rem;
+  font: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--l-color-text-tertiary);
+}
+
 .label {
   flex: 1;
 }
