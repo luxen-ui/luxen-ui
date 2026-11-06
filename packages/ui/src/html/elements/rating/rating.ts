@@ -170,14 +170,16 @@ export class Rating extends LuxenFormAssociatedElement {
             `;
           })}
         </div>
-        ${this.labels?.length
-          ? html`<div
-              class="rating-label"
-              part="label"
-            >
-              ${this.currentLabel}
-            </div>`
-          : nothing}
+        ${
+          this.labels?.length
+            ? html`<div
+                class="rating-label"
+                part="label"
+              >
+                ${this.currentLabel}
+              </div>`
+            : nothing
+        }
       </div>
     `;
   }

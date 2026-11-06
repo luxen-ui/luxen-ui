@@ -288,7 +288,7 @@ export class Combobox extends LuxenFormAssociatedElement {
       this._nav.setActive(this._filtered.findIndex((i) => i.value === this.value));
     }
     this.updateComplete.then(() => {
-      const panel = this._panelEl as (HTMLElement & { showPopover?: () => void }) | null;
+      const panel = this._panelEl;
       panel?.showPopover?.();
       this._floating.startPositioning({
         placement: this.placement,
@@ -303,8 +303,8 @@ export class Combobox extends LuxenFormAssociatedElement {
     if (!this.dispatchEvent(new Event('hide', { cancelable: true }))) return;
     this._open = false;
     this._nav.reset();
-    const panel = this._panelEl as (HTMLElement & { hidePopover?: () => void }) | null;
-    if (panel?.matches?.(':popover-open')) (panel as { hidePopover?: () => void }).hidePopover?.();
+    const panel = this._panelEl;
+    if (panel?.matches?.(':popover-open')) panel.hidePopover?.();
     this._floating.stopPositioning();
     this._resetDisplay();
   }
@@ -457,15 +457,17 @@ export class Combobox extends LuxenFormAssociatedElement {
             @input=${this._onInput}
             @keydown=${this._onKeyDown}
           />
-          ${this.withClear && (this.value || this._query)
-            ? html`<button
-                class="clear"
-                type="button"
-                tabindex="-1"
-                aria-label=${this._localize.term('clear')}
-                @click=${this._clear}
-              ></button>`
-            : nothing}
+          ${
+            this.withClear && (this.value || this._query)
+              ? html`<button
+                  class="clear"
+                  type="button"
+                  tabindex="-1"
+                  aria-label=${this._localize.term('clear')}
+                  @click=${this._clear}
+                ></button>`
+              : nothing
+          }
           <span
             class="chevron"
             aria-hidden="true"
@@ -485,33 +487,38 @@ export class Combobox extends LuxenFormAssociatedElement {
             aria-label=${this.label || this._localize.term('suggestions')}
           >
             ${filtered.map(
-              (item, i) => html`<li
-                class="option"
-                part="option"
-                id=${this._nav.optionId(i)}
-                role="option"
-                aria-selected=${i === activeIndex ? 'true' : 'false'}
-                aria-disabled=${item.disabled ? 'true' : nothing}
-                data-current=${item.value === this.value ? '' : nothing}
-                @pointerdown=${(e: Event) => e.preventDefault()}
-                @click=${() => this._commit(item)}
-              >
-                ${item.html
-                  ? html`<span class="option-rich"
-                      >${unsafeHTML(this._highlightRich(item.html))}</span
-                    >`
-                  : html`<span class="option-label">${this._highlight(item.label)}</span>`}
-              </li>`,
+              (item, i) =>
+                html`<li
+                  class="option"
+                  part="option"
+                  id=${this._nav.optionId(i)}
+                  role="option"
+                  aria-selected=${i === activeIndex ? 'true' : 'false'}
+                  aria-disabled=${item.disabled ? 'true' : nothing}
+                  data-current=${item.value === this.value ? '' : nothing}
+                  @pointerdown=${(e: Event) => e.preventDefault()}
+                  @click=${() => this._commit(item)}
+                >
+                  ${
+                    item.html
+                      ? html`<span class="option-rich"
+                          >${unsafeHTML(this._highlightRich(item.html))}</span
+                        >`
+                      : html`<span class="option-label">${this._highlight(item.label)}</span>`
+                  }
+                </li>`,
             )}
           </ul>
-          ${filtered.length === 0
-            ? html`<div
-                class="empty"
-                part="empty"
-              >
-                ${this._localize.term('noResults')}
-              </div>`
-            : nothing}
+          ${
+            filtered.length === 0
+              ? html`<div
+                  class="empty"
+                  part="empty"
+                >
+                  ${this._localize.term('noResults')}
+                </div>`
+              : nothing
+          }
         </div>
 
         <div

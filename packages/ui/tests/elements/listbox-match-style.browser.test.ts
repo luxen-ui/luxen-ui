@@ -84,7 +84,7 @@ describe('A site can theme the search match with form-control tokens', () => {
       'l-select',
       THEMED,
     );
-    await userEvent.click(page.getByRole('button', { name: 'Country' }));
+    await userEvent.click(page.getByRole('combobox', { name: 'Country' }));
     await userEvent.keyboard('r');
     await settle(el);
     const marks = paint(el);

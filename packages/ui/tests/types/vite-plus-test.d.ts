@@ -7,4 +7,4 @@
 // direct `import … from 'vitest'`. We redirect the type resolution (only — vite
 // still loads the real module at runtime) through explicit named re-exports,
 // which tsgolint does follow. Drop this once tsgolint resolves the star barrel.
-export { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
+export { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, test, vi } from 'vite-plus/test';

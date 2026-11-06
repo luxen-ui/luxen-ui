@@ -143,7 +143,7 @@ export class Tooltip extends LuxenElement {
     if (changed.has('for')) {
       // A queued show/hide targets the old trigger — drop it before rewiring.
       this._clearTimers();
-      this._removeTriggerListeners(changed.get('for') as string);
+      this._removeTriggerListeners(changed.get('for'));
       this._addTriggerListeners();
       if (this.open && !changed.has('open')) {
         void this._repositionToTrigger();
@@ -357,14 +357,16 @@ export class Tooltip extends LuxenElement {
         role="tooltip"
         part="body"
       >
-        ${this.withoutArrow
-          ? nothing
-          : html`
-              <i
-                part="arrow"
-                role="presentation"
-              ></i>
-            `}
+        ${
+          this.withoutArrow
+            ? nothing
+            : html`
+                <i
+                  part="arrow"
+                  role="presentation"
+                ></i>
+              `
+        }
         <slot></slot>
       </div>
     `;

@@ -307,40 +307,42 @@ export class TreeItem extends LuxenElement {
           part="expand-button"
           aria-hidden="true"
         >
-          ${this.loading
-            ? html`<span
-                class="spinner"
-                role="status"
-              ></span>`
-            : this.expanded || this.isLeaf()
-              ? html`<slot name="collapse-icon">
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.5 6l4.5 5 4.5-5"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </slot>`
-              : html`<slot name="expand-icon">
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                  >
-                    <path
-                      d="M6 3.5l5 4.5-5 4.5"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </slot>`}
+          ${
+            this.loading
+              ? html`<span
+                  class="spinner"
+                  role="status"
+                ></span>`
+              : this.expanded || this.isLeaf()
+                ? html`<slot name="collapse-icon">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M3.5 6l4.5 5 4.5-5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </slot>`
+                : html`<slot name="expand-icon">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M6 3.5l5 4.5-5 4.5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </slot>`
+          }
         </span>
 
         <input

@@ -313,7 +313,7 @@ export class Select extends LuxenFormAssociatedElement {
       this._nav.setActive(this._filtered.findIndex((i) => i.value === this._values[0]));
     }
     void this.updateComplete.then(() => {
-      const panel = this._panelEl as (HTMLElement & { showPopover?: () => void }) | null;
+      const panel = this._panelEl;
       panel?.showPopover?.();
       this._floating.startPositioning({
         placement: this.placement,
@@ -332,7 +332,7 @@ export class Select extends LuxenFormAssociatedElement {
     this._open = false;
     this._query = '';
     this._nav.reset();
-    const panel = this._panelEl as (HTMLElement & { hidePopover?: () => void }) | null;
+    const panel = this._panelEl;
     if (panel?.matches?.(':popover-open')) panel.hidePopover?.();
     this._floating.stopPositioning();
     document.removeEventListener('pointerdown', this._onDocumentPointerDown, true);
@@ -467,8 +467,12 @@ export class Select extends LuxenFormAssociatedElement {
       ></span>
     `;
     const onClick = () => (this._open ? this.hide() : this.show());
-    // Multiple mode uses a focusable div (role="combobox") so the chips' remove
-    // buttons are valid interactive children — a <button> trigger can't nest them.
+    // Both modes expose role="combobox" (APG select-only combobox). A combobox
+    // doesn't take its name from its content, so `label` stays the accessible
+    // name while the shown value is announced as the value. A plain button would
+    // let `aria-label` hide the chosen value from screen readers (WCAG 2.5.3).
+    // Multiple mode uses a focusable div so the chips' remove buttons are valid
+    // interactive children — a <button> trigger can't nest them.
     return this.multiple
       ? html`<div
           class="trigger"
@@ -490,6 +494,7 @@ export class Select extends LuxenFormAssociatedElement {
           class="trigger"
           part="trigger"
           type="button"
+          role="combobox"
           ?disabled=${this.disabled}
           aria-haspopup="listbox"
           aria-expanded=${this._open ? 'true' : 'false'}
@@ -522,15 +527,17 @@ export class Select extends LuxenFormAssociatedElement {
         part="base"
       >
         ${this._renderTrigger(invalid)}
-        ${this.withClear && hasValue
-          ? html`<button
-              class="clear"
-              part="clear"
-              type="button"
-              aria-label=${this._localize.term('clear')}
-              @click=${this._clear}
-            ></button>`
-          : nothing}
+        ${
+          this.withClear && hasValue
+            ? html`<button
+                class="clear"
+                part="clear"
+                type="button"
+                aria-label=${this._localize.term('clear')}
+                @click=${this._clear}
+              ></button>`
+            : nothing
+        }
 
         <div
           class="panel"
@@ -538,22 +545,24 @@ export class Select extends LuxenFormAssociatedElement {
           popover="manual"
           @keydown=${this._onPanelKeyDown}
         >
-          ${this.searchable
-            ? html`<div class="search-row">
-                <input
-                  class="search"
-                  part="search"
-                  type="text"
-                  role="searchbox"
-                  autocomplete="off"
-                  spellcheck="false"
-                  .placeholder=${this._localize.term('search') ?? ''}
-                  aria-controls=${this._listId}
-                  aria-activedescendant=${activeId ?? nothing}
-                  @input=${this._onSearchInput}
-                />
-              </div>`
-            : nothing}
+          ${
+            this.searchable
+              ? html`<div class="search-row">
+                  <input
+                    class="search"
+                    part="search"
+                    type="text"
+                    role="searchbox"
+                    autocomplete="off"
+                    spellcheck="false"
+                    .placeholder=${this._localize.term('search') ?? ''}
+                    aria-controls=${this._listId}
+                    aria-activedescendant=${activeId ?? nothing}
+                    @input=${this._onSearchInput}
+                  />
+                </div>`
+              : nothing
+          }
 
           <ul
             class="listbox"
@@ -566,36 +575,41 @@ export class Select extends LuxenFormAssociatedElement {
             aria-activedescendant=${!this.searchable ? (activeId ?? nothing) : nothing}
           >
             ${filtered.map(
-              (item, i) => html`<li
-                class="option"
-                part="option"
-                id=${this._nav.optionId(i)}
-                role="option"
-                aria-selected=${this._values.includes(item.value) ? 'true' : 'false'}
-                aria-disabled=${item.disabled ? 'true' : nothing}
-                data-active=${i === activeIndex ? '' : nothing}
-                data-current=${this._values.includes(item.value) ? '' : nothing}
-                @pointerdown=${(e: Event) => e.preventDefault()}
-                @click=${() => this._select(item)}
-              >
-                ${item.html
-                  ? html`<span class="option-rich"
-                      >${unsafeHTML(this._richHighlighter.highlight(item.html, this._query))}</span
-                    >`
-                  : html`<span class="option-label"
-                      >${highlightText(item.label, this._query)}</span
-                    >`}
-              </li>`,
+              (item, i) =>
+                html`<li
+                  class="option"
+                  part="option"
+                  id=${this._nav.optionId(i)}
+                  role="option"
+                  aria-selected=${this._values.includes(item.value) ? 'true' : 'false'}
+                  aria-disabled=${item.disabled ? 'true' : nothing}
+                  data-active=${i === activeIndex ? '' : nothing}
+                  data-current=${this._values.includes(item.value) ? '' : nothing}
+                  @pointerdown=${(e: Event) => e.preventDefault()}
+                  @click=${() => this._select(item)}
+                >
+                  ${
+                    item.html
+                      ? html`<span class="option-rich"
+                          >${unsafeHTML(this._richHighlighter.highlight(item.html, this._query))}</span
+                        >`
+                      : html`<span class="option-label"
+                          >${highlightText(item.label, this._query)}</span
+                        >`
+                  }
+                </li>`,
             )}
           </ul>
-          ${filtered.length === 0
-            ? html`<div
-                class="empty"
-                part="empty"
-              >
-                ${this._localize.term('noResults')}
-              </div>`
-            : nothing}
+          ${
+            filtered.length === 0
+              ? html`<div
+                  class="empty"
+                  part="empty"
+                >
+                  ${this._localize.term('noResults')}
+                </div>`
+              : nothing
+          }
         </div>
 
         <div

@@ -2,7 +2,7 @@
 // Vite+ runner at runtime, so its types aren't resolvable to the lint checker).
 // oxlint-disable-next-line typescript/triple-slash-reference -- required: test files aren't in any tsconfig include.
 /// <reference path="./vitest.d.ts" />
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 // Imported in the plain Node test environment (no DOM). This is the SSR-safety
 // guarantee: importing the engine — and a real locale — must not touch
 // document/window at module scope, and term resolution must work with no DOM.

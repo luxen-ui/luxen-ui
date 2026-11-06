@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: voidzero-dev/setup-vp@v1.22.0
         with:
           node-version: '24'
           cache: true
@@ -45,7 +45,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          # pnpm ≥11 publishes natively: it ignores `npm_config_*` variables and
+          # `publishConfig.provenance`, so provenance must be requested here. The
+          # attestation is signed with this job's OIDC token (`id-token: write`).
+          PNPM_CONFIG_PROVENANCE: true
 
       # On a real publish, tag the release commit `v<version>` (luxen-ui's version)
       # and deploy the docs. The tag marks the released version; the Netlify build

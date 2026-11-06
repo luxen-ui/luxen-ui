@@ -218,9 +218,11 @@ export class AlertDialog extends Dialog {
             aria-disabled=${this.loading ? 'true' : nothing}
             aria-busy=${this.loading ? 'true' : nothing}
           >
-            ${this.loading
-              ? staticHtml`<${spinnerTag} aria-hidden="true"></${spinnerTag}>`
-              : nothing}
+            ${
+              this.loading
+                ? staticHtml`<${spinnerTag} aria-hidden="true"></${spinnerTag}>`
+                : nothing
+            }
             ${this.confirmText}
           </button>
         </slot>

@@ -115,7 +115,7 @@ export class Popover extends LuxenElement {
     // against the new anchor, and when both change in the same update the open
     // path owns the positioning outright (see the guard below).
     if (changed.has('for')) {
-      this._removeTriggerListeners(changed.get('for') as string);
+      this._removeTriggerListeners(changed.get('for'));
       this._addTriggerListeners();
       if (this.open && !changed.has('open')) {
         void this._repositionToTrigger();
@@ -266,14 +266,16 @@ export class Popover extends LuxenElement {
         part="body"
         @toggle=${this._onToggle}
       >
-        ${this.withoutArrow
-          ? nothing
-          : html`
-              <i
-                part="arrow"
-                role="presentation"
-              ></i>
-            `}
+        ${
+          this.withoutArrow
+            ? nothing
+            : html`
+                <i
+                  part="arrow"
+                  role="presentation"
+                ></i>
+              `
+        }
         <slot></slot>
       </div>
     `;

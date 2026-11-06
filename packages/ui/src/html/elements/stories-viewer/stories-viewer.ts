@@ -800,27 +800,27 @@ export class LuxenStoriesViewer extends LuxenElement {
           isFirstStory
             ? nothing
             : html`<button
-              type="button"
-              part="button-previous"
-              class="btn btn-nav btn-previous"
-              aria-label=${this._localize.term('previousStory')}
-              @click=${() => this.previousStory()}
-            >
-              <${iconTag} name="mdi:chevron-left"></${iconTag}>
-            </button>`
+                type="button"
+                part="button-previous"
+                class="btn btn-nav btn-previous"
+                aria-label=${this._localize.term('previousStory')}
+                @click=${() => this.previousStory()}
+              >
+                <${iconTag} name="mdi:chevron-left"></${iconTag}>
+              </button>`
         }
         ${
           isLastStory
             ? nothing
             : html`<button
-              type="button"
-              part="button-next"
-              class="btn btn-nav btn-next"
-              aria-label=${this._localize.term('nextStory')}
-              @click=${() => this.nextStory()}
-            >
-              <${iconTag} name="mdi:chevron-right"></${iconTag}>
-            </button>`
+                type="button"
+                part="button-next"
+                class="btn btn-nav btn-next"
+                aria-label=${this._localize.term('nextStory')}
+                @click=${() => this.nextStory()}
+              >
+                <${iconTag} name="mdi:chevron-right"></${iconTag}>
+              </button>`
         }
       </dialog>
     `;

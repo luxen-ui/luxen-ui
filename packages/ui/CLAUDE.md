@@ -80,7 +80,7 @@ Conventions:
 - **Propagation follows the platform** (set in the class constructor, not at the
   call site, so it can't drift):
   - Lifecycle (`show`/`hide`/`after-*`, `expand`/`collapse`): `bubbles: false,
-composed: false` — listen on the element itself (like `toggle`/`close`).
+    composed: false` — listen on the element itself (like `toggle`/`close`).
   - Value/change (`change`, `select`): `bubbles: true, composed: false` — like
     native `change` (bubbles, but does not cross shadow boundaries).
   - Informational/media-like (`story-*`, `mute-change`, `slides-in-view`,
@@ -138,7 +138,7 @@ string literal or a type.
   `cls()` is a no-op at the default `l` prefix, so binding costs nothing.
 - **Never augment the global `HTMLElementTagNameMap` (or Vue's
   `GlobalComponents`) in element source.** A `declare global { interface
-HTMLElementTagNameMap { 'l-foo': Foo } }` block hardcodes `l-` and is wrong
+  HTMLElementTagNameMap { 'l-foo': Foo } }` block hardcodes `l-` and is wrong
   under any non-default prefix. Consumer-side typing is emitted **dynamically,
   with the configured prefix**, by the Vite plugin's `emitTypes` option (see
   `LuxenEmitTypesConfig` in `src/html/config.ts`) — the library must not ship a
@@ -174,8 +174,8 @@ How to write component tests:
   `.click()`, or manual `.focus()` in a test. `userEvent.keyboard` targets the
   focused element: establish focus the way a user would (`userEvent.tab()` or
   a click), never with `.focus()`. Import the shared `userEvent` singleton from
-  `tests/elements/support/user-event.ts` (it re-exports vite-plus 0.2's
-  `userEvent` from `vite-plus/test/browser/context`); never re-create it
+  `tests/elements/support/user-event.ts` (it re-exports the
+  `userEvent` singleton from `vite-plus/test/browser/context`); never re-create it
   per-suite.
 - **Query like assistive tech.** `page.getByRole(role, { name, ...states })`
   is the default query — it pierces open shadow DOM and proves the accessible
