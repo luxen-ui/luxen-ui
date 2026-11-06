@@ -119,7 +119,7 @@ The editor participates in forms via its `name` attribute. The submitted value i
   { Key: 'Ctrl/Cmd + U', Description: 'Toggles underline' },
   { Key: 'Ctrl/Cmd + Z', Description: 'Undo' },
   { Key: 'Ctrl/Cmd + Shift + Z', Description: 'Redo' },
-  { Key: 'Escape', Description: 'Closes the emoji picker when open' },
+  { Key: 'Escape', Description: 'Closes the emoji picker when open and returns focus to where it was before: the editor, or the Emoji button when the picker was opened from the toolbar' },
 ]" />
 
 ## API reference

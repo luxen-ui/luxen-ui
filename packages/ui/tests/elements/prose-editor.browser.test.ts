@@ -588,8 +588,13 @@ describe('Accessibility', () => {
       });
     }
 
-    it('Escape in the picker closes it and returns focus to the Emoji button (WCAG 2.4.3 / RGAA 12.8)', async () => {
+    // Closing the picker without choosing an emoji hands focus back to where it
+    // was before it opened: the editor (caret intact) for someone who was typing
+    // and clicked Emoji, the Emoji button for someone who came from the toolbar.
+    it('Escape returns focus to the editor when the picker was opened from it with the mouse (WCAG 2.4.3 / RGAA 12.8)', async () => {
       const el = await mount(`<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>`);
+      await _userEvent.click(page.getByRole('textbox'));
+      await _userEvent.type(page.getByRole('textbox'), 'Hi');
       await _userEvent.click(toolbarButton('Emoji'));
       await waitUntil(() => pickerOpen() && deepActiveElement() === emojiSearch());
       expect(deepActiveElement()).toBe(emojiSearch());
@@ -598,7 +603,42 @@ describe('Accessibility', () => {
       await settleEl(el);
 
       expect(pickerOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(editorArea(el));
+      // Typing carries on at the caret.
+      await _userEvent.keyboard('!');
+      await settleEl(el);
+      expect(el.getHTML()).toBe('<p>Hi!</p>');
+    });
+
+    it('Escape returns focus to the Emoji button when the picker was opened from the toolbar with the keyboard (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(
+        `<l-prose-editor toolbar="bold,emoji" emoji-data-source="/emoji.json"></l-prose-editor>`,
+      );
+      await _userEvent.tab();
+      await _userEvent.keyboard('{ArrowRight}');
+      await _userEvent.keyboard('{Enter}');
+      await waitUntil(() => pickerOpen() && deepActiveElement() === emojiSearch());
+      expect(deepActiveElement()).toBe(emojiSearch());
+
+      await _userEvent.keyboard('{Escape}');
+      await settleEl(el);
+
+      expect(pickerOpen()).toBe(false);
       expect(deepActiveElement()).toBe(emojiButton(el));
+    });
+
+    it('re-clicking Emoji closes the picker and returns focus to the editor it was opened from (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(`<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>`);
+      await _userEvent.click(page.getByRole('textbox'));
+      await _userEvent.click(toolbarButton('Emoji'));
+      await waitUntil(() => pickerOpen() && deepActiveElement() === emojiSearch());
+
+      await _userEvent.click(toolbarButton('Emoji'));
+      await settleEl(el);
+      await macrotask();
+
+      expect(pickerOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(editorArea(el));
     });
 
     it('choosing an emoji inserts it and returns focus to the editor (WCAG 2.4.3 / RGAA 12.8)', async () => {
