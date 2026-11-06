@@ -1,0 +1,61 @@
+@import './_base.css';
+
+@layer components {
+  /* Grid — every cell drawn: rules between rows and between columns, an outer
+     border with rounded corners, and a filled header. The header fill is mixed
+     from the table's own background, so it stays opaque over the rows that
+     scroll under the sticky header. */
+  .l-table[data-appearance='grid'] {
+    --_radius: var(--l-radius-md);
+    --_inner-radius: calc(var(--_radius) - 1px);
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--_radius);
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where(th, td) {
+      border-block-end: 1px solid var(--border-color);
+      border-inline-end: 1px solid var(--border-color);
+    }
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where(th, td):last-child {
+      border-inline-end: 0;
+    }
+
+    /* The last body row loses its rule under totals too: the totals row
+       draws its own, stronger one above. */
+    & > tbody:last-of-type > tr:last-child > :where(th, td),
+    & > tfoot > tr:last-child > :where(th, td) {
+      border-block-end: 0;
+    }
+
+    & > thead > tr > :where(th) {
+      --_cell-background: color-mix(
+        in oklab,
+        var(--background-color),
+        var(--l-color-text-primary) 4%
+      );
+    }
+
+    & > tfoot > tr:first-child > :where(th, td) {
+      border-block-start: 1px solid var(--l-color-border);
+    }
+
+    /* Corner cells follow the table's rounded border. The first row group is
+       the header, or the first body when there is none — never the caption. */
+    & > :is(thead, tbody:first-of-type:not(thead ~ tbody)) > tr:first-child > :first-child {
+      border-start-start-radius: var(--_inner-radius);
+    }
+
+    & > :is(thead, tbody:first-of-type:not(thead ~ tbody)) > tr:first-child > :last-child {
+      border-start-end-radius: var(--_inner-radius);
+    }
+
+    & > :is(tbody, tfoot):last-child > tr:last-child > :first-child {
+      border-end-start-radius: var(--_inner-radius);
+    }
+
+    & > :is(tbody, tfoot):last-child > tr:last-child > :last-child {
+      border-end-end-radius: var(--_inner-radius);
+    }
+  }
+}

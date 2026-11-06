@@ -1,0 +1,27 @@
+@import './_base.css';
+
+@layer components {
+  /* Lines — the default appearance: a rule under every row, a stronger one under
+     the header and above the totals. Each row group keeps the rule under its
+     last row, which separates it from the next group; only the table's last
+     group drops it. */
+  .l-table:not([data-appearance]),
+  .l-table[data-appearance='lines'] {
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where(th, td) {
+      border-block-end: 1px solid var(--border-color);
+    }
+
+    & > thead > tr > :where(th) {
+      border-block-end-color: var(--l-color-border);
+    }
+
+    & > tbody:last-of-type > tr:last-child > :where(th, td),
+    & > tfoot > tr:last-child > :where(th, td) {
+      border-block-end: 0;
+    }
+
+    & > tfoot > tr:first-child > :where(th, td) {
+      border-block-start: 1px solid var(--l-color-border);
+    }
+  }
+}
