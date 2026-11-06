@@ -3,28 +3,47 @@
  * status icon pinned to the inline-end of the row, after `.l-select-item-text`.
  * One source for every tier, so they cannot drift apart:
  *   - `@import`ed (and layered) by src/css/elements/select.css for the native
- *     `select.l-select` picker, and
+ *     `select.l-select` picker, where `.l-select option` is the row, and
  *   - imported `?inline` into the l-select / l-combobox shadow roots, which copy
- *     each option's markup and cannot reach the global stylesheet.
+ *     each option's markup and cannot reach the global stylesheet; there
+ *     `:host .option-rich` is the row. `:host` never matches in a document, so
+ *     the light-DOM copy cannot reach a consumer's own `.option-rich`.
  *
  * A class, not a `slot="suffix"` attribute hook: in a customizable select the
  * <option> has its own UA shadow root, so a child carrying a `slot` it has no
  * slot for is not rendered at all. A class keeps one markup for every tier.
  *
- * Intentionally UNLAYERED, like button-core.css. The bare class is enough in a
- * shadow root: there it only ever matches the copied option markup. Each tier
- * hides the suffix in its own trigger next to its description rule.
+ * Intentionally UNLAYERED, like button-core.css. Each tier hides the suffix in
+ * its own trigger next to its description rule.
  */
+
+/* The row's line box as an absolute length — the title's line, since the title
+   inherits the row's font and line-height. Registered so `1lh` resolves on the
+   row and is inherited as a length; unregistered it would resolve on the
+   smaller suffix. A shadow root ignores this rule, so rich-option.ts also
+   registers it from JS. */
+@property --_select-item-line {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+:is(.l-select option, :host .option-rich) {
+  --_select-item-line: 1lh;
+}
+
 .l-select-item-suffix {
   display: inline-flex;
   /* Never shrinks: the text column gives way first and its title truncates. */
   flex: 0 0 auto;
   align-items: center;
   /* Sits on the title's line rather than the row's middle — like the checkmark
-     and the media — so a wrapping description never moves it. Baseline
-     alignment (paired with the text column below) holds whatever font-size and
-     line-height the tier gives its title. */
-  align-self: first baseline;
+     and the media — so a wrapping description never moves it: a box exactly one
+     title line tall, pinned to the top, centres its content on that line. Content
+     taller than the line (a badge in a tight row, an avatar) overflows it evenly
+     above and below, into the row's padding, and never moves the title. */
+  align-self: flex-start;
+  block-size: var(--_select-item-line);
   gap: 0.25rem;
   margin-inline-start: auto;
   white-space: nowrap;
@@ -32,9 +51,10 @@
   font-size: 0.75rem;
 }
 
-/* The other half of the baseline pair: in a row that carries a suffix, the text
-   column joins the same baseline group, so the suffix lines up with the title's
-   first line. Rows without a suffix keep their tier's own alignment. */
-.l-select-item-text:has(~ .l-select-item-suffix) {
-  align-self: first baseline;
+/* In a picker row that carries a suffix, the text column is pinned to the top
+   too, so the title shares the suffix's line in a centred row (l-combobox).
+   Scoped to the rows: the trigger's copy of the selected option (where the
+   suffix is hidden) keeps its own centring. */
+:is(.l-select option, :host .option-rich) > .l-select-item-text:has(~ .l-select-item-suffix) {
+  align-self: flex-start;
 }
