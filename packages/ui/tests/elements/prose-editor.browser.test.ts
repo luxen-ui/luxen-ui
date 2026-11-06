@@ -327,8 +327,8 @@ describe('l-prose-editor emoji picker', () => {
     expect(p?.matches(':popover-open')).toBe(true);
 
     // The capture-phase document keydown listener catches Escape regardless of
-    // which element has focus. Send via userEvent.keyboard — focus stays on the
-    // emoji button (the last clicked element) which is fine.
+    // which element has focus. Send via userEvent.keyboard — focus is in the
+    // picker's search field, where opening the picker put it.
     await _userEvent.keyboard('{Escape}');
     await macrotask();
 
@@ -625,6 +625,63 @@ describe('Accessibility', () => {
 
       expect(pickerOpen()).toBe(false);
       expect(deepActiveElement()).toBe(emojiButton(el));
+    });
+
+    it('Escape returns focus to a slotted toolbar control the picker was opened from (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(
+        `<l-prose-editor emoji-data-source="/emoji.json">
+           <input slot="toolbar-start" aria-label="Font size" />
+         </l-prose-editor>`,
+      );
+      const fontSize = page.getByRole('textbox', { name: 'Font size' });
+      await _userEvent.click(fontSize);
+      await _userEvent.click(toolbarButton('Emoji'));
+      await waitUntil(() => pickerOpen() && deepActiveElement() === emojiSearch());
+      expect(deepActiveElement()).toBe(emojiSearch());
+
+      await _userEvent.keyboard('{Escape}');
+      await settleEl(el);
+
+      expect(pickerOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(fontSize.element());
+    });
+
+    // The picker is appended at the end of <body> (or the open dialog), but its
+    // tab sequence behaves as if it sat right after the Emoji button: tabbing out
+    // of it closes it and lands next to its trigger, not at the end of the page.
+    it('Shift+Tab out of the picker closes it and returns focus to the Emoji button (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(`<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>`);
+      await _userEvent.click(page.getByRole('textbox'));
+      await _userEvent.click(toolbarButton('Emoji'));
+      await waitUntil(() => pickerOpen() && deepActiveElement() === emojiSearch());
+
+      await _userEvent.tab({ shift: true });
+      await settleEl(el);
+
+      expect(pickerOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(emojiButton(el));
+    });
+
+    it('Tab past the last control of the picker closes it and moves focus to the editor (WCAG 2.4.3 / RGAA 12.8)', async () => {
+      const el = await mount(
+        `<l-prose-editor emoji-data-source="/emoji.json"></l-prose-editor>
+         <button>After the editor</button>`,
+      );
+      await _userEvent.click(toolbarButton('Emoji'));
+      await waitUntil(
+        () =>
+          pickerOpen() &&
+          deepActiveElement() === emojiSearch() &&
+          page.getByRole('menuitem', { name: /grinning face/ }).query() !== null,
+      );
+
+      // Tab through the picker's own controls until focus leaves it.
+      // oxlint-disable-next-line eslint/no-await-in-loop -- one keystroke at a time, like a user.
+      for (let i = 0; i < 30 && pickerOpen(); i++) await _userEvent.tab();
+      await settleEl(el);
+
+      expect(pickerOpen()).toBe(false);
+      expect(deepActiveElement()).toBe(editorArea(el));
     });
 
     it('re-clicking Emoji closes the picker and returns focus to the editor it was opened from (WCAG 2.4.3 / RGAA 12.8)', async () => {
