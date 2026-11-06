@@ -81,7 +81,7 @@ Put markup inside each `<option>` — wrap a `.l-select-item-title` over a `.l-s
 
 ### Suffix
 
-Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row. It keeps its natural width while the text column gives way, and a long title truncates with an ellipsis. Like the description, the suffix stays in the picker: `<selectedcontent>` mirrors only the media and the title into the trigger.
+Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row. It sits on the title's line and keeps its natural width while the text column gives way, so a long title truncates with an ellipsis. Like the description, the suffix stays in the picker: `<selectedcontent>` mirrors only the media and the title into the trigger. Screen readers announce the suffix with its option, so write it as words ("12 members", not "12").
 
 Don't add a `label` attribute to native options: a labelled option paints its label instead of its rich children.
 
@@ -133,7 +133,7 @@ With `searchable`, the query is highlighted inside `.l-select-item-title` and `.
 <<< @/.vitepress/examples/select/SelectRich.html [HTML]
 :::
 
-The [`.l-select-item-suffix`](#suffix) works the same way. Here too it stays out of the trigger, and an [`<l-badge>`](/elements/badge) inside it keeps its look in the popover. Keep the `label` (or `.l-select-item-title`) so the suffix text never leaks into filtering or the trigger.
+The [`.l-select-item-suffix`](#suffix) works the same way, and stays out of the trigger, the chips and the search. Rich options are copied into the popover's shadow root: an [`<l-badge>`](/elements/badge) is styled there, but your page's own selectors don't reach that copy. To theme it, set the badge's CSS custom properties on the `<l-select>`: they inherit into the popover.
 
 <ComponentWrapper :html="selectRichSuffix" />
 
@@ -260,6 +260,10 @@ import 'luxen-ui/select';
 ### CSS parts
 
 <ApiTable element="select" section="cssParts" />
+
+### CSS classes
+
+<ApiTable element="select" section="cssClasses" />
 
 ### CSS custom properties
 

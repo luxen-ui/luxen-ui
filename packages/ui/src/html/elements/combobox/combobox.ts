@@ -10,9 +10,8 @@ import { DatalistObserverController } from '../../shared/controllers/datalist-ob
 import { LocalizeController } from '../../shared/localize.js';
 import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
 import { uniqueId } from '../../registry.js';
-import { richOptionLabel } from '../../shared/rich-option.js';
+import { adoptRichContentStyles, richOptionLabel } from '../../shared/rich-option.js';
 import hostStyles from '../../shared/styles/host.styles.js';
-import badgeStyles from '../../shared/styles/badge-core.styles.js';
 import suffixStyles from '../../shared/styles/select-item-suffix.styles.js';
 import rawStyles from './combobox.css?inline';
 
@@ -100,14 +99,21 @@ interface ComboboxEventMap {
  * @cssproperty [--border-radius] - Control + panel radius.
  * @cssproperty [--background] - Panel background.
  *
+ * @cssClass .l-select-item-media - Rich option: leading image or icon.
+ * @cssClass .l-select-item-text - Rich option: column holding the title and the description.
+ * @cssClass .l-select-item-title - Rich option: title, truncated with an ellipsis. Used as the label when the option has no `label`.
+ * @cssClass .l-select-item-description - Rich option: secondary line, shown in the listbox only.
+ * @cssClass .l-select-item-suffix - Rich option: trailing badge, count or status icon on the title's line. Kept out of the input and the filter.
+ *
  * @customElement l-combobox
  */
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Combobox extends LuxenFormAssociatedElement {
   // Rich option markup is copied into the shadow root, out of reach of the
-  // global stylesheets: badgeStyles keeps an l-badge in it styled, suffixStyles
-  // lays out the `.l-select-item-suffix` zone.
-  static override styles = [hostStyles, badgeStyles, suffixStyles, styles];
+  // global stylesheets: suffixStyles lays out the `.l-select-item-suffix` zone,
+  // and `_readItems` adopts the styles of the light-DOM elements (l-badge) the
+  // options actually contain.
+  static override styles = [hostStyles, suffixStyles, styles];
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('combobox-list');
@@ -225,6 +231,7 @@ export class Combobox extends LuxenFormAssociatedElement {
       const label = richOptionLabel(o);
       return { value: o.value, label, disabled: o.disabled, html: rich ? o.innerHTML : undefined };
     });
+    adoptRichContentStyles(this.shadowRoot, this._items);
   }
 
   /**

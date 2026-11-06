@@ -63,20 +63,35 @@ const LONG_TITLE = 'A very long option title that cannot possibly fit in the row
  * native picker must not get one — a labelled option paints its label instead of
  * its rich children.
  */
-const option = (value: string, title: string, { selected = false, native = false } = {}) => `
+const BADGE = '<l-badge size="sm">7 in use</l-badge>';
+// A suffix taller than the title's line (an avatar, a large badge…).
+const TALL = '<span style="display: inline-block; inline-size: 0.5rem; block-size: 2.5rem"></span>';
+const MEDIA =
+  '<span class="l-select-item-media" style="display: inline-block; inline-size: 1.5rem; block-size: 1.5rem"></span>';
+
+const option = (
+  value: string,
+  title: string,
+  { selected = false, native = false, suffix = BADGE, media = '' } = {},
+) => `
   <option value="${value}"${native ? '' : ` label="${title}"`}${selected ? ' selected' : ''}>
+    ${media}
     <span class="l-select-item-text">
       <span class="l-select-item-title">${title}</span>
       <span class="l-select-item-description">Secondary line</span>
     </span>
-    <span class="l-select-item-suffix"><l-badge size="sm">7 in use</l-badge></span>
+    <span class="l-select-item-suffix">${suffix}</span>
   </option>
 `;
 
-const OPTIONS = option('short', 'Short', { selected: true }) + option('long', LONG_TITLE);
-const NATIVE_OPTIONS =
-  option('short', 'Short', { selected: true, native: true }) +
-  option('long', LONG_TITLE, { native: true });
+const fixture = (native = false) =>
+  option('short', 'Short', { selected: true, native, media: MEDIA }) +
+  option('long', LONG_TITLE, { native }) +
+  option('text', 'Text', { native, suffix: '3 open' }) +
+  option('tall', 'Tall', { native, suffix: TALL });
+
+const OPTIONS = fixture();
+const NATIVE_OPTIONS = fixture(true);
 
 /**
  * Both rows carry the same suffix. In each, it ends at the row's inline-end
@@ -87,7 +102,6 @@ const NATIVE_OPTIONS =
  * suffix out.
  */
 function expectSuffix(short: Element, long: Element) {
-  const middle = (r: DOMRect) => r.top + r.height / 2;
   const measure = (row: Element) => {
     const suffix = row.querySelector<HTMLElement>('.l-select-item-suffix')!.getBoundingClientRect();
     const text = row.querySelector<HTMLElement>('.l-select-item-text')!.getBoundingClientRect();
@@ -117,6 +131,40 @@ function expectStyledBadge(row: Element) {
   expect(parseFloat(cs.paddingInlineStart)).toBeGreaterThan(0);
 }
 
+const middle = (r: DOMRect) => r.top + r.height / 2;
+const contentTop = (row: Element) =>
+  row.getBoundingClientRect().top + parseFloat(getComputedStyle(row).paddingTop);
+const rect = (row: Element, cls: string) =>
+  row.querySelector<HTMLElement>(`.${cls}`)!.getBoundingClientRect();
+
+/**
+ * A text-only suffix is centred on the title's line box — whatever line-height
+ * the tier gives its title — not merely top-aligned with it.
+ */
+function expectCentredOnTitle(row: Element) {
+  const suffix = rect(row, 'l-select-item-suffix');
+  const title = rect(row, 'l-select-item-title');
+  expect(Math.abs(middle(suffix) - middle(title))).toBeLessThanOrEqual(0.5);
+}
+
+/**
+ * Content taller than the title's line is still centred on that line (it
+ * overflows evenly), and the title stays on the row's first line.
+ */
+function expectTallSuffixKeepsTitle(row: Element) {
+  const title = rect(row, 'l-select-item-title');
+  const content = row.querySelector('.l-select-item-suffix > span')!.getBoundingClientRect();
+  expect(Math.abs(title.top - contentTop(row))).toBeLessThanOrEqual(1);
+  expect(Math.abs(middle(content) - middle(title))).toBeLessThanOrEqual(0.5);
+}
+
+/** In the trigger the suffix is hidden; the selected text stays centred on its media. */
+function expectTriggerCentred(value: Element) {
+  const text = rect(value, 'l-select-item-text');
+  const media = rect(value, 'l-select-item-media');
+  expect(Math.abs(middle(text) - middle(media))).toBeLessThanOrEqual(0.5);
+}
+
 describe('A native select shows a suffix on rich options', () => {
   const NATIVE = `
     <select class="l-select" aria-label="Pool" style="inline-size: 100%">
@@ -134,6 +182,20 @@ describe('A native select shows a suffix on rich options', () => {
       select.querySelector('option[value="long"]')!,
     );
     await userEvent.keyboard('{Escape}');
+  });
+
+  it('centres a text or tall suffix on the title line', async () => {
+    const select = mount(NATIVE).querySelector('select')!;
+    await userEvent.click(select);
+    await finishOpening();
+    expectCentredOnTitle(select.querySelector('option[value="text"]')!);
+    expectTallSuffixKeepsTitle(select.querySelector('option[value="tall"]')!);
+    await userEvent.keyboard('{Escape}');
+  });
+
+  it('keeps the selected text centred on its media in the trigger', () => {
+    const select = mount(NATIVE).querySelector('select')!;
+    expectTriggerCentred(select.querySelector('selectedcontent')!);
   });
 
   it('keeps the suffix out of the trigger, like the description', () => {
@@ -179,6 +241,32 @@ describe('l-select shows a suffix on rich options', () => {
     const mirrored = el.shadowRoot!.querySelector('.value .l-select-item-suffix')!;
     expect(getComputedStyle(mirrored).display).toBe('none');
   });
+
+  it('centres a text or tall suffix on the title line', async () => {
+    const el = await open();
+    const rows = el.shadowRoot!.querySelectorAll('.option-rich');
+    expectCentredOnTitle(rows[2]);
+    expectTallSuffixKeepsTitle(rows[3]);
+  });
+
+  it('keeps the selected text centred on its media in the trigger', async () => {
+    const el = mount(ENHANCED).querySelector<Select>('l-select')!;
+    await customElements.whenDefined('l-select');
+    await settle(el);
+    expectTriggerCentred(el.shadowRoot!.querySelector('.value')!);
+  });
+
+  it('themes a badge from custom properties set on the element', async () => {
+    const el = mount(
+      `<l-select label="Pool" style="--text-color: rgb(1, 2, 3)"><datalist>${OPTIONS}</datalist></l-select>`,
+    ).querySelector<Select>('l-select')!;
+    await customElements.whenDefined('l-select');
+    await settle(el);
+    await userEvent.click(page.getByRole('button', { name: 'Pool' }));
+    await settle(el);
+    const badge = el.shadowRoot!.querySelector('.option-rich l-badge')!;
+    expect(getComputedStyle(badge).color).toBe('rgb(1, 2, 3)');
+  });
 });
 
 describe('l-combobox shows a suffix on rich options', () => {
@@ -203,6 +291,13 @@ describe('l-combobox shows a suffix on rich options', () => {
   it('paints a badge placed in the suffix', async () => {
     const el = await open();
     expectStyledBadge(el.shadowRoot!.querySelector('.option-rich')!);
+  });
+
+  it('centres a text or tall suffix on the title line', async () => {
+    const el = await open();
+    const rows = el.shadowRoot!.querySelectorAll('.option-rich');
+    expectCentredOnTitle(rows[2]);
+    expectTallSuffixKeepsTitle(rows[3]);
   });
 
   it('filters by the title, never by the suffix text', async () => {

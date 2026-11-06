@@ -98,7 +98,7 @@ As you type, the match is highlighted inside `.l-select-item-title` and `.l-sele
 
 #### Suffix
 
-Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row, before the checkmark. It keeps its natural width while the title truncates, and an [`<l-badge>`](/elements/badge) inside it keeps its look in the popover. With a `label` (or `.l-select-item-title`) set, the suffix text is never matched by the filter or written into the input.
+Add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row, before the checkmark. It sits on the title's line, keeps its natural width while the title truncates, and is never matched by the filter or written into the input. Rich options are copied into the popover's shadow root: an [`<l-badge>`](/elements/badge) is styled there, but your page's own selectors don't reach that copy. To theme it, set the badge's CSS custom properties on the `<l-combobox>`: they inherit into the popover. Screen readers announce the suffix with its option, so write it as words ("12 members", not "12").
 
 <ComponentWrapper :html="comboboxRichSuffix" />
 
@@ -223,6 +223,10 @@ import 'luxen-ui/combobox';
 ### CSS parts
 
 <ApiTable element="combobox" section="cssParts" />
+
+### CSS classes
+
+<ApiTable element="combobox" section="cssClasses" />
 
 ### CSS custom properties
 
