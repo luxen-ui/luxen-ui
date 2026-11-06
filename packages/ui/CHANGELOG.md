@@ -1,5 +1,23 @@
 # luxen-ui
 
+## 0.23.0
+
+### Minor Changes
+
+- c087908: Highlight the search query inside rich options of `<l-combobox>` and searchable `<l-select>`. The match is now wrapped in `<mark>` within `.l-select-item-title` and `.l-select-item-description`, with the same accent/case-insensitive matching as plain options. Setting `highlight` to `false` on `<l-combobox>` now turns it off for rich options too.
+  
+  The match is themable through two new form-control tokens, `--l-form-control-match-background-color` and `--l-form-control-match-font-weight`. It now shows a soft tinted background by default, in addition to the semibold weight; set `--l-form-control-match-background-color: transparent` to keep the previous look.
+- 8062fc1: Rich options gain a suffix: add a `.l-select-item-suffix` after `.l-select-item-text` to pin a badge, a count or a status icon to the end of the row, in the native `select.l-select`, `<l-select>` and `<l-combobox>` alike. The suffix sits on the title's line, keeps its natural width while a long title truncates with an ellipsis, and stays in the picker (it is not mirrored into the trigger). Its text is never part of the option's label, so it is not matched by search nor shown in the input or chips. An `<l-badge>` placed in a rich option is now styled inside the `<l-select>` and `<l-combobox>` popovers (page-level selectors still don't reach those copies; set the badge's CSS custom properties on the host element instead).
+
+### Patch Changes
+
+- 1b839ec: Update the runtime dependencies to their latest compatible releases: `@floating-ui/dom` 1.8, Tiptap 3.32 (behind `<l-prose-editor>`) and `iconify-icon` 3.0.5. No API change.
+- 7268cdb: `<l-form-field>` no longer fires a burst of `invalid` events at its control. Checking whether the control was valid fired `invalid`, which made the field check again, dozens of times per keystroke. Listeners on the control now receive `invalid` only when the browser reports it, such as on form submit.
+- 757209b: `<l-prose-editor>`: opening the emoji picker, by click or with Enter/Space on the Emoji button, now moves focus into the picker's search field, so keyboard and screen-reader users land inside it. Closing it without picking an emoji (Escape, or Emoji again) returns focus to where it was before: the editor, caret intact, or the toolbar control you were in, or the Emoji button if you opened it from the toolbar with the keyboard. Tabbing out of the picker closes it and continues from the Emoji button (Shift+Tab goes back to the button, Tab moves on to the editor) instead of jumping to the end of the page. Picking an emoji returns focus to the editor, an outside click leaves focus where you clicked, and Escape while composing with an IME no longer closes the picker. Pressing the Emoji button no longer takes focus away from the editor.
+- 58df716: Pressing a `<l-prose-editor>` toolbar button keeps focus and the selection in the editor, so typing continues where it left off. In Firefox, focus used to stay on the button and the next keystrokes were lost; in other browsers the editor briefly blurred on every toolbar click, firing `blur`/`focusout` handlers.
+- 1b839ec: Screen readers now announce the value chosen in a single `<l-select>`, not just its label. The trigger now has `role="combobox"`, like the `multiple` variant, so it is read as "Country, France" instead of only "Country". Tests that found the trigger with `getByRole('button', …)` should now use `getByRole('combobox', …)`.
+- 7f394e0: In Safari, `<l-tag>` no longer cuts the descenders of its label (g, j, p, q, y), and a control placed in an `<l-tree-item>` row no longer has its focus ring or hover background cut. Both labels now clip only horizontally, where the ellipsis needs it, instead of relying on `overflow-clip-margin`, which Safari does not support.
+
 ## 0.22.1
 
 ### Patch Changes
