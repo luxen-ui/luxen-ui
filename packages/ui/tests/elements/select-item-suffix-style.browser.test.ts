@@ -217,7 +217,7 @@ describe('l-select shows a suffix on rich options', () => {
     const el = mount(ENHANCED).querySelector<Select>('l-select')!;
     await customElements.whenDefined('l-select');
     await settle(el);
-    await userEvent.click(page.getByRole('button', { name: 'Pool' }));
+    await userEvent.click(page.getByRole('combobox', { name: 'Pool' }));
     await settle(el);
     await finishOpening(el.shadowRoot);
     return el;
@@ -262,7 +262,7 @@ describe('l-select shows a suffix on rich options', () => {
     ).querySelector<Select>('l-select')!;
     await customElements.whenDefined('l-select');
     await settle(el);
-    await userEvent.click(page.getByRole('button', { name: 'Pool' }));
+    await userEvent.click(page.getByRole('combobox', { name: 'Pool' }));
     await settle(el);
     const badge = el.shadowRoot!.querySelector('.option-rich l-badge')!;
     expect(getComputedStyle(badge).color).toBe('rgb(1, 2, 3)');
