@@ -128,9 +128,11 @@ const TOOLBAR_PRESETS: Record<'default' | 'minimal', ToolbarCommandName[]> = {
  * tab order is handled by the consumer.
  *
  * ### Pointer — focus stays in the editor
- * Pressing a generated formatting button keeps focus and the selection in the
- * editor (Emoji excepted: it opens a picker). Slotted content keeps its native
- * press behavior, so a slotted input or select still takes focus. A slotted
+ * Pressing a generated toolbar button keeps focus and the selection in the
+ * editor. Emoji opens its picker and moves focus into it; closing the picker
+ * without picking (Escape, or Emoji again) returns focus to the editor, caret
+ * intact. Slotted content keeps its native press behavior, so a slotted input
+ * or select still takes focus. A slotted
  * button that runs an editor command should do the same as the generated ones
  * and cancel its own `mousedown` default
  * (`button.addEventListener('mousedown', (e) => e.preventDefault())`), so the
@@ -228,6 +230,8 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   private _emojiPicker?: HTMLElement;
   private _emojiPickerPromise?: Promise<HTMLElement | null>;
   private _emojiOpenAtPointerDown = false;
+  private _emojiFocusInsideAtPointerDown = false;
+  private _emojiReturnToEditor = false;
   private _emojiAutoUpdateCleanup?: () => void;
 
   /**
@@ -603,27 +607,23 @@ export class ProseEditor extends LuxenFormAssociatedElement {
    * light-dismiss (see `firstUpdated`). Keyboard users still reach the buttons
    * with Tab and the arrows.
    *
-   * Two exceptions keep their native press behavior:
-   * - the Emoji button, which opens a popup instead of editing and never
-   *   refocuses the editor itself — keeping focus there would send the next
-   *   keystrokes into the document behind the open picker;
-   * - slotted `toolbar-start` / `toolbar-end` content, which may hold inputs or
-   *   selects that need the press to focus them (see the class docs).
+   * The Emoji button is included: it moves focus into its picker on open, and
+   * keeping focus in the editor through the press lets the picker hand it back
+   * there on close (see `_openEmojiPicker`).
+   *
+   * Slotted `toolbar-start` / `toolbar-end` content keeps its native press
+   * behavior: it may hold inputs or selects that need the press to focus them
+   * (see the class docs).
    */
   private _onToolbarMouseDown = (event: MouseEvent) => {
-    const button = this._generatedButtonIn(event);
-    if (!button || button.dataset.command === 'emoji') return;
+    if (!this._generatedButtonIn(event)) return;
     event.preventDefault();
   };
 
   private _onKeyDown = (event: KeyboardEvent) => {
     const picker = this._emojiPicker;
     if (event.key !== 'Escape' || !picker?.matches(':popover-open')) return;
-    // Hand focus back to the trigger (APG popup pattern) — but only when it was
-    // inside the picker: a user who tabbed out to the page keeps their place.
-    const focusWasInside = picker.matches(':focus-within');
-    picker.hidePopover();
-    if (focusWasInside) this._emojiButton?.focus();
+    this._closeEmojiPicker(picker.matches(':focus-within'));
     // Consume the Escape so it dismisses only the picker, not the host dialog.
     event.preventDefault();
     event.stopPropagation();
@@ -670,6 +670,7 @@ export class ProseEditor extends LuxenFormAssociatedElement {
    */
   private _onEmojiButtonPointerDown = () => {
     this._emojiOpenAtPointerDown = !!this._emojiPicker?.matches(':popover-open');
+    this._emojiFocusInsideAtPointerDown = !!this._emojiPicker?.matches(':focus-within');
   };
 
   private async _onEmojiButtonClick(event: MouseEvent) {
@@ -678,7 +679,10 @@ export class ProseEditor extends LuxenFormAssociatedElement {
     const wasOpen =
       event.detail === 0 ? picker.matches(':popover-open') : this._emojiOpenAtPointerDown;
     if (wasOpen) {
-      if (picker.matches(':popover-open')) picker.hidePopover();
+      // Native light-dismiss may already have closed it on `pointerup`, so read
+      // where focus was at `pointerdown`. Keyboard activation has focus on the
+      // button itself, which is where it should stay.
+      this._closeEmojiPicker(event.detail !== 0 && this._emojiFocusInsideAtPointerDown);
     } else if (!picker.matches(':popover-open')) {
       this._openEmojiPicker(picker);
     }
@@ -687,16 +691,33 @@ export class ProseEditor extends LuxenFormAssociatedElement {
   /**
    * Open the picker and move focus into it — its search field, in the picker's
    * shadow root — so keyboard and screen-reader users land inside the popup
-   * (APG popup pattern). Escape and choosing an emoji move focus back out; an
-   * outside click leaves it where the user clicked.
+   * (APG popup pattern). Choosing an emoji moves focus to the editor; closing
+   * without choosing returns it to where it was before (see
+   * `_closeEmojiPicker`); an outside click leaves it where the user clicked.
    */
   private _openEmojiPicker(picker: HTMLElement) {
+    // A mouse press on Emoji keeps focus in the editor (`_onToolbarMouseDown`),
+    // so this tells a user who was typing from one who came from the toolbar.
+    this._emojiReturnToEditor = !this.editor.isDestroyed && this.editor.view.hasFocus();
     picker.showPopover();
     // `toggle` (which un-hides the picker, see `_ensureEmojiPicker`) is queued,
     // so the picker is still `display: none` here — reveal it now, or the search
     // field can't take focus. `preventScroll`: autoUpdate positions it on toggle.
     picker.style.display = 'flex';
     picker.shadowRoot?.querySelector<HTMLElement>('#search')?.focus({ preventScroll: true });
+  }
+
+  /**
+   * Close the picker; when `restoreFocus` (focus was inside it), hand focus back
+   * to where it was before it opened: the editor, with its selection, for a user
+   * who was typing, otherwise the Emoji button (APG: return to the trigger).
+   */
+  private _closeEmojiPicker(restoreFocus: boolean) {
+    const picker = this._emojiPicker;
+    if (picker?.matches(':popover-open')) picker.hidePopover();
+    if (!restoreFocus) return;
+    if (this._emojiReturnToEditor && !this.editor.isDestroyed) this.editor.view.focus();
+    else this._emojiButton?.focus();
   }
 
   private _ensureEmojiPicker(): Promise<HTMLElement | null> {
