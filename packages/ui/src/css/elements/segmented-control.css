@@ -127,8 +127,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--l-focus-ring);
-      outline-offset: -2px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+      outline-offset: calc(var(--l-focus-ring-width) * -1);
       border-radius: var(--l-radius-sm);
     }
   }

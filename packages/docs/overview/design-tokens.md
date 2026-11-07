@@ -135,6 +135,16 @@ A 2px stroke and no halo, from tokens alone. Tab through the fields:
 <<< @/.vitepress/examples/form-tokens/FocusStroke.html [HTML]
 :::
 
+To give text fields the same thickness as the focus ring of buttons and toggles, point the stroke at `--l-focus-ring-width`:
+
+```css
+:root {
+  --l-focus-ring-width: 2px;
+  --l-form-control-focus-border-width: var(--l-focus-ring-width);
+  --l-form-control-focus-halo-width: 0;
+}
+```
+
 </section>
 
 <section class="not-has-[[data-viz]]:hidden">

@@ -25,11 +25,12 @@
 
 .item:focus-visible {
   /* A ring distinct from the hover tint (which is the same low-contrast fill).
-     Negative offset keeps the 2px ring inside the row so it never collides with
-     the panel edge or a neighboring item. */
+     A negative offset equal to the ring width keeps the ring inside the row, at
+     any --l-focus-ring-width, so it never collides with the panel edge or a
+     neighboring item. */
   background: var(--l-color-bg-state-hover);
-  outline: 2px solid var(--l-focus-ring);
-  outline-offset: -2px;
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+  outline-offset: calc(var(--l-focus-ring-width) * -1);
 }
 
 @media (hover: hover) {
