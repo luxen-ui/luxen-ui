@@ -36,9 +36,16 @@
     :scope {
       --digits: 6;
       --cell-size: 2.75rem;
-      --cell-bg-color: color-mix(in oklab, var(--l-color-text-primary) 4%, var(--l-color-surface));
-      --cell-border-color: var(--l-color-border);
-      --cell-border-radius: var(--l-radius-md);
+      /* Built from the shared text-field tokens, so a themed form restyles its
+         OTP cells too. The fill keeps its faint ink tint over the field color. */
+      --cell-bg-color: color-mix(
+        in oklab,
+        var(--l-color-text-primary) 4%,
+        var(--l-form-control-background-color)
+      );
+      --cell-border-color: var(--l-form-control-border-color);
+      /* Same corners as the other text fields, so a themed form rounds its cells too. */
+      --cell-border-radius: var(--l-form-control-border-radius);
       --cell-focus-color: var(--l-focus-ring);
       --cell-focus-ring: 0 0 0 1px var(--cell-focus-color);
       --_cell-font:
@@ -74,14 +81,14 @@
       justify-content: center;
       inline-size: var(--cell-size);
       block-size: var(--cell-size);
-      border: 1px solid var(--cell-border-color);
+      border: var(--l-form-control-border-width) solid var(--cell-border-color);
       border-radius: var(--cell-border-radius);
       background: var(--cell-bg-color);
       font-family: var(--_cell-font);
       font-size: calc(var(--cell-size) * 0.45);
       font-variant-numeric: tabular-nums;
       line-height: 1;
-      color: var(--l-color-text-primary);
+      color: var(--l-form-control-value-color);
       transition:
         border-color 150ms ease,
         box-shadow 150ms ease;
@@ -185,10 +192,10 @@
        top of the disabled ink, diluting the token to 40% of its calibrated
        value and washing the border out with it. */
     :scope:has(input:disabled) .l-input-otp-cell {
-      --cell-bg-color: var(--l-form-control-disabled-background);
-      --cell-border-color: var(--l-form-control-disabled-border);
+      --cell-bg-color: var(--l-form-control-background-color-disabled);
+      --cell-border-color: var(--l-form-control-border-color-disabled);
       cursor: not-allowed;
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
 
     /*
@@ -218,7 +225,7 @@
       border: 0;
       border-radius: var(--cell-border-radius);
       background: var(--cell-bg-color);
-      color: var(--l-color-text-primary);
+      color: var(--l-form-control-value-color);
       font-family: var(--_cell-font);
       font-size: calc(var(--cell-size) * 0.45);
       font-variant-numeric: tabular-nums;

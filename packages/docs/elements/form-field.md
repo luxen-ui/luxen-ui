@@ -9,7 +9,7 @@ import stackedExample from '../.vitepress/examples/form-field/Stacked.html?raw'
 
 # Form Field <Badge type="tip">&lt;l-form-field&gt;</Badge>
 
-Wraps a label, a control, and optional messages — wiring the accessibility plumbing (`id`/`for`, `aria-describedby`, `aria-invalid`, required marker) and choosing an inline or stacked layout from the control type.
+Wraps a label, a control, and optional messages — wiring the accessibility plumbing (`id`/`for`, `aria-describedby`, `aria-invalid`, required indicator) and choosing an inline or stacked layout from the control type.
 
 <ElementSpec element="form-field" />
 
@@ -67,7 +67,7 @@ Add a `<p class="l-error">` for the validation message. It stays hidden until th
 
 ### Disabled
 
-Add native `disabled` to the control. The field greys its label, hint and required marker to match.
+Add native `disabled` to the control. The field greys its label, hint and required indicator to match.
 
 ### Disabled group
 

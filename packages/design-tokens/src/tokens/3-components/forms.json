@@ -1,5 +1,5 @@
 {
-  "$description": "Form component tokens — shared by every form control (checkbox, radio, switch, input, textarea, select) and the `l-form-field` wrapper. Two families: `form.control.*` (control appearance) and `form.field.*` (field layout). References semantic aliases so theming/dark-mode is inherited.",
+  "$description": "Form control tokens — one family, `form.control.*`, for everything a form control is made of: the control itself (checkbox, radio, switch, input, textarea, select) and the parts `l-form-field` lays out around it (label, hint, error message, required indicator, spacing). References semantic aliases so theming/dark-mode is inherited.",
   "form": {
     "control": {
       "activated-color": {
@@ -10,12 +10,12 @@
       "activated-content-color": {
         "$type": "color",
         "$value": "{color.white}",
-        "$description": "Color of the glyph on the activated fill (checkmark, radio dot, switch thumb). Pairs with the stable accent."
+        "$description": "Color of the switch thumb on the activated (on) track. Pairs with the stable accent. The checkbox checkmark and the radio dot do not read it: they are baked-white SVGs (background-image cannot take a color), so on a light accent swap them through the elements' `--checkmark` / `--dot` properties."
       },
       "background-color": {
         "$type": "color",
         "$value": "{color.surface}",
-        "$description": "Control background (input, textarea, select, unchecked toggle box)."
+        "$description": "Background of every form control at rest: text fields (input, textarea, select) and the box of an unchecked checkbox or radio."
       },
       "value-color": {
         "$type": "color",
@@ -30,47 +30,47 @@
       "border-color": {
         "$type": "color",
         "$value": "{color.border}",
-        "$description": "Control border color."
+        "$description": "Border color of every form control at rest: text fields and the box of a checkbox or radio."
       },
       "border-width": {
         "$type": "dimension",
         "$value": "1px",
-        "$description": "Control border width."
+        "$description": "Border width of text fields and of the checkbox and radio box."
       },
       "border-radius": {
         "$type": "dimension",
         "$value": "{radius-md}",
-        "$description": "Control border radius."
+        "$description": "Corner radius of text fields (input, textarea, select, input group). Toggles keep their own shape."
       },
       "border-color-hover": {
         "$type": "color",
         "$value": "{color.text.tertiary}",
-        "$description": "Control border color on hover."
+        "$description": "Border color of a hovered form control (text fields, checkbox, radio). Also tints the hover halo of an unchecked checkbox or radio."
       },
       "border-color-invalid": {
         "$type": "color",
         "$value": "{color.bg.fill.danger.strong}",
-        "$description": "Control border color when invalid."
+        "$description": "Border color of an invalid form control (text fields, checkbox, radio), and the ring around an invalid switch."
       },
-      "disabled-background": {
+      "background-color-disabled": {
         "$type": "color",
         "$value": "color-mix(in oklab, {color.text.primary} 6%, transparent)",
-        "$description": "Background of a disabled text control — a faint ink wash (reinforces non-interactivity, instead of fading the whole control with opacity). Translucent rather than a solid grey so it composites onto whatever sits behind: a disabled field reads the same on a card, an alert, or a dialog, where an opaque fill would show as a mismatched patch. On the default surface it lands within a step of the former solid --l-color-bg-disabled, in both light and dark."
+        "$description": "Background of a disabled form control: text fields, the box of an unchecked checkbox or radio, and the track of an off switch — a faint ink wash (reinforces non-interactivity, instead of fading the whole control with opacity). Translucent rather than a solid grey so it composites onto whatever sits behind: a disabled field reads the same on a card, an alert, or a dialog, where an opaque fill would show as a mismatched patch. On the default surface it lands within a step of the former solid --l-color-bg-disabled, in both light and dark."
       },
-      "disabled-border": {
+      "border-color-disabled": {
         "$type": "color",
         "$value": "color-mix(in oklab, {color.text.primary} 20%, transparent)",
-        "$description": "Border color of a disabled text control. Translucent for the same reason as --l-form-control-disabled-background, and derived from the same ink so fill and border stay in step under any theme. 20% is the alpha that reproduces the former solid --l-color-border-disabled on the default surface in both modes; 25% (the CSSWG default-UA proposal) drifts bright enough in dark mode to read as an enabled border."
+        "$description": "Border color of a disabled form control: text fields and the box of an unchecked checkbox or radio. Translucent for the same reason as --l-form-control-background-color-disabled, and derived from the same ink so fill and border stay in step under any theme. 20% is the alpha that reproduces the former solid --l-color-border-disabled on the default surface in both modes; 25% (the CSSWG default-UA proposal) drifts bright enough in dark mode to read as an enabled border."
       },
-      "disabled-color": {
+      "text-color-disabled": {
         "$type": "color",
         "$value": "{color.text.disabled}",
-        "$description": "Value/placeholder text color of a disabled text control. Deliberately opaque, unlike the fill and border: text is the one layer that must not composite. An ink-derived alpha assumes the backdrop luminance matches the color scheme, so on a dark card in light mode a translucent value would fade dark-on-dark to nothing — a solid grey stays legible either way."
+        "$description": "Text color of a disabled control and of its field: the value and placeholder, plus the label, hint and required indicator of a disabled `l-form-field` (and the legend and labels of a `fieldset:disabled`). Deliberately opaque, unlike the fill and border: text is the one layer that must not composite. An ink-derived alpha assumes the backdrop luminance matches the color scheme, so on a dark card in light mode a translucent value would fade dark-on-dark to nothing — a solid grey stays legible either way."
       },
-      "disabled-mark-color": {
+      "mark-color-disabled": {
         "$type": "color",
         "$value": "{color.gray.500}",
-        "$description": "Mark on a disabled control that greys out through tokens rather than fading — currently the switch's thumb when it is off and disabled, sitting on the pale --l-form-control-disabled-background. A mid grey that holds in both light and dark, so the mark keeps past 3:1 against that fill either way; the lighter --l-form-control-disabled-color would drop below it. Decoupled from text tokens for the same reason as --l-form-control-track-off-color. Activated controls (checked checkbox, selected radio, on switch) do not use this — they fade instead, keeping their accent tint."
+        "$description": "Mark on a disabled control that greys out through tokens rather than fading — currently the switch's thumb when it is off and disabled, sitting on the pale --l-form-control-background-color-disabled. A mid grey that holds in both light and dark, so the mark keeps past 3:1 against that fill either way; the lighter --l-form-control-text-color-disabled would drop below it. Decoupled from text tokens for the same reason as --l-form-control-track-color-off. Activated controls (checked checkbox, selected radio, on switch) do not use this — they fade instead, keeping their accent tint."
       },
       "toggle-size": {
         "$type": "dimension",
@@ -82,7 +82,7 @@
         "$value": "0.22",
         "$description": "Thickness of the hover halo ring on toggle controls (checkbox, radio, switch), as a fraction of the toggle size. Single source for the shared toggle hover language."
       },
-      "track-off-color": {
+      "track-color-off": {
         "$type": "color",
         "$value": "{color.gray.500}",
         "$description": "Off-state track fill of the switch. A mid grey that holds in both light and dark so the white thumb keeps ~5:1 contrast either way — decoupled from text tokens so re-theming body text never moves the track."
@@ -90,12 +90,12 @@
       "height": {
         "$type": "dimension",
         "$value": "{size.control.md}",
-        "$description": "Height of text controls (input, select, textarea)."
+        "$description": "Height of text fields (input, textarea, select, input group, l-select, l-combobox). Checkbox, radio and switch are sized by --l-form-control-toggle-size instead."
       },
       "padding-inline": {
         "$type": "dimension",
         "$value": "{spacing-3}",
-        "$description": "Horizontal padding of text controls."
+        "$description": "Horizontal padding of text fields (input, textarea, select, input group)."
       },
       "icon-size": {
         "$type": "dimension",
@@ -105,49 +105,50 @@
       "label-color": {
         "$type": "color",
         "$value": "{color.text.primary}",
-        "$description": "Field label color."
+        "$description": "Color of an `l-form-field` label (and of a radio group legend)."
       },
       "hint-color": {
         "$type": "color",
         "$value": "{color.text.secondary}",
-        "$description": "Helper/description text color (`l-hint`)."
+        "$description": "Color of the helper text below a control (`.l-hint`)."
       },
-      "error-color": {
+      "error-message-color": {
         "$type": "color",
         "$value": "{color.text.danger}",
-        "$description": "Error message text color (`l-error`)."
+        "$description": "Color of the error message text (`.l-error`) shown when the field is invalid. The message only — the invalid border is --l-form-control-border-color-invalid."
       },
       "required-content": {
         "$type": "content",
         "$value": "'*'",
-        "$description": "Marker appended to a required field's label."
+        "$description": "Indicator appended to the label of a required field, as a CSS `content` value: a symbol (the default asterisk) or text, e.g. `\" (required)\"`."
       },
       "required-color": {
         "$type": "color",
         "$value": "{color.text.danger}",
-        "$description": "Color of the required marker."
+        "$description": "Color of the required indicator (--l-form-control-required-content)."
+      },
+      "label-gap": {
+        "$type": "dimension",
+        "$value": "{spacing-1}",
+        "$description": "Space between the parts inside one `l-form-field`: label, control, hint and error, stacked vertically (in an inline field, between the label and its messages). Tight, so the label and helper text sit close to the control. Not the space between two fields — the form layout owns that."
+      },
+      "choice-label-gap": {
+        "$type": "dimension",
+        "$value": "{spacing-2}",
+        "$description": "Horizontal space between a toggle control (checkbox, radio, switch) and its label in an inline `l-form-field`."
       },
       "match-background-color": {
         "$type": "color",
-        "$value": { "light": "{color.yellow.100}", "dark": "{color.yellow.900}" },
+        "$value": {
+          "light": "{color.yellow.100}",
+          "dark": "{color.yellow.900}"
+        },
         "$description": "Background of the `<mark>` wrapping the part of an option that matches the search query, in the listbox of `l-combobox` and searchable `l-select` (plain label, or a rich option's title and description). A soft marker tint, light enough to keep the option text readable on a hovered or active row. Setting it to `transparent` leaves only --l-form-control-match-font-weight to mark the match — pick a weight above the option text's then, since a rich `l-select` title is already semibold."
       },
       "match-font-weight": {
         "$type": "fontWeight",
         "$value": "{font-weight-semibold}",
         "$description": "Font weight of the search-query match in `l-combobox` and searchable `l-select` options. Pairs with --l-form-control-match-background-color; set to `inherit` to mark the match with the background alone."
-      }
-    },
-    "field": {
-      "gap": {
-        "$type": "dimension",
-        "$value": "{spacing-1}",
-        "$description": "Vertical gap between label, control, and messages in a stacked field. Tight, so the label and helper text sit close to the control."
-      },
-      "choice-gap": {
-        "$type": "dimension",
-        "$value": "{spacing-2}",
-        "$description": "Horizontal gap between a toggle control and its label in an inline field."
       }
     }
   }

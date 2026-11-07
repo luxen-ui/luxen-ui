@@ -20,8 +20,8 @@
     /* Uses the form-control disabled tokens, not the generic aliases: a stepper
        is a text control and must grey out identically to the input next to it. */
     :scope:has(input:disabled) {
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
     }
   }
 

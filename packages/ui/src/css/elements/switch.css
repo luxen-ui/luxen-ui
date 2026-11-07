@@ -43,7 +43,7 @@
 
     /* `--_track` is the live track fill; `:checked` flips it to the accent.
        The hover halo reads it back so the glow always matches the state. */
-    --_track: var(--l-form-control-track-off-color);
+    --_track: var(--l-form-control-track-color-off);
     --_thumb-color: var(--l-form-control-activated-content-color);
     --_thumb-img: radial-gradient(ellipse closest-side, var(--_thumb-color) 94%, #0000);
 
@@ -160,8 +160,8 @@
        input and the thumb flips to the muted grey so it stays legible on it —
        an off switch has no accent fill, so there is nothing a fade would help. */
     &:disabled:not(:checked) {
-      --_track: var(--l-form-control-disabled-background);
-      --_thumb-color: var(--l-form-control-disabled-mark-color);
+      --_track: var(--l-form-control-background-color-disabled);
+      --_thumb-color: var(--l-form-control-mark-color-disabled);
     }
 
     /* On + disabled: faded, like the checked checkbox and radio. The white thumb

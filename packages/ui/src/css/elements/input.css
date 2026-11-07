@@ -109,14 +109,14 @@
        forced grey on disabled inputs so the token color actually applies. */
     &:disabled {
       cursor: not-allowed;
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
-      color: var(--l-form-control-disabled-color);
-      -webkit-text-fill-color: var(--l-form-control-disabled-color);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
+      color: var(--l-form-control-text-color-disabled);
+      -webkit-text-fill-color: var(--l-form-control-text-color-disabled);
     }
 
     &:disabled::placeholder {
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
   }
 
@@ -223,11 +223,13 @@
   }
 
   /* Native search clear — clears the field with zero JS (WebKit/Blink; Firefox
-     has no cancel button but Escape clears the field natively). */
-  :is(
-      .l-input,
-      :where(l-form-field:not([unstyled]), l-input-group) > input
-    )[type='search']::-webkit-search-cancel-button {
+     has no cancel button but Escape clears the field natively). The type sits
+     in `:where()`: only a search input has this button anyway, and counting it
+     would outrank l-input-group's reset of the end-padding bleed below — the
+     clear would then slide past the inner input's edge and get clipped. */
+  :is(.l-input, :where(l-form-field:not([unstyled]), l-input-group) > input):where(
+      [type='search']
+    )::-webkit-search-cancel-button {
     /* Same end-action box as the date/time picker icon above. */
     appearance: none;
     box-sizing: border-box;
@@ -242,10 +244,9 @@
   }
 
   @media (hover: hover) {
-    :is(
-        .l-input,
-        :where(l-form-field:not([unstyled]), l-input-group) > input
-      )[type='search']::-webkit-search-cancel-button:hover {
+    :is(.l-input, :where(l-form-field:not([unstyled]), l-input-group) > input):where(
+        [type='search']
+      )::-webkit-search-cancel-button:hover {
       color: var(--l-form-control-value-color);
     }
   }
@@ -425,7 +426,7 @@
          secondary skin, disabled state included. */
       &:disabled {
         cursor: not-allowed;
-        color: var(--l-form-control-disabled-color);
+        color: var(--l-form-control-text-color-disabled);
       }
     }
 
@@ -473,9 +474,9 @@
 
     &:has(> input:disabled) {
       cursor: not-allowed;
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
-      color: var(--l-form-control-disabled-color);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
+      color: var(--l-form-control-text-color-disabled);
 
       /* Static adornments (icons, unit text) set their own colour above, so the
          `color` on the group never reaches them — a disabled group ended up with
@@ -484,7 +485,7 @@
          live next to a disabled field, and the injected toggle already mirrors
          the input's `disabled` and greys through its own rule. */
       & > :not(input, button) {
-        color: var(--l-form-control-disabled-color);
+        color: var(--l-form-control-text-color-disabled);
       }
     }
   }

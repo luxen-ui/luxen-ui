@@ -13,7 +13,7 @@ import '../../src/css/elements/input.css';
 import '../../src/css/elements/textarea.css';
 
 // Disabled controls follow one rule: a mark painted on an accent fill fades with
-// `opacity`; everything else greys out through `--l-form-control-disabled-*`.
+// `opacity`; everything else greys out through the `--l-form-control-*-disabled` tokens.
 //
 // This suite guards the second half. `opacity` is a blunt instrument — it drags a
 // control's mark and its own fill toward the page together, so wherever it leaks
@@ -37,9 +37,9 @@ const MIN_MARK_CONTRAST = 3;
 /** Every token this suite measures through — see the preconditions below. */
 const MEASURED_TOKENS = [
   '--l-color-surface',
-  '--l-form-control-disabled-background',
-  '--l-form-control-disabled-border',
-  '--l-form-control-disabled-mark-color',
+  '--l-form-control-background-color-disabled',
+  '--l-form-control-border-color-disabled',
+  '--l-form-control-mark-color-disabled',
 ];
 
 // Two causes produce an unresolved `--l-*`, and naming only one sends the reader
@@ -79,7 +79,7 @@ type Rgba = [number, number, number, number];
  *
  * Without this the suite measures a token that failed to resolve as opaque
  * black and reports the result as a contrast number, which is how a missing
- * `--l-form-control-disabled-mark-color` once read as "1.43:1, below the 3:1
+ * `--l-form-control-mark-color-disabled` once read as "1.43:1, below the 3:1
  * floor" instead of "there is no thumb colour here at all".
  */
 function parse(color: string): Rgba {
@@ -182,8 +182,8 @@ function paintedPair(el: Element, mark: string, fill: string, surface: Rgba) {
 // `dist/` happens to be on disk, which can predate the tokens under test by
 // months.
 //
-// Against a `dist/` built before `--l-form-control-disabled-mark-color` existed,
-// `--_thumb-color: var(--l-form-control-disabled-mark-color)` is invalid at
+// Against a `dist/` built before `--l-form-control-mark-color-disabled` existed,
+// `--_thumb-color: var(--l-form-control-mark-color-disabled)` is invalid at
 // computed-value time: the custom property computes to nothing, `--_thumb-img`
 // collapses to `background-image: none`, and the disabled switch really does
 // paint as an empty pill. `parse()` used to read that empty string as opaque

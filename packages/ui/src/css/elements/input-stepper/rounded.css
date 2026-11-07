@@ -58,7 +58,7 @@
     }
 
     :scope button:disabled {
-      border-color: var(--l-form-control-disabled-border);
+      border-color: var(--l-form-control-border-color-disabled);
     }
   }
 }

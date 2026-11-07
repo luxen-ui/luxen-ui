@@ -112,8 +112,8 @@
        checkbox and an input in the same disabled form grey out identically.
        There is no mark here — only a box — so nothing can be washed out. */
     &:disabled:not(:checked, :indeterminate) {
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
     }
 
     /* Checked: faded rather than greyed. A solid neutral fill keeps the glyph

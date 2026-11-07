@@ -1,42 +1,56 @@
 ---
-outline: deep
+outline: false
 aside: false
 ---
 
 # Design Tokens
 
-Semantic CSS custom properties (`--l-*`) that drive every Luxen UI element. They
-build on Luxen's own oklch palette and resolve light/dark automatically via
-`light-dark()`. Always reference these semantic tokens — never raw palette
-colors — so theming and dark mode propagate everywhere.
+<TokenNav />
 
-The primitive palette is vendored from [Tailwind CSS v4](https://tailwindcss.com/docs/colors) — same 26 oklch families, same values, locked at sync time so Tailwind version bumps don't shift your design.
+<!-- Each section hides itself when the filter leaves it without a token row. -->
 
-Reference tokens canonically as `var(--l-color-*)` in your CSS. If you use
-Tailwind, the [bridge](/overview/using-with-tailwind) exposes them as semantic
-utility classes (`text-primary`, `bg-fill-brand`, `bg-fill-info-soft`,
-`border-interactive`, …).
+<section class="not-has-[[data-viz]]:hidden">
 
-Click any token name to copy its `var(…)` reference.
+## Color
 
-## Color · Text
+<section class="not-has-[[data-viz]]:hidden">
+
+### Text
 
 <DesignTokens category="text" />
 
-## Color · Surface
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Surface
 
 <DesignTokens category="surface" />
 
-## Color · Border
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Border
 
 <DesignTokens category="border" />
 
-## Color · Fill
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Fill
 
 Three-tier status scale ordered by visual weight: **soft** (palest tint),
 **subtle** (clearly tinted), **strong** (full-intensity solid).
 
 <DesignTokens category="fill" />
+
+</section>
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
 
 ## Shadow
 
@@ -44,14 +58,100 @@ Elevation scale for floating surfaces, ordered by how far they lift off the page
 
 <DesignTokens category="shadow" />
 
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
 ## Sizing
 
 Standard interactive control heights.
 
 <DesignTokens category="sizing" />
 
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
 ## Spacing
 
 Single-source scale: `--l-spacing` is the unit, every step is derived via `calc(var(--l-spacing) * N)`. Override `--l-spacing` to scale the whole UI's rhythm without touching individual steps.
 
 <DesignTokens category="spacing" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+## Form controls
+
+Shared by every form control and the `l-form-field` wrapper. Each token is shown on a live control at its **default**, then with **only that token** forced to a violet highlight — revealing exactly what it **touches**.
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### All controls
+
+Shared by text fields and the checkbox and radio box (the invalid border also rings the switch).
+
+<DesignTokens category="form" group="control" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Text fields
+
+Input, textarea and select only — toggles are sized by `--l-form-control-toggle-size`.
+
+<DesignTokens category="form" group="field" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Toggles
+
+Checkbox, radio and switch.
+
+<DesignTokens category="form" group="toggle" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Disabled state
+
+Shared by every control: text fields, checkbox, radio and switch.
+
+<DesignTokens category="form" group="disabled" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Labels & messages
+
+Parts of an `l-form-field`.
+
+<DesignTokens category="form" group="labels" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Field layout
+
+<DesignTokens category="form" group="layout" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Search match
+
+Highlighted query match in `l-combobox` and searchable `l-select` options.
+
+<DesignTokens category="form" group="match" />
+
+</section>
+
+</section>

@@ -97,6 +97,21 @@ describe('A native end action sits in a square of the field height', () => {
     // the group's padding (12 + 17 = 29).
     expect(Math.abs(centreFromEnd - 22)).toBeLessThanOrEqual(1.5);
   });
+
+  it('keeps the search clear whole inside an l-input-group, behind its end padding', async () => {
+    const group = mount(`<l-input-group>${SEARCH()}</l-input-group>`);
+    await userEvent.click(group.querySelector('input')!);
+    const inGroup = await endGlyph(group);
+    host.remove();
+    const standalone = mount(SEARCH());
+    await userEvent.click(standalone);
+    const alone = await endGlyph(standalone);
+    // 1px border + 12px group padding + half of the 34px square. Bleeding over
+    // the end padding like a standalone input would push the square past the
+    // input's edge, where the input clips the glyph.
+    expect(Math.abs(inGroup.centreFromEnd - 30)).toBeLessThanOrEqual(1.5);
+    expect(Math.abs(inGroup.width - alone.width)).toBeLessThanOrEqual(1);
+  });
 });
 
 describe('A native end glyph follows --l-form-control-icon-size', () => {
