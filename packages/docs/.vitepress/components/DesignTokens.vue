@@ -76,7 +76,7 @@ function vizKind(t) {
   if (t.category === 'spacing') return 'gap';
   if (t.category === 'text') return 'text';
   if (t.category === 'border') {
-    if (p[0] === 'focus-ring') return 'focus-ring';
+    if (p[0] === 'focus-ring' || p[0] === 'focus-ring-width') return 'focus-ring';
     if (p[1] === 'divider') return 'divider';
     return 'border';
   }
@@ -91,6 +91,22 @@ function vizKind(t) {
     return 'fill-tag';
   }
   return 'swatch';
+}
+
+/**
+ * The focus-ring swatch: the color token tints a ring around a control; the
+ * width token draws the real :focus-visible ring (2px offset, as on a button)
+ * at its own thickness, in the current ring color.
+ */
+function focusVizStyle(t) {
+  const base = {
+    background: 'var(--l-color-bg-fill-secondary)',
+    borderColor: 'var(--l-color-border)',
+  };
+  if (t.path[0] === 'focus-ring-width') {
+    return { ...base, outline: `${t.value} solid var(--l-focus-ring)`, outlineOffset: '2px' };
+  }
+  return { ...base, boxShadow: `0 0 0 3px ${t.value}` };
 }
 
 /** Lookup helper. */
@@ -479,11 +495,7 @@ function copy(name) {
               >
                 <span
                   class="viz-focus__el"
-                  :style="{
-                    background: 'var(--l-color-bg-fill-secondary)',
-                    borderColor: 'var(--l-color-border)',
-                    boxShadow: `0 0 0 3px ${token.value}`,
-                  }"
+                  :style="focusVizStyle(token)"
                 />
               </div>
               <div

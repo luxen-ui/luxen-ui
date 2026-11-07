@@ -251,7 +251,13 @@
   "focus-ring": {
     "$type": "color",
     "$value": "#d9461f",
-    "$description": "Focus ring color for :focus-visible outlines on interactive elements like buttons, inputs, and links."
+    "$description": "Focus ring color for :focus-visible outlines on interactive elements like buttons, inputs, and links. Its thickness is --l-focus-ring-width. Text fields take this color on their focused border and halo, with a thickness of their own (--l-form-control-focus-border-width)."
+  },
+
+  "focus-ring-width": {
+    "$type": "dimension",
+    "$value": "2px",
+    "$description": "Thickness of the :focus-visible ring drawn around interactive elements — buttons, checkbox, radio, switch, tabs, tags, menu and tree items, toolbar and adornment buttons, close buttons, avatars, breadcrumb links. Rings set inside their element (so an `overflow: hidden` ancestor cannot clip them) grow inward with it. Text fields show focus on their border instead: see --l-form-control-focus-border-width, which a consumer can point at this token for one focus thickness everywhere."
   },
 
   "size": {

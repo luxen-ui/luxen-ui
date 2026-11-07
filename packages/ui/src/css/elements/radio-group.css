@@ -133,7 +133,7 @@
        the input inside it. */
     & > .l-button:has(:focus-visible) {
       z-index: 2;
-      outline: 2px solid var(--l-focus-ring);
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
       outline-offset: 2px;
     }
 

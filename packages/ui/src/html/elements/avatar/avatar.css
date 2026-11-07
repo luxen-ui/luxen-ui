@@ -146,7 +146,7 @@ button.base {
 }
 
 button.base:focus-visible {
-  outline: 2px solid var(--l-focus-ring);
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
   outline-offset: 2px;
 }
 
