@@ -68,18 +68,19 @@
   color: var(--l-form-control-placeholder-color);
 }
 
-/* The clear button is a SIBLING of the trigger (not a child — no nested buttons), overlaid
- * over the trigger's end, before the chevron. */
+/* The clear button is a SIBLING of the trigger (not a child — no nested buttons),
+ * overlaid on the trigger's end, square against the chevron's square — which
+ * sits flush against the border (picker-core.css). */
 .clear-button {
   position: absolute;
   inset-block: 0;
-  inset-inline-end: calc(var(--l-form-control-padding-inline) + 1.25em);
+  inset-inline-end: calc(var(--l-form-control-border-width) + var(--_action-size));
   margin-block: auto;
 }
 
-.clear-button:focus-visible {
-  outline: 2px solid var(--l-focus-ring);
-  outline-offset: 2px;
+/* Keep the value (text or chips) clear of the overlaid button. */
+.base:has(> .clear-button) .chevron {
+  margin-inline-start: var(--_action-size);
 }
 
 /* Rich content in the trigger takes the row styles (select-item.css), then

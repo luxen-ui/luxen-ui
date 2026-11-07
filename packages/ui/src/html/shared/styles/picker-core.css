@@ -71,38 +71,82 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
 }
 
-.chevron {
+/* End actions — the clear button and the chevron each take a square as tall as
+   the field inside its borders, so their hit area and the spacing between them
+   follow `--height` (WCAG 2.5.8 with room to spare: 34px at the default 36px
+   height). The chevron always comes last and bleeds over the field's end
+   padding, so it sits flush against the border and its glyph stays centred in
+   that square. The glyph is drawn by a pseudo-element at
+   `--l-form-control-icon-size`, leaving the box itself free to carry a hover
+   wash and a focus ring. Mirrors the interactive adornments of l-input-group. */
+:host {
+  --_action-size: calc(var(--height) - 2 * var(--l-form-control-border-width));
+}
+
+:is(.chevron, .clear-button) {
   flex: none;
-  inline-size: 1em;
-  block-size: 1em;
-  background-color: currentColor;
+  display: grid;
+  place-items: center;
+  inline-size: var(--_action-size);
   color: var(--l-form-control-placeholder-color);
-  mask: var(--_chevron-icon) center / contain no-repeat;
+}
+
+:is(.chevron, .clear-button)::before {
+  content: '';
+  inline-size: var(--l-form-control-icon-size);
+  block-size: var(--l-form-control-icon-size);
+  background-color: currentColor;
+  mask: var(--_glyph) center / contain no-repeat;
+}
+
+/* Stretches over the row rather than taking a fixed block size: l-select's
+   trigger has block padding, and a multiple trigger grows with its chips. */
+.chevron {
+  --_glyph: var(--chevron-icon);
+
+  align-self: stretch;
+  margin-inline-end: calc(var(--l-form-control-padding-inline) * -1);
+}
+
+.chevron::before {
   transition: rotate 0.15s ease;
 }
 
 /* The element exposing `role="combobox"` (l-combobox's input, l-select's
    trigger) carries the open state. */
-.base:has([role='combobox'][aria-expanded='true']) .chevron {
+.base:has([role='combobox'][aria-expanded='true']) .chevron::before {
   rotate: 180deg;
 }
 
-/* ≥24px hit area (WCAG 2.5.8) with a 1em icon centred inside. */
 .clear-button {
-  inline-size: 1.5rem;
-  block-size: 1.5rem;
-  border: 0;
+  --_glyph: var(--clear-icon);
+
+  block-size: var(--_action-size);
+  margin: 0;
   padding: 0;
+  border: 0;
+  border-radius: calc(var(--border-radius) - var(--l-form-control-border-width));
+  background: none;
+  font: inherit;
   cursor: pointer;
-  background-color: currentColor;
-  color: var(--l-form-control-placeholder-color);
-  mask: var(--_x-icon) center / 1em no-repeat;
+  transition-property: background-color, color;
+  transition-duration: 150ms;
 }
 
 @media (hover: hover) {
   .clear-button:hover {
     color: var(--l-form-control-value-color);
+    background-color: var(--l-color-bg-fill-neutral-soft);
   }
+}
+
+.clear-button:active {
+  background-color: var(--l-color-bg-fill-neutral-subtle);
+}
+
+.clear-button:focus-visible {
+  outline: 2px solid var(--l-focus-ring);
+  outline-offset: -2px;
 }
 
 /*
@@ -190,14 +234,17 @@ mark.match {
 */
 
 :host {
-  --_chevron-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  --_x-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  /* Public glyphs of the end actions, as a `url()`. Set either on the element
+     to re-skin it; the glyph is masked, so its color comes from the control. */
+  --chevron-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --clear-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
   --_check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce) {
   .panel,
-  .chevron {
+  .chevron::before,
+  .clear-button {
     transition-duration: 0ms;
   }
 }

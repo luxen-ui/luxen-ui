@@ -11,6 +11,7 @@ import selectSearchable from '../.vitepress/examples/select/SelectSearchable.htm
 import selectMultiple from '../.vitepress/examples/select/SelectMultiple.html?raw'
 import selectRich from '../.vitepress/examples/select/SelectRich.html?raw'
 import selectFilter from '../.vitepress/examples/select/SelectFilter.html?raw'
+import selectTall from '../.vitepress/examples/select/SelectTall.html?raw'
 import selectNativeRichSuffix from '../.vitepress/examples/select/SelectRichSuffix.html?raw'
 import selectRichSuffix from '../.vitepress/examples/select/SelectRichSuffixEnhanced.html?raw'
 
@@ -145,6 +146,17 @@ The [`.l-select-item-suffix`](#suffix) works the same way, and stays out of the 
 ### Clearable
 
 Add `with-clear` for a button that resets the value.
+
+### Taller controls
+
+The clear button and the chevron each take a square as tall as the field, borders excluded: their hit area and the space between them grow with the control. Set `--height` on the element, or `--l-form-control-height` on an ancestor to resize every form control at once. The glyphs keep their size; resize them with `--l-form-control-icon-size` (default `1em`).
+
+<ComponentWrapper :html="selectTall" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/select/SelectTall.html [HTML]
+:::
 
 ### Custom filter
 

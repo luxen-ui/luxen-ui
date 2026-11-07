@@ -28,8 +28,24 @@
   color: var(--l-form-control-placeholder-color);
 }
 
-.clear-button {
+/* The clear button and the chevron sit side by side, square against square —
+   the row's gap only separates them from the input. */
+.actions {
   flex: none;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+}
+
+/* The chevron toggles the list (see _onControlPointerDown). */
+.chevron {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .chevron:hover {
+    color: var(--l-form-control-value-color);
+  }
 }
 
 /*

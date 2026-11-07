@@ -7,6 +7,7 @@ import { onMounted } from 'vue'
 import { titleAndDescriptionFilter } from '../.vitepress/examples/rich-option-filter.js'
 import comboboxDefault from '../.vitepress/examples/combobox/ComboboxDefault.html?raw'
 import comboboxClearable from '../.vitepress/examples/combobox/ComboboxClearable.html?raw'
+import comboboxTall from '../.vitepress/examples/combobox/ComboboxTall.html?raw'
 import comboboxCustom from '../.vitepress/examples/combobox/ComboboxCustom.html?raw'
 import comboboxRich from '../.vitepress/examples/combobox/ComboboxRich.html?raw'
 import comboboxRichSuffix from '../.vitepress/examples/combobox/ComboboxRichSuffix.html?raw'
@@ -70,6 +71,17 @@ Add `with-clear` for a button that resets the value.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/combobox/ComboboxClearable.html [HTML]
+:::
+
+### Taller controls
+
+The clear button and the chevron each take a square as tall as the field, borders excluded: their hit area and the space between them grow with the control. Set `--height` on the element, or `--l-form-control-height` on an ancestor to resize every form control at once. The glyphs keep their size; resize them with `--l-form-control-icon-size` (default `1em`).
+
+<ComponentWrapper :html="comboboxTall" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/combobox/ComboboxTall.html [HTML]
 :::
 
 ### Custom values

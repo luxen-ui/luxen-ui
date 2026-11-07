@@ -29,6 +29,8 @@
  * @cssproperty --calendar-icon - Date picker glyph as a `url()`. Masked, so color is taken from the control, not the image.
  * @cssproperty --clock-icon - Time picker glyph as a `url()`.
  * @cssproperty --clear-icon - Search clear glyph as a `url()`.
+ * @cssproperty [--l-form-control-icon-size=1em] - Glyph size of the date/time picker icon and the search clear (global
+ *   form-control token). Their hit area is a square of the control height (borders excluded).
  *
  * @example Default
  * <input type="text" class="l-input" placeholder="Placeholder text" />

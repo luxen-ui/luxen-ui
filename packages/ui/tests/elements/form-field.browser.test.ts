@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import '../../src/html/elements/form-field/index.js';
 import '../../src/html/elements/slider/index.js';
+import '../../src/html/elements/select/index.js';
+// l-select sizes its end actions from the form-control tokens.
+import '../../src/css/tokens.css';
 // The field owns its error's visibility through CSS keyed on the reflected
 // `invalid` state, so load the real stylesheet and assert what a user sees.
 import '../../src/css/elements/form-field.css';
@@ -217,5 +220,54 @@ describe('l-form-field checks validity without firing invalid at the control', (
     expect(field.hasAttribute('invalid')).toBe(true);
     // Its only way to answer is `checkValidity()`, which fires `invalid` once.
     expect(count.fired).toBe(1);
+  });
+});
+
+describe('l-form-field keeps a long value inside its container', () => {
+  // A form laid out as a grid with an implicit `auto` column, like most form
+  // stacks. l-select keeps its value on one line, so its min-content is the
+  // whole value plus the clear and chevron squares. (A native `<select>` at a
+  // percentage width is exempt: its min-content contribution is zero.)
+  const LONG_SELECT_FORM = (size = 'md') => `
+    <form style="display: grid; inline-size: 16rem">
+      <l-form-field>
+        <label>Team</label>
+        <l-select label="Team" with-clear size="${size}">
+          <datalist>
+            <option value="p" selected>Platform engineering and developer experience, worldwide</option>
+          </datalist>
+        </l-select>
+      </l-form-field>
+    </form>
+  `;
+
+  async function mountForm(size?: string) {
+    const field = await mount(LONG_SELECT_FORM(size));
+    const select = field.querySelector('l-select') as HTMLElement & {
+      updateComplete: Promise<unknown>;
+    };
+    await select.updateComplete;
+    await new Promise((r) => setTimeout(r, 0));
+    return { field, select, form: host.querySelector('form')! };
+  }
+
+  it('stays as wide as the form instead of growing to the value', async () => {
+    const { field, form } = await mountForm();
+    expect(field.getBoundingClientRect().width).toBe(form.getBoundingClientRect().width);
+  });
+
+  it('keeps the control inside the form', async () => {
+    const { form, select } = await mountForm();
+    expect(select.getBoundingClientRect().right).toBeLessThanOrEqual(
+      form.getBoundingClientRect().right,
+    );
+  });
+
+  it('changes only the height when the control size changes', async () => {
+    const { select: md } = await mountForm('md');
+    const mdWidth = md.getBoundingClientRect().width;
+    host.remove();
+    const { select: xl } = await mountForm('xl');
+    expect(xl.getBoundingClientRect().width).toBe(mdWidth);
   });
 });

@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
+// The end actions (clear, chevron) are sized from the form-control tokens — a
+// required stylesheet — so without it they collapse and cannot be clicked.
+import '../../src/css/tokens.css';
 import '../../src/html/elements/select/index.js';
 import type { Select } from '../../src/html/elements/select/select.js';
 import { userEvent } from './support/user-event.js';
@@ -230,6 +233,21 @@ describe('Selection state', () => {
     await settle(el);
     const data = new FormData(host.querySelector('form')!);
     expect(data.get('country')).toBe('de');
+  });
+});
+
+describe('A mouse user toggles the listbox with the chevron', () => {
+  const chevron = (el: Select) =>
+    page.elementLocator(el.shadowRoot!.querySelector<HTMLElement>('.chevron')!);
+
+  it('opens the listbox, then closes it on a second click', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(trigger().element().getAttribute('aria-expanded')).toBe('true');
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(trigger().element().getAttribute('aria-expanded')).toBe('false');
   });
 });
 

@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
+// The end actions (clear, chevron) are sized from the form-control tokens — a
+// required stylesheet — so without it they collapse and cannot be clicked.
+import '../../src/css/tokens.css';
 import '../../src/html/elements/combobox/index.js';
 import type { Combobox } from '../../src/html/elements/combobox/combobox.js';
 import { deepActiveElement } from './support/a11y.js';
@@ -154,6 +157,39 @@ describe('Clicking outside closes the list', () => {
     await userEvent.click(chevron(el));
     await settle(el);
     expect(deepActiveElement()).toBe(combobox().element());
+  });
+});
+
+describe('A mouse user toggles the list with the chevron', () => {
+  const chevron = (el: Combobox) =>
+    page.elementLocator(el.shadowRoot!.querySelector<HTMLElement>('.chevron')!);
+
+  it('opens the list, then closes it on a second click', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('true');
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('keeps focus in the input while it closes the list', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(deepActiveElement()).toBe(combobox().element());
+  });
+
+  it('leaves the list open when the user clicks into the text', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(combobox());
+    await settle(el);
+    await userEvent.click(combobox());
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('true');
   });
 });
 

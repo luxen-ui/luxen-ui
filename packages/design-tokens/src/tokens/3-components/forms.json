@@ -97,6 +97,11 @@
         "$value": "{spacing-3}",
         "$description": "Horizontal padding of text controls."
       },
+      "icon-size": {
+        "$type": "dimension",
+        "$value": "1em",
+        "$description": "Glyph size of the actions and indicators at the end of a text control: the clear (×) and the chevron of l-select / l-combobox, the chevron of the native `.l-select`, the native search clear and date/time picker icon of an input, and the password toggle of l-input-group. Only the glyph — each action's hit area follows the control height. Relative to font size by default; set a length to enlarge the glyphs on taller controls."
+      },
       "label-color": {
         "$type": "color",
         "$value": "{color.text.primary}",
