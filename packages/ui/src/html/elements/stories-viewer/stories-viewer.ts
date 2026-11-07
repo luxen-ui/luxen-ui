@@ -4,10 +4,11 @@ import { property, query, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { LocalizeController } from '../../shared/localize.js';
-import { tagName } from '../../registry.js';
+import { cls, tagName } from '../../registry.js';
 import { staticTag } from '../../static-tag.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import visuallyHiddenStyles from '../../shared/styles/visually-hidden.styles.js';
 import type { LuxenStories } from '../stories/stories.js';
 import type { LuxenStory } from '../story/story.js';
 import rawStyles from './stories-viewer.css?inline';
@@ -124,7 +125,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @customElement l-stories-viewer
  */
 export class LuxenStoriesViewer extends LuxenElement {
-  static override styles: CSSResultGroup = [hostStyles, styles];
+  static override styles: CSSResultGroup = [hostStyles, visuallyHiddenStyles, styles];
 
   private _localize = new LocalizeController(this);
 
@@ -783,7 +784,7 @@ export class LuxenStoriesViewer extends LuxenElement {
           </div>
 
           <div
-            class="sr-only"
+            class=${cls('visually-hidden')}
             aria-live="polite"
           >
             ${

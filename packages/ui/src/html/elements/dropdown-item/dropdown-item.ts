@@ -5,6 +5,7 @@ import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { tagName } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import menuPanelStyles from '../../shared/styles/menu-panel.styles.js';
 import rawStyles from './dropdown-item.css?inline';
 
 const styles = unsafeCSS(rawStyles);
@@ -26,7 +27,7 @@ const styles = unsafeCSS(rawStyles);
  * @customElement l-dropdown-item
  */
 export class DropdownItem extends LuxenElement {
-  static override styles = [hostStyles, styles];
+  static override styles = [hostStyles, menuPanelStyles, styles];
 
   private _submenuFloating = new PopoverController(this, {
     getTriggerElement: () => this,
@@ -127,11 +128,6 @@ export class DropdownItem extends LuxenElement {
     }
   }
 
-  private _getDuration(prop: '--show-duration' | '--hide-duration'): number {
-    const parsed = parseFloat(getComputedStyle(this).getPropertyValue(prop));
-    return Number.isNaN(parsed) ? 150 : parsed;
-  }
-
   private async _handleSubmenuOpenChange() {
     const panel = this._submenuEl;
     if (!panel) return;
@@ -149,12 +145,12 @@ export class DropdownItem extends LuxenElement {
       panel.showPopover();
       await this._submenuFloating.updatePosition(posOpts);
       if (!this.submenuOpen) return;
-      await this._submenuFloating.animateShow(panel, this._getDuration('--show-duration'));
+      await this._submenuFloating.animateShow(panel);
       this._submenuFloating.startPositioning(posOpts);
     } else {
       if (!panel.matches(':popover-open')) return;
       this._submenuFloating.stopPositioning();
-      await this._submenuFloating.animateHide(panel, this._getDuration('--hide-duration'));
+      await this._submenuFloating.animateHide(panel);
       if (panel.matches(':popover-open')) panel.hidePopover();
     }
   }

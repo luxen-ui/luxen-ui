@@ -7,6 +7,7 @@ import { tagName } from '../../registry.js';
 import type { DropdownItem } from '../dropdown-item/dropdown-item.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import menuPanelStyles from '../../shared/styles/menu-panel.styles.js';
 import rawStyles from './dropdown.css?inline';
 
 const styles = unsafeCSS(rawStyles);
@@ -37,12 +38,12 @@ interface DropdownEventMap {
  *
  * @csspart panel - The floating menu container.
  *
- * @cssproperty --background - Panel background color.
- * @cssproperty --border-radius - Panel border radius. Default `8px`.
- * @cssproperty --padding - Panel inner padding. Default `0.25rem`. Slotted `<l-divider>` elements bleed by this amount on each side to span the panel edges.
- * @cssproperty --shadow - Panel box shadow.
- * @cssproperty --show-duration - Show animation duration in ms. Default `150`.
- * @cssproperty --hide-duration - Hide animation duration in ms. Default `150`.
+ * @cssproperty --background - Panel background color. Default `var(--l-color-surface-overlay)`.
+ * @cssproperty --border-radius - Panel border radius. Default `var(--l-popover-border-radius)` (6px).
+ * @cssproperty --padding - Panel inner padding. Default `var(--l-popover-padding)` (0.25rem). Slotted `<l-divider>` elements bleed by this amount on each side to span the panel edges.
+ * @cssproperty --shadow - Panel box shadow. Default `var(--l-popover-shadow)`.
+ * @cssproperty --show-duration - Show animation duration. Default `150ms`.
+ * @cssproperty --hide-duration - Hide animation duration. Default `150ms`.
  *
  * @event show - Fired before the dropdown opens. Cancelable.
  * @event after-show - Fired after the open animation completes.
@@ -54,7 +55,7 @@ interface DropdownEventMap {
  */
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- typed addEventListener overloads merged below; no uninitialized properties.
 export class Dropdown extends LuxenElement {
-  static override styles = [hostStyles, styles];
+  static override styles = [hostStyles, menuPanelStyles, styles];
 
   private _floating = new PopoverController(this, {
     getTriggerElement: () => this._triggerEl,
@@ -145,11 +146,6 @@ export class Dropdown extends LuxenElement {
     return current ? this._levelItemsOf(current) : this._getItems();
   }
 
-  private _getDuration(prop: '--show-duration' | '--hide-duration'): number {
-    const parsed = parseFloat(getComputedStyle(this).getPropertyValue(prop));
-    return Number.isNaN(parsed) ? 150 : parsed;
-  }
-
   // --- Public API ---
 
   show() {
@@ -196,7 +192,7 @@ export class Dropdown extends LuxenElement {
       panel.showPopover();
       await this._floating.updatePosition(posOpts);
       if (!this.open) return;
-      await this._floating.animateShow(panel, this._getDuration('--show-duration'));
+      await this._floating.animateShow(panel);
       this._floating.startPositioning(posOpts);
       this._triggerEl?.setAttribute('aria-expanded', 'true');
       this.dispatchEvent(new AfterShowEvent());
@@ -204,7 +200,7 @@ export class Dropdown extends LuxenElement {
       this._floating.stopPositioning();
       this._closeAllSubmenus();
       this._triggerEl?.setAttribute('aria-expanded', 'false');
-      await this._floating.animateHide(panel, this._getDuration('--hide-duration'));
+      await this._floating.animateHide(panel);
       if (panel.matches(':popover-open')) panel.hidePopover();
       this.dispatchEvent(new AfterHideEvent());
     }

@@ -1,0 +1,98 @@
+/*
+ * Option row and rich-option content (`.l-select-item-media / -text / -title /
+ * -description`) shared by the two select tiers, so they cannot drift apart:
+ *   - `@import`ed (and layered) by src/css/elements/select.css for the native
+ *     `select.l-select` picker, where `.l-select option` is the row, and
+ *   - imported `?inline` into the l-select shadow root, which copies each
+ *     option's markup straight into its `:host .option` row — the same shape as
+ *     a native <option>, so a row is rich by its content alone.
+ * `:host` never matches in a document, so the shadow selectors cannot reach a
+ * consumer's own `.option`. Each rule is a selector LIST (not
+ * `:is()`), so every tier keeps its own specificity.
+ *
+ * The selected checkmark is NOT here: the native one is `::checkmark`, which a
+ * browser without customizable select would reject — taking the whole rule,
+ * and the shadow tier's checkmark with it.
+ *
+ * Intentionally UNLAYERED, like button-core.css / select-item-suffix.css.
+ * In the shadow root it loads BEFORE picker-core.css, whose disabled-option rule
+ * must win over the row's `cursor: pointer`.
+ */
+
+.l-select option,
+:host .option {
+  display: flex;
+  position: relative;
+  align-items: start;
+  gap: var(--l-menu-item-gap);
+  /* For the native tier: the document has no box-sizing reset, so the padding
+     would add to the min-height. Shadow roots already get it from host.css. */
+  box-sizing: border-box;
+  /* Block padding that centres a one-line row on the item min-height (36px at
+     the default tokens, like l-dropdown-item) but never drops below the item
+     padding token. Rows top-align (`align-items: start`) so a wrapping
+     description grows downwards; the checkmarks pin to this same offset. */
+  --_row-padding-block: max(
+    var(--l-menu-item-padding-block),
+    (var(--l-menu-item-min-height) - var(--l-popover-font-size) * var(--l-popover-line-height)) / 2
+  );
+
+  min-block-size: var(--l-menu-item-min-height);
+  padding-block: var(--_row-padding-block);
+  /* Reserve the inline-start checkmark column on every row so titles align
+     whether or not the option is selected (like l-dropdown). */
+  padding-inline: 1.75rem var(--l-menu-item-padding-inline);
+  border-radius: var(--l-menu-item-border-radius);
+  cursor: pointer;
+  color: var(--l-color-text-primary);
+}
+
+/* Selection is shown by the checkmark alone (like l-dropdown) — the selected
+   option carries NO background, so it never reads as merged with the
+   hovered/active row, which is the only one that takes the tint. Native tier
+   only: in the l-select shadow root the mouse moves the active option
+   (ListboxNavController.onPointerMove), whose `[data-active]` tint is the one
+   highlight — a `:hover` tint there would add a second row. */
+@media (hover: hover) {
+  .l-select option:hover {
+    background: var(--l-color-bg-state-hover);
+  }
+}
+
+/* Rich option content — image/icon + title + optional description. One class
+   selector per part, not scoped to a tier: the classes are library-owned (like
+   `.l-select-item-suffix`), so the same rule styles a native <option>, an
+   l-select row and the copy each trigger shows. Each trigger then trims its copy
+   (title weight, hidden description) next to its own rules. */
+.l-select-item-media {
+  flex: 0 0 auto;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.l-select-item-text {
+  display: flex;
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.l-select-item-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: var(--l-font-weight-semibold);
+}
+
+.l-select-item-description {
+  /* Override the `white-space: nowrap` inherited from the native <select>, so
+     the description wraps within the picker's max-inline-size instead of
+     overflowing on one line. */
+  white-space: normal;
+  text-wrap: pretty;
+  color: var(--l-color-text-tertiary);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}

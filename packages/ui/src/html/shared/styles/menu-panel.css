@@ -1,0 +1,37 @@
+/*
+ * The menu panel shared by l-dropdown and the submenus of l-dropdown-item — the
+ * `[popover]` element of each shadow root, and the `<hr>` separators slotted
+ * into it.
+ *
+ * The public knobs (--padding, --border-radius, --background, --shadow) are set
+ * on l-dropdown's :host and inherit through the light DOM into nested
+ * l-dropdown-item submenus, so a themed dropdown themes its submenus too. The
+ * fallbacks only serve a standalone l-dropdown-item.
+ */
+
+[popover] {
+  inset: unset;
+  overflow: visible;
+  width: max-content;
+  padding: var(--padding, var(--l-popover-padding));
+  margin: 0;
+  border: 1px solid var(--l-color-border-overlay);
+  border-radius: var(--border-radius, var(--l-popover-border-radius));
+  background: var(--background, var(--l-color-surface-overlay));
+  color: var(--l-color-text-primary);
+  box-shadow: var(--shadow, var(--l-popover-shadow));
+  font-size: var(--l-popover-font-size);
+  line-height: var(--l-popover-line-height);
+}
+
+/* Lightweight separator alternative to <l-divider> — same dimensions, no extra
+   import. Bleeds through the panel padding to span its edges. Scoped to slots
+   inside the panel, so an item's own label slot never picks it up. */
+[popover] ::slotted(hr) {
+  display: block;
+  height: 1px;
+  margin-block: var(--padding, var(--l-popover-padding));
+  margin-inline: calc(var(--padding, var(--l-popover-padding)) * -1);
+  border: 0;
+  background: var(--l-color-divider);
+}

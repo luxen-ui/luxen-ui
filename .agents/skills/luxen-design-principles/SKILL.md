@@ -139,6 +139,8 @@ See [references/css-patterns.md](references/css-patterns.md) for the entry/exit 
 
 All element styles must be wrapped in `@layer components { ... }`. This keeps specificity predictable across the cascade.
 
+**Icons**: no inline `<svg>` in templates. Chevrons, carets and other indicator glyphs the element draws are a CSS mask painted with `background-color: currentColor` (recolored via `color`); content icons use `<l-icon>`. See "Icons" in `packages/ui/CLAUDE.md`.
+
 ### Scoping light-DOM internals (`@scope` + reset guard)
 
 A light-DOM element that **builds its own subtree of generic tags** (`<button>`, `<input>`, `<div>`, `<span>`…) inherits the user-agent default chrome on those tags (button borders/backgrounds, input styling). Wrap such elements in the `@scope` + zero-specificity reset pattern (see `input-stepper`, `toast`, `input-otp`, `story` for live examples): `@scope` keeps the rules from leaking **out**, and the `all: unset` reset strips UA defaults off the generated internals so the component styles from a clean slate.

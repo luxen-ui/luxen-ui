@@ -9,10 +9,13 @@ import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
-import { tagName, uniqueId } from '../../registry.js';
+import { cls, tagName, uniqueId } from '../../registry.js';
 import { adoptRichContentStyles, richOptionLabel } from '../../shared/rich-option.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import visuallyHiddenStyles from '../../shared/styles/visually-hidden.styles.js';
 import suffixStyles from '../../shared/styles/select-item-suffix.styles.js';
+import pickerCoreStyles from '../../shared/styles/picker-core.styles.js';
+import selectItemStyles from '../../shared/styles/select-item.styles.js';
 import rawStyles from './select.css?inline';
 // Registers the chip element used to render selected values in multiple mode.
 import '../tag/index.js';
@@ -121,8 +124,17 @@ export class Select extends LuxenFormAssociatedElement {
   // Rich option markup is copied into the shadow root, out of reach of the
   // global stylesheets: suffixStyles lays out the `.l-select-item-suffix` zone,
   // and `_readItems` adopts the styles of the light-DOM elements (l-badge) the
-  // options actually contain.
-  static override styles = [hostStyles, suffixStyles, styles];
+  // options actually contain. selectItemStyles (row + rich content, shared with
+  // the native picker) loads before pickerCoreStyles so the shared disabled-row
+  // rule wins over the row's `cursor: pointer`.
+  static override styles = [
+    hostStyles,
+    visuallyHiddenStyles,
+    suffixStyles,
+    selectItemStyles,
+    pickerCoreStyles,
+    styles,
+  ];
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('select-list');
@@ -475,6 +487,7 @@ export class Select extends LuxenFormAssociatedElement {
       >
       <span
         class="chevron"
+        part="chevron"
         aria-hidden="true"
       ></span>
     `;
@@ -542,7 +555,7 @@ export class Select extends LuxenFormAssociatedElement {
         ${
           this.withClear && hasValue
             ? html`<button
-                class="clear"
+                class="clear-button"
                 part="clear"
                 type="button"
                 aria-label=${this._localize.term('clear')}
@@ -585,6 +598,8 @@ export class Select extends LuxenFormAssociatedElement {
             aria-label=${this.label || this._localize.term('suggestions')}
             aria-multiselectable=${this.multiple ? 'true' : nothing}
             aria-activedescendant=${!this.searchable ? (activeId ?? nothing) : nothing}
+            @pointermove=${this._nav.onPointerMove}
+            @pointerleave=${this._nav.onPointerLeave}
           >
             ${filtered.map(
               (item, i) =>
@@ -602,9 +617,7 @@ export class Select extends LuxenFormAssociatedElement {
                 >
                   ${
                     item.html
-                      ? html`<span class="option-rich"
-                          >${unsafeHTML(this._richHighlighter.highlight(item.html, this._query))}</span
-                        >`
+                      ? unsafeHTML(this._richHighlighter.highlight(item.html, this._query))
                       : html`<span class="option-label"
                           >${highlightText(item.label, this._query)}</span
                         >`
@@ -625,7 +638,7 @@ export class Select extends LuxenFormAssociatedElement {
         </div>
 
         <div
-          class="visually-hidden"
+          class=${cls('visually-hidden')}
           aria-live="polite"
         >
           ${status}

@@ -506,6 +506,16 @@ const sd = new StyleDictionary({
           },
         },
         {
+          destination: 'popover.css',
+          format: 'css/luxen',
+          options: {
+            subset: 'components',
+            fileMatch: 'popover',
+            header:
+              '/* Luxen design-tokens — popover and menu-item component tokens.\n   Bundled in the Luxen preset via `luxen-ui/css/tokens`. Geometry and type of\n   the panels anchored to a trigger (dropdown, popover, listbox, select picker)\n   and of the rows inside them. */\n\n',
+          },
+        },
+        {
           destination: 'index.css',
           format: 'css/luxen-index',
         },

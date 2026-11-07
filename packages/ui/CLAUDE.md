@@ -430,6 +430,27 @@ Use `color-mix()` or CSS relative color syntax to compute hover, active, and dis
 
 This keeps state colors consistent, reduces token sprawl, and adapts automatically when the base color changes.
 
+### Icons: chevrons are CSS masks, content icons are `<l-icon>`
+
+Never write inline `<svg>` / `<path>` markup in an element template. Pick the technique by what the icon is:
+
+- **Indicator chrome the element draws itself** — chevrons, carets, disclosure arrows, submenu indicators, the check and clear (×) glyphs of a picker: a masked box painted with `currentColor`. A consumer recolors it with plain `color` and re-skins it by swapping the mask URL.
+
+  ```css
+  .chevron {
+    inline-size: 1em;
+    block-size: 1em;
+    background-color: currentColor;
+    mask: var(--_chevron-icon) center / contain no-repeat;
+  }
+  ```
+
+  Drive the color through `color`, never through `background-color: var(--some-color)`. When the element exposes a public color knob, map it onto `color` (`color: var(--caret-color)`) so both work. References: `.chevron` in `shared/styles/picker-core.css` (l-select, l-combobox), `.submenu-indicator` in `dropdown-item.css`.
+
+- **Content icons** — media controls, actions, anything that reads as content rather than as the element's own affordance: `<l-icon name="set:icon">` from an Iconify collection, rendered through the registry tag (see `stories-viewer`), sized with `font-size` and colored with `color`.
+
+Not migrated yet: `l-tree-item` expand/collapse and `l-carousel` arrows (inline `<svg>`); the native `.l-select` `::picker-icon` and the `l-disclosure` marker (masks painted through `--caret-color` / `--marker-color` instead of `currentColor`).
+
 ### Use modern CSS features
 
 Prefer modern CSS when applicable and Baseline available. Reference list:

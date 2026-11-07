@@ -225,13 +225,13 @@ describe('l-select shows a suffix on rich options', () => {
 
   it('pins the suffix to the end of each row and truncates a long title', async () => {
     const el = await open();
-    const [short, long] = el.shadowRoot!.querySelectorAll('.option-rich');
+    const [short, long] = el.shadowRoot!.querySelectorAll('[role="option"]');
     expectSuffix(short, long);
   });
 
   it('paints a badge placed in the suffix', async () => {
     const el = await open();
-    expectStyledBadge(el.shadowRoot!.querySelector('.option-rich')!);
+    expectStyledBadge(el.shadowRoot!.querySelector('[role="option"]')!);
   });
 
   it('keeps the suffix out of the trigger, like the description', async () => {
@@ -244,7 +244,7 @@ describe('l-select shows a suffix on rich options', () => {
 
   it('centres a text or tall suffix on the title line', async () => {
     const el = await open();
-    const rows = el.shadowRoot!.querySelectorAll('.option-rich');
+    const rows = el.shadowRoot!.querySelectorAll('[role="option"]');
     expectCentredOnTitle(rows[2]);
     expectTallSuffixKeepsTitle(rows[3]);
   });
@@ -264,7 +264,7 @@ describe('l-select shows a suffix on rich options', () => {
     await settle(el);
     await userEvent.click(page.getByRole('combobox', { name: 'Pool' }));
     await settle(el);
-    const badge = el.shadowRoot!.querySelector('.option-rich l-badge')!;
+    const badge = el.shadowRoot!.querySelector('[role="option"] l-badge')!;
     expect(getComputedStyle(badge).color).toBe('rgb(1, 2, 3)');
   });
 });
@@ -284,18 +284,18 @@ describe('l-combobox shows a suffix on rich options', () => {
 
   it('pins the suffix to the end of each row and truncates a long title', async () => {
     const el = await open();
-    const [short, long] = el.shadowRoot!.querySelectorAll('.option-rich');
+    const [short, long] = el.shadowRoot!.querySelectorAll('[role="option"]');
     expectSuffix(short, long);
   });
 
   it('paints a badge placed in the suffix', async () => {
     const el = await open();
-    expectStyledBadge(el.shadowRoot!.querySelector('.option-rich')!);
+    expectStyledBadge(el.shadowRoot!.querySelector('[role="option"]')!);
   });
 
   it('centres a text or tall suffix on the title line', async () => {
     const el = await open();
-    const rows = el.shadowRoot!.querySelectorAll('.option-rich');
+    const rows = el.shadowRoot!.querySelectorAll('[role="option"]');
     expectCentredOnTitle(rows[2]);
     expectTallSuffixKeepsTitle(rows[3]);
   });

@@ -1,0 +1,59 @@
+{
+  "$description": "Popover and menu-item component tokens — the panels anchored to a trigger and built on the Popover API (`l-dropdown` and its submenus, `l-popover`, the `l-select` / `l-combobox` listbox, the native `.l-select` picker), and the rows inside them (menu items, listbox options). One source so every anchored panel shares one surface and every menu or listbox row one rhythm. Not used by modal surfaces (`l-dialog`, `l-drawer`). Colors stay semantic aliases (--l-color-surface-overlay, --l-color-border-overlay); these tokens carry the geometry and type.",
+  "popover": {
+    "border-radius": {
+      "$type": "dimension",
+      "$value": "{radius-md}",
+      "$description": "Corner radius of a panel anchored to a trigger (dropdown menu, popover, listbox, select picker). Each element still exposes its own `--border-radius` knob for a one-off override. Not for dialogs or drawers."
+    },
+    "padding": {
+      "$type": "dimension",
+      "$value": "{spacing-1}",
+      "$description": "Inset between a menu or listbox panel's border and its rows. Also the vertical margin of an `<hr>` separator, which bleeds through it to the panel edges. Not applied to `l-popover`, whose content brings its own spacing."
+    },
+    "shadow": {
+      "$type": "shadow",
+      "$value": "{shadow.md}",
+      "$description": "Elevation of a panel anchored to a trigger. Aliases --l-shadow-md so popovers can be re-elevated without moving every medium shadow. Modal surfaces use their own, higher elevation."
+    },
+    "font-size": {
+      "$type": "dimension",
+      "$value": "{text-sm}",
+      "$description": "Text size inside an anchored panel — menu items, listbox options, popover body."
+    },
+    "line-height": {
+      "$type": "number",
+      "$value": "1.5",
+      "$description": "Line height inside an anchored panel. Pairs with --l-popover-font-size; a row's first line box (font-size × line-height) is what checkmarks and suffixes centre on."
+    }
+  },
+  "menu": {
+    "item": {
+      "min-height": {
+        "$type": "dimension",
+        "$value": "2.25rem",
+        "$description": "Minimum height of a row in a menu or listbox — `l-dropdown-item`, `l-select` / `l-combobox` options, native `.l-select` options (36px). A comfortable pointer and touch target, well above the WCAG 2.5.8 24px floor. Rich rows (description, media) grow past it."
+      },
+      "padding-block": {
+        "$type": "dimension",
+        "$value": "{spacing-1_5}",
+        "$description": "Vertical padding of a menu item or listbox option. Select rows never go below it, and centre a single line on --l-menu-item-min-height."
+      },
+      "padding-inline": {
+        "$type": "dimension",
+        "$value": "{spacing-2}",
+        "$description": "Horizontal padding of a menu item or listbox option. Section labels (`l-dropdown-label`) use it too, so they line up with the rows below them."
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{spacing-2}",
+        "$description": "Gap between the parts of a menu item or option — check, icon, label, suffix."
+      },
+      "border-radius": {
+        "$type": "dimension",
+        "$value": "{radius-sm}",
+        "$description": "Corner radius of a row's hover / active tint, inset inside the popover's own radius."
+      }
+    }
+  }
+}

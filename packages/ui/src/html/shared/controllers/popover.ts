@@ -567,7 +567,24 @@ export class PopoverController implements ReactiveController {
 
   // --- Animation ---
 
-  async animateShow(el: HTMLElement, duration: number, keyframes?: Keyframe[]) {
+  /**
+   * The host's `--show-duration` / `--hide-duration`, in ms. Accepts a CSS time
+   * or a bare number of ms (`150`, `150ms` and `0.15s` all read as 150); falls
+   * back to 150 when unset or unparsable.
+   */
+  durationOf(prop: '--show-duration' | '--hide-duration'): number {
+    const raw = getComputedStyle(this._host).getPropertyValue(prop).trim().toLowerCase();
+    const parsed = parseFloat(raw);
+    if (Number.isNaN(parsed)) return 150;
+    return raw.endsWith('s') && !raw.endsWith('ms') ? parsed * 1000 : parsed;
+  }
+
+  /** Fade/scale `el` in over `duration` ms — the host's `--show-duration` by default. */
+  async animateShow(
+    el: HTMLElement,
+    duration = this.durationOf('--show-duration'),
+    keyframes?: Keyframe[],
+  ) {
     const d = reducedMotion?.matches ? 0 : duration;
     el.getAnimations().forEach((a) => a.cancel());
     el.animate(
@@ -579,7 +596,12 @@ export class PopoverController implements ReactiveController {
     );
   }
 
-  async animateHide(el: HTMLElement, duration: number, keyframes?: Keyframe[]) {
+  /** Fade/scale `el` out over `duration` ms — the host's `--hide-duration` by default. */
+  async animateHide(
+    el: HTMLElement,
+    duration = this.durationOf('--hide-duration'),
+    keyframes?: Keyframe[],
+  ) {
     const d = reducedMotion?.matches ? 0 : duration;
     const anim = el.animate(
       keyframes ?? [
