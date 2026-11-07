@@ -169,10 +169,12 @@ async function replaceComponentWrappers(content, imports) {
 // Accessibility criteria are doc-authored (not code-extracted), so this still
 // reads the inline `:data`. Rendered as a bullet list — one criterion per line —
 // to match the API-reference list style (no pipe escaping, long descriptions
-// stay readable). Reference links are stripped; they're noise in a skill.
+// stay readable). Inline WCAG/RGAA links are stripped; they're noise in a skill.
+// The optional `:references` prop (human-facing source links) is matched and
+// dropped here on purpose — the actionable guidance already lives in `:rules`.
 function convertAccessibilityTable(content) {
   const regex =
-    /<AccessibilityTable\s+:data="(\[[\s\S]*?\])"\s*(?::rules="(\[[\s\S]*?\])"\s*)?\/>/g;
+    /<AccessibilityTable\s+:data="(\[[\s\S]*?\])"\s*(?::rules="(\[[\s\S]*?\])"\s*)?(?::references="\[[\s\S]*?\]"\s*)?\/>/g;
   return content.replace(regex, (_, dataStr, rulesStr) => {
     let data;
     try {

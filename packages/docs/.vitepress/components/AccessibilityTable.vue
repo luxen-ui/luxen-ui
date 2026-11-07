@@ -10,6 +10,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  references: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -40,6 +44,7 @@ const parseInlineMarkdown = (text) => {
 };
 
 const rulesLabelId = useId();
+const refsLabelId = useId();
 
 const parseCriteriaGroups = (wcag) => {
   if (!wcag) return [];
@@ -134,6 +139,29 @@ const parseCriteriaGroups = (wcag) => {
         :key="i"
         class="a11y-rule"
         v-html="parseInlineMarkdown(rule)"
+      />
+    </ul>
+  </div>
+
+  <div
+    v-if="references.length"
+    class="vp-raw a11y-refs"
+  >
+    <p
+      :id="refsLabelId"
+      class="a11y-refs-title"
+    >
+      References
+    </p>
+    <ul
+      class="a11y-refs-list"
+      :aria-labelledby="refsLabelId"
+    >
+      <li
+        v-for="(reference, i) in references"
+        :key="i"
+        class="a11y-ref"
+        v-html="parseInlineMarkdown(reference)"
       />
     </ul>
   </div>
@@ -293,5 +321,62 @@ const parseCriteriaGroups = (wcag) => {
   transform: translateY(-50%);
   border-radius: 50%;
   background-color: var(--vp-c-text-3);
+}
+
+.a11y-refs {
+  margin: 16px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.a11y-refs-title {
+  margin: 0 0 8px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--vp-c-text-3);
+}
+
+.vp-raw .a11y-refs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vp-raw .a11y-ref {
+  position: relative;
+  padding-left: 30px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-3);
+}
+
+.vp-raw .a11y-ref + .a11y-ref {
+  margin-top: 6px;
+}
+
+.a11y-ref::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0.75em;
+  width: 6px;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background-color: var(--vp-c-text-3);
+}
+
+.vp-raw .a11y-ref a {
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+.vp-raw .a11y-ref a:hover {
+  color: var(--vp-c-text-1);
+  text-decoration: underline;
 }
 </style>

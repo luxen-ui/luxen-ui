@@ -82,10 +82,15 @@ Use the native `name` attribute to create an exclusive accordion — only one it
 <AccessibilityTable :data="[
   { Check: 'Role', Description: 'Uses native `<details>` — built-in disclosure semantics, no ARIA needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Accessible name', Description: 'The `<summary>` provides the accessible name automatically', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Headings', Description: 'The `<summary>` is a disclosure control — a heading placed inside it is not reliably exposed to assistive tech', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.1)' },
   { Check: 'Motion', Description: 'Animations use CSS transitions that respect `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
   'Always include a descriptive `<summary>` as the first child of `<details>`',
   'Do not override the `role` or `tabindex` on `<summary>` — native semantics are correct',
+  'Never place a heading inside `<summary>` — it is not reliably exposed as a heading; add one heading above the group instead',
+]" :references="[
+  '[GOV.NZ — disclosures and accordions](https://govtnz.github.io/web-a11y-guidance/wct/disclosures-and-accordions/) — native-first guidance; headings inside `<summary>` are inconsistently exposed',
+  '[ARIA APG — accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) — the heading > button alternative when a trigger must be a navigable heading',
 ]" />
 
 ### Keyboard interactions
