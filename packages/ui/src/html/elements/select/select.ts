@@ -107,7 +107,12 @@ interface SelectEventMap {
  * @csspart option - Each option row.
  * @csspart empty - The "no results" message.
  *
- * @cssproperty [--height] - Control height. Defaults to the form-control height.
+ * @cssproperty [--height=var(--l-form-control-height)] - Control height. The clear button and the chevron
+ *   each take a square of this height (borders excluded), so their hit area and spacing follow it.
+ * @cssproperty [--l-form-control-icon-size=1em] - Glyph size of the clear button and the chevron (global form-control
+ *   token; set it here or on any ancestor). Changes the glyph only — the hit area follows `--height`.
+ * @cssproperty --chevron-icon - Chevron glyph as a `url()`. Masked, so its color comes from the control, not the image.
+ * @cssproperty --clear-icon - Clear button glyph as a `url()`.
  * @cssproperty [--border-radius] - Trigger + panel radius.
  * @cssproperty [--background] - Panel background.
  *

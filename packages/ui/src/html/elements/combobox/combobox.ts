@@ -97,7 +97,12 @@ interface ComboboxEventMap {
  * @csspart option - Each option row.
  * @csspart empty - The "no results" message.
  *
- * @cssproperty [--height] - Control height. Defaults to the form-control height.
+ * @cssproperty [--height=var(--l-form-control-height)] - Control height. The clear button and the chevron
+ *   each take a square of this height (borders excluded), so their hit area and spacing follow it.
+ * @cssproperty [--l-form-control-icon-size=1em] - Glyph size of the clear button and the chevron (global form-control
+ *   token; set it here or on any ancestor). Changes the glyph only — the hit area follows `--height`.
+ * @cssproperty --chevron-icon - Chevron glyph as a `url()`. Masked, so its color comes from the control, not the image.
+ * @cssproperty --clear-icon - Clear button glyph as a `url()`.
  * @cssproperty [--border-radius] - Control + panel radius.
  * @cssproperty [--background] - Panel background.
  *
@@ -418,7 +423,13 @@ export class Combobox extends LuxenFormAssociatedElement {
       e.preventDefault();
       this._inputEl?.focus();
     }
-    if (this._open) return;
+    // The chevron toggles, like a native select's arrow: it closes an open list.
+    // Anywhere else on the control only opens it, so clicking into the text to
+    // move the caret never dismisses the suggestions.
+    if (this._open) {
+      if ((e.target as HTMLElement).closest('.chevron')) this.hide();
+      return;
+    }
     this.show();
   };
 
@@ -483,21 +494,23 @@ export class Combobox extends LuxenFormAssociatedElement {
             @input=${this._onInput}
             @keydown=${this._onKeyDown}
           />
-          ${
-            this.withClear && (this.value || this._query)
-              ? html`<button
-                  class="clear-button"
-                  type="button"
-                  tabindex="-1"
-                  aria-label=${this._localize.term('clear')}
-                  @click=${this._clear}
-                ></button>`
-              : nothing
-          }
-          <span
-            class="chevron"
-            aria-hidden="true"
-          ></span>
+          <span class="actions">
+            ${
+              this.withClear && (this.value || this._query)
+                ? html`<button
+                    class="clear-button"
+                    type="button"
+                    tabindex="-1"
+                    aria-label=${this._localize.term('clear')}
+                    @click=${this._clear}
+                  ></button>`
+                : nothing
+            }
+            <span
+              class="chevron"
+              aria-hidden="true"
+            ></span>
+          </span>
         </div>
 
         <div

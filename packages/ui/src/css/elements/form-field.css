@@ -7,6 +7,13 @@
 @layer components {
   l-form-field {
     display: grid;
+    /* One column as wide as the field, never wider. An implicit `auto` column
+       grows to the control's min-content, which for a select is its longest
+       value kept on one line (native `select`, `l-select`): the field — and an
+       `auto` grid track around it — then overflows its container instead of
+       truncating the value. Max-content sizing is unchanged, so a field in a
+       shrink-to-fit context still grows to fit its control. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--l-form-field-gap);
     /* Controls size to their content; text controls (`.l-input`, `.l-textarea`)
        opt into full width via their own CSS — the field never forces width. */

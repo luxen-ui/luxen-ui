@@ -6,6 +6,10 @@ import { computed, ref } from 'vue';
 const required = ref(false);
 const disabled = ref(false);
 const invalid = ref(false);
+// Shows the clear (×) button on the pickers that have one (l-combobox, l-select),
+// so its hit area and spacing can be eyeballed against the chevron at every size.
+// A reactive attribute, so not part of `stateKey`.
+const clearable = ref(true);
 
 // Control size — drives every control's height via `data-size` (native) / `size`
 // (custom), all mapping the shared `--l-size-control-*` scale. Not part of
@@ -64,6 +68,14 @@ const attr = (on) => (on ? '' : null);
           v-model="invalid"
         />
         Error
+      </label>
+      <label class="forms-overview__toggle">
+        <input
+          type="checkbox"
+          class="l-checkbox"
+          v-model="clearable"
+        />
+        Clear button
       </label>
 
       <label class="forms-overview__toggle">
@@ -438,8 +450,58 @@ const attr = (on) => (on ? '' : null);
         <p class="l-error">{{ error }}</p>
       </l-form-field>
 
-      <!-- TODO: add select here as it ships — it reuses the same l-form-field
-           wiring and --l-form-control-* tokens. -->
+      <!-- Combobox — the clear button and the chevron sit at the end, each in a
+           square as tall as the field. "Clear button" in the bar toggles the ×.
+           Error empties a required combobox (valueMissing), which also hides
+           the ×: there is nothing to clear. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Country</label>
+        <l-combobox
+          label="Country"
+          placeholder="Search a country…"
+          :value="invalid ? '' : 'fr'"
+          :size="size"
+          :with-clear="attr(clearable)"
+          :required="attr(required || invalid)"
+          :disabled="attr(disabled)"
+        >
+          <datalist>
+            <option value="us">United States</option>
+            <option value="fr">France</option>
+            <option value="de">Germany</option>
+          </datalist>
+        </l-combobox>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
+
+      <!-- Select — same end actions as the combobox; the × is overlaid on the
+           trigger, so a long value must stop before it. Error clears a required
+           select (valueMissing), like the combobox. -->
+      <l-form-field :invalid="attr(invalid)">
+        <label>Team</label>
+        <l-select
+          label="Team"
+          placeholder="Select a team…"
+          :size="size"
+          :with-clear="attr(clearable)"
+          :required="attr(required || invalid)"
+          :disabled="attr(disabled)"
+        >
+          <datalist>
+            <option value="design">Design</option>
+            <option
+              value="platform"
+              :selected="!invalid"
+            >
+              Platform engineering and developer experience
+            </option>
+            <option value="support">Customer support</option>
+          </datalist>
+        </l-select>
+        <p class="l-hint">{{ hint }}</p>
+        <p class="l-error">{{ error }}</p>
+      </l-form-field>
     </form>
   </div>
 </template>

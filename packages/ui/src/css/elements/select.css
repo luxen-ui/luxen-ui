@@ -29,6 +29,9 @@
     /* mdi:chevron-down — same glyph as l-disclosure's `data-marker="arrow"`.
        Override with any url()/image to re-skin; pairs with --caret-color. */
     --caret-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"></path></svg>');
+    /* The chevron takes a square as tall as the field inside its borders, like
+       the l-select / l-combobox chevron and the native input actions. */
+    --_action-size: calc(var(--height) - 2 * var(--l-form-control-border-width));
 
     box-sizing: border-box;
     display: inline-flex;
@@ -139,10 +142,16 @@
     &::picker-icon {
       content: '';
       flex: 0 0 auto;
-      inline-size: 1.25rem;
-      block-size: 1.25rem;
+      /* Same end-action box as l-select: a square of the field height that
+         bleeds over the end padding to sit flush against the border, so it
+         lines up with the other controls' chevrons. The glyph is masked down
+         to --l-form-control-icon-size. Rotating the square keeps the glyph
+         centred. */
+      align-self: stretch;
+      inline-size: var(--_action-size);
+      margin-inline-end: calc(var(--l-form-control-padding-inline) * -1);
       background-color: var(--caret-color);
-      mask: var(--caret-icon) center / contain no-repeat;
+      mask: var(--caret-icon) center / var(--l-form-control-icon-size) no-repeat;
       transition: rotate 150ms ease;
     }
     &:open::picker-icon {

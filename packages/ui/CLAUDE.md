@@ -445,7 +445,9 @@ Never write inline `<svg>` / `<path>` markup in an element template. Pick the te
   }
   ```
 
-  Drive the color through `color`, never through `background-color: var(--some-color)`. When the element exposes a public color knob, map it onto `color` (`color: var(--caret-color)`) so both work. References: `.chevron` in `shared/styles/picker-core.css` (l-select, l-combobox), `.submenu-indicator` in `dropdown-item.css`.
+  Drive the color through `color`, never through `background-color: var(--some-color)`. When the element exposes a public color knob, map it onto `color` (`color: var(--caret-color)`) so both work. Reference: `.submenu-indicator` in `dropdown-item.css`.
+
+  When the glyph sits on a **clickable action at the end of a form control** (a picker's clear and chevron, a native date/search action), the box is the hit area and the glyph moves to a `::before` (or the native pseudo-element's own mask size): the box is a square of the control height inside its borders, the glyph is sized by `--l-form-control-icon-size`, and its URL is a **public** custom property (`--chevron-icon`, `--clear-icon`, `--calendar-icon`) so consumers re-skin it without styling the box. References: `.chevron` / `.clear-button` in `shared/styles/picker-core.css` (l-select, l-combobox), the native pickers in `src/css/elements/input.css`.
 
 - **Content icons** — media controls, actions, anything that reads as content rather than as the element's own affordance: `<l-icon name="set:icon">` from an Iconify collection, rendered through the registry tag (see `stories-viewer`), sized with `font-size` and colored with `color`.
 

@@ -41,6 +41,10 @@
     /* Public knobs */
     --height: var(--l-form-control-height);
     --border-radius: var(--l-form-control-border-radius);
+    /* The native end actions (date/time picker, search clear) each take a
+       square as tall as the field inside its borders — same box as the
+       l-select / l-combobox chevron and clear. */
+    --_action-size: calc(var(--height) - 2 * var(--l-form-control-border-width));
     /* https://lucide.dev/icons/calendar */
     --calendar-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>');
     /* https://lucide.dev/icons/clock */
@@ -164,16 +168,24 @@
     .l-input,
     :where(l-form-field:not([unstyled]), l-input-group) > input
   )::-webkit-calendar-picker-indicator {
-    inline-size: 1.15em;
-    block-size: 1.15em;
+    /* Same end-action box as the l-select / l-combobox chevron and clear: a
+       square as tall as the field inside its borders, bleeding over the end
+       padding so it sits flush against the border. Its hit area follows
+       `--height`; only the glyph is masked down to
+       `--l-form-control-icon-size` (default 1em, the size of an `<l-icon>`
+       affix). The mask covers the whole box, so a native indicator gets a
+       color change on hover but no wash. */
+    box-sizing: border-box;
+    inline-size: var(--_action-size);
+    block-size: var(--_action-size);
+    margin: 0;
+    margin-inline-end: calc(var(--l-form-control-padding-inline) * -1);
     padding: 0;
     color: var(--l-form-control-placeholder-color);
     background-color: currentColor;
     background-image: none;
     cursor: pointer;
-    /* 1em mask-size (not `contain`, which would fill the 1.15em hit area) keeps
-       the glyph the same visual size as a 1em `<l-icon>` affix. */
-    mask: var(--calendar-icon) center / 1em no-repeat;
+    mask: var(--calendar-icon) center / var(--l-form-control-icon-size) no-repeat;
   }
 
   :is(
@@ -216,13 +228,17 @@
       .l-input,
       :where(l-form-field:not([unstyled]), l-input-group) > input
     )[type='search']::-webkit-search-cancel-button {
+    /* Same end-action box as the date/time picker icon above. */
     appearance: none;
-    inline-size: 1.15em;
-    block-size: 1.15em;
+    box-sizing: border-box;
+    inline-size: var(--_action-size);
+    block-size: var(--_action-size);
+    margin: 0;
+    margin-inline-end: calc(var(--l-form-control-padding-inline) * -1);
     color: var(--l-form-control-placeholder-color);
     background-color: currentColor;
     cursor: pointer;
-    mask: var(--clear-icon) center / 1em no-repeat;
+    mask: var(--clear-icon) center / var(--l-form-control-icon-size) no-repeat;
   }
 
   @media (hover: hover) {
@@ -281,6 +297,9 @@
     /* The control inside drops its own chrome — the group provides it.
        `:is(input, .l-input)` outranks the `.l-input` base rule. */
     & > :is(input, .l-input) {
+      /* Follow the group's height (its `size` or `--height`), not the input
+         default: the native date/search action is sized from it. */
+      --height: inherit;
       flex: 1 1 auto;
       min-inline-size: 0;
       inline-size: auto;
@@ -289,6 +308,33 @@
       border: 0;
       border-radius: 0;
       background: transparent;
+    }
+
+    /* The inner input has no end padding to bleed over (the group owns it), so
+       its native date/search action stays inside the input box. */
+    & > :is(input, .l-input)::-webkit-calendar-picker-indicator,
+    & > :is(input, .l-input)::-webkit-search-cancel-button {
+      margin-inline-end: 0;
+    }
+
+    /* A date/time input that ends the group always shows its picker icon:
+       drop the group's end padding so that square sits flush against the
+       border, like a trailing button adornment or a picker's chevron. Gated on
+       the WebKit indicator — elsewhere the browser draws its own control. The
+       search clear only shows on hover or focus, so a search input keeps the
+       padding. */
+    @supports selector(::-webkit-calendar-picker-indicator) {
+      &:has(
+        > :is(input, .l-input):last-child:is(
+            [type='date'],
+            [type='time'],
+            [type='datetime-local'],
+            [type='month'],
+            [type='week']
+          )
+      ) {
+        padding-inline-end: 0;
+      }
     }
 
     /* The group owns the state visuals (focus halo, invalid wash); keep the
@@ -381,6 +427,14 @@
         cursor: not-allowed;
         color: var(--l-form-control-disabled-color);
       }
+    }
+
+    /* The injected password toggle is an end action like the date picker or a
+       picker's clear: its glyph follows --l-form-control-icon-size. `l-icon`
+       renders at 1em, so the size goes through font-size (default 1em: no
+       change). Authored adornments keep their own icon size. */
+    & > .l-input-group-toggle {
+      font-size: var(--l-form-control-icon-size);
     }
 
     @media (hover: hover) {
