@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
+// The design tokens the shadow skins read (focus ring color and width…).
+import '../../src/css/tokens.css';
 import '../../src/html/elements/dropdown/index.js';
 import '../../src/html/elements/dropdown-item/index.js';
 import '../../src/html/elements/dropdown-label/index.js';
@@ -1118,12 +1120,6 @@ describe('Accessibility', () => {
 
     it('the keyboard-focused item shows a visible focus ring (WCAG 2.4.7 / RGAA 10.7)', async () => {
       await mount(FIXTURE);
-      // The tokens stylesheet isn't loaded in the bare test harness; supply the
-      // two tokens the ring reads (they inherit into the shadow DOM) so the
-      // `var(--l-focus-ring-width) solid var(--l-focus-ring)` outline resolves
-      // the way it does in real usage.
-      host.style.setProperty('--l-focus-ring', '#d9461f');
-      host.style.setProperty('--l-focus-ring-width', '2px');
       await openViaKey('{ArrowDown}'); // focus Apple via keyboard (:focus-visible)
       const row = item('apple').shadowRoot!.querySelector<HTMLElement>('.item')!;
       expect(row.matches(':focus-visible')).toBe(true);

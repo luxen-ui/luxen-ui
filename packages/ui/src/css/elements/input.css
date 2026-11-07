@@ -81,11 +81,29 @@
       }
     }
 
-    /* Focus: the border takes the focus-ring color. The extra stroke width and
-       the soft halo live in a separate rule below (kept off the group's inner
-       input, which the group resets anyway). */
+    /* Focus: the border takes the focus-ring color, plus a stroke of
+       --l-form-control-focus-border-width (0 by default: nothing drawn) as an
+       outline drawn inward from the outer edge, over the border. One painted
+       ring, so rounded corners carry no seam, and the box, the padding and the
+       text never move. An outline, not an inset box-shadow: it paints above the
+       content (a native picker indicator cannot cover it) and leaves box-shadow
+       to the halo below. The group's inner input resets the outline: the group
+       draws the stroke on its wrapper. The other text controls (textarea,
+       native select, input group, l-select / l-combobox, l-prose-editor) reuse
+       this recipe. */
     &:focus-visible {
       border-color: var(--l-focus-ring);
+      outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
+      outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
+
+      /* Forced colors: the system palette overrides border-color, so the
+         border no longer reads as a state change, and the halo is dropped. A
+         transparent outline is forced to a visible system color: it is the
+         indicator there. */
+      @media (forced-colors: active) {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
     }
 
     /* Invalid: red border + a faint danger wash. After interaction
@@ -100,6 +118,11 @@
         var(--l-form-control-border-color-invalid) 6%,
         var(--l-form-control-background-color)
       );
+    }
+
+    /* The focus stroke follows the invalid border. */
+    &:is(:user-invalid, [aria-invalid='true']):focus-visible {
+      outline-color: var(--l-form-control-border-color-invalid);
     }
 
     /* Disabled: a solid greyed-out fill (shadcn-style) rather than fading the
@@ -135,57 +158,6 @@
     ):focus-visible {
     box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
       color-mix(in oklab, var(--l-form-control-border-color-invalid) 22%, transparent);
-  }
-
-  /* Focus stroke — when --l-form-control-focus-border-width is wider than the
-     resting border, an outline that wide is drawn inward from the outer edge
-     (offset = minus its width), over the border: one painted ring, so the
-     rounded corners carry no seam between border and outline, and the box,
-     the padding and the text never move. `sign()` zeroes it otherwise (a
-     negative width clamps to 0): at the default width nothing is drawn.
-     An outline, not an inset box-shadow: it paints above the content (a native
-     picker indicator cannot cover it) and leaves box-shadow to the halo alone,
-     so a 0 halo never voids the stroke. Same text-like type filter as the base
-     rule, so a checkbox or a range inside `l-form-field` keeps its own focus
-     outline. The other text controls (textarea, native select, input group,
-     l-select / l-combobox, l-prose-editor) reuse this recipe. */
-  :is(
-    .l-input,
-    :where(l-form-field:not([unstyled]))
-      > input:where(
-        :not([type]),
-        [type='text'],
-        [type='search'],
-        [type='email'],
-        [type='url'],
-        [type='tel'],
-        [type='password'],
-        [type='number'],
-        [type='date'],
-        [type='time'],
-        [type='datetime-local'],
-        [type='month'],
-        [type='week']
-      )
-  ):focus-visible {
-    outline: calc(
-        var(--l-form-control-focus-border-width) *
-          sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
-      )
-      solid var(--l-focus-ring);
-    outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
-
-    &:is(:user-invalid, [aria-invalid='true']) {
-      outline-color: var(--l-form-control-border-color-invalid);
-    }
-
-    /* Forced colors: the system palette overrides border-color, so the border
-       no longer reads as a state change, and the halo is dropped. A transparent
-       outline is forced to a visible system color: it is the indicator there. */
-    @media (forced-colors: active) {
-      outline: 2px solid transparent;
-      outline-offset: 2px;
-    }
   }
 
   /* Size — `data-size` maps the control height to the shared `--l-size-control-*`
@@ -503,11 +475,7 @@
        button shows its own ring, not the group's. */
     &:has(> input:focus-visible) {
       border-color: var(--l-focus-ring);
-      outline: calc(
-          var(--l-form-control-focus-border-width) *
-            sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
-        )
-        solid var(--l-focus-ring);
+      outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
       outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
       box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
         color-mix(in oklab, var(--l-focus-ring) 22%, transparent);

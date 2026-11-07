@@ -31,7 +31,7 @@ interface Control {
   frame: (el: HTMLElement) => HTMLElement;
   /** The box the value text is laid out in — it must not move on focus. */
   text: (el: HTMLElement) => HTMLElement;
-  /** Whether an invalid control recolors its halo (the native select does not). */
+  /** Whether the control has an invalid skin that recolors its halo. */
   invalidHalo: boolean;
 }
 
@@ -51,7 +51,7 @@ const CONTROLS: Record<string, Control> = {
       `<select class="l-select" aria-label="Country" ${attrs}><option>France</option></select>`,
     frame: self,
     text: self,
-    invalidHalo: false,
+    invalidHalo: true,
   },
   '.l-textarea': {
     markup: (attrs = '') => `<textarea class="l-textarea" aria-label="Bio" ${attrs}>Hi</textarea>`,
@@ -179,11 +179,8 @@ for (const [name, control] of Object.entries(CONTROLS)) {
         expect(geometry(control, el)).toEqual(atRest);
       });
 
-      it('draws nothing extra when it is not wider than the resting border', async () => {
-        const el = await mount(
-          control.markup(),
-          '--l-form-control-border-width: 2px; --l-form-control-focus-border-width: 1px',
-        );
+      it('draws no stroke on a borderless field by default', async () => {
+        const el = await mount(control.markup(), '--l-form-control-border-width: 0px');
         await focusByKeyboard();
         expect(paint(control, el).outlineWidth).toBe('0px');
       });

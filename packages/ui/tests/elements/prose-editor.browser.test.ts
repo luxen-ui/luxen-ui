@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import type { UserEvent } from 'vite-plus/test/browser/context';
+// The design tokens the frame reads (focus ring, form-control focus widths…).
+import '../../src/css/tokens.css';
 import '../../src/html/elements/prose-editor/index.js';
 // The focus indicator lives in the light-DOM stylesheet (it is the only place
 // that can see .ProseMirror's focus state), so load it to assert what a user sees.
@@ -821,12 +823,10 @@ describe('Accessibility', () => {
 
     async function mountThemed(markup: string): Promise<ProseEditor> {
       const el = await mount(markup);
-      // The tokens stylesheet isn't loaded in the bare test harness; supply the
-      // tokens the frame reads so the var() chains resolve as in real usage.
+      // Pin the two colors the assertions compare against (the tokens
+      // stylesheet is loaded above; these override its values).
       host.style.setProperty('--l-focus-ring', RING);
       host.style.setProperty('--l-color-border', IDLE);
-      host.style.setProperty('--l-form-control-focus-border-width', '1px');
-      host.style.setProperty('--l-form-control-focus-halo-width', '3px');
       await settleTransition();
       return el;
     }

@@ -94,20 +94,17 @@ function vizKind(t) {
 }
 
 /**
- * The focus-ring swatch: the color token tints a ring around a control; the
- * width token draws the real :focus-visible ring (2px offset, as on a button)
- * at its own thickness, in the current ring color.
+ * The focus-ring swatch: the controls that draw the ring (button, checkbox,
+ * radio, switch), with only this token set to its value. Focus can't be
+ * triggered on an inert preview, so their `:focus-visible` ring is pinned on.
  */
-function focusVizStyle(t) {
-  const base = {
-    background: 'var(--l-color-bg-fill-secondary)',
-    borderColor: 'var(--l-color-border)',
-  };
-  if (t.path[0] === 'focus-ring-width') {
-    return { ...base, outline: `${t.value} solid var(--l-focus-ring)`, outlineOffset: '2px' };
-  }
-  return { ...base, boxShadow: `0 0 0 3px ${t.value}` };
+function focusVars(t) {
+  return { [t.name]: t.value };
 }
+const pinnedRing = {
+  outline: 'var(--l-focus-ring-width) solid var(--l-focus-ring)',
+  outlineOffset: '2px',
+};
 
 /** Lookup helper. */
 function tokenByName(name) {
@@ -493,10 +490,38 @@ function copy(name) {
                 class="viz-focus"
                 :style="{ background: 'var(--l-color-surface)' }"
               >
-                <span
-                  class="viz-focus__el"
-                  :style="focusVizStyle(token)"
-                />
+                <div
+                  inert
+                  class="flex items-center gap-4"
+                  :style="focusVars(token)"
+                >
+                  <button
+                    type="button"
+                    class="l-button"
+                    :style="pinnedRing"
+                  >
+                    Save
+                  </button>
+                  <input
+                    type="checkbox"
+                    class="l-checkbox"
+                    aria-label="Checkbox"
+                    :style="pinnedRing"
+                  />
+                  <input
+                    type="radio"
+                    class="l-radio"
+                    aria-label="Radio"
+                    :style="pinnedRing"
+                  />
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    class="l-switch"
+                    aria-label="Switch"
+                    :style="pinnedRing"
+                  />
+                </div>
               </div>
               <div
                 v-else-if="vizKind(token) === 'control'"
@@ -829,12 +854,6 @@ function copy(name) {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.viz-focus__el {
-  inline-size: 1.25rem;
-  block-size: 1.25rem;
-  border-radius: 0.25rem;
-  border: 1px solid;
 }
 
 .viz-fill-tag-wrap {
