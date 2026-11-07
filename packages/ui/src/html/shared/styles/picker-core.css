@@ -65,9 +65,9 @@
 /* Focus: border takes the ring color plus the soft halo, matching l-input. The
    halo is mixed here rather than read from a :root token, so a --l-focus-ring
    re-themed on an ancestor recolors the halo as well as the border.
-   A --l-form-control-focus-border-width wider than the resting border draws its
-   full thickness as an outline inward over the border, so the field, its text
-   and its end actions never move (0 wide at the default width: nothing drawn).
+   The --l-form-control-focus-border-width stroke is an outline drawn inward
+   over the border, so the field, its text and its end actions never move (0 by
+   default: nothing drawn).
    An outline, not an inset box-shadow: it paints above the clear button and
    the chevron, whose hover wash reaches the border, and it leaves box-shadow to
    the halo alone, 0 wide (--l-form-control-focus-halo-width: 0) painting
@@ -75,11 +75,7 @@
 .control:has(.input:focus-visible),
 .trigger:focus-visible {
   border-color: var(--l-focus-ring);
-  outline: calc(
-      var(--l-form-control-focus-border-width) *
-        sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
-    )
-    solid var(--l-focus-ring);
+  outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
   outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
   box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
     color-mix(in oklab, var(--l-focus-ring) 22%, transparent);

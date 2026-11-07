@@ -93,19 +93,14 @@
     }
   }
 
-  /* Focus stroke + soft halo — same recipe as `.l-input`. A
-     --l-form-control-focus-border-width wider than the resting border draws its
-     full thickness as an outline drawn inward over the border (the box and the
-     text never move; at the default width it is 0 wide), and box-shadow carries
-     the halo alone, 0 wide (--l-form-control-focus-halo-width: 0) painting
-     nothing.
+  /* Focus stroke + soft halo — same recipe as `.l-input`. The
+     --l-form-control-focus-border-width stroke is an outline drawn inward over
+     the border (the box and the text never move; 0 by default: nothing drawn),
+     and box-shadow carries the halo alone, 0 wide
+     (--l-form-control-focus-halo-width: 0) painting nothing.
      The outline paints above the content, so it stays whole over a scrollbar. */
   :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):focus-visible {
-    outline: calc(
-        var(--l-form-control-focus-border-width) *
-          sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
-      )
-      solid var(--l-focus-ring);
+    outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
     outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
     box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
       color-mix(in oklab, var(--l-focus-ring) 22%, transparent);

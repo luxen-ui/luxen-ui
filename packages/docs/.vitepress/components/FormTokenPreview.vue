@@ -46,13 +46,12 @@ const hoverStyle = { '--l-form-control-border-color': 'var(--l-form-control-bord
 /**
  * Focus can't be triggered on a static (inert) preview either — pin the
  * `.l-input:focus-visible` recipe of input.css on the field instead: the border
- * in the ring color, the stroke beyond it as an outline drawn inward, the halo
+ * in the ring color, the stroke as an outline drawn inward over it, the halo
  * as the box-shadow.
  */
 const focusStyle = {
   borderColor: 'var(--l-focus-ring)',
-  outline:
-    'calc(var(--l-form-control-focus-border-width) * sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))) solid var(--l-focus-ring)',
+  outline: 'var(--l-form-control-focus-border-width) solid var(--l-focus-ring)',
   outlineOffset: 'calc(var(--l-form-control-focus-border-width) * -1)',
   boxShadow:
     '0 0 0 var(--l-form-control-focus-halo-width) color-mix(in oklab, var(--l-focus-ring) 22%, transparent)',
