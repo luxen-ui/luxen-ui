@@ -1,5 +1,41 @@
 # luxen-ui
 
+## 0.24.0
+
+### Minor Changes
+
+- c96ccb3: The end actions of text controls now follow the control height. The clear button and the chevron of `<l-select>` and `<l-combobox>`, the chevron of the native `select.l-select`, and the search clear and date/time picker icon of `.l-input` each take a square as tall as the field (borders excluded). A taller control set with `--height` or `--l-form-control-height` gets larger hit areas and more room between them, with no extra setting. Inside `<l-input-group>`, the native actions follow the group's `size`. The clear button gains a hover background and a visible focus ring.
+  
+  A new `--l-form-control-icon-size` token sets the size of all these glyphs, and of the `<l-input-group>` password toggle (default `1em`). `<l-select>` and `<l-combobox>` expose their glyphs as `--chevron-icon` and `--clear-icon`.
+  
+  Clicking the chevron of `<l-combobox>` now closes an open list, as it already did in `<l-select>`. A long value in `<l-select>` now stops before the clear button instead of running under it. `<l-form-field>` no longer widens to fit a long select value: the field stays as wide as its container and the value truncates, so a form laid out as a grid keeps every field inside its box at every control size.
+  
+  **Styling the `chevron` and `clear` parts.** These parts are now the action's full square, and the glyph is drawn inside them. To resize a glyph, set `--l-form-control-icon-size` instead of sizing the part. To change it, set `--chevron-icon` or `--clear-icon` instead of a `mask` on the part. A `color` on the part still recolors the glyph.
+  
+  The native `select.l-select` chevron is drawn at `1em` like the other chevrons, smaller than its former fixed `1.25rem` box. Set `--l-form-control-icon-size` to enlarge every glyph at once.
+- b72579e: Eight form tokens are renamed so their names say what they style and put the state last, like `--l-form-control-border-color-hover`. All form tokens now share the `--l-form-control-*` prefix, including the spacing of `l-form-field`.
+  
+  | Before                                 | After                                        |
+  | -------------------------------------- | -------------------------------------------- |
+  | `--l-form-field-gap`                   | `--l-form-control-label-gap`                 |
+  | `--l-form-field-choice-gap`            | `--l-form-control-choice-label-gap`          |
+  | `--l-form-control-error-color`         | `--l-form-control-error-message-color`       |
+  | `--l-form-control-disabled-background` | `--l-form-control-background-color-disabled` |
+  | `--l-form-control-disabled-border`     | `--l-form-control-border-color-disabled`     |
+  | `--l-form-control-disabled-color`      | `--l-form-control-text-color-disabled`       |
+  | `--l-form-control-disabled-mark-color` | `--l-form-control-mark-color-disabled`       |
+  | `--l-form-control-track-off-color`     | `--l-form-control-track-color-off`           |
+  
+  `--l-form-control-label-gap` is the space between the parts inside one field (label, control, hint, error), not between two fields. `--l-form-control-choice-label-gap` is the space between a checkbox, radio or switch and its label. `--l-form-control-error-message-color` colors the error text only; the invalid border stays `--l-form-control-border-color-invalid`. `--l-form-control-text-color-disabled` covers all the text of a disabled control and its field: value, placeholder, label, hint and required indicator.
+  
+  **Migration.** Rename any override of the old tokens. The old names are not kept as aliases, so an override left on an old name is silently ignored and the control falls back to the default value.
+- 5271bbc: Panels anchored to a trigger and their rows now share new `--l-popover-*` and `--l-menu-item-*` design tokens, so dropdowns, popovers, selects and comboboxes look the same and can be re-themed in one place. Combobox options now match dropdown items: 36px rows, 14px text and a hover highlight. In both `<l-select>` and `<l-combobox>`, the mouse and the keyboard share a single highlighted option. `--show-duration` and `--hide-duration` now also accept values in seconds. A combobox opened from its chevron now closes when you click outside it.
+
+### Patch Changes
+
+- b72579e: `<l-dropdown>` no longer throws `item.closeSubmenu is not a function` when it is defined before `<l-dropdown-item>` — for instance when the two modules load as separate CDN scripts or parallel dynamic imports. A dropdown that has never been opened also stops firing a stray `after-hide` event when it mounts.
+- b72579e: `<l-input-otp>` cells now take their look from the shared text-field tokens, like `input`, `textarea` and `select`: corner radius from `--l-form-control-border-radius`, border from `--l-form-control-border-color` and `--l-form-control-border-width`, digits from `--l-form-control-value-color`, and their faint tinted fill over `--l-form-control-background-color`. A form whose fields are themed now restyles its OTP cells to match. The default look is unchanged, and the `--cell-*` properties still set the cells on their own.
+
 ## 0.23.0
 
 ### Minor Changes
