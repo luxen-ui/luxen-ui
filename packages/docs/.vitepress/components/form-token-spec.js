@@ -95,6 +95,23 @@ export const FORM_TOKEN_GROUPS = {
       touches: 'End glyphs',
     },
   },
+  // The focused text field: stroke and halo. Previewed pinned in the focus
+  // state; the highlight recolors the ring violet so the stroke reads apart
+  // from the brand-orange default.
+  focus: {
+    '--l-form-control-focus-border-width': {
+      preview: 'input-focus',
+      highlight: '3px',
+      paint: { '--l-focus-ring': HL },
+      touches: 'Focus stroke width',
+    },
+    '--l-form-control-focus-halo-width': {
+      preview: 'input-focus',
+      highlight: '8px',
+      paint: { '--l-focus-ring': HL },
+      touches: 'Focus halo width',
+    },
+  },
   toggle: {
     '--l-form-control-activated-color': {
       preview: 'toggles-on',

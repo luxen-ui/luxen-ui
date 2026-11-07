@@ -81,12 +81,29 @@
       }
     }
 
-    /* Focus: border takes the ring color plus the soft halo, matching l-input. */
+    /* Focus: border takes the ring color plus the soft halo, matching l-input.
+       A --l-form-control-focus-border-width wider than the resting border draws
+       its full thickness as an outline inward over the border (the box, the
+       text and the picker icon never move; 0 wide at the default width), and
+       box-shadow carries the halo alone (0 wide paints nothing). */
     &:focus-visible {
       border-color: var(--l-focus-ring);
-      outline: 2px solid transparent;
-      outline-offset: 2px;
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+      outline: calc(
+          var(--l-form-control-focus-border-width) *
+            sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
+        )
+        solid var(--l-focus-ring);
+      outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
+      box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
+        color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+
+      /* Forced colors: the system palette overrides border-color and drops the
+         halo. A transparent outline is forced to a visible system color: it is
+         the indicator there. */
+      @media (forced-colors: active) {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
     }
 
     /* Invalid: red border + faint danger wash. Ordered after focus so the red
@@ -94,6 +111,9 @@
     &:user-invalid,
     &[aria-invalid='true'] {
       border-color: var(--l-form-control-border-color-invalid);
+      /* The focus stroke follows the invalid border. (The halo keeps the
+         focus-ring color here, unlike .l-input / .l-textarea.) */
+      outline-color: var(--l-form-control-border-color-invalid);
       background-color: color-mix(
         in oklab,
         var(--l-form-control-border-color-invalid) 6%,

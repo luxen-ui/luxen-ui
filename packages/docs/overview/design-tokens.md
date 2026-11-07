@@ -3,6 +3,10 @@ outline: false
 aside: false
 ---
 
+<script setup>
+import focusStrokeExample from '../.vitepress/examples/form-tokens/FocusStroke.html?raw'
+</script>
+
 # Design Tokens
 
 <TokenNav />
@@ -103,6 +107,33 @@ Shared by text fields and the checkbox and radio box (the invalid border also ri
 Input, textarea and select only — toggles are sized by `--l-form-control-toggle-size`.
 
 <DesignTokens category="form" group="field" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Focus
+
+The focused text field — input, textarea, select, `l-input-group`, `l-select`, `l-combobox` and `l-prose-editor` — in the `--l-focus-ring` color (the invalid color on an invalid field). A stroke wider than the resting border is drawn inward, over the border: the control keeps its size and its text does not move.
+
+<DesignTokens category="form" group="focus" />
+
+#### Crisp stroke, no halo
+
+A 2px stroke and no halo, from tokens alone. Tab through the fields:
+
+```css
+:root {
+  --l-form-control-focus-border-width: 2px;
+  --l-form-control-focus-halo-width: 0;
+}
+```
+
+<ComponentWrapper :html="focusStrokeExample" />
+
+::: details Code
+<<< @/.vitepress/examples/form-tokens/FocusStroke.html [HTML]
+:::
 
 </section>
 
