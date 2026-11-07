@@ -146,7 +146,7 @@
       box-shadow: none;
     }
 
-    /* Deliberately *not* the --l-form-control-disabled-* tokens the `default`
+    /* Deliberately *not* the --l-form-control-*-disabled tokens the `default`
        appearance greys out with: those are translucent, and this capsule needs
        one flat colour rather than a tint laid over whatever it happens to sit
        on. Soft lands between the page and the enabled fill in both modes —
@@ -162,7 +162,7 @@
        one. */
     :scope:has(input:disabled)[appearance='pill'] {
       --_fill: var(--l-color-bg-fill-neutral-soft);
-      --border-color: var(--l-form-control-disabled-border);
+      --border-color: var(--l-form-control-border-color-disabled);
     }
   }
 }

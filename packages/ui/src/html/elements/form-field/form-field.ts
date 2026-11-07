@@ -14,7 +14,7 @@ const CONTROL_SELECTOR = 'input, select, textarea';
 /**
  * @summary Progressively enhances a label + control + messages group: wires the
  * accessibility plumbing (`id`/`for`, `aria-describedby`, `aria-invalid`,
- * required marker) and picks an inline or stacked layout from the control type.
+ * required indicator) and picks an inline or stacked layout from the control type.
  *
  * Styling stays on the control (`.l-checkbox`, …); inside a field a bare control
  * is auto-styled by the element CSS. Add `unstyled` to keep the ARIA wiring while
@@ -141,7 +141,7 @@ export class FormField extends LuxenElement {
       this.layout = isToggle ? 'inline' : 'stacked';
     }
 
-    // Required marker (control is the source of truth).
+    // Required indicator (control is the source of truth).
     this.required = control.hasAttribute('required');
     this.optional = !this.required;
 

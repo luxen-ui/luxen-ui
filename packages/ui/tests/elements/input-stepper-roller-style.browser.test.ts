@@ -58,7 +58,7 @@ const decrementBtn = () => page.getByRole('button', { name: 'Decrease value' });
 describe('The roller overlay lets the stepper’s own background show through', () => {
   it('paints no fill of its own, so a disabled stepper greys out evenly', async () => {
     await mount(ROLLER('disabled'));
-    // The host paints --l-form-control-disabled-background, which is translucent.
+    // The host paints --l-form-control-background-color-disabled, which is translucent.
     // A fill here would composite it a second time over the value area only —
     // the reported lighter rectangle. Transparent means the value area shows
     // exactly what the button area shows.

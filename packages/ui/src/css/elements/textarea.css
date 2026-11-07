@@ -85,14 +85,14 @@
     &:disabled {
       cursor: not-allowed;
       resize: none;
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
-      color: var(--l-form-control-disabled-color);
-      -webkit-text-fill-color: var(--l-form-control-disabled-color);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
+      color: var(--l-form-control-text-color-disabled);
+      -webkit-text-fill-color: var(--l-form-control-text-color-disabled);
     }
 
     &:disabled::placeholder {
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
   }
 

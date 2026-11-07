@@ -14,7 +14,7 @@
        truncating the value. Max-content sizing is unchanged, so a field in a
        shrink-to-fit context still grows to fit its control. */
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--l-form-field-gap);
+    gap: var(--l-form-control-label-gap);
     /* Controls size to their content; text controls (`.l-input`, `.l-textarea`)
        opt into full width via their own CSS — the field never forces width. */
     justify-items: start;
@@ -25,7 +25,7 @@
       font-weight: var(--l-font-weight-medium);
     }
 
-    /* Required marker on the label. */
+    /* Required indicator on the label. */
     &[required] > label::after {
       content: var(--l-form-control-required-content);
       margin-inline-start: 0.25ch;
@@ -36,7 +36,7 @@
        control on the left, label on the right, messages below the label. */
     &[layout='inline'] {
       grid-template-columns: auto 1fr;
-      column-gap: var(--l-form-field-choice-gap);
+      column-gap: var(--l-form-control-choice-label-gap);
       align-items: center;
 
       & > :is(input, select, textarea) {
@@ -56,7 +56,7 @@
     }
   }
 
-  /* A disabled control takes its label, hint and required marker with it —
+  /* A disabled control takes its label, hint and required indicator with it —
      otherwise a greyed-out control sits under a full-strength label and the
      field still reads as available. Greying the label alone would invert the
      hierarchy: `.l-hint` is `text-secondary`, darker than the disabled ink, so
@@ -71,13 +71,13 @@
   l-form-field:has(> [disabled]) {
     & > label,
     & > .l-hint {
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
 
-    /* The marker is decorative once nothing can be submitted; a red asterisk on
+    /* The indicator is decorative once nothing can be submitted; a red asterisk on
        an inert field reads as an unmet requirement the user could act on. */
     &[required] > label::after {
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
 
     /* Undo the inline layout's `cursor: pointer` — clicking the label would
@@ -98,7 +98,7 @@
   fieldset:disabled {
     & :is(legend, label),
     & .l-hint {
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
 
     & label {
@@ -116,7 +116,7 @@
   .l-error {
     display: block;
     margin: 0;
-    color: var(--l-form-control-error-color);
+    color: var(--l-form-control-error-message-color);
     font-size: var(--l-text-sm);
   }
 

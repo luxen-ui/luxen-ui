@@ -16,9 +16,9 @@ import { cls } from '../../registry.js';
  * @cssproperty --digits - Number of digit boxes (default: 6). Must match input's maxlength.
  * @cssproperty --cell-size - Cell width and height (default: 2.75rem). Font size scales automatically.
  * @cssproperty --cell-gap - Space between cells (default: 0.5rem).
- * @cssproperty --cell-bg-color - Cell background color.
- * @cssproperty --cell-border-color - Cell border color.
- * @cssproperty --cell-border-radius - Cell border-radius.
+ * @cssproperty --cell-bg-color - Cell background color (default: a faint ink tint over `--l-form-control-background-color`).
+ * @cssproperty --cell-border-color - Cell border color (default: `var(--l-form-control-border-color)`).
+ * @cssproperty --cell-border-radius - Cell border-radius (default: `var(--l-form-control-border-radius)`, like the other text fields).
  * @cssproperty --cell-focus-color - Border + ring color of the active (focused) cell.
  * @cssproperty --cell-focus-ring - `box-shadow` of the active cell ring (defaults to a 1px solid ring; set to `none` to disable).
  */

@@ -171,7 +171,13 @@ export class Dropdown extends LuxenElement {
   }
 
   override updated(changed: PropertyValues<this>) {
-    if (changed.has('open')) {
+    // `open` reads as changed on the first update even when it stays false. A
+    // menu that was never opened has nothing to close — running the close path
+    // there would fire a stray `after-hide` and call into items that may not be
+    // upgraded yet (l-dropdown defined before l-dropdown-item), which throws.
+    // React to real transitions only.
+    const wasOpen = changed.get('open');
+    if (changed.has('open') && (this.open || wasOpen !== undefined)) {
       void this._handleOpenChange();
     }
   }

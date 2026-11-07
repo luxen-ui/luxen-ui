@@ -9,6 +9,6 @@ import FormsOverview from '../.vitepress/components/FormsOverview.vue'
 
 # Forms overview <Badge type="tip">Visual tests</Badge>
 
-Flip a state and every form control updates at once — a quick way to check that labels, hints, errors, required markers, disabled and invalid styling stay consistent across the whole form system.
+Flip a state and every form control updates at once — a quick way to check that labels, hints, errors, required indicators, disabled and invalid styling stay consistent across the whole form system.
 
 <FormsOverview />

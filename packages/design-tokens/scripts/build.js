@@ -383,7 +383,7 @@ StyleDictionary.registerFormat({
 function categorize(token) {
   const path = token.path;
   const [head] = path;
-  // Form component tokens (form.control.*, form.field.*) get their own bucket.
+  // Form component tokens (form.control.*) get their own bucket.
   if (head === 'form') return 'form';
   // Tooltip component token — a floating surface.
   if (head === 'tooltip') return 'surface';

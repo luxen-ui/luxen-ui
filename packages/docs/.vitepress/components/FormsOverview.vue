@@ -310,7 +310,7 @@ const attr = (on) => (on ? '' : null);
       <!-- Radio — a group, so the legend is the field label and the options
            share a name. `<fieldset disabled>` disables every option at once. -->
       <fieldset
-        class="m-0 grid gap-[var(--l-form-field-gap)] border-0 p-0"
+        class="m-0 grid gap-[var(--l-form-control-label-gap)] border-0 p-0"
         :disabled="disabled"
       >
         <!-- The colour is a ternary, not two stacked classes: both are arbitrary
@@ -321,7 +321,7 @@ const attr = (on) => (on ? '' : null);
           class="p-0 text-sm font-medium"
           :class="[
             disabled
-              ? '[color:var(--l-form-control-disabled-color)]'
+              ? '[color:var(--l-form-control-text-color-disabled)]'
               : '[color:var(--l-form-control-label-color)]',
             required &&
               'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]',
@@ -329,30 +329,35 @@ const attr = (on) => (on ? '' : null);
         >
           Notification preference
         </legend>
-        <label
-          class="flex cursor-pointer items-center gap-[var(--l-form-field-choice-gap)] text-sm"
-        >
-          <input
-            type="radio"
-            class="l-radio"
-            name="overview-notifications"
-            :required="required"
-            :checked="!invalid"
-            :aria-invalid="invalid ? 'true' : null"
-          />
-          All new messages
-        </label>
-        <label
-          class="flex cursor-pointer items-center gap-[var(--l-form-field-choice-gap)] text-sm"
-        >
-          <input
-            type="radio"
-            class="l-radio"
-            name="overview-notifications"
-            :aria-invalid="invalid ? 'true' : null"
-          />
-          Direct messages and mentions
-        </label>
+        <!-- The options sit in their own block, spaced like a vertical
+             l-radio-group (--l-spacing-3): --l-form-control-label-gap spaces the
+             field's parts (legend, options, hint, error), not the options. -->
+        <div class="grid gap-3">
+          <label
+            class="flex cursor-pointer items-center gap-[var(--l-form-control-choice-label-gap)] text-sm"
+          >
+            <input
+              type="radio"
+              class="l-radio"
+              name="overview-notifications"
+              :required="required"
+              :checked="!invalid"
+              :aria-invalid="invalid ? 'true' : null"
+            />
+            All new messages
+          </label>
+          <label
+            class="flex cursor-pointer items-center gap-[var(--l-form-control-choice-label-gap)] text-sm"
+          >
+            <input
+              type="radio"
+              class="l-radio"
+              name="overview-notifications"
+              :aria-invalid="invalid ? 'true' : null"
+            />
+            Direct messages and mentions
+          </label>
+        </div>
         <p class="l-hint">{{ hint }}</p>
         <p
           class="l-error"
@@ -382,21 +387,21 @@ const attr = (on) => (on ? '' : null);
 
       <!-- Rating — a form-associated custom control, but not an
            input/select/textarea, so l-form-field can't auto-wire it; mirror the
-           radio fieldset with a manual label, required marker and error. The
+           radio fieldset with a manual label, required indicator and error. The
            shared size maps to --icon-size and the accent to --active-color.
            Error clears a required rating (value 0) so it reads as invalid. -->
       <!-- A real `<fieldset>`, not a div dressed as one: `fieldset:disabled`
            greys the legend and the hint for free, exactly like the radio group,
            instead of hand-rolling the disabled colour a third time. -->
       <fieldset
-        class="m-0 grid gap-[var(--l-form-field-gap)] border-0 p-0"
+        class="m-0 grid gap-[var(--l-form-control-label-gap)] border-0 p-0"
         :disabled="disabled"
       >
         <legend
           class="p-0 text-sm font-medium"
           :class="[
             disabled
-              ? '[color:var(--l-form-control-disabled-color)]'
+              ? '[color:var(--l-form-control-text-color-disabled)]'
               : '[color:var(--l-form-control-label-color)]',
             required &&
               'after:ml-[0.25ch] after:[content:var(--l-form-control-required-content)] after:[color:var(--l-form-control-required-color)]',

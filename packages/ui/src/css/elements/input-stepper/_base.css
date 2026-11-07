@@ -126,7 +126,7 @@
        sets on this same state. Matches `input:disabled` below. */
     button:disabled {
       cursor: not-allowed;
-      color: var(--l-form-control-disabled-color);
+      color: var(--l-form-control-text-color-disabled);
     }
 
     @media (hover: hover) {
@@ -185,7 +185,7 @@
        paints — the form-control fill in `default`, nothing at all in `rounded` —
        shows through untouched. A fill here would composite a second time over the
        host's own and read as a tinted rectangle over the value area wherever either
-       one is translucent, e.g. --l-form-control-disabled-background. */
+       one is translucent, e.g. --l-form-control-background-color-disabled. */
     .l-input-stepper-track-display {
       position: absolute;
       inset: 0;

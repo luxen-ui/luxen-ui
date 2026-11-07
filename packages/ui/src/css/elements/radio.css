@@ -83,8 +83,8 @@
        wash out), selected fades (the fade reads as inactive at a glance, at the
        cost of a 1.85:1 dot — see checkbox-appearance.css for the full rationale). */
     &:disabled:not(:checked) {
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
     }
 
     &:disabled:checked {

@@ -1,9 +1,14 @@
 <script setup>
 import { computed, ref } from 'vue';
 import tokensJson from '@luxen-ui/design-tokens/json';
+import FormTokenPreview from './FormTokenPreview.vue';
+import { FORM_TOKEN_GROUPS, FORM_TOKEN_SPEC } from './form-token-spec.js';
+import { matchesQuery, tokenQuery } from './token-filter.js';
 
 const props = defineProps({
   category: { type: String, default: null },
+  /** Sub-group of the `form` category (a key of FORM_TOKEN_GROUPS). */
+  group: { type: String, default: null },
 });
 
 const CATEGORIES = {
@@ -14,9 +19,33 @@ const CATEGORIES = {
   shadow: 'Shadow',
   sizing: 'Sizing',
   spacing: 'Spacing',
+  form: 'Form',
 };
 
-const tokens = computed(() => tokensJson.filter((t) => t.category !== 'primitive'));
+// A form token missing from every group would silently vanish from the page.
+if (import.meta.env.DEV) {
+  const grouped = new Set(Object.values(FORM_TOKEN_GROUPS).flatMap((g) => Object.keys(g)));
+  const orphans = tokensJson.filter((t) => t.category === 'form' && !grouped.has(t.name));
+  if (orphans.length) {
+    console.warn(
+      `[DesignTokens] form tokens not assigned to a group in form-token-spec.js: ${orphans.map((t) => t.name).join(', ')}`,
+    );
+  }
+}
+
+/** Tokens of a category, narrowed and ordered by a form sub-group when one is given. */
+function tokensFor(key) {
+  const inCategory = tokens.value.filter((t) => t.category === key);
+  if (key !== 'form' || !props.group) return inCategory;
+  const names = Object.keys(FORM_TOKEN_GROUPS[props.group] ?? {});
+  return names.map((n) => inCategory.find((t) => t.name === n)).filter(Boolean);
+}
+
+// Narrowed by the page filter (TokenNav). A block left empty renders no rows,
+// and the page hides its enclosing section (`not-has-[[data-viz]]:hidden`).
+const tokens = computed(() =>
+  tokensJson.filter((t) => t.category !== 'primitive' && matchesQuery(t, tokenQuery.value)),
+);
 
 const groups = computed(() => {
   const wanted = props.category ? [props.category] : Object.keys(CATEGORIES);
@@ -24,7 +53,7 @@ const groups = computed(() => {
     .map((key) => ({
       key,
       label: CATEGORIES[key],
-      tokens: tokens.value.filter((t) => t.category === key),
+      tokens: tokensFor(key),
       hasModes: tokens.value.some((t) => t.category === key && t.light != null && t.dark != null),
     }))
     .filter((g) => g.tokens.length > 0);
@@ -41,6 +70,7 @@ function hasModes(t) {
  */
 function vizKind(t) {
   const p = t.path;
+  if (t.category === 'form') return 'form';
   if (t.category === 'shadow') return 'shadow';
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
@@ -181,8 +211,40 @@ function copy(name) {
 
         <!-- VALUES block (cells in flex row, full width below info) -->
         <div class="tokens__cells">
+          <!-- FORM: the live control at its default, then with only this
+               token highlighted — shows exactly what the token touches. -->
+          <template v-if="vizKind(token) === 'form'">
+            <div
+              v-for="highlight in [false, true]"
+              :key="String(highlight)"
+              class="tokens__cell"
+              :data-mode="highlight ? 'highlight' : 'default'"
+            >
+              <div class="tokens__cell-viz">
+                <FormTokenPreview
+                  :token="token"
+                  :highlight="highlight"
+                />
+              </div>
+              <div class="tokens__cell-footer">
+                <span
+                  class="tokens__cell-mode"
+                  :class="{ 'tokens__cell-mode--touch': highlight }"
+                  >{{ highlight ? 'Touches' : 'Default' }}</span
+                >
+                <span
+                  class="tokens__cell-legend"
+                  :class="{ 'tokens__cell-legend--touch': highlight }"
+                  >{{
+                    highlight ? FORM_TOKEN_SPEC[token.name]?.touches : legend(token.value)
+                  }}</span
+                >
+              </div>
+            </div>
+          </template>
+
           <!-- Light + dark side by side when modes exist -->
-          <template v-if="group.hasModes && hasModes(token)">
+          <template v-else-if="group.hasModes && hasModes(token)">
             <div
               class="tokens__cell"
               :data-mode="'light'"
@@ -406,7 +468,7 @@ function copy(name) {
 
           <!-- SINGLE cell (no light/dark: focus-ring, alias-of-alias, sizing, spacing) -->
           <div
-            v-if="!hasModes(token) && vizKind(token) !== 'shadow'"
+            v-if="!hasModes(token) && !['shadow', 'form'].includes(vizKind(token))"
             class="tokens__cell"
           >
             <div class="tokens__cell-viz">
@@ -563,6 +625,12 @@ function copy(name) {
   line-height: 1;
 }
 
+/* Form tokens render a live control — a stacked field (label + input) needs
+   more room than a swatch. */
+.tokens__group[data-category='form'] .tokens__cell-viz {
+  block-size: 5rem;
+}
+
 /* Footer with mode tag + legend (or just legend for single-value cells) */
 .tokens__cell-footer {
   display: flex;
@@ -591,6 +659,17 @@ function copy(name) {
   text-overflow: ellipsis;
   min-inline-size: 0;
   flex: 1;
+}
+
+/* "Touches" cell: tag in the same violet as the highlight, caption in
+   regular text (it names a part of the control, not a value). */
+.tokens__cell-mode--touch {
+  color: light-dark(oklch(55% 0.22 295), oklch(72% 0.17 295));
+  opacity: 1;
+}
+.tokens__cell-legend--touch {
+  font-family: inherit;
+  color: var(--vp-c-text-1);
 }
 
 /* Pixel equivalent for length tokens (sizing/spacing) — a fixed chip on the
@@ -805,7 +884,9 @@ function copy(name) {
 
 @media (max-width: 768px) {
   .tokens__row {
-    grid-template-columns: 1fr;
+    /* minmax(0, …): a bare 1fr can't shrink below its min-content, so a long
+       nowrap legend (the shadow values) would stretch the page sideways. */
+    grid-template-columns: minmax(0, 1fr);
     row-gap: 0.875rem;
   }
   .tokens__cells {

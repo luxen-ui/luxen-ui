@@ -103,9 +103,9 @@
 
     &:disabled {
       cursor: not-allowed;
-      border-color: var(--l-form-control-disabled-border);
-      background-color: var(--l-form-control-disabled-background);
-      color: var(--l-form-control-disabled-color);
+      border-color: var(--l-form-control-border-color-disabled);
+      background-color: var(--l-form-control-background-color-disabled);
+      color: var(--l-form-control-text-color-disabled);
     }
 
     /* The selected value fills the trigger; the chevron sits at the inline-end.

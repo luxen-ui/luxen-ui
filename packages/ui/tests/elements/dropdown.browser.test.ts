@@ -131,6 +131,20 @@ const OUTSIDE_FIXTURE = `
 // ---------------------------------------------------------------------------
 
 describe('Opening and closing the menu', () => {
+  it('fires no hide events on mount — a menu that was never opened has not closed', async () => {
+    host = document.createElement('div');
+    host.innerHTML = FIXTURE;
+    const seen: string[] = [];
+    for (const type of ['hide', 'after-hide']) {
+      el().addEventListener(type, () => seen.push(type));
+    }
+    document.body.append(host);
+    await settle();
+    // The close path awaits the hide animation — give it time to run out.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(seen).toEqual([]);
+  });
+
   it('opens when the trigger is clicked and marks aria-expanded on the trigger', async () => {
     await mount(FIXTURE);
     const ready = waitForEvent(el(), 'after-show');
