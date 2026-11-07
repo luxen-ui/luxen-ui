@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/combobox/index.js';
 import type { Combobox } from '../../src/html/elements/combobox/combobox.js';
+import { deepActiveElement } from './support/a11y.js';
 import { userEvent } from './support/user-event.js';
 import { waitForEvent } from './support/events.js';
 
@@ -120,6 +121,94 @@ describe('A keyboard user can select an option (WCAG 2.1.1 / RGAA 7.3)', () => {
 // ---------------------------------------------------------------------------
 // Form participation
 // ---------------------------------------------------------------------------
+
+describe('Clicking outside closes the list', () => {
+  const OUTSIDE = `<p id="outside" style="block-size: 4rem">Elsewhere</p>${FIXTURE}`;
+  const chevron = (el: Combobox) =>
+    page.elementLocator(el.shadowRoot!.querySelector<HTMLElement>('.chevron')!);
+  const clickOutside = () =>
+    userEvent.click(page.elementLocator(document.getElementById('outside')!));
+
+  it('closes a list opened from the input', async () => {
+    const el = await mount(OUTSIDE);
+    await userEvent.click(combobox());
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('true');
+    await clickOutside();
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('closes a list opened from the chevron', async () => {
+    const el = await mount(OUTSIDE);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('true');
+    await clickOutside();
+    await settle(el);
+    expect(combobox().element().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('moves focus into the input when the chevron is clicked', async () => {
+    const el = await mount(OUTSIDE);
+    await userEvent.click(chevron(el));
+    await settle(el);
+    expect(deepActiveElement()).toBe(combobox().element());
+  });
+});
+
+describe('A mouse user shares one highlight with the keyboard', () => {
+  const highlighted = () => page.getByRole('option', { selected: true }).elements();
+
+  it('highlights the hovered option, and only that one', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(combobox());
+    await userEvent.keyboard('{ArrowDown}');
+    await settle(el);
+    await userEvent.hover(page.getByRole('option', { name: 'Germany' }));
+    await settle(el);
+    const rows = highlighted();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.textContent?.trim()).toBe('Germany');
+  });
+
+  it('commits the hovered option with Enter', async () => {
+    const el = await mount(FIXTURE);
+    await userEvent.click(combobox());
+    await settle(el);
+    await userEvent.hover(page.getByRole('option', { name: 'Spain' }));
+    await settle(el);
+    await userEvent.keyboard('{Enter}');
+    await settle(el);
+    expect(el.value).toBe('es');
+  });
+
+  it('forgets the hovered option once the pointer leaves the list', async () => {
+    const el = await mount(FIXTURE.replace('<l-combobox', '<l-combobox allow-custom'));
+    await userEvent.click(combobox());
+    await userEvent.keyboard('Ger');
+    await settle(el);
+    await userEvent.hover(page.getByRole('option', { name: 'Germany' }));
+    await settle(el);
+    await userEvent.hover(combobox());
+    await settle(el);
+    expect(highlighted()).toHaveLength(0);
+    await userEvent.keyboard('{Enter}');
+    await settle(el);
+    expect(el.value).toBe('Ger');
+  });
+
+  it('does not leave the highlight behind on a disabled option', async () => {
+    const el = await mount(FIXTURE.replace('value="de"', 'value="de" disabled'));
+    await userEvent.click(combobox());
+    await settle(el);
+    await userEvent.hover(page.getByRole('option', { name: 'France' }));
+    await settle(el);
+    await userEvent.hover(page.getByRole('option', { name: 'Germany' }));
+    await settle(el);
+    expect(highlighted()).toHaveLength(0);
+  });
+});
 
 describe('l-combobox participates in forms', () => {
   it('submits the selected value under its name', async () => {
@@ -283,7 +372,7 @@ describe('Options can carry rich content', () => {
     const el = await mount(RICH);
     await userEvent.click(combobox());
     await settle(el);
-    expect(el.shadowRoot!.querySelector('.option-rich .l-select-item-title')).not.toBeNull();
+    expect(el.shadowRoot!.querySelector('[role="option"] .l-select-item-title')).not.toBeNull();
     // "europe" is in a description, not the title → no match.
     await userEvent.keyboard('europe');
     await settle(el);
@@ -365,7 +454,7 @@ describe('Typing highlights the match inside rich options', () => {
 
   const marks = (el: Combobox, zone: 'title' | 'description') =>
     Array.from(
-      el.shadowRoot!.querySelectorAll(`.option-rich .l-select-item-${zone} mark`),
+      el.shadowRoot!.querySelectorAll(`[role="option"] .l-select-item-${zone} mark`),
       (m) => m.textContent,
     );
 
@@ -383,7 +472,7 @@ describe('Typing highlights the match inside rich options', () => {
     await userEvent.click(combobox());
     await userEvent.keyboard('lux');
     await settle(el);
-    const option = el.shadowRoot!.querySelector('.option-rich')!;
+    const option = el.shadowRoot!.querySelector('[role="option"]')!;
     expect(option.querySelector('.l-select-item-media')?.textContent).toBe('🇱🇺');
     expect(option.querySelector('.l-select-item-title')?.textContent).toBe('Luxembourg');
     expect(option.querySelector('.l-select-item-description')?.textContent).toBe(
@@ -407,7 +496,7 @@ describe('Typing highlights the match inside rich options', () => {
     await settle(el);
     // Each keyword is marked on its own.
     expect(marks(el, 'title')).toEqual(['&', 'B']);
-    expect(el.shadowRoot!.querySelector('.option-rich .l-select-item-title')?.textContent).toBe(
+    expect(el.shadowRoot!.querySelector('[role="option"] .l-select-item-title')?.textContent).toBe(
       'Antigua & Barbuda',
     );
   });
@@ -427,8 +516,8 @@ describe('Typing highlights the match inside rich options', () => {
     await userEvent.click(combobox());
     await userEvent.keyboard('paris');
     await settle(el);
-    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(2);
-    expect(el.shadowRoot!.querySelector('.option-rich mark mark')).toBeNull();
+    expect(el.shadowRoot!.querySelectorAll('[role="option"] mark')).toHaveLength(2);
+    expect(el.shadowRoot!.querySelector('[role="option"] mark mark')).toBeNull();
   });
 
   it('leaves rich options untouched when `highlight` is off', async () => {
@@ -437,7 +526,7 @@ describe('Typing highlights the match inside rich options', () => {
     await userEvent.click(combobox());
     await userEvent.keyboard('lux');
     await settle(el);
-    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(0);
+    expect(el.shadowRoot!.querySelectorAll('[role="option"] mark')).toHaveLength(0);
   });
 
   it('clears the marks once the query is erased', async () => {
@@ -448,7 +537,7 @@ describe('Typing highlights the match inside rich options', () => {
     await userEvent.keyboard('{Backspace}{Backspace}{Backspace}');
     await settle(el);
     expect(page.getByRole('option').elements()).toHaveLength(3);
-    expect(el.shadowRoot!.querySelectorAll('.option-rich mark')).toHaveLength(0);
+    expect(el.shadowRoot!.querySelectorAll('[role="option"] mark')).toHaveLength(0);
   });
 });
 

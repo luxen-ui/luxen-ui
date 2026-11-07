@@ -27,7 +27,7 @@ export interface ListboxNavConfig {
  * commit/close semantics.
  *
  * Home/End are intentionally not handled — an editable combobox reserves them
- * for the text cursor (ARIA APG). Shared by `l-combobox` and (future) `l-select`.
+ * for the text cursor (ARIA APG). Shared by `l-combobox` and `l-select`.
  */
 export class ListboxNavController implements ReactiveController {
   private host: ReactiveControllerHost;
@@ -79,6 +79,33 @@ export class ListboxNavController implements ReactiveController {
     }
     this._step(diff);
   }
+
+  /**
+   * Bind on the `role="listbox"` as `@pointermove`: the option under the mouse
+   * becomes the active one, so hover and keyboard share a single highlight (and
+   * Enter commits what is highlighted). One delegated, stable listener instead
+   * of one per option. Touch is ignored, or a finger scrolling the list would
+   * drag the active option along; a disabled row clears it, so the highlight
+   * never stays on a row the pointer has left.
+   */
+  readonly onPointerMove = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') return;
+    const row = (e.target as Element).closest('[role="option"]');
+    if (!row) return;
+    const index = Array.prototype.indexOf.call(this.config.getOptionElements() ?? [], row);
+    if (index < 0) return;
+    if (this.config.isDisabled(index)) this.reset();
+    else this.setActive(index);
+  };
+
+  /**
+   * Bind on the `role="listbox"` as `@pointerleave`: once the mouse leaves the
+   * list, the row it last crossed no longer decides what Enter commits.
+   */
+  readonly onPointerLeave = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') return;
+    this.reset();
+  };
 
   /**
    * Handle a keydown for listbox navigation. Returns `true` when the key was

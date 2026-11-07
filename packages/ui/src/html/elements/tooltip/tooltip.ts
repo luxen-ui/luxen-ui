@@ -115,11 +115,6 @@ export class Tooltip extends LuxenElement {
     return this.withoutArrow ? null : this.shadowRoot!.querySelector('i');
   }
 
-  private _getDuration(prop: '--show-duration' | '--hide-duration'): number {
-    const parsed = parseFloat(getComputedStyle(this).getPropertyValue(prop));
-    return Number.isNaN(parsed) ? 150 : parsed;
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     tooltipInstances.add(this);
@@ -236,7 +231,7 @@ export class Tooltip extends LuxenElement {
       popover.showPopover();
       await this._floating.updatePosition(posOpts);
       if (!this.open) return;
-      await this._floating.animateShow(popover, this._getDuration('--show-duration'));
+      await this._floating.animateShow(popover);
       this._floating.startPositioning(posOpts);
       this._floating.markTrigger('aria-describedby', this._tooltipId, null);
     } else {
@@ -244,7 +239,7 @@ export class Tooltip extends LuxenElement {
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
       this._floating.releaseTrigger(null);
-      await this._floating.animateHide(popover, this._getDuration('--hide-duration'));
+      await this._floating.animateHide(popover);
       if (popover.matches(':popover-open')) popover.hidePopover();
     }
   }

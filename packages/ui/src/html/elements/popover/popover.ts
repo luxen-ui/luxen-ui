@@ -18,11 +18,11 @@ const styles = unsafeCSS(rawStyles);
  * @csspart body - The popover container.
  * @csspart arrow - The directional arrow element.
  *
- * @cssproperty --background - Background color. Default: `Canvas`.
+ * @cssproperty --background - Background color. Default `var(--l-color-surface-overlay)`.
  * @cssproperty --color - Text color. Default: inherited.
- * @cssproperty --border-radius - Border radius. Default `8px`.
+ * @cssproperty --border-radius - Border radius. Default `var(--l-popover-border-radius)` (6px).
  * @cssproperty --max-width - Maximum width. Default `320px`.
- * @cssproperty --shadow - Box shadow.
+ * @cssproperty --shadow - Box shadow. Default `var(--l-popover-shadow)`.
  * @cssproperty --arrow-size - Arrow size. Default `8px`.
  * @cssproperty --show-duration - Show animation duration. Default `150ms`.
  * @cssproperty --hide-duration - Hide animation duration. Default `150ms`.
@@ -91,11 +91,6 @@ export class Popover extends LuxenElement {
 
   private get _arrowEl(): HTMLElement | null {
     return this.withoutArrow ? null : this.shadowRoot!.querySelector('i');
-  }
-
-  private _getDuration(prop: '--show-duration' | '--hide-duration'): number {
-    const parsed = parseFloat(getComputedStyle(this).getPropertyValue(prop));
-    return Number.isNaN(parsed) ? 150 : parsed;
   }
 
   override connectedCallback() {
@@ -190,7 +185,7 @@ export class Popover extends LuxenElement {
       popover.showPopover();
       await this._floating.updatePosition(posOpts);
       if (!this.open) return;
-      await this._floating.animateShow(popover, this._getDuration('--show-duration'));
+      await this._floating.animateShow(popover);
       this._floating.startPositioning(posOpts);
       this._floating.markTrigger('aria-expanded', 'true', 'false');
       // No aria-controls: the panel's id lives in this element's shadow root and
@@ -200,7 +195,7 @@ export class Popover extends LuxenElement {
       this._floating.stopPositioning();
       this._floating.cleanupSafePolygon();
       this._floating.releaseTrigger('false');
-      await this._floating.animateHide(popover, this._getDuration('--hide-duration'));
+      await this._floating.animateHide(popover);
       if (popover.matches(':popover-open')) popover.hidePopover();
     }
   }

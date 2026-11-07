@@ -9,10 +9,12 @@ import { ListboxNavController } from '../../shared/controllers/listbox-nav.js';
 import { DatalistObserverController } from '../../shared/controllers/datalist-observer.js';
 import { LocalizeController } from '../../shared/localize.js';
 import { RichHighlighter, highlightText, normalize } from '../../shared/highlight.js';
-import { uniqueId } from '../../registry.js';
+import { cls, uniqueId } from '../../registry.js';
 import { adoptRichContentStyles, richOptionLabel } from '../../shared/rich-option.js';
 import hostStyles from '../../shared/styles/host.styles.js';
+import visuallyHiddenStyles from '../../shared/styles/visually-hidden.styles.js';
 import suffixStyles from '../../shared/styles/select-item-suffix.styles.js';
+import pickerCoreStyles from '../../shared/styles/picker-core.styles.js';
 import rawStyles from './combobox.css?inline';
 
 const styles = unsafeCSS(rawStyles);
@@ -113,7 +115,13 @@ export class Combobox extends LuxenFormAssociatedElement {
   // global stylesheets: suffixStyles lays out the `.l-select-item-suffix` zone,
   // and `_readItems` adopts the styles of the light-DOM elements (l-badge) the
   // options actually contain.
-  static override styles = [hostStyles, suffixStyles, styles];
+  static override styles = [
+    hostStyles,
+    visuallyHiddenStyles,
+    suffixStyles,
+    pickerCoreStyles,
+    styles,
+  ];
 
   private _localize = new LocalizeController(this);
   private readonly _listId = uniqueId('combobox-list');
@@ -402,7 +410,14 @@ export class Combobox extends LuxenFormAssociatedElement {
 
   private _onControlPointerDown = (e: PointerEvent) => {
     // Toggle on clicking the control chrome (not while typing).
-    if ((e.target as HTMLElement).closest('.clear')) return;
+    if ((e.target as HTMLElement).closest('.clear-button')) return;
+    // A click on the chrome (chevron, padding, prefix) focuses the input, like a
+    // native select. Otherwise focus stays on the page, the input never sees a
+    // focusout, and an outside click or Tab can no longer close the list.
+    if (e.target !== this._inputEl) {
+      e.preventDefault();
+      this._inputEl?.focus();
+    }
     if (this._open) return;
     this.show();
   };
@@ -471,7 +486,7 @@ export class Combobox extends LuxenFormAssociatedElement {
           ${
             this.withClear && (this.value || this._query)
               ? html`<button
-                  class="clear"
+                  class="clear-button"
                   type="button"
                   tabindex="-1"
                   aria-label=${this._localize.term('clear')}
@@ -496,6 +511,8 @@ export class Combobox extends LuxenFormAssociatedElement {
             role="listbox"
             id=${this._listId}
             aria-label=${this.label || this._localize.term('suggestions')}
+            @pointermove=${this._nav.onPointerMove}
+            @pointerleave=${this._nav.onPointerLeave}
           >
             ${filtered.map(
               (item, i) =>
@@ -512,9 +529,7 @@ export class Combobox extends LuxenFormAssociatedElement {
                 >
                   ${
                     item.html
-                      ? html`<span class="option-rich"
-                          >${unsafeHTML(this._highlightRich(item.html))}</span
-                        >`
+                      ? unsafeHTML(this._highlightRich(item.html))
                       : html`<span class="option-label">${this._highlight(item.label)}</span>`
                   }
                 </li>`,
@@ -533,7 +548,7 @@ export class Combobox extends LuxenFormAssociatedElement {
         </div>
 
         <div
-          class="visually-hidden"
+          class=${cls('visually-hidden')}
           aria-live="polite"
         >
           ${status}

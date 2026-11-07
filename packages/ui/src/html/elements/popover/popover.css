@@ -1,9 +1,9 @@
 :host {
   --background: var(--l-color-surface-overlay);
   --color: inherit;
-  --border-radius: 6px;
+  --border-radius: var(--l-popover-border-radius);
   --max-width: 320px;
-  --shadow: var(--l-shadow-md);
+  --shadow: var(--l-popover-shadow);
   --arrow-size: 8px;
   --show-duration: 150ms;
   --hide-duration: 150ms;
@@ -24,8 +24,8 @@
   border-radius: var(--border-radius);
   background: var(--background);
   color: var(--color);
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: var(--l-popover-font-size);
+  line-height: var(--l-popover-line-height);
   box-shadow: var(--shadow);
 }
 

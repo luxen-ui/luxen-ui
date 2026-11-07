@@ -129,7 +129,7 @@ describe('Searching highlights the match inside rich options', () => {
   `;
 
   const marks = (el: Select) =>
-    Array.from(el.shadowRoot!.querySelectorAll('.option-rich mark'), (m) => m.textContent);
+    Array.from(el.shadowRoot!.querySelectorAll('[role="option"] mark'), (m) => m.textContent);
 
   it('marks the match in the title and the description, keeping the markup', async () => {
     const el = await mount(RICH);
@@ -137,7 +137,7 @@ describe('Searching highlights the match inside rich options', () => {
     await userEvent.keyboard('lux');
     await settle(el);
     expect(marks(el)).toEqual(['Lux', 'Lux']);
-    const option = el.shadowRoot!.querySelector('.option-rich')!;
+    const option = el.shadowRoot!.querySelector('[role="option"]')!;
     expect(option.querySelector('.l-select-item-media')?.textContent).toBe('🇱🇺');
     expect(option.querySelector('.l-select-item-title mark')).not.toBeNull();
     expect(option.querySelector('.l-select-item-description mark')).not.toBeNull();
@@ -320,6 +320,28 @@ describe('The closed trigger follows the options it was given', () => {
 // ---------------------------------------------------------------------------
 // Rich options
 // ---------------------------------------------------------------------------
+
+describe('The trigger shows a rich value at the row size', () => {
+  const AVATAR = `
+    <l-select label="Owner" value="jc">
+      <datalist>
+        <option value="jc">
+          <img class="l-select-item-media" alt=""
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'/%3E">
+          <span class="l-select-item-text"><span class="l-select-item-title">Jane Cooper</span></span>
+        </option>
+      </datalist>
+    </l-select>
+  `;
+
+  it('sizes an image media like the option rows', async () => {
+    const el = await mount(AVATAR);
+    const media = el.shadowRoot!.querySelector<HTMLElement>('.value .l-select-item-media')!;
+    const row = el.shadowRoot!.querySelector<HTMLElement>('[role="option"] .l-select-item-media')!;
+    expect(`${media.offsetWidth}px`).toBe(getComputedStyle(row).inlineSize);
+    expect(`${media.offsetHeight}px`).toBe(getComputedStyle(row).blockSize);
+  });
+});
 
 describe('A rich option is named by its text, not its suffix', () => {
   const UNTITLED = (attrs: string) => `

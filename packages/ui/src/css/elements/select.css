@@ -10,10 +10,13 @@
    - the trigger (the <select> box) mirrors the form controls (l-input /
      l-textarea) through the --l-form-control-* tokens;
    - the picker (::picker(select)) and its items mirror the l-dropdown panel
-     (--l-color-surface-overlay / --l-color-border-overlay / --l-shadow-md). */
+     through the --l-popover-* / --l-menu-item-* tokens (plus --l-color-surface-overlay /
+     --l-color-border-overlay). */
 
-/* The rich-option suffix (`.l-select-item-suffix`) is shared with the
-   l-select / l-combobox shadow roots from select-item-suffix.css. */
+/* The option row and rich-option content are shared with the l-select shadow
+   root from select-item.css; the rich-option suffix (`.l-select-item-suffix`)
+   with the l-select / l-combobox shadow roots from select-item-suffix.css. */
+@import '../../html/shared/styles/select-item.css' layer(components);
 @import '../../html/shared/styles/select-item-suffix.css' layer(components);
 
 @layer components {
@@ -157,15 +160,15 @@
        never wrap (they'd overflow with a horizontal scrollbar). */
     min-inline-size: anchor-size(width);
     max-inline-size: min(90vw, 22rem);
-    padding: 0.25rem;
+    padding: var(--l-popover-padding);
     margin-block-start: 0.25rem;
     border: 1px solid var(--l-color-border-overlay);
-    border-radius: 6px;
+    border-radius: var(--l-popover-border-radius);
     background: var(--l-color-surface-overlay);
     color: var(--l-color-text-primary);
-    box-shadow: var(--l-shadow-md);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    box-shadow: var(--l-popover-shadow);
+    font-size: var(--l-popover-font-size);
+    line-height: var(--l-popover-line-height);
 
     /* Off-stage (also the exit state); the entry starts from @starting-style. */
     opacity: 0;
@@ -187,81 +190,25 @@
     }
   }
 
+  /* Row layout and hover tint: select-item.css (shared with l-select). */
   .l-select option {
-    display: flex;
-    position: relative;
-    align-items: start;
-    gap: 0.5rem;
-    box-sizing: border-box;
-    min-block-size: 36px;
-    padding-block: 0.5rem;
-    /* Reserve the inline-start checkmark column on every row so titles align
-       whether or not the option is selected (like l-dropdown). */
-    padding-inline: 1.75rem 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--l-color-text-primary);
-
-    /* Selection is shown by the checkmark alone (like l-dropdown) — the
-       selected option carries NO background, so it never reads as merged with
-       the hovered/active row, which is the only one that takes the tint. */
-    @media (hover: hover) {
-      &:hover {
-        background: var(--l-color-bg-state-hover);
-      }
-    }
-
     /* Native selected indicator — absolutely placed in the reserved inline-start
        column and pinned to the first line, so a wrapping description never
        shifts it and unselected rows keep identical text alignment. */
     &::checkmark {
       position: absolute;
       inset-inline-start: 0.5rem;
-      /* Sit in the title's line box: same start offset as the padding, and a
-         block-size equal to the title's line-height (0.875rem × 1.5) so the
-         glyph centers on the title regardless of its cap height. */
-      inset-block-start: 0.5rem;
+      /* Sit in the title's line box: same start offset as the row padding
+         (select-item.css), and a block-size equal to the title's line-height so
+         the glyph centers on the title regardless of its cap height. */
+      inset-block-start: var(--_row-padding-block);
       inline-size: 1rem;
-      block-size: 1.3125rem;
+      block-size: calc(var(--l-popover-font-size) * var(--l-popover-line-height));
       background-color: currentColor;
       /* https://lucide.dev/icons/check */
       mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>')
         center / 1rem no-repeat;
     }
-  }
-
-  /* Rich option content — image/icon + title + optional description. */
-  .l-select-item-media {
-    flex: 0 0 auto;
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
-    border-radius: 4px;
-    object-fit: cover;
-  }
-
-  .l-select-item-text {
-    display: flex;
-    min-inline-size: 0;
-    flex: 1 1 auto;
-    flex-direction: column;
-  }
-
-  .l-select-item-title {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-weight: var(--l-font-weight-semibold);
-  }
-
-  .l-select-item-description {
-    /* Override the `white-space: nowrap` inherited from the native <select>, so
-       the description wraps within the picker's max-inline-size instead of
-       overflowing on one line. */
-    white-space: normal;
-    text-wrap: pretty;
-    color: var(--l-color-text-tertiary);
-    font-size: 0.75rem;
-    line-height: 1.3;
   }
 
   @media (prefers-reduced-motion: reduce) {

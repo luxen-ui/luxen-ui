@@ -6,8 +6,8 @@
  *     `select.l-select` picker, where `.l-select option` is the row, and
  *   - imported `?inline` into the l-select / l-combobox shadow roots, which copy
  *     each option's markup and cannot reach the global stylesheet; there
- *     `:host .option-rich` is the row. `:host` never matches in a document, so
- *     the light-DOM copy cannot reach a consumer's own `.option-rich`.
+ *     `:host .option` is the row. `:host` never matches in a document, so
+ *     the light-DOM copy cannot reach a consumer's own `.option`.
  *
  * A class, not a `slot="suffix"` attribute hook: in a customizable select the
  * <option> has its own UA shadow root, so a child carrying a `slot` it has no
@@ -28,7 +28,7 @@
   initial-value: 0px;
 }
 
-:is(.l-select option, :host .option-rich) {
+:is(.l-select option, :host .option) {
   --_select-item-line: 1lh;
 }
 
@@ -55,6 +55,6 @@
    too, so the title shares the suffix's line in a centred row (l-combobox).
    Scoped to the rows: the trigger's copy of the selected option (where the
    suffix is hidden) keeps its own centring. */
-:is(.l-select option, :host .option-rich) > .l-select-item-text:has(~ .l-select-item-suffix) {
+:is(.l-select option, :host .option) > .l-select-item-text:has(~ .l-select-item-suffix) {
   align-self: flex-start;
 }

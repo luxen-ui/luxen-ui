@@ -33,6 +33,10 @@
       "style": "./dist/css/tooltip.css",
       "import": "./dist/css/tooltip.css"
     },
+    "./css/popover": {
+      "style": "./dist/css/popover.css",
+      "import": "./dist/css/popover.css"
+    },
     "./tailwind": {
       "style": "./dist/tailwind/theme.css",
       "import": "./dist/tailwind/theme.css"

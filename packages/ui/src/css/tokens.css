@@ -13,3 +13,7 @@
 
 /* Tooltip component token (--l-tooltip-background-color). */
 @import '@luxen-ui/design-tokens/css/tooltip';
+
+/* Popover and menu-item tokens (--l-popover-*, --l-menu-item-*): panels
+   anchored to a trigger and their rows. */
+@import '@luxen-ui/design-tokens/css/popover';

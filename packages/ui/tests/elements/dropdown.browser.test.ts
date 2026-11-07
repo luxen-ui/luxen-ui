@@ -141,6 +141,15 @@ describe('Opening and closing the menu', () => {
     expect(trigger().getAttribute('aria-expanded')).toBe('true');
   });
 
+  it('reads a --show-duration written in seconds as a CSS time', async () => {
+    await mount(FIXTURE.replace('--show-duration: 0', '--show-duration: 0.3s'));
+    const ready = waitForEvent(el(), 'after-show');
+    await userEvent.click(menuTrigger());
+    await ready;
+    const timing = panel().getAnimations()[0]?.effect?.getTiming();
+    expect(timing?.duration).toBe(300);
+  });
+
   it('closes on a second trigger click and clears aria-expanded', async () => {
     await mount(FIXTURE);
     const ready = waitForEvent(el(), 'after-show');
