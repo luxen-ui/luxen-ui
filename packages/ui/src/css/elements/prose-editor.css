@@ -49,16 +49,36 @@
      `overflow: hidden` clips this, which is why it is the second layer and not
      the only one — clipped, the border above still reads as focus.
 
-     The transparent outline keeps a visible indicator under forced colors,
-     where border-color is overridden by the user's palette and the border rule
-     stops reading as a state change. Inset (negative offset), unlike
-     input.css / textarea.css: under forced colors it is the only indicator
-     left, so it must survive that same clipping. */
+     A --l-form-control-focus-border-width wider than the frame's --border-width
+     draws its full thickness as an outline inward over the frame, around the
+     whole of it (toolbar included), like input.css / textarea.css: the editor
+     keeps its size and its text does not move. 0 wide at the default width:
+     nothing is drawn. The halo is 0 wide with --l-form-control-focus-halo-width:
+     0. The --border-width fallback mirrors the shadow default, for the same
+     mismatched-versions reason as --border-color-focus above.
+
+     Under forced colors border-color is overridden by the user's palette and
+     the border rule stops reading as a state change: a transparent outline,
+     forced to a visible system color, is the indicator there. Inset (negative
+     offset), unlike input.css / textarea.css: under forced colors it is the
+     only indicator left, so it must survive that same clipping. */
   l-prose-editor:has(.ProseMirror:focus-visible)::part(wrapper) {
-    outline: 2px solid transparent;
-    outline-offset: -2px;
-    box-shadow: 0 0 0 3px
+    outline: calc(
+        var(--l-form-control-focus-border-width) *
+          sign(var(--l-form-control-focus-border-width) - var(--border-width, 1px))
+      )
+      solid var(--border-color-focus, var(--l-focus-ring));
+    outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
+    box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
       color-mix(in oklab, var(--border-color-focus, var(--l-focus-ring)) 22%, transparent);
+  }
+
+  /* Not nested: `&` cannot stand for a selector ending in ::part(). */
+  @media (forced-colors: active) {
+    l-prose-editor:has(.ProseMirror:focus-visible)::part(wrapper) {
+      outline: 2px solid transparent;
+      outline-offset: -2px;
+    }
   }
 
   l-prose-editor .ProseMirror :first-child {

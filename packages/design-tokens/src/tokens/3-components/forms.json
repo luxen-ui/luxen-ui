@@ -37,6 +37,16 @@
         "$value": "1px",
         "$description": "Border width of text fields and of the checkbox and radio box."
       },
+      "focus-border-width": {
+        "$type": "dimension",
+        "$value": "{form.control.border-width}",
+        "$description": "Stroke width of a focused text field (input, textarea, native select, input group, l-select, l-combobox, l-prose-editor), in the focus-ring color (the invalid color on an invalid field). Defaults to the resting --l-form-control-border-width. A wider value is drawn inward, as an outline over the border: the control keeps its size and its text does not move. A value at or below the resting width draws nothing extra (the border alone shows the focus color)."
+      },
+      "focus-halo-width": {
+        "$type": "dimension",
+        "$value": "3px",
+        "$description": "Width of the soft halo around a focused text field — a ring of the focus-ring color (the invalid color on an invalid field) at 22% opacity, outside the border. Set to `0` for a crisp stroke with no halo, typically together with --l-form-control-focus-border-width. The color is mixed at the control, so a --l-focus-ring re-themed on an ancestor recolors the halo too."
+      },
       "border-radius": {
         "$type": "dimension",
         "$value": "{radius-md}",

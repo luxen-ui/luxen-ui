@@ -56,13 +56,10 @@
       }
     }
 
-    /* Focus: the border takes the focus-ring color; the soft halo lives in the
-       rule below. The transparent outline keeps a visible indicator under
-       forced colors. */
+    /* Focus: the border takes the focus-ring color; the focus stroke width and
+       the soft halo live in the rule below. */
     &:focus-visible {
       border-color: var(--l-focus-ring);
-      outline: 2px solid transparent;
-      outline-offset: 2px;
     }
 
     /* Invalid: red border + a faint danger wash. After interaction
@@ -96,16 +93,38 @@
     }
   }
 
-  /* Soft focus halo. */
+  /* Focus stroke + soft halo — same recipe as `.l-input`. A
+     --l-form-control-focus-border-width wider than the resting border draws its
+     full thickness as an outline drawn inward over the border (the box and the
+     text never move; at the default width it is 0 wide), and box-shadow carries
+     the halo alone, 0 wide (--l-form-control-focus-halo-width: 0) painting
+     nothing.
+     The outline paints above the content, so it stays whole over a scrollbar. */
   :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+    outline: calc(
+        var(--l-form-control-focus-border-width) *
+          sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
+      )
+      solid var(--l-focus-ring);
+    outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
+    box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
+      color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+
+    /* Forced colors: the system palette overrides border-color and drops the
+       halo. A transparent outline is forced to a visible system color: it is
+       the indicator there. */
+    @media (forced-colors: active) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
   }
 
   :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):is(
       :user-invalid,
       [aria-invalid='true']
     ):focus-visible {
-    box-shadow: 0 0 0 3px
+    outline-color: var(--l-form-control-border-color-invalid);
+    box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
       color-mix(in oklab, var(--l-form-control-border-color-invalid) 22%, transparent);
   }
 

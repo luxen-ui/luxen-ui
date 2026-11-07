@@ -43,6 +43,21 @@ const rootStyle = computed(() => ({
 /** Hover can't be triggered on a static preview — route the hover color into the resting border. */
 const hoverStyle = { '--l-form-control-border-color': 'var(--l-form-control-border-color-hover)' };
 
+/**
+ * Focus can't be triggered on a static (inert) preview either — pin the
+ * `.l-input:focus-visible` recipe of input.css on the field instead: the border
+ * in the ring color, the stroke beyond it as an outline drawn inward, the halo
+ * as the box-shadow.
+ */
+const focusStyle = {
+  borderColor: 'var(--l-focus-ring)',
+  outline:
+    'calc(var(--l-form-control-focus-border-width) * sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))) solid var(--l-focus-ring)',
+  outlineOffset: 'calc(var(--l-form-control-focus-border-width) * -1)',
+  boxShadow:
+    '0 0 0 var(--l-form-control-focus-halo-width) color-mix(in oklab, var(--l-focus-ring) 22%, transparent)',
+};
+
 /** The toggles' own hover halo, pinned on so the ratio is visible without hovering. */
 const haloStyle = {
   boxShadow:
@@ -71,6 +86,13 @@ const matchStyle = {
       value="Jane Cooper"
       aria-label="Full name"
       :style="paint"
+    />
+    <input
+      v-else-if="preview === 'input-focus'"
+      class="l-input w-full"
+      value="Jane Cooper"
+      aria-label="Full name"
+      :style="[focusStyle, paint]"
     />
     <input
       v-else-if="preview === 'placeholder'"

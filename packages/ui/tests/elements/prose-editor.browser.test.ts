@@ -822,9 +822,11 @@ describe('Accessibility', () => {
     async function mountThemed(markup: string): Promise<ProseEditor> {
       const el = await mount(markup);
       // The tokens stylesheet isn't loaded in the bare test harness; supply the
-      // two tokens the frame reads so the var() chains resolve as in real usage.
+      // tokens the frame reads so the var() chains resolve as in real usage.
       host.style.setProperty('--l-focus-ring', RING);
       host.style.setProperty('--l-color-border', IDLE);
+      host.style.setProperty('--l-form-control-focus-border-width', '1px');
+      host.style.setProperty('--l-form-control-focus-halo-width', '3px');
       await settleTransition();
       return el;
     }

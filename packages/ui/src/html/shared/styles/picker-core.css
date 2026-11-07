@@ -64,11 +64,36 @@
 
 /* Focus: border takes the ring color plus the soft halo, matching l-input. The
    halo is mixed here rather than read from a :root token, so a --l-focus-ring
-   re-themed on an ancestor recolors the halo as well as the border. */
+   re-themed on an ancestor recolors the halo as well as the border.
+   A --l-form-control-focus-border-width wider than the resting border draws its
+   full thickness as an outline inward over the border, so the field, its text
+   and its end actions never move (0 wide at the default width: nothing drawn).
+   An outline, not an inset box-shadow: it paints above the clear button and
+   the chevron, whose hover wash reaches the border, and it leaves box-shadow to
+   the halo alone, 0 wide (--l-form-control-focus-halo-width: 0) painting
+   nothing. */
 .control:has(.input:focus-visible),
 .trigger:focus-visible {
   border-color: var(--l-focus-ring);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+  outline: calc(
+      var(--l-form-control-focus-border-width) *
+        sign(var(--l-form-control-focus-border-width) - var(--l-form-control-border-width))
+    )
+    solid var(--l-focus-ring);
+  outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
+  box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
+    color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+}
+
+/* Forced colors: the system palette overrides border-color and drops the halo.
+   A transparent outline is forced to a visible system color: it is the
+   indicator there. */
+@media (forced-colors: active) {
+  .control:has(.input:focus-visible),
+  .trigger:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
 }
 
 /* End actions — the clear button and the chevron each take a square as tall as
