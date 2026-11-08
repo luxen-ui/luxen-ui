@@ -76,6 +76,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Stories viewer    | `<l-stories-viewer>`    | ⬢ Custom HTML Element (with Shadow DOM) |
 | Story             | `<l-story>`             | ◇ Custom HTML Element (no Shadow DOM)   |
 | Switch            | `<input>`               | ⏣ Native HTML Element                   |
+| Table             | `<table>`               | ⏣ Native HTML Element                   |
 | Tabs              | `<l-tabs>`              | ⬡ Progressive Custom HTML Element       |
 | Tag               | `<l-tag>`               | ⬢ Custom HTML Element (with Shadow DOM) |
 | Textarea          | `<textarea>`            | ⏣ Native HTML Element                   |

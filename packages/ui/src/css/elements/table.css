@@ -1,0 +1,186 @@
+@layer components {
+  /**
+   * Table — `.l-table` on a native `<table>` holding records.
+   *
+   * CSS only. The states it shows are platform states, written in the markup:
+   *
+   *   sort        `aria-sort` on a `<th>` holding a `<button>` (APG sortable
+   *               table example), or a link when the server sorts
+   *
+   * Rows are sized on the control scale (`--l-size-control-*`) plus a fixed
+   * block padding, so a control of the table's size fits a row exactly.
+   *
+   * Selectors walk `thead | tbody | tfoot > tr > cell` from the table so a table
+   * nested in a cell keeps its own styles.
+   *
+   * - https://www.w3.org/WAI/ARIA/apg/patterns/table/
+   * - https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/
+   */
+
+  .l-table {
+    /* Public knobs */
+    --row-height: calc(var(--_size) + 2 * var(--_padding-block));
+    --background-color: var(--l-color-surface);
+    --border-color: var(--l-color-divider);
+
+    --_size: var(--l-size-control-md);
+    --_padding-block: var(--l-spacing-1);
+    --_padding-inline: var(--l-spacing-3);
+
+    inline-size: 100%;
+    /* `separate`: a sticky header loses its borders under `collapse`. */
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--background-color);
+    color: var(--l-color-text-primary);
+    font-size: var(--l-text-sm);
+    /* Digits take the same width everywhere, so figures line up down a column. */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--l-text-sm--line-height);
+
+    &[data-size='sm'] {
+      --_size: var(--l-size-control-sm);
+      --_padding-inline: var(--l-spacing-2);
+    }
+
+    &[data-size='lg'] {
+      --_size: var(--l-size-control-lg);
+      --_padding-inline: var(--l-spacing-4);
+    }
+
+    & > caption {
+      padding-block-end: var(--l-spacing-2);
+      font-weight: var(--l-font-weight-semibold);
+      text-align: start;
+    }
+
+    /* ── Cells ───────────────────────────────────────────────────────────── */
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where(th, td) {
+      /* On a table cell a block size is a minimum: content still grows it.
+         Border-box, so the row height includes the padding. */
+      box-sizing: border-box;
+      block-size: var(--row-height);
+      border-block-end: 1px solid var(--border-color);
+      padding-block: var(--_padding-block);
+      padding-inline: var(--_padding-inline);
+      text-align: start;
+      vertical-align: middle;
+    }
+
+    /* A row header names its row; it reads as data, not as a column title. */
+    & > :where(tbody, tfoot) > :where(tr) > :where(th) {
+      font-weight: inherit;
+    }
+
+    /* Alignment, set on a column's header and cells: `end` for figures. */
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-align='center']) {
+      text-align: center;
+    }
+
+    & > :where(thead, tbody, tfoot) > :where(tr) > :where([data-align='end']) {
+      text-align: end;
+    }
+
+    /* Only the table's last row group drops its closing rule; the others keep
+       it, which separates one group from the next. */
+    & > tbody:last-of-type > tr:last-child > :where(th, td),
+    & > tfoot > tr:last-child > :where(th, td) {
+      border-block-end: 0;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+
+    /* Sticks to the top of its scroll container, opaque over the rows. */
+    & > thead > tr > :where(th) {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 1;
+      border-block-end-color: var(--l-color-border);
+      background-color: var(--background-color);
+      color: var(--l-color-text-secondary);
+      font-weight: var(--l-font-weight-medium);
+      white-space: nowrap;
+    }
+
+    /* Sortable header: the button (or link) is the control, `aria-sort` on its
+       `<th>` is the state. The glyph is a mask painted with `currentColor`, so
+       `color` on the `::after` recolors it. An `.l-button` in a header is some
+       other action (column settings, a menu) and keeps its own look. */
+    & > thead > tr > th > :is(button, a):not(.l-button) {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--l-spacing-1);
+      margin: 0;
+      border: 0;
+      border-radius: var(--l-radius-sm);
+      padding: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: inherit;
+      text-decoration: none;
+      cursor: pointer;
+
+      &::after {
+        --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 6.5 8 3.5l3 3M5 9.5l3 3 3-3' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        content: '';
+        flex: none;
+        inline-size: 1em;
+        block-size: 1em;
+        color: var(--l-color-text-tertiary);
+        background-color: currentColor;
+        mask: var(--_sort-icon) center / contain no-repeat;
+      }
+
+      &:focus-visible {
+        outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+        outline-offset: 2px;
+      }
+
+      @media (hover: hover) {
+        &:hover:not(:disabled) {
+          color: var(--l-color-text-primary);
+        }
+      }
+
+      /* A column the current query cannot sort by. */
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+    }
+
+    /* In an end-aligned column the label sits flush with the figures below it. */
+    & > thead > tr > th[data-align='end'] > :is(button, a):not(.l-button) {
+      flex-direction: row-reverse;
+    }
+
+    &
+      > thead
+      > tr
+      > th:is([aria-sort='ascending'], [aria-sort='descending'])
+      > :is(button, a):not(.l-button) {
+      color: var(--l-color-text-primary);
+
+      &::after {
+        color: inherit;
+      }
+    }
+
+    & > thead > tr > th[aria-sort='ascending'] > :is(button, a):not(.l-button)::after {
+      --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 12.5v-9M4.5 7 8 3.5 11.5 7' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    & > thead > tr > th[aria-sort='descending'] > :is(button, a):not(.l-button)::after {
+      --_sort-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3.5v9M4.5 9 8 12.5 11.5 9' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    /* ── Totals ──────────────────────────────────────────────────────────── */
+
+    & > tfoot > tr:first-child > :where(th, td) {
+      border-block-start: 1px solid var(--l-color-border);
+      font-weight: var(--l-font-weight-medium);
+    }
+  }
+}
