@@ -111,7 +111,7 @@ Add `data-unstyled-links` to opt out of Luxen's link theming and apply your own 
 
 :::
 
-### Attributes
+### Attributes & Properties
 
 <ApiTable element="breadcrumb" section="attributes" />
 

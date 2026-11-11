@@ -196,15 +196,11 @@ import 'luxen-ui/rating';
 
 <ApiTable element="rating" section="properties" />
 
-### Methods
-
-<ApiTable element="rating" section="properties" />
-
 ### Events
 
 <ApiTable element="rating" section="events" />
 
-### CSS Parts
+### CSS parts
 
 <ApiTable element="rating" section="cssParts" />
 

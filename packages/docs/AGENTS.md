@@ -100,12 +100,17 @@ One-line description.
 ### Criteria                 ← <AccessibilityTable> with WCAG + RGAA criteria
 ### Keyboard interactions    ← <KeyboardTable> with Key/Description
 
-## API reference
+## API reference              ← headings in exactly this order; omit the ones the element doesn't have
 ### Importing                ← @import path
-### Attributes & Properties   ← <ApiTable element section="properties"|"attributes" /> (only if element has them)
-### Events                   ← <ApiTable element section="events" /> (only if element has them)
+### Attributes & Properties  ← <ApiTable element section="properties"|"attributes" />
+### Methods                  ← <ApiTable element section="methods" />
+### Commands                 ← <ApiTable element section="commands" />
+### Events                   ← <ApiTable element section="events" />
+### Slots                    ← <ApiTable element section="slots" />
+### CSS parts                ← <ApiTable element section="cssParts" />
 ### CSS classes              ← <ApiTable element section="cssClasses" />
 ### CSS custom properties    ← <ApiTable element section="cssProperties" />
+### `sub-element` Slots      ← sub-elements (dropdown-item…) after the main element, same order
 ````
 
 - **Hero snippet** shows the most common usage (1-3 lines of HTML)
@@ -115,7 +120,7 @@ One-line description.
 - **Accessibility** (required for interactive elements) — two subsections:
   - **Criteria** uses `<AccessibilityTable>` with `Check`, `Description`, and `WCAG` columns. Always include both **WCAG** and **RGAA** criteria where applicable. Format: `[WCAG 1.4.3](url), [RGAA 3.2](url)`. The `:rules` prop lists integration rules (e.g., "Always add `aria-label`") — they render as a **Rules** list under the criteria on the docs site _and_ feed the generated skill, so write them for both audiences. See `close-button.md` for reference.
   - **Keyboard interactions** uses `<KeyboardTable>` with `Key` and `Description` columns. Keys support `+` separator (e.g., `Shift + Tab`). See `close-button.md` for reference.
-- **API reference** tables are **generated from the element source**, not hand-written. Use `<ApiTable element="<name>" section="<section>" />` (sections: `properties`, `attributes`, `events`, `methods`, `slots`, `cssClasses`, `cssParts`, `cssProperties`, `commands`) and `<ElementSpec element="<name>" />`. The data comes from the element's JSDoc / native `*.meta.ts` sidecar via `luxen-ui/metadata` — to add or fix a row, edit the **source**, not the doc (see `packages/ui/CLAUDE.md` → "Element Reference Metadata"). The `metadata` build check fails if a referenced section is empty or mis-routed. Inline `<ApiTable :data="[…]" />` remains only for data that isn't code-derived (e.g. a function's options object).
+- **API reference** tables are **generated from the element source**, not hand-written. Use `<ApiTable element="<name>" section="<section>" />` (sections: `properties`, `attributes`, `events`, `methods`, `slots`, `cssClasses`, `cssParts`, `cssProperties`, `commands`) and `<ElementSpec element="<name>" />`. The data comes from the element's JSDoc / native `*.meta.ts` sidecar via `luxen-ui/metadata` — to add or fix a row, edit the **source**, not the doc (see `packages/ui/CLAUDE.md` → "Element Reference Metadata"). The `metadata` build check fails if a referenced section is empty or mis-routed, and if the `###` headings drift from the order and spelling above (a heading not in that list, like `ToastOptions`, is allowed and stays right below the section it belongs to). Rows inside each table are sorted at build time — alphabetically, except the default slot first and the overlay lifecycle events (`show`, `after-show`, `hide`, `after-hide`) in firing order — so JSDoc tag order doesn't matter. Inline `<ApiTable :data="[…]" />` remains only for data that isn't code-derived (e.g. a function's options object).
 
 ### Examples over explanations
 

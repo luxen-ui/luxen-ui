@@ -15,6 +15,8 @@
  *   6. An element the Vite plugin's `emitTypes` cannot type — missing from
  *      `ELEMENT_CLASSES`, mapped to a class the manifest doesn't declare, or
  *      missing from `ElementBaseName` in `src/html/registry.ts`.
+ *   7. A doc whose `## API reference` headings are out of the canonical order,
+ *      misspelled, or labelled differently from the table they hold.
  *
  * Usage: node scripts/check-metadata.mjs   (exit 0 = pass, 1 = problems)
  */
@@ -49,6 +51,111 @@ const VALID_SECTIONS = new Set([
   'commands',
   'examples',
 ]);
+
+// 7: the `## API reference` section of every element doc lists its `###`
+// headings in one canonical order — the HTML/JS API first, then the CSS API —
+// so every page reads the same way. A sub-element's sections (headed
+// "`dropdown-item` Slots") come after the main element's, in the same order,
+// and every metadata table sits under the heading of its own element and
+// section. A heading not in the list (e.g. `ToastOptions`, the options object
+// of `toast()`) is a companion of the section right above it: it is not ranked
+// and may only hold inline `:data` tables, never metadata-driven ones.
+const API_SECTION_ORDER = [
+  ['Importing', []],
+  ['Attributes & Properties', ['properties', 'attributes']],
+  ['Methods', ['methods']],
+  ['Commands', ['commands']],
+  ['Events', ['events']],
+  ['Slots', ['slots']],
+  ['CSS parts', ['cssParts']],
+  ['CSS classes', ['cssClasses']],
+  ['CSS custom properties', ['cssProperties']],
+];
+const API_SECTION_NAMES = API_SECTION_ORDER.map(([name]) => name);
+const API_SECTION_DATA = new Map(API_SECTION_ORDER);
+// Lowercased spellings → canonical heading, so "CSS Parts" or "Properties" is
+// reported as a misspelling instead of slipping through as a companion.
+const API_SECTION_SPELLINGS = new Map([
+  ...API_SECTION_NAMES.map((name) => [name.toLowerCase(), name]),
+  ['attributes', 'Attributes & Properties'],
+  ['properties', 'Attributes & Properties'],
+  ['custom properties', 'CSS custom properties'],
+]);
+
+function checkApiReferenceOrder(file, src) {
+  const start = src.search(/^## API reference\s*$/m);
+  if (start === -1) return [];
+  // Ignore code fences; the backreference closes a fence only on a run of
+  // backticks as long as the one that opened it, so nested fences pair up.
+  const api = src.slice(start).replace(/^(`{3,})[\s\S]*?^\1/gm, '');
+  const end = api.slice(1).search(/^## /m);
+  const body = end === -1 ? api : api.slice(0, end + 1);
+  const mainElement = file.replace(/\.md$/, '');
+
+  const problems = [];
+  const sections = body.split(/^### /m).slice(1);
+  let lastRank = -1;
+  let lastGroup = null;
+  const seenGroups = new Set();
+  for (const section of sections) {
+    const heading = section.slice(0, section.indexOf('\n')).trim();
+    const [, group = null, name] = heading.match(/^(?:`([^`]+)`\s+)?(.*)$/);
+    const where = `${file}: API reference "### ${heading}"`;
+    const tables = [...section.matchAll(/<ApiTable\s([^>]*?)\/>/g)]
+      .map((m) => ({
+        element: m[1].match(/\belement="([^"]*)"/)?.[1],
+        section: m[1].match(/\bsection="([^"]*)"/)?.[1],
+      }))
+      .filter((t) => t.element); // inline :data tables carry no element
+
+    const canonical = API_SECTION_SPELLINGS.get(name.toLowerCase());
+    if (!canonical) {
+      // Companion section: a metadata table here means a mislabelled section.
+      for (const t of tables) {
+        problems.push(
+          `${where} holds <ApiTable element="${t.element}" section="${t.section}" /> — put it under its own "### ${t.element === mainElement ? '' : `\`${t.element}\` `}<section>" heading`,
+        );
+      }
+      continue;
+    }
+    if (canonical !== name) {
+      problems.push(`${where} — write "${canonical}"`);
+    }
+
+    if (group !== lastGroup) {
+      if (group === null || seenGroups.has(group)) {
+        problems.push(
+          `${where} — keep each element's sections together, main element first, then each sub-element`,
+        );
+      }
+      seenGroups.add(group);
+      lastGroup = group;
+      lastRank = -1;
+    }
+    const rank = API_SECTION_NAMES.indexOf(canonical);
+    if (rank <= lastRank) {
+      problems.push(`${where} is out of order — expected: ${API_SECTION_NAMES.join(' → ')}`);
+    }
+    lastRank = rank;
+
+    // The heading must match the data its tables render: same element (the
+    // backticked sub-element, else the page's own) and an allowed section.
+    const allowed = API_SECTION_DATA.get(canonical);
+    for (const t of tables) {
+      if (t.element !== (group ?? mainElement)) {
+        problems.push(
+          `${where} renders element="${t.element}", which belongs under another heading`,
+        );
+      }
+      if (allowed.length && !allowed.includes(t.section)) {
+        problems.push(
+          `${where} renders section="${t.section}", which belongs under another heading`,
+        );
+      }
+    }
+  }
+  return problems;
+}
 
 async function exists(p) {
   try {
@@ -134,6 +241,8 @@ async function main() {
         errors.push(`${file}: <ElementSpec> references unknown element "${element}"`);
       }
     }
+
+    errors.push(...checkApiReferenceOrder(file, src));
   }
 
   // 6: the Vite plugin can type every element it defines.
