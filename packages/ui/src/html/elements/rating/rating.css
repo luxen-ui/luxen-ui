@@ -33,6 +33,8 @@
 }
 
 .icon-wrapper {
+  display: block;
+  border-radius: var(--l-radius-sm);
   cursor: pointer;
 }
 
@@ -67,16 +69,13 @@
   scale: 1.2;
 }
 
-.icon-wrapper:has(input:focus-visible) .icon {
-  outline: 2px solid var(--active-color);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-:host([edit-mode]) .wrapper:focus-within {
-  outline: 2px solid var(--active-color);
-  outline-offset: 2px;
-  border-radius: 2px;
+/* One ring, around the focused star — the radio the keyboard is on. On the
+   label, not the star: the star is drawn by a mask, which would clip its own
+   outline away. The global ring color, not --active-color: gold is ~1.6:1 on
+   white, under the 3:1 a focus indicator needs (WCAG 1.4.11). */
+.icon-wrapper:has(input:focus-visible) {
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: var(--l-focus-ring-offset);
 }
 
 /* — Disabled — */

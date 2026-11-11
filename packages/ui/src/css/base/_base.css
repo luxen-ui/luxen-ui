@@ -11,4 +11,15 @@
   l-tooltip:not(:defined) {
     display: none;
   }
+
+  /* Plain links, buttons and summaries — the ones no Luxen class styles — take
+     the same focus ring as the elements, instead of the browser default,
+     whose contrast is not guaranteed on a themed page. Zero specificity, in
+     the base layer: every element rule and any consumer rule wins over it.
+     Tags only, no `[tabindex]`: a document rule beats a shadow `:host` rule,
+     so it would ring custom-element hosts that draw their own ring inside. */
+  :where(a:any-link, button, summary):focus-visible {
+    outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+    outline-offset: var(--l-focus-ring-offset);
+  }
 }

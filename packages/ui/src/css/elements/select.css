@@ -87,18 +87,18 @@
        default: nothing drawn), and box-shadow carries the halo alone (0 wide
        paints nothing). */
     &:focus-visible {
-      border-color: var(--l-focus-ring);
-      outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
+      border-color: var(--l-focus-ring-color);
+      outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring-color);
       outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
       box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
-        color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+        color-mix(in oklab, var(--l-focus-ring-color) 22%, transparent);
 
       /* Forced colors: the system palette overrides border-color and drops the
          halo. A transparent outline is forced to a visible system color: it is
          the indicator there. */
       @media (forced-colors: active) {
-        outline: 2px solid transparent;
-        outline-offset: 2px;
+        outline: var(--l-focus-ring-width) solid transparent;
+        outline-offset: var(--l-focus-ring-offset);
       }
     }
 

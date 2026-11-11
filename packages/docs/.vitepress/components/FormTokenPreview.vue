@@ -50,11 +50,11 @@ const hoverStyle = { '--l-form-control-border-color': 'var(--l-form-control-bord
  * as the box-shadow.
  */
 const focusStyle = {
-  borderColor: 'var(--l-focus-ring)',
-  outline: 'var(--l-form-control-focus-border-width) solid var(--l-focus-ring)',
+  borderColor: 'var(--l-focus-ring-color)',
+  outline: 'var(--l-form-control-focus-border-width) solid var(--l-focus-ring-color)',
   outlineOffset: 'calc(var(--l-form-control-focus-border-width) * -1)',
   boxShadow:
-    '0 0 0 var(--l-form-control-focus-halo-width) color-mix(in oklab, var(--l-focus-ring) 22%, transparent)',
+    '0 0 0 var(--l-form-control-focus-halo-width) color-mix(in oklab, var(--l-focus-ring-color) 22%, transparent)',
 };
 
 /** The toggles' own hover halo, pinned on so the ratio is visible without hovering. */

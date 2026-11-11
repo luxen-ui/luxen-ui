@@ -248,3 +248,32 @@ describe('A checkbox inside l-form-field keeps its own focus outline', () => {
     expect(cs.outlineColor).toBe('rgb(217, 70, 31)');
   });
 });
+
+describe('The search box in an open l-select', () => {
+  // Opened with the keyboard: focus moves into the search box, a text field,
+  // which must look focused like every other text field.
+  async function openSearch(style = '') {
+    const el = await mount(`<l-select searchable label="Country">${OPTIONS}</l-select>`, style);
+    await focusByKeyboard();
+    await userEvent.keyboard('{Enter}');
+    await (el as Select).updateComplete;
+    await new Promise((r) => setTimeout(r, 0));
+    await settleTransition();
+    return el.shadowRoot!.querySelector<HTMLInputElement>('.search')!;
+  }
+
+  it('takes the focus-ring color and the halo of a text field', async () => {
+    const search = await openSearch();
+    expect(search.matches(':focus-visible')).toBe(true);
+    const cs = getComputedStyle(search);
+    expect(cs.borderTopColor).toBe('rgb(217, 70, 31)');
+    expect(haloSpread(cs.boxShadow)).toBe(3);
+  });
+
+  it('follows the focus stroke and halo tokens', async () => {
+    const cs = getComputedStyle(await openSearch(STRONG));
+    expect(cs.outlineWidth).toBe('2px');
+    expect(cs.outlineOffset).toBe('-2px');
+    expect(cs.boxShadow === 'none' || haloSpread(cs.boxShadow) === 0).toBe(true);
+  });
+});

@@ -129,7 +129,7 @@ See [references/css-patterns.md](references/css-patterns.md) for the entry/exit 
 
 ## 10. Accessibility Conventions
 
-- **Focus**: `:focus-visible` with `outline: 2px solid var(--l-focus-ring); outline-offset: 2px;`
+- **Focus**: `:focus-visible` with `outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color); outline-offset: var(--l-focus-ring-offset);`. A ring that an `overflow: hidden` ancestor would clip goes inside instead: `outline-offset: calc(var(--l-focus-ring-width) * -1)`. Always an `outline`, never a `box-shadow` (dropped in forced colors). Never hardcode the width, offset or color.
 - **Hover**: Wrap hover styles in `@media (hover: hover)` for touch devices
 - **Screen readers**: Use `.l-visually-hidden` utility class for off-screen text
 - **Disabled**: `:disabled` with `cursor: not-allowed; opacity: 0.4;`

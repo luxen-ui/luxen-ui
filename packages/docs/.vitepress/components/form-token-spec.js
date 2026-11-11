@@ -19,7 +19,7 @@
 
 /** Violet — a hue no Luxen token uses (brand orange, accent blue, status red/green/amber, match yellow), so it can't be mistaken for a default. */
 // Lighter in dark mode so violet text and borders keep their contrast on dark surfaces.
-const HL = 'light-dark(oklch(55% 0.22 295), oklch(72% 0.17 295))';
+export const HL = 'light-dark(oklch(55% 0.22 295), oklch(72% 0.17 295))';
 /** Same hue, translucent — for fills that sit behind text. */
 const HL_FILL = 'oklch(55% 0.22 295 / 22%)';
 /** Paints the control's border violet — for the border geometry tokens. */
@@ -102,13 +102,13 @@ export const FORM_TOKEN_GROUPS = {
     '--l-form-control-focus-border-width': {
       preview: 'input-focus',
       highlight: '3px',
-      paint: { '--l-focus-ring': HL },
+      paint: { '--l-focus-ring-color': HL },
       touches: 'Focus stroke width',
     },
     '--l-form-control-focus-halo-width': {
       preview: 'input-focus',
       highlight: '8px',
-      paint: { '--l-focus-ring': HL },
+      paint: { '--l-focus-ring-color': HL },
       touches: 'Focus halo width',
     },
   },

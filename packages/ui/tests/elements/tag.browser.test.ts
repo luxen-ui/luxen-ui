@@ -536,7 +536,7 @@ describe('Accessibility', () => {
       // The shared checkbox appearance nests its own `:focus-visible` ring under
       // a selector list, which outranks a bare `.checkbox:focus-visible` — left
       // unqualified it paints a second ring inside the chip's. Assert the box
-      // carries none; the chip's own ring uses `--l-focus-ring`, and the token
+      // carries none; the chip's own ring uses `--l-focus-ring-color`, and the token
       // stylesheet is deliberately absent from the behavioural suites.
       const el = await mount(`<l-tag selectable control="checkbox">Color</l-tag>`);
       await userEvent.tab();

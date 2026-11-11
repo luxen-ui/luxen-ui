@@ -12,7 +12,7 @@
  *
  * Run `luxen-ui --help` for usage.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
@@ -297,6 +297,21 @@ async function runGenerateSkill(ctx) {
     const content = readFileSync(src, 'utf-8');
     const out = applyPackageName(applyPrefix(content, ctx), ctx);
     writeFileSync(dst, out, 'utf-8');
+  }
+
+  // 4a. Foundations guides (focus, …) — the "when and why" behind the tokens,
+  // prepared at build time from packages/docs/foundations/*.md.
+  const foundationsDir = join(distTplDir, 'foundations');
+  if (existsSync(foundationsDir)) {
+    ensureDir(join(ctx.outDir, 'references', 'foundations'));
+    for (const file of readdirSync(foundationsDir).filter((f) => f.endsWith('.md'))) {
+      const content = readFileSync(join(foundationsDir, file), 'utf-8');
+      writeFileSync(
+        join(ctx.outDir, 'references', 'foundations', file),
+        applyPackageName(applyPrefix(content, ctx), ctx),
+        'utf-8',
+      );
+    }
   }
 
   // 4b. Design-token reference — generated from the shipped token CSS, prefix-

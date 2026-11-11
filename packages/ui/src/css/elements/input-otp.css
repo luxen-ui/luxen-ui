@@ -46,8 +46,11 @@
       --cell-border-color: var(--l-form-control-border-color);
       /* Same corners as the other text fields, so a themed form rounds its cells too. */
       --cell-border-radius: var(--l-form-control-border-radius);
-      --cell-focus-color: var(--l-focus-ring);
-      --cell-focus-ring: 0 0 0 1px var(--cell-focus-color);
+      --cell-focus-color: var(--l-focus-ring-color);
+      /* The active cell looks focused like any text field: the focus tokens'
+         halo by default. */
+      --cell-focus-ring: 0 0 0 var(--l-form-control-focus-halo-width)
+        color-mix(in oklab, var(--cell-focus-color) 22%, transparent);
       --_cell-font:
         ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
         monospace;
@@ -101,9 +104,22 @@
     ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
     */
 
+    /* The real focus is on the hidden input; the active cell shows it with the
+       text-field recipe: ring-colored border, the inward stroke of
+       --l-form-control-focus-border-width (0 by default) and the halo. */
     :scope:focus-within .l-input-otp-cell[data-active] {
       border-color: var(--cell-focus-color);
+      outline: var(--l-form-control-focus-border-width) solid var(--cell-focus-color);
+      outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
       box-shadow: var(--cell-focus-ring);
+
+      /* Forced colors: the system palette overrides border-color and drops the
+         halo. A transparent outline is forced to a visible system color: it is
+         the indicator there. */
+      @media (forced-colors: active) {
+        outline: var(--l-focus-ring-width) solid transparent;
+        outline-offset: var(--l-focus-ring-offset);
+      }
     }
 
     /*
@@ -236,7 +252,7 @@
     /* Swap the UA focus ring for the Luxen outline ring. Inset (like input-stepper)
        so the filled field's ring is never clipped by a tight container. */
     :scope:not(:defined) > input:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
       outline-offset: calc(var(--l-focus-ring-width) * -1);
     }
   }

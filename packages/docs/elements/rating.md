@@ -166,7 +166,7 @@ Avatar group + star rating as a trust badge.
   { Check: 'Role', Description: 'In edit mode, uses native `<input type=&quot;radio&quot;>` elements — built-in semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
   { Check: 'Accessible name', Description: 'Provide an associated label via `<label>` or `aria-label` when in edit mode', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
   { Check: 'Non-text contrast', Description: 'Star colors must meet non-text contrast ratio against the background', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast)' },
-  { Check: 'Focus', Description: 'Focus ring shown around the rating group via `:focus-within`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible)' },
+  { Check: 'Focus', Description: 'Keyboard focus draws the global focus ring around the focused star (`:focus-visible`)', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
 ]" :rules="[
   'Wrap editable ratings with a visible `<label>` or provide `aria-label` on the host element',
   'In read-only mode, add `aria-label` describing the rating (e.g., `aria-label=&quot;3.5 out of 5 stars&quot;`)',

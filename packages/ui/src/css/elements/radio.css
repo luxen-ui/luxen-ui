@@ -61,8 +61,8 @@
     }
 
     &:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-      outline-offset: 2px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+      outline-offset: var(--l-focus-ring-offset);
     }
 
     /* Invalid: only after interaction (`:user-invalid`), or forced via

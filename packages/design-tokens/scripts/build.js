@@ -395,7 +395,8 @@ function categorize(token) {
   if (head === 'size') return 'sizing';
   if (head === 'shadow') return 'shadow';
   if (head === 'backdrop' || head === 'backdrop-strong') return 'surface';
-  if (head === 'focus-ring' || head === 'focus-ring-width') return 'border';
+  // Global focus indicator (--l-focus-ring-color*) — its own section in the docs.
+  if (head.startsWith('focus-ring')) return 'focus';
   if (head === 'color') {
     const second = rest[0];
     if (second === 'text') return 'text';

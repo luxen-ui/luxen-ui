@@ -6,7 +6,9 @@ The markdown files in `elements/` are the **source of truth** for the Agent Skil
 
 At Luxen build time, `packages/ui/scripts/prepare-skill-templates.mjs` transforms these docs into plain markdown (strips VitePress syntax, inlines HTML examples) and writes them to `packages/ui/dist/templates/elements/`. The CLI then assembles a per-consumer skill (with their prefix and tokens applied) from those templates.
 
-**Every edit to an element doc directly affects what AI agents see when generating Luxen UI code.**
+The Foundations guides in `foundations/` (e.g. `focus.md`) are a skill source too: the same script writes them to `packages/ui/dist/templates/foundations/`, and the CLI ships them as `references/foundations/<name>.md`. Figures (`<*Figure>` components) are dropped and `<DesignTokens>` blocks become token lists, so any fact a figure or its caption shows must also be stated in the text or a table.
+
+**Every edit to an element doc or a Foundations guide directly affects what AI agents see when generating Luxen UI code.**
 
 ## Writing Guidelines
 

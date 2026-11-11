@@ -59,7 +59,7 @@
     /* Focus: the border takes the focus-ring color; the focus stroke width and
        the soft halo live in the rule below. */
     &:focus-visible {
-      border-color: var(--l-focus-ring);
+      border-color: var(--l-focus-ring-color);
     }
 
     /* Invalid: red border + a faint danger wash. After interaction
@@ -100,17 +100,17 @@
      (--l-form-control-focus-halo-width: 0) painting nothing.
      The outline paints above the content, so it stays whole over a scrollbar. */
   :is(.l-textarea, :where(l-form-field:not([unstyled])) > textarea):focus-visible {
-    outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
+    outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring-color);
     outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
     box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
-      color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+      color-mix(in oklab, var(--l-focus-ring-color) 22%, transparent);
 
     /* Forced colors: the system palette overrides border-color and drops the
        halo. A transparent outline is forced to a visible system color: it is
        the indicator there. */
     @media (forced-colors: active) {
-      outline: 2px solid transparent;
-      outline-offset: 2px;
+      outline: var(--l-focus-ring-width) solid transparent;
+      outline-offset: var(--l-focus-ring-offset);
     }
   }
 

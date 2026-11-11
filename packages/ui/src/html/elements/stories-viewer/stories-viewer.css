@@ -239,9 +239,17 @@ dialog {
     background: rgb(0 0 0 / 45%);
   }
 
+  /* Two-color ring (WCAG technique C40): these buttons float over the story
+     media, whose brightness is unknown, so no single color is sure to
+     contrast. A light ring between two dark bands — the shadow fills the gap
+     and edges the ring — reads on any frame. Width and offset follow the
+     global tokens; in forced colors the shadow is dropped and the outline is
+     repainted. */
   &:focus-visible {
-    outline: 2px solid var(--progress-color);
-    outline-offset: 2px;
+    outline: var(--l-focus-ring-width) solid var(--progress-color);
+    outline-offset: var(--l-focus-ring-offset);
+    box-shadow: 0 0 0 calc(var(--l-focus-ring-offset) + var(--l-focus-ring-width) * 2)
+      rgb(0 0 0 / 75%);
   }
 
   /* WCAG 2.1 SC 2.5.5 / RGAA 13.4 — 44×44 hit area without changing the visible 32×32 disc. The pseudo carries no paint, only hit testing. */

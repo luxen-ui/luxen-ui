@@ -39,7 +39,7 @@
      color instead of the ring. */
   l-prose-editor:has(.ProseMirror:focus-visible)::part(toolbar),
   l-prose-editor:has(.ProseMirror:focus-visible)::part(editor) {
-    border-color: var(--border-color-focus, var(--l-focus-ring));
+    border-color: var(--border-color-focus, var(--l-focus-ring-color));
   }
 
   /* Soft focus halo — same recipe as input.css / textarea.css, so a prose
@@ -62,17 +62,17 @@
      only indicator left, so it must survive that same clipping. */
   l-prose-editor:has(.ProseMirror:focus-visible)::part(wrapper) {
     outline: var(--l-form-control-focus-border-width) solid
-      var(--border-color-focus, var(--l-focus-ring));
+      var(--border-color-focus, var(--l-focus-ring-color));
     outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
     box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
-      color-mix(in oklab, var(--border-color-focus, var(--l-focus-ring)) 22%, transparent);
+      color-mix(in oklab, var(--border-color-focus, var(--l-focus-ring-color)) 22%, transparent);
   }
 
   /* Not nested: `&` cannot stand for a selector ending in ::part(). */
   @media (forced-colors: active) {
     l-prose-editor:has(.ProseMirror:focus-visible)::part(wrapper) {
-      outline: 2px solid transparent;
-      outline-offset: -2px;
+      outline: var(--l-focus-ring-width) solid transparent;
+      outline-offset: calc(var(--l-focus-ring-width) * -1);
     }
   }
 
@@ -184,6 +184,6 @@
   }
 
   l-prose-editor .ProseMirror hr.ProseMirror-selectednode {
-    border-top-color: var(--l-focus-ring);
+    border-top-color: var(--l-focus-ring-color);
   }
 }

@@ -263,8 +263,8 @@
   }
 
   .base:has(:is(.toggle, .checkbox):focus-visible) {
-    outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-    outline-offset: 2px;
+    outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+    outline-offset: var(--l-focus-ring-offset);
   }
 
   /* The skin comes from the shared `.l-checkbox` appearance, applied through
@@ -400,7 +400,7 @@
        chip's border on three sides, so an outset ring would sit half outside
        the chip and clip against its neighbour in a wrapped filter bar. */
     &:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
       outline-offset: calc(var(--l-focus-ring-width) * -1);
     }
 

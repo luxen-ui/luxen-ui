@@ -603,6 +603,7 @@ export class Select extends LuxenFormAssociatedElement {
             aria-label=${this.label || this._localize.term('suggestions')}
             aria-multiselectable=${this.multiple ? 'true' : nothing}
             aria-activedescendant=${!this.searchable ? (activeId ?? nothing) : nothing}
+            data-nav=${this._nav.keyboard ? 'keyboard' : 'pointer'}
             @pointermove=${this._nav.onPointerMove}
             @pointerleave=${this._nav.onPointerLeave}
           >

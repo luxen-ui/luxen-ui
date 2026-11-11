@@ -77,6 +77,15 @@
   background-color: var(--l-color-bg-state-hover);
 }
 
+/* Moved there with the arrow keys: the active option is where the keyboard
+   is, though DOM focus stays on the input (aria-activedescendant), so it draws
+   the focus ring itself — inside, like a menu item. A tint alone is the hover
+   look, barely 1.1:1, and forced colors drops it. */
+.listbox[data-nav='keyboard'] .option[aria-selected='true'] {
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: calc(var(--l-focus-ring-width) * -1);
+}
+
 /* Checkmark on the currently committed value. */
 .option[data-current]::after {
   content: '';

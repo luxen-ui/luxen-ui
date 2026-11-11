@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import tokensJson from '@luxen-ui/design-tokens/json';
 import FormTokenPreview from './FormTokenPreview.vue';
-import { FORM_TOKEN_GROUPS, FORM_TOKEN_SPEC } from './form-token-spec.js';
+import { FORM_TOKEN_GROUPS, FORM_TOKEN_SPEC, HL } from './form-token-spec.js';
 import { matchesQuery, tokenQuery } from './token-filter.js';
 
 const props = defineProps({
@@ -17,6 +17,7 @@ const CATEGORIES = {
   border: 'Border',
   fill: 'Fill',
   shadow: 'Shadow',
+  focus: 'Focus',
   sizing: 'Sizing',
   spacing: 'Spacing',
   form: 'Form',
@@ -72,11 +73,11 @@ function vizKind(t) {
   const p = t.path;
   if (t.category === 'form') return 'form';
   if (t.category === 'shadow') return 'shadow';
+  if (t.category === 'focus') return 'focus-ring';
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
   if (t.category === 'text') return 'text';
   if (t.category === 'border') {
-    if (p[0] === 'focus-ring' || p[0] === 'focus-ring-width') return 'focus-ring';
     if (p[1] === 'divider') return 'divider';
     return 'border';
   }
@@ -94,16 +95,33 @@ function vizKind(t) {
 }
 
 /**
- * The focus-ring swatch: the controls that draw the ring (button, checkbox,
- * radio, switch), with only this token set to its value. Focus can't be
- * triggered on an inert preview, so their `:focus-visible` ring is pinned on.
+ * The focus-ring rows, shown like the form tokens: the controls that draw the
+ * ring (button, checkbox, switch) at their default, then with ONLY this
+ * token forced to an exaggerated value and the ring painted violet — so the
+ * second cell shows what the token changes. Focus can't be triggered on an
+ * inert preview, so their `:focus-visible` ring is pinned on.
  */
-function focusVars(t) {
-  return { [t.name]: t.value };
+const FOCUS_TOKEN_SPEC = {
+  '--l-focus-ring-color': { highlight: HL, touches: 'Ring color' },
+  '--l-focus-ring-width': {
+    highlight: '5px',
+    paint: { '--l-focus-ring-color': HL },
+    touches: 'Ring thickness',
+  },
+  '--l-focus-ring-offset': {
+    highlight: '6px',
+    paint: { '--l-focus-ring-color': HL },
+    touches: 'Gap to the ring',
+  },
+};
+function focusVars(t, highlight) {
+  if (!highlight) return {};
+  const spec = FOCUS_TOKEN_SPEC[t.name];
+  return spec ? { [t.name]: spec.highlight, ...spec.paint } : {};
 }
 const pinnedRing = {
-  outline: 'var(--l-focus-ring-width) solid var(--l-focus-ring)',
-  outlineOffset: '2px',
+  outline: 'var(--l-focus-ring-width) solid var(--l-focus-ring-color)',
+  outlineOffset: 'var(--l-focus-ring-offset)',
 };
 
 /** Lookup helper. */
@@ -250,6 +268,64 @@ function copy(name) {
                   :class="{ 'tokens__cell-legend--touch': highlight }"
                   >{{
                     highlight ? FORM_TOKEN_SPEC[token.name]?.touches : legend(token.value)
+                  }}</span
+                >
+              </div>
+            </div>
+          </template>
+
+          <!-- FOCUS RING: default, then only this token exaggerated (violet ring). -->
+          <template v-else-if="vizKind(token) === 'focus-ring'">
+            <div
+              v-for="highlight in [false, true]"
+              :key="String(highlight)"
+              class="tokens__cell"
+              :data-mode="highlight ? 'highlight' : 'default'"
+            >
+              <div class="tokens__cell-viz">
+                <div
+                  class="viz-focus"
+                  :style="{ background: 'var(--l-color-surface)' }"
+                >
+                  <div
+                    inert
+                    class="flex items-center gap-5"
+                    :style="focusVars(token, highlight)"
+                  >
+                    <button
+                      type="button"
+                      class="l-button"
+                      :style="pinnedRing"
+                    >
+                      Save
+                    </button>
+                    <input
+                      type="checkbox"
+                      class="l-checkbox"
+                      aria-label="Checkbox"
+                      :style="pinnedRing"
+                    />
+                    <input
+                      type="checkbox"
+                      role="switch"
+                      class="l-switch"
+                      aria-label="Switch"
+                      :style="pinnedRing"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="tokens__cell-footer">
+                <span
+                  class="tokens__cell-mode"
+                  :class="{ 'tokens__cell-mode--touch': highlight }"
+                  >{{ highlight ? 'Touches' : 'Default' }}</span
+                >
+                <span
+                  class="tokens__cell-legend"
+                  :class="{ 'tokens__cell-legend--touch': highlight }"
+                  >{{
+                    highlight ? FOCUS_TOKEN_SPEC[token.name]?.touches : legend(token.value)
                   }}</span
                 >
               </div>
@@ -479,52 +555,14 @@ function copy(name) {
             </div>
           </template>
 
-          <!-- SINGLE cell (no light/dark: focus-ring, alias-of-alias, sizing, spacing) -->
+          <!-- SINGLE cell (no light/dark: alias-of-alias, sizing, spacing) -->
           <div
-            v-if="!hasModes(token) && !['shadow', 'form'].includes(vizKind(token))"
+            v-if="!hasModes(token) && !['shadow', 'form', 'focus-ring'].includes(vizKind(token))"
             class="tokens__cell"
           >
             <div class="tokens__cell-viz">
               <div
-                v-if="vizKind(token) === 'focus-ring'"
-                class="viz-focus"
-                :style="{ background: 'var(--l-color-surface)' }"
-              >
-                <div
-                  inert
-                  class="flex items-center gap-4"
-                  :style="focusVars(token)"
-                >
-                  <button
-                    type="button"
-                    class="l-button"
-                    :style="pinnedRing"
-                  >
-                    Save
-                  </button>
-                  <input
-                    type="checkbox"
-                    class="l-checkbox"
-                    aria-label="Checkbox"
-                    :style="pinnedRing"
-                  />
-                  <input
-                    type="radio"
-                    class="l-radio"
-                    aria-label="Radio"
-                    :style="pinnedRing"
-                  />
-                  <input
-                    type="checkbox"
-                    role="switch"
-                    class="l-switch"
-                    aria-label="Switch"
-                    :style="pinnedRing"
-                  />
-                </div>
-              </div>
-              <div
-                v-else-if="vizKind(token) === 'control'"
+                v-if="vizKind(token) === 'control'"
                 class="viz-control-wrap"
               >
                 <div
@@ -584,6 +622,9 @@ function copy(name) {
 <style scoped>
 .tokens {
   margin-block: 1.5rem;
+  /* Rows stack on their own width, not the viewport's: the same block sits in
+     the full-width tokens page and in narrower guide columns (with an aside). */
+  container-type: inline-size;
 }
 
 /* ────────────────────── Token row (2 columns: info | values) ────────────────────── */
@@ -663,8 +704,9 @@ function copy(name) {
 }
 
 /* Form tokens render a live control — a stacked field (label + input) needs
-   more room than a swatch. */
-.tokens__group[data-category='form'] .tokens__cell-viz {
+   more room than a swatch. Focus rows need room for an exaggerated ring. */
+.tokens__group[data-category='form'] .tokens__cell-viz,
+.tokens__group[data-category='focus'] .tokens__cell-viz {
   block-size: 5rem;
 }
 
@@ -913,7 +955,9 @@ function copy(name) {
   flex-shrink: 1;
 }
 
-@media (max-width: 768px) {
+/* Side by side needs room for the description (~20rem) next to the 26rem of
+   cells; below that, the cells go full width under the description. */
+@container (max-width: 48rem) {
   .tokens__row {
     /* minmax(0, …): a bare 1fr can't shrink below its min-content, so a long
        nowrap legend (the shadow values) would stretch the page sideways. */
