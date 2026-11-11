@@ -145,8 +145,14 @@ The CSS covers everything except the password toggle; the JS import upgrades `l-
 
 <ApiTable element="input" section="cssProperties" />
 
-### Input group
+### `input-group` Attributes & Properties
 
 <ApiTable element="input-group" section="properties" />
 
+### `input-group` CSS classes
+
 <ApiTable element="input-group" section="cssClasses" />
+
+### `input-group` CSS custom properties
+
+<ApiTable element="input-group" section="cssProperties" />
