@@ -162,6 +162,10 @@ import 'luxen-ui/avatar';
 
 <ApiTable element="avatar" section="properties" />
 
+### CSS parts
+
+<ApiTable element="avatar" section="cssParts" />
+
 ### CSS classes
 
 <ApiTable element="avatar" section="cssClasses" />
@@ -169,7 +173,3 @@ import 'luxen-ui/avatar';
 ### CSS custom properties
 
 <ApiTable element="avatar" section="cssProperties" />
-
-### CSS parts
-
-<ApiTable element="avatar" section="cssParts" />

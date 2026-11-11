@@ -82,9 +82,23 @@ function normalizeProperties(members = []) {
     });
 }
 
+// Custom Elements / form-associated lifecycle callbacks the browser calls.
+// They are public in TypeScript but not an API a consumer calls themselves.
+const PLATFORM_CALLBACKS = new Set([
+  'connectedCallback',
+  'disconnectedCallback',
+  'adoptedCallback',
+  'attributeChangedCallback',
+  'connectedMoveCallback',
+  'formAssociatedCallback',
+  'formDisabledCallback',
+  'formResetCallback',
+  'formStateRestoreCallback',
+]);
+
 function normalizeMethods(members = []) {
   return members
-    .filter((m) => m.kind === 'method')
+    .filter((m) => m.kind === 'method' && !PLATFORM_CALLBACKS.has(m.name))
     .map((m) => ({
       name: m.name,
       params: (m.parameters ?? []).map((p) => ({ name: p.name, type: p.type?.text ?? null })),
@@ -197,6 +211,32 @@ async function buildImport(entry, isCustomElement) {
   return { css, js };
 }
 
+// --- Row order ---------------------------------------------------------------
+// Rows are sorted here rather than kept in JSDoc order, so the reference tables
+// read the same way on every element no matter how a source file was written.
+// Code-point comparison (not localeCompare, which ignores hyphens and would put
+// `--shadow` between `--show-duration` and `--size`) keeps it deterministic.
+const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+const sortBy = (key) => (list) => list.toSorted((a, b) => byCodePoint(key(a), key(b)));
+
+// Overlay lifecycle events, and the methods and commands that trigger them,
+// read in the order they fire (show before hide); anything else follows
+// alphabetically. Commands are matched without their `--` prefix.
+const LIFECYCLE = ['show', 'after-show', 'hide', 'after-hide'];
+function sortLifecycleFirst(list) {
+  const rank = (x) => {
+    const i = LIFECYCLE.indexOf(x.name.replace(/^--/, ''));
+    return i === -1 ? LIFECYCLE.length : i;
+  };
+  return list.toSorted((a, b) => rank(a) - rank(b) || byCodePoint(a.name, b.name));
+}
+
+// Everything else sorts by name. For slots that also puts the default slot
+// (name `''`) first, since the empty string sorts before any other.
+const byName = sortBy((x) => x.name);
+// Properties render under their attribute name when they reflect one.
+const sortProperties = sortBy((p) => p.attribute ?? p.name);
+
 async function normalizeElement(entry, decl) {
   const isCustomElement = entry.type !== 'native' && entry.kind !== 'native';
   const tag = isCustomElement ? `${ELEMENT_PREFIX}-${entry.name}` : null;
@@ -218,15 +258,15 @@ async function normalizeElement(entry, decl) {
     status: entry.status ?? 'stable',
     appearances: entry.appearances ?? [],
     import: await buildImport(entry, isCustomElement),
-    properties: normalizeProperties(decl?.members),
-    attributes: normalizeAttributes(decl?._attributes),
-    events: normalizeEvents(decl?.events),
-    methods: normalizeMethods(decl?.members),
-    slots: normalizeSlots(decl?.slots),
-    cssClasses: normalizeCssClasses(decl?._cssClasses),
-    cssParts: normalizeParts(decl?.cssParts),
-    cssProperties: normalizeCssProperties(decl?.cssProperties),
-    commands: normalizeCommands(decl?.commands),
+    properties: sortProperties(normalizeProperties(decl?.members)),
+    attributes: byName(normalizeAttributes(decl?._attributes)),
+    events: sortLifecycleFirst(normalizeEvents(decl?.events)),
+    methods: sortLifecycleFirst(normalizeMethods(decl?.members)),
+    slots: byName(normalizeSlots(decl?.slots)),
+    cssClasses: byName(normalizeCssClasses(decl?._cssClasses)),
+    cssParts: byName(normalizeParts(decl?.cssParts)),
+    cssProperties: byName(normalizeCssProperties(decl?.cssProperties)),
+    commands: sortLifecycleFirst(normalizeCommands(decl?.commands)),
     examples: normalizeExamples(decl?.examples),
   };
 }

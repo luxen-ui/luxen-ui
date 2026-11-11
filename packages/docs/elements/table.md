@@ -87,7 +87,7 @@ Put a `<button>` in each sortable header, and `aria-sort="ascending"` or `"desce
 
 :::
 
-### Attributes
+### Attributes & Properties
 
 <ApiTable element="table" section="attributes" />
 

@@ -157,7 +157,7 @@ import 'luxen-ui/carousel-item';
 
 <ApiTable element="carousel" section="events" />
 
-### CSS Parts
+### CSS parts
 
 <ApiTable element="carousel" section="cssParts" />
 

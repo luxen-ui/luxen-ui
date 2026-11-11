@@ -157,7 +157,7 @@ import 'luxen-ui/prose-editor';
 
 <ApiTable element="prose-editor" section="slots" />
 
-### CSS Parts
+### CSS parts
 
 <ApiTable element="prose-editor" section="cssParts" />
 

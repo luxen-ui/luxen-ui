@@ -154,14 +154,14 @@ import 'luxen-ui/color-scheme-icon';
 
 :::
 
-### Properties
+### Attributes & Properties
 
 <ApiTable element="color-scheme-icon" section="properties" />
-
-### CSS custom properties
-
-<ApiTable element="color-scheme-icon" section="cssProperties" />
 
 ### CSS parts
 
 <ApiTable element="color-scheme-icon" section="cssParts" />
+
+### CSS custom properties
+
+<ApiTable element="color-scheme-icon" section="cssProperties" />
