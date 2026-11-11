@@ -107,7 +107,11 @@ dialog[open] {
 
 /* dialog.css casts --shadow on every panel. An edge drawer sits flush against
    the viewport and its backdrop already separates it, so it keeps no shadow:
-   --shadow only applies once the panel floats ([inset]). */
+   --shadow only applies once the panel floats ([inset]).
+   The property is reset here, not the variable: `:host(:not([inset])) {
+   --shadow: none }` would lose to any `l-drawer { --shadow: … }` in the page
+   (outer styles beat :host rules), so a consumer tuning the shadow of their
+   inset drawers would put it on every edge drawer too. */
 :host(:not([inset])) dialog {
   box-shadow: none;
 }
