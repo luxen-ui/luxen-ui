@@ -11,6 +11,9 @@
   --easing: cubic-bezier(0.32, 0.72, 0, 1);
   --backdrop: var(--l-backdrop);
   --backdrop-blur: 0;
+  /* No shadow by default: on the standard backdrop the contrast already lifts
+     the surface. A lighter backdrop needs one to keep the edge readable. */
+  --shadow: none;
 
   display: contents;
 }
@@ -28,6 +31,15 @@ dialog {
   border-radius: var(--border-radius);
   background-color: var(--l-color-surface-overlay);
   color: var(--l-color-text-primary);
+  box-shadow: var(--shadow);
+
+  /* Forced colors repaint the panel and the page with the same Canvas color
+     and drop every box-shadow (the --shadow ring included), so a borderless
+     panel loses its edge entirely. An outline survives, takes no layout space
+     and follows the border radius; CanvasText is the system foreground. */
+  @media (forced-colors: active) {
+    outline: 1px solid CanvasText;
+  }
 
   /* EXIT STATE */
   opacity: 0;
