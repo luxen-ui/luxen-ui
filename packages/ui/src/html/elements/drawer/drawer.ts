@@ -24,13 +24,13 @@ const drawerStyles = unsafeCSS(rawDrawerStyles);
  * @csspart body - The body wrapper around the default slot.
  * @csspart footer - The footer wrapper around the footer slot.
  *
- * @cssproperty --size - Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `top`/`bottom`). Default `320px`.
- * @cssproperty --border-radius - Drawer border radius on the inner edges (all corners when `inset`). Default `0.375rem`.
- * @cssproperty --inset-gap - Gap between the drawer and the viewport edges when `inset` is set. Default `1rem`.
- * @cssproperty --shadow - Drop shadow applied to the floating panel when `inset` is set. Set to `none` to remove it.
- * @cssproperty --show-duration - Open transition duration. Default `300ms`.
- * @cssproperty --hide-duration - Close transition duration. Default `200ms`.
- * @cssproperty --easing - Timing function of the open and close transitions, backdrop included. Default `cubic-bezier(0.32, 0.72, 0, 1)`.
+ * @cssproperty [--size=320px] - Drawer size on the axis perpendicular to its edge (width for `start`/`end`, height for `top`/`bottom`).
+ * @cssproperty [--border-radius=0.375rem] - Drawer border radius on the inner edges (all corners when `inset`).
+ * @cssproperty [--inset-gap=1rem] - Gap between the drawer and the viewport edges when `inset` is set.
+ * @cssproperty [--shadow=var(--l-shadow-lg)] - Drop shadow applied to the floating panel when `inset` is set (an edge drawer casts none). Set to `none` to remove it.
+ * @cssproperty [--show-duration=300ms] - Open transition duration.
+ * @cssproperty [--hide-duration=200ms] - Close transition duration.
+ * @cssproperty [--easing=cubic-bezier(0.32, 0.72, 0, 1)] - Timing function of the open and close transitions, backdrop included.
  * @cssproperty --backdrop - Backdrop color.
  *
  * @event show - Fired when the drawer is about to open. Cancelable — call `event.preventDefault()` to keep it closed.

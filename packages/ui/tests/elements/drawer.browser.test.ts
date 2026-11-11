@@ -167,6 +167,21 @@ describe('Drawer inset', () => {
     expect(rect.left).toBeCloseTo(24, 0);
     expect(window.innerWidth - rect.right).toBeCloseTo(24, 0);
   });
+
+  it('only the floating inset panel carries --shadow, never the edge-flush one', async () => {
+    await mount(
+      `<l-drawer title="Edge" style="--shadow: 0 4px 8px rgb(0 0 0 / 0.25); --show-duration: 0ms; --hide-duration: 0ms">
+        <p>Flush</p>
+      </l-drawer>`,
+    );
+    drawer().open = true;
+    await settle();
+    expect(getComputedStyle(nativeDialog()).boxShadow).toBe('none');
+
+    drawer().inset = true;
+    await settle();
+    expect(getComputedStyle(nativeDialog()).boxShadow).toContain('0px 4px 8px');
+  });
 });
 
 // ---------------------------------------------------------------------------

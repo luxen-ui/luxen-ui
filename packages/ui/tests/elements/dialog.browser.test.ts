@@ -316,6 +316,28 @@ describe('Invoker commands open and close the dialog', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Panel shadow
+// ---------------------------------------------------------------------------
+
+describe('A consumer can lift the panel off a light backdrop with --shadow', () => {
+  it('casts no shadow by default', async () => {
+    await mount(FIXTURE);
+    dialog().open = true;
+    await settle();
+    expect(getComputedStyle(nativeDialog()).boxShadow).toBe('none');
+  });
+
+  it('applies the --shadow value to the panel', async () => {
+    await mount(
+      `<l-dialog title="Lifted" style="--shadow: 0 4px 8px rgb(0 0 0 / 0.25); --show-duration: 0ms"><p>Body</p></l-dialog>`,
+    );
+    dialog().open = true;
+    await settle();
+    expect(getComputedStyle(nativeDialog()).boxShadow).toContain('0px 4px 8px');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Accessibility
 // ---------------------------------------------------------------------------
 

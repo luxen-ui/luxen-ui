@@ -59,6 +59,7 @@ if (typeof document !== 'undefined' && !(SCROLL_LOCK_SHEET in document)) {
  * @cssproperty [--easing=cubic-bezier(0.32, 0.72, 0, 1)] - Timing function of the open and close transitions, backdrop included.
  * @cssproperty --backdrop - Backdrop color.
  * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length). `0` means no blur; set e.g. `4px` for a subtle frost.
+ * @cssproperty [--shadow=none] - Drop shadow of the dialog panel (any `box-shadow` value). Raise it when the backdrop is light, where the panel edge would otherwise fade into the page.
  *
  * @event show - Fired when the dialog is about to open. Cancelable — call `event.preventDefault()` to keep it closed.
  * @event after-show - Fired after the open animation completes. Not cancelable.
