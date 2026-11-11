@@ -64,7 +64,7 @@ Elevation scale for floating surfaces, ordered by how far they lift off the page
 
 ## Focus
 
-The focus indicator, in one color and two shapes: a ring around most controls, a recolored border on text fields. Usage, theming and accessibility: [Focus guide](/foundations/focus).
+The focus indicator, in one color and two shapes: a ring around most controls, a thicker border in the focus color on text fields. Usage, theming and accessibility: [Focus guide](/foundations/focus).
 
 <section class="not-has-[[data-viz]]:hidden">
 

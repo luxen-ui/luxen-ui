@@ -39,8 +39,8 @@
       },
       "focus-border-width": {
         "$type": "dimension",
-        "$value": "0px",
-        "$description": "Width of the stroke drawn on a focused text field (input, textarea, native select, input group, l-select, l-combobox, l-prose-editor), in the focus-ring color (the invalid color on an invalid field). Drawn inward from the outer edge, over the border: the control keeps its size and its text does not move. `0` (the default) draws no stroke: the resting border alone takes the focus color. Set it wider than --l-form-control-border-width for a thicker focus, e.g. `2px`."
+        "$value": "2px",
+        "$description": "Width of the stroke drawn on a focused text field (input, textarea, native select, input group, l-select and its search box, l-combobox, l-prose-editor, the active l-input-otp cell), in the focus-ring color (the invalid color on an invalid field). Drawn inward from the outer edge, over the border: the control keeps its size and its text does not move. The default `2px` covers the 1px border and 1px more inside, so a focused field reads as clearly as a ring around a button. A value at or below --l-form-control-border-width adds nothing visible: the resting border alone takes the focus color."
       },
       "focus-halo-width": {
         "$type": "dimension",

@@ -144,13 +144,14 @@ const STRONG = '--l-form-control-focus-border-width: 2px; --l-form-control-focus
 for (const [name, control] of Object.entries(CONTROLS)) {
   describe(`A focused ${name}`, () => {
     describe('keeps the default focus look', () => {
-      it('takes the focus-ring color on its 1px border, with no extra stroke', async () => {
+      it('takes the focus-ring color on its border, thickened by a 2px inward stroke', async () => {
         const el = await mount(control.markup());
         await focusByKeyboard();
         const p = paint(control, el);
         expect(p.borderWidth).toBe('1px');
         expect(p.border).toBe('rgb(217, 70, 31)');
-        expect(p.outlineWidth).toBe('0px');
+        expect(p.outlineWidth).toBe('2px');
+        expect(p.outlineOffset).toBe('-2px');
       });
 
       it('casts the 3px soft halo', async () => {
@@ -179,8 +180,14 @@ for (const [name, control] of Object.entries(CONTROLS)) {
         expect(geometry(control, el)).toEqual(atRest);
       });
 
-      it('draws no stroke on a borderless field by default', async () => {
+      it('still marks a borderless field with the stroke', async () => {
         const el = await mount(control.markup(), '--l-form-control-border-width: 0px');
+        await focusByKeyboard();
+        expect(paint(control, el).outlineWidth).toBe('2px');
+      });
+
+      it('draws no stroke at 0', async () => {
+        const el = await mount(control.markup(), '--l-form-control-focus-border-width: 0px');
         await focusByKeyboard();
         expect(paint(control, el).outlineWidth).toBe('0px');
       });
