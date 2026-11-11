@@ -113,11 +113,6 @@
   font: inherit;
 }
 
-.search:focus-visible {
-  outline: none;
-  border-color: var(--l-focus-ring);
-}
-
 .search::placeholder {
   color: var(--l-form-control-placeholder-color);
 }
@@ -125,6 +120,16 @@
 /* Keyboard-active row (moves with Arrow keys) — same tint as hover. */
 .option[data-active] {
   background-color: var(--l-color-bg-state-hover);
+}
+
+/* Moved there with the arrow keys: the active option is where the keyboard
+   is, though DOM focus stays on the search box or the listbox
+   (aria-activedescendant), so it draws the focus ring itself — inside, like a
+   menu item. A tint alone is the hover look, barely 1.1:1, and forced colors
+   drops it. */
+.listbox[data-nav='keyboard'] .option[data-active] {
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: calc(var(--l-focus-ring-width) * -1);
 }
 
 /* Selected indicator in the reserved inline-start column, pinned to the first

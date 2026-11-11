@@ -14,7 +14,7 @@ function run(css: string, opts: { elementPrefix?: string; cssPrefix?: string }):
 // `light-dark()` alias referencing primitives, and a self-reference alias.
 const TOKENS = `:root {
   --l-color-gray-900: #111;
-  --l-focus-ring: #d9461f;
+  --l-focus-ring-color: #d9461f;
   --l-color-text-primary: light-dark(var(--l-color-gray-700), var(--l-color-gray-200));
   --l-color-border-overlay: var(--l-color-border);
 }`;
@@ -22,7 +22,7 @@ const TOKENS = `:root {
 describe('postcss-plugin-prefix — design-token bridging (RFC custom-prefix)', () => {
   it('renames every --l-* token declaration to the custom prefix', () => {
     const out = run(TOKENS, { cssPrefix: 'p' });
-    expect(out).toContain('--p-focus-ring: #d9461f;');
+    expect(out).toContain('--p-focus-ring-color: #d9461f;');
     expect(out).toContain('--p-color-gray-900: #111;');
     // var() references inside values are rewritten too.
     expect(out).toContain('light-dark(var(--p-color-gray-700), var(--p-color-gray-200))');
@@ -30,7 +30,7 @@ describe('postcss-plugin-prefix — design-token bridging (RFC custom-prefix)', 
 
   it('emits a :root alias bridging each canonical --l-* token to --{prefix}-*', () => {
     const out = run(TOKENS, { cssPrefix: 'p' });
-    expect(out).toContain('--l-focus-ring: var(--p-focus-ring);');
+    expect(out).toContain('--l-focus-ring-color: var(--p-focus-ring-color);');
     expect(out).toContain('--l-color-gray-900: var(--p-color-gray-900);');
     expect(out).toContain('--l-color-text-primary: var(--p-color-text-primary);');
     expect(out).toContain('--l-color-border-overlay: var(--p-color-border-overlay);');
@@ -67,8 +67,8 @@ describe('postcss-plugin-prefix — design-token bridging (RFC custom-prefix)', 
     // Asymmetric config (tags `pulse-*`, css `p-*`): the token bridge follows
     // the CSS prefix, never the element prefix.
     const out = run(TOKENS, { elementPrefix: 'pulse', cssPrefix: 'p' });
-    expect(out).toContain('--l-focus-ring: var(--p-focus-ring);');
-    expect(out).not.toContain('pulse-focus-ring');
+    expect(out).toContain('--l-focus-ring-color: var(--p-focus-ring-color);');
+    expect(out).not.toContain('pulse-focus-ring-color');
   });
 });
 

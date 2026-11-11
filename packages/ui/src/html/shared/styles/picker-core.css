@@ -63,7 +63,7 @@
 }
 
 /* Focus: border takes the ring color plus the soft halo, matching l-input. The
-   halo is mixed here rather than read from a :root token, so a --l-focus-ring
+   halo is mixed here rather than read from a :root token, so a --l-focus-ring-color
    re-themed on an ancestor recolors the halo as well as the border.
    The --l-form-control-focus-border-width stroke is an outline drawn inward
    over the border, so the field, its text and its end actions never move (0 by
@@ -71,14 +71,16 @@
    An outline, not an inset box-shadow: it paints above the clear button and
    the chevron, whose hover wash reaches the border, and it leaves box-shadow to
    the halo alone, 0 wide (--l-form-control-focus-halo-width: 0) painting
-   nothing. */
+   nothing. The search box in l-select's panel is a text field too: same
+   recipe (its row's padding leaves room for the halo). */
 .control:has(.input:focus-visible),
-.trigger:focus-visible {
-  border-color: var(--l-focus-ring);
-  outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring);
+.trigger:focus-visible,
+.search:focus-visible {
+  border-color: var(--l-focus-ring-color);
+  outline: var(--l-form-control-focus-border-width) solid var(--l-focus-ring-color);
   outline-offset: calc(var(--l-form-control-focus-border-width) * -1);
   box-shadow: 0 0 0 var(--l-form-control-focus-halo-width)
-    color-mix(in oklab, var(--l-focus-ring) 22%, transparent);
+    color-mix(in oklab, var(--l-focus-ring-color) 22%, transparent);
 }
 
 /* Forced colors: the system palette overrides border-color and drops the halo.
@@ -86,9 +88,10 @@
    indicator there. */
 @media (forced-colors: active) {
   .control:has(.input:focus-visible),
-  .trigger:focus-visible {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+  .trigger:focus-visible,
+  .search:focus-visible {
+    outline: var(--l-focus-ring-width) solid transparent;
+    outline-offset: var(--l-focus-ring-offset);
   }
 }
 
@@ -166,7 +169,7 @@
 }
 
 .clear-button:focus-visible {
-  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
   outline-offset: calc(var(--l-focus-ring-width) * -1);
 }
 

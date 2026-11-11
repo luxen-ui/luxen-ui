@@ -12,6 +12,12 @@
  *      <ApiTable> / <ElementSpec> / ::: directives, drop leftover demo
  *      components). Output: packages/ui/dist/templates/elements/<name>.md
  *
+ *   1b. Transform the Foundations guides (packages/docs/foundations/*.md —
+ *      focus, …) the same way. They carry the "when and why" behind the tokens
+ *      that the generated `references/tokens.md` inventory cannot. Figures
+ *      (`<*Figure>`) are dropped; `<DesignTokens>` blocks become token lists.
+ *      Output: packages/ui/dist/templates/foundations/<name>.md
+ *
  *   2. Sync the auto-generated `l-*` tag list inside packages/ui/MOCKUPS.md
  *      from the manifest (between <!-- generated:l-tags --> markers), then copy
  *      the file verbatim to packages/ui/dist/templates/mockups.md.
@@ -19,7 +25,7 @@
  * This script does NOT generate a complete skill — that's the CLI's job at
  * consumer-run time, where the prefix, name, and theme overrides are applied.
  */
-import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, realpath } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -30,6 +36,17 @@ const DOCS_ROOT = resolve(PKG_ROOT, '..', 'docs');
 const MANIFEST_PATH = resolve(PKG_ROOT, 'elements.json');
 const MOCKUPS_PATH = resolve(PKG_ROOT, 'MOCKUPS.md');
 const OUT_ROOT = resolve(PKG_ROOT, 'dist', 'templates');
+// Absolute origin of the docs site: root-relative links (`/overview/…`) are
+// dead outside it, so templates point back at the published page.
+const DOCS_ORIGIN = 'https://luxen-ui.com';
+
+// Built design tokens (the same JSON the docs' <DesignTokens> reads) and the
+// docs' form-token grouping, for rendering <DesignTokens> blocks as lists.
+const TOKENS_PATH = resolve(PKG_ROOT, '..', 'design-tokens', 'dist', 'json', 'tokens.json');
+const TOKENS = JSON.parse(await readFile(TOKENS_PATH, 'utf-8'));
+const { FORM_TOKEN_GROUPS } = await import(
+  resolve(DOCS_ROOT, '.vitepress', 'components', 'form-token-spec.js')
+);
 
 const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8'));
 const ELEMENTS = manifest.elements.filter((e) => e.inSkill).map((e) => e.name);
@@ -55,8 +72,15 @@ async function main() {
   for (const element of ELEMENTS) {
     const docPath = join(DOCS_ROOT, 'elements', `${element}.md`);
     const raw = await readFile(docPath, 'utf-8');
-    const transformed = await transformDoc(raw, element);
+    const transformed = await transformDoc(raw, join(DOCS_ROOT, 'elements'));
     await writeFile(join(OUT_ROOT, 'elements', `${element}.md`), transformed);
+  }
+
+  const foundationsDir = join(DOCS_ROOT, 'foundations');
+  await mkdir(join(OUT_ROOT, 'foundations'), { recursive: true });
+  for (const file of (await readdir(foundationsDir)).filter((f) => f.endsWith('.md')).toSorted()) {
+    const raw = await readFile(join(foundationsDir, file), 'utf-8');
+    await writeFile(join(OUT_ROOT, 'foundations', file), await transformDoc(raw, foundationsDir));
   }
 
   await syncMockupsTagList();
@@ -88,9 +112,9 @@ async function syncMockupsTagList() {
 
 // --- Markdown transformation ---
 
-async function transformDoc(content, _elementName) {
+async function transformDoc(content, docDir) {
   // 1. Parse <script setup> imports to build variable -> file path map
-  const imports = parseScriptImports(content);
+  const imports = parseScriptImports(content, docDir);
 
   // 2. Strip <script setup> block
   content = content.replace(/<script setup>[\s\S]*?<\/script>\s*/m, '');
@@ -119,8 +143,15 @@ async function transformDoc(content, _elementName) {
   // 5d. Replace <ElementSpec> with a concise markdown line
   content = convertElementSpec(content);
 
-  // 5e. Strip leftover docs-only components (interactive demos)
+  // 5d'. Replace <DesignTokens> with a token list
+  content = convertDesignTokens(content);
+
+  // 5e. Strip leftover docs-only components (interactive demos, figures)
+  content = stripFigures(content);
   content = stripLeftoverComponents(content);
+
+  // 5f. Point root-relative links at the published docs
+  content = absolutizeDocsLinks(content);
 
   // 6. Convert VitePress container directives and file includes
   content = await convertVitePressBlocks(content, wrapperResult.inlinedFiles);
@@ -131,7 +162,7 @@ async function transformDoc(content, _elementName) {
   return content;
 }
 
-function parseScriptImports(content) {
+function parseScriptImports(content, docDir) {
   const imports = new Map();
   const setupMatch = content.match(/<script setup>([\s\S]*?)<\/script>/);
   if (!setupMatch) return imports;
@@ -140,7 +171,7 @@ function parseScriptImports(content) {
   let match;
   while ((match = importRegex.exec(setupMatch[1])) !== null) {
     // Resolve relative path from docs root (imports use '../.vitepress/...')
-    const filePath = resolve(join(DOCS_ROOT, 'elements'), match[2]);
+    const filePath = resolve(docDir, match[2]);
     imports.set(match[1], filePath);
   }
   return imports;
@@ -380,6 +411,41 @@ function convertElementSpec(content) {
     const label = TYPE_LABEL[attrs.match(/type="([^"]*)"/)?.[1]];
     return label ? `**\`<${tag}>\`** — ${label}` : `**\`<${tag}>\`**`;
   });
+}
+
+// Resolves <DesignTokens category="x" [group="y"] /> into one bullet per token,
+// in the order the docs page shows them: name, default value, description.
+// A `form` group is ordered by the docs' FORM_TOKEN_GROUPS, like the page.
+function convertDesignTokens(content) {
+  const regex = /<DesignTokens\s+([^>]*?)\/>/g;
+  return content.replace(regex, (_, attrs) => {
+    const category = attrs.match(/category="([^"]*)"/)?.[1];
+    const group = attrs.match(/group="([^"]*)"/)?.[1];
+    if (!category) return '';
+    let tokens = TOKENS.filter((t) => t.category === category);
+    if (group) {
+      const names = Object.keys(FORM_TOKEN_GROUPS[group] ?? {});
+      if (!names.length) throw new Error(`<DesignTokens group="${group}"> — unknown form group.`);
+      tokens = names.map((n) => tokens.find((t) => t.name === n)).filter(Boolean);
+    }
+    if (!tokens.length) throw new Error(`<DesignTokens category="${category}"> — no tokens.`);
+    return tokens
+      .map((t) => `- \`${t.name}\` (default: \`${t.value}\`) — ${t.description}`)
+      .join('\n');
+  });
+}
+
+// Drops illustration components (`<FocusFigure name="…">caption</FocusFigure>`).
+// A figure only shows what the surrounding prose and tables already state, and
+// its caption refers to the picture. Matched by the `Figure` suffix, so paired
+// components whose children are content (e.g. <ComponentWrapper>…) are kept.
+function stripFigures(content) {
+  return content.replace(/<([A-Z]\w*Figure)\b[^>]*>[\s\S]*?<\/\1>\s*/g, '');
+}
+
+// Root-relative markdown links resolve only on the docs site.
+function absolutizeDocsLinks(content) {
+  return content.replace(/\]\(\/(?!\/)/g, `](${DOCS_ORIGIN}/`);
 }
 
 // Strips leftover docs-only Vue components (interactive demos such as

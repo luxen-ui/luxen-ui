@@ -24,7 +24,7 @@
   min-block-size: var(--row-height);
   padding-inline: var(--row-padding-inline);
   padding-inline-start: calc(var(--indent-size) * var(--_depth, 0) + var(--row-padding-inline));
-  border-radius: 0.375rem;
+  border-radius: var(--l-radius-md);
   cursor: pointer;
   user-select: none;
   transition:
@@ -35,8 +35,10 @@
 
 .item:focus-visible,
 :host(:focus-visible) .item {
-  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-  outline-offset: 1px;
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  /* Half the gap: rows/buttons sit edge to edge, a full offset would
+     reach into the neighbour. */
+  outline-offset: calc(var(--l-focus-ring-offset) / 2);
 }
 
 @media (hover: hover) {

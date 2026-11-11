@@ -36,6 +36,14 @@ export class ListboxNavController implements ReactiveController {
   /** Index of the active option, or `-1` when none is active. */
   activeIndex = -1;
 
+  /**
+   * Whether the keyboard (not the pointer) last moved the active option. DOM
+   * focus stays on the input, so `:focus-visible` cannot tell: hosts render it
+   * on the listbox (`data-nav="keyboard"`) and the active option then draws the
+   * focus ring, while a pointer-driven one keeps the plain hover tint.
+   */
+  keyboard = false;
+
   constructor(host: ReactiveControllerHost, config: ListboxNavConfig) {
     this.host = host;
     this.config = config;
@@ -72,6 +80,7 @@ export class ListboxNavController implements ReactiveController {
 
   /** Move the active option by `diff`, opening the listbox first if closed. */
   move(diff: 1 | -1) {
+    this.keyboard = true;
     if (!this.config.isOpen()) {
       this.config.open();
       // Land on the first (Down) or last (Up) option — APG.
@@ -92,6 +101,10 @@ export class ListboxNavController implements ReactiveController {
     if (e.pointerType === 'touch') return;
     const row = (e.target as Element).closest('[role="option"]');
     if (!row) return;
+    if (this.keyboard) {
+      this.keyboard = false;
+      this.host.requestUpdate();
+    }
     const index = Array.prototype.indexOf.call(this.config.getOptionElements() ?? [], row);
     if (index < 0) return;
     if (this.config.isDisabled(index)) this.reset();

@@ -194,8 +194,8 @@ The selector `.l-close:not([data-appearance])` makes the imported appearance act
   }
 
   &:focus-visible {
-    outline: 2px solid var(--l-focus-ring);
-    outline-offset: 2px;
+    outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+    outline-offset: var(--l-focus-ring-offset);
   }
 }
 ```

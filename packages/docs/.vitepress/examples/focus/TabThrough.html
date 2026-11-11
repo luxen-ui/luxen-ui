@@ -1,0 +1,42 @@
+<div class="flex flex-wrap items-center gap-4">
+  <button
+    type="button"
+    class="l-button"
+    data-variant="primary"
+  >
+    Save
+  </button>
+  <button
+    type="button"
+    class="l-button"
+  >
+    Cancel
+  </button>
+  <label class="flex items-center gap-2 text-sm">
+    <input
+      type="checkbox"
+      class="l-checkbox"
+    />
+    Remember me
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    <input
+      type="checkbox"
+      role="switch"
+      class="l-switch"
+    />
+    Notifications
+  </label>
+  <l-segmented-control
+    label="View"
+    value="list"
+  >
+    <button value="list">List</button>
+    <button value="board">Board</button>
+  </l-segmented-control>
+  <input
+    class="l-input w-40"
+    placeholder="Search…"
+    aria-label="Search"
+  />
+</div>

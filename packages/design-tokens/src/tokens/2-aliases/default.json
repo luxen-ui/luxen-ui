@@ -248,16 +248,22 @@
     }
   },
 
-  "focus-ring": {
+  "focus-ring-color": {
     "$type": "color",
     "$value": "#d9461f",
-    "$description": "Focus ring color for :focus-visible outlines on interactive elements like buttons, inputs, and links. Its thickness is --l-focus-ring-width. Text fields take this color on their focused border and halo, with a thickness of their own (--l-form-control-focus-border-width)."
+    "$description": "Color of the focus indicator, shown on :focus-visible: the ring around buttons, checkbox, radio, switch, tabs, tags, menu and tree items, links, and the border and halo of a focused text field. Keep at least 3:1 against every surface it lands on (WCAG 1.4.11) — the default gives 4.3:1 on white and 4.1:1 on the dark surface. Re-theme it on an ancestor to scope it, e.g. a lighter color over a photo."
   },
 
   "focus-ring-width": {
     "$type": "dimension",
     "$value": "2px",
-    "$description": "Thickness of the :focus-visible ring drawn around interactive elements — buttons, checkbox, radio, switch, tabs, tags, menu and tree items, toolbar and adornment buttons, close buttons, avatars, breadcrumb links. Rings set inside their element (so an `overflow: hidden` ancestor cannot clip them) grow inward with it. Text fields show focus on their border instead: see --l-form-control-focus-border-width, which a consumer can point at this token for one focus thickness everywhere."
+    "$description": "Thickness of the :focus-visible ring drawn around interactive elements — buttons, checkbox, radio, switch, slider thumb, rating, tabs, tags, menu and tree items, toolbar and adornment buttons, close buttons, avatars, breadcrumb links. Keep it at 2px or more (WCAG 2.4.13). Rings set inside their element (items laid edge to edge — menu items, tabs, segmented control — where an outer ring would overlap a neighbor or the panel edge) grow inward with it. Text fields show focus on their border instead: see --l-form-control-focus-border-width, which a consumer can point at this token for one focus thickness everywhere."
+  },
+
+  "focus-ring-offset": {
+    "$type": "dimension",
+    "$value": "2px",
+    "$description": "Gap between an element and its :focus-visible ring, so the ring reads apart from the element's own border or fill. Rings set inside their element (menu items, tabs, segmented control, disclosure summary — items laid edge to edge, where an outer ring would overlap a neighbor or the panel edge) ignore it and sit flush inside the edge instead."
   },
 
   "size": {

@@ -85,8 +85,8 @@
 
     /* Focus ring hugs the thumbnail shape (circle, portrait, etc.) — label stays outside the ring. */
     .l-story-trigger:focus-visible .l-story-thumb {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-      outline-offset: 3px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+      outline-offset: var(--l-focus-ring-offset);
     }
 
     .l-story-trigger:hover .l-story-thumb {

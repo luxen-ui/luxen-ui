@@ -114,8 +114,12 @@ thumb's hit box is ≥24px (WCAG 2.5.8) while the visible disc stays smaller.
   outline: none;
 }
 
+/* The ring goes on the visible disc, not on the larger hit box. An outline, not
+   a box-shadow halo: it keeps full contrast and survives forced colors, where
+   box-shadows are dropped. */
 .thumb:focus-visible::before {
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--l-focus-ring) 45%, transparent);
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: var(--l-focus-ring-offset);
 }
 
 /*

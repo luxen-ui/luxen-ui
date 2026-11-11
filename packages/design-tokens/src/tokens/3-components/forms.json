@@ -45,7 +45,7 @@
       "focus-halo-width": {
         "$type": "dimension",
         "$value": "3px",
-        "$description": "Width of the soft halo around a focused text field — a ring of the focus-ring color (the invalid color on an invalid field) at 22% opacity, outside the border. Set to `0` for a crisp stroke with no halo, typically together with --l-form-control-focus-border-width. The color is mixed at the control, so a --l-focus-ring re-themed on an ancestor recolors the halo too."
+        "$description": "Width of the soft halo around a focused text field — a ring of the focus-ring color (the invalid color on an invalid field) at 22% opacity, outside the border. Set to `0` for a crisp stroke with no halo, typically together with --l-form-control-focus-border-width. The color is mixed at the control, so a --l-focus-ring-color re-themed on an ancestor recolors the halo too."
       },
       "border-radius": {
         "$type": "dimension",

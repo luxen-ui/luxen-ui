@@ -88,6 +88,9 @@ Output structure (per [Agent Skills spec](https://agentskills.io/specification))
 └── references/
     ├── integration.md             ← integration-mode guide + element inventory
     ├── mockups.md                 ← --with-mockups only: HTML boilerplate using the standalone assets
+    ├── tokens.md                  ← design-token inventory, with your prefix
+    ├── foundations/
+    │   └── focus.md               ← concept guides: when and why, tokens, accessibility rules
     └── <element>.md               ← per-element specs (attributes, slots, events)
 ```
 

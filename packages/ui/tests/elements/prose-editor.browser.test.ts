@@ -825,7 +825,7 @@ describe('Accessibility', () => {
       const el = await mount(markup);
       // Pin the two colors the assertions compare against (the tokens
       // stylesheet is loaded above; these override its values).
-      host.style.setProperty('--l-focus-ring', RING);
+      host.style.setProperty('--l-focus-ring-color', RING);
       host.style.setProperty('--l-color-border', IDLE);
       await settleTransition();
       return el;
