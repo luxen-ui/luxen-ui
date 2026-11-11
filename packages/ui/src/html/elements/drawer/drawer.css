@@ -103,7 +103,13 @@ dialog[open] {
    still clears the viewport edge during the slide (it no longer sits flush). */
 :host([inset]) dialog {
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+}
+
+/* dialog.css casts --shadow on every panel. An edge drawer sits flush against
+   the viewport and its backdrop already separates it, so it keeps no shadow:
+   --shadow only applies once the panel floats ([inset]). */
+:host(:not([inset])) dialog {
+  box-shadow: none;
 }
 
 /* Inline-edge drawers (start/end): inset the block edges, shrink height to fit. */

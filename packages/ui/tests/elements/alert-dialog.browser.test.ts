@@ -189,6 +189,17 @@ describe('Tone', () => {
   });
 });
 
+describe('Panel shadow', () => {
+  it('casts no shadow by default and honors the inherited --shadow knob', async () => {
+    await mount(FIXTURE);
+    await open();
+    expect(getComputedStyle(nativeDialog()).boxShadow).toBe('none');
+
+    alert().style.setProperty('--shadow', '0 4px 8px rgb(0 0 0 / 0.25)');
+    expect(getComputedStyle(nativeDialog()).boxShadow).toContain('0px 4px 8px');
+  });
+});
+
 describe('Replaceable actions', () => {
   it('a slotted confirm button replaces the default and drives the confirm event', async () => {
     await mount(`

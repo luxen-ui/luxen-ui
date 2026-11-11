@@ -76,8 +76,9 @@ export class CancelEvent extends Event {
  * @cssproperty [--show-duration=200ms] - Open transition duration.
  * @cssproperty [--hide-duration=200ms] - Close transition duration.
  * @cssproperty [--easing=cubic-bezier(0.32, 0.72, 0, 1)] - Timing function of the open and close transitions, backdrop included.
- * @cssproperty --backdrop - Backdrop color.
- * @cssproperty [--backdrop-blur=0] - Backdrop blur amount (any CSS length).
+ * @cssproperty [--backdrop=var(--l-backdrop-strong)] - Backdrop color.
+ * @cssproperty [--backdrop-blur=2px] - Backdrop blur amount (any CSS length).
+ * @cssproperty [--shadow=none] - Drop shadow of the dialog panel (any `box-shadow` value). Raise it when the backdrop is light, where the panel edge would otherwise fade into the page.
  *
  * @event confirm - Fired when the user accepts. Cancelable — `preventDefault()` keeps it open for async work.
  * @event cancel - Fired when the user dismisses (cancel action, Escape). Cancelable — `preventDefault()` keeps it open.
