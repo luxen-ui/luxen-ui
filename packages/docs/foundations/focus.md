@@ -18,16 +18,16 @@ The focus indicator shows where the keyboard is. Every Luxen element draws it fr
 ## Anatomy
 
 <FocusFigure name="anatomy">
-Each shape at real size, then one edge magnified 20×. The stroke is drawn inward from the field's outer edge, over the border: hatched where it lands once set.
+Each shape at real size, then one edge magnified 20×. The stroke is drawn inward from the field's outer edge, over the border: 2px reads as the 1px border plus 1px inside.
 </FocusFigure>
 
-| Part   | Token                                          | Default                      |
-| ------ | ---------------------------------------------- | ---------------------------- |
-| Offset | `--l-focus-ring-offset`                        | `2px`                        |
-| Ring   | `--l-focus-ring-width`, `--l-focus-ring-color` | `2px`, `#d9461f`             |
-| Halo   | `--l-form-control-focus-halo-width`            | `3px`, the ring color at 22% |
-| Border | `--l-form-control-border-width`                | `1px`, in the ring color     |
-| Stroke | `--l-form-control-focus-border-width`          | `0`, drawn inward            |
+| Part   | Token                                          | Default                             |
+| ------ | ---------------------------------------------- | ----------------------------------- |
+| Offset | `--l-focus-ring-offset`                        | `2px`                               |
+| Ring   | `--l-focus-ring-width`, `--l-focus-ring-color` | `2px`, `#d9461f`                    |
+| Halo   | `--l-form-control-focus-halo-width`            | `3px`, the ring color at 22%        |
+| Border | `--l-form-control-border-width`                | `1px`, in the ring color            |
+| Stroke | `--l-form-control-focus-border-width`          | `2px`, drawn inward over the border |
 
 An invalid field takes `--l-form-control-border-color-invalid` for its halo, border and stroke.
 
@@ -173,13 +173,12 @@ Point the field stroke at the ring width and drop the halo:
 
 <ComponentWrapper :html="oneThickness" />
 
-### Crisp field stroke
+### Crisp field
 
-A 2px stroke, no halo. The stroke is drawn inward: the field keeps its size and its text does not move.
+The stroke alone, no halo. The stroke is drawn inward: the field keeps its size and its text does not move.
 
 ```css
 :root {
-  --l-form-control-focus-border-width: 2px;
   --l-form-control-focus-halo-width: 0;
 }
 ```
@@ -195,7 +194,7 @@ A 2px stroke, no halo. The stroke is drawn inward: the field keeps its size and 
 <AccessibilityTable :data="[
   { Check: 'Visible', Description: 'Every focusable element shows an indicator on keyboard focus', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
   { Check: 'Contrast', Description: 'The indicator has 3:1 against adjacent colors: 4.3:1 on white, 4.1:1 on the dark surface', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
-  { Check: 'Size', Description: 'Outside rings are a solid 2px perimeter, the minimum area of Focus Appearance (AAA). Inside rings and the default field border cover less: set `--l-focus-ring-width` and `--l-form-control-focus-border-width` to `3px` to meet it everywhere', WCAG: '[WCAG 2.4.13](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance)' },
+  { Check: 'Size', Description: 'Outside rings are a solid 2px perimeter, the minimum area of Focus Appearance (AAA). Inside rings and the field stroke are drawn inward, which covers less: set `--l-focus-ring-width` and `--l-form-control-focus-border-width` to `3px` to meet it everywhere', WCAG: '[WCAG 2.4.13](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance)' },
   { Check: 'Not obscured', Description: 'Rings between items set edge to edge are drawn inside, so none is covered by a neighbor; `scroll-padding` keeps focus clear of sticky content', WCAG: '[WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [WCAG 2.4.12](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-enhanced)' },
   { Check: 'Forced colors', Description: 'Indicators are outlines, repainted by the system; never a `box-shadow` alone', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
   { Check: 'Order', Description: 'Focus follows DOM order; composite widgets (tabs, tree, menu, radio group) are one Tab stop with arrow keys inside, and focus is never trapped', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [WCAG 2.1.2](https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8), [RGAA 12.9](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.9)' },

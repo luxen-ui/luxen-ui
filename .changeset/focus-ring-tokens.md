@@ -18,5 +18,6 @@ Every focus indicator now comes from these tokens:
 - `<l-rating>` in edit mode rings the focused star. The star ring never showed (the star's mask clipped it), and a second ring went around the whole group, also on mouse clicks.
 - Plain links, `<button>` and `<summary>` elements take the same ring from the base styles, with zero specificity, so any rule of yours still wins.
 - In forced-colors mode, text fields draw their indicator at `--l-focus-ring-width` instead of a fixed 2px.
+- A focused text field is easier to spot: `--l-form-control-focus-border-width` now defaults to `2px` instead of `0`, so the 1px border thickens to 2px inward (the field does not move). Set it back to `0` for the previous look.
 
 **Migration.** Rename any override of `--l-focus-ring` to `--l-focus-ring-color`. The old name is not kept as an alias, so an override left on it is silently ignored and the ring falls back to the default color.
