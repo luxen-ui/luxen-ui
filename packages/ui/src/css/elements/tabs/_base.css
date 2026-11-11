@@ -87,7 +87,7 @@
     }
 
     &:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
       outline-offset: calc(var(--l-focus-ring-width) * -1);
       border-radius: var(--l-radius-sm);
     }
@@ -101,8 +101,8 @@
 
   l-tabs > :not(:first-child) {
     &:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-      outline-offset: 2px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+      outline-offset: var(--l-focus-ring-offset);
       border-radius: var(--l-radius-sm);
     }
   }

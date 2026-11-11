@@ -62,6 +62,32 @@ Elevation scale for floating surfaces, ordered by how far they lift off the page
 
 <section class="not-has-[[data-viz]]:hidden">
 
+## Focus
+
+The focus indicator, in one color and two shapes: a ring around most controls, a recolored border on text fields. Usage, theming and accessibility: [Focus guide](/foundations/focus).
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Ring
+
+<DesignTokens category="focus" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Field
+
+Input, textarea, select, `l-input-group`, `l-select`, `l-combobox` and `l-prose-editor`.
+
+<DesignTokens category="form" group="focus" />
+
+</section>
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
 ## Sizing
 
 Standard interactive control heights.
@@ -103,16 +129,6 @@ Shared by text fields and the checkbox and radio box (the invalid border also ri
 Input, textarea and select only — toggles are sized by `--l-form-control-toggle-size`.
 
 <DesignTokens category="form" group="field" />
-
-</section>
-
-<section class="not-has-[[data-viz]]:hidden">
-
-### Focus
-
-The focused text field — input, textarea, select, `l-input-group`, `l-select`, `l-combobox` and `l-prose-editor` — in the `--l-focus-ring` color (the invalid color on an invalid field). The stroke is drawn inward, over the border: the control keeps its size and its text does not move. Example: [a crisp stroke with no halo](/forms/overview#focus).
-
-<DesignTokens category="form" group="focus" />
 
 </section>
 

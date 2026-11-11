@@ -60,11 +60,11 @@ The same `luxen.config.mjs` is read by the [`luxen-ui generate-skill` CLI](../re
 
 ### Shadow-DOM tokens stay wired up
 
-Each element bakes its Shadow-DOM CSS into the element JS, built once with the default `l` prefix — that CSS never passes through your build's PostCSS, so it keeps reading `var(--l-focus-ring)`, `var(--l-color-bg-state-selected)`, and the rest. To keep those defaults alive under a custom prefix, the plugin appends a one-time bridge to your imported tokens:
+Each element bakes its Shadow-DOM CSS into the element JS, built once with the default `l` prefix — that CSS never passes through your build's PostCSS, so it keeps reading `var(--l-focus-ring-color)`, `var(--l-color-bg-state-selected)`, and the rest. To keep those defaults alive under a custom prefix, the plugin appends a one-time bridge to your imported tokens:
 
 ```css
 :root {
-  --l-focus-ring: var(--p-focus-ring);
+  --l-focus-ring-color: var(--p-focus-ring-color);
   --l-color-bg-state-selected: var(--p-color-bg-state-selected);
   /* …every token, generated automatically… */
 }

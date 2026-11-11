@@ -105,6 +105,7 @@ export default defineConfig({
         items: [
           { text: 'Design Tokens', link: '/overview/design-tokens' },
           { text: 'Color scheme', link: '/overview/color-scheme' },
+          { text: 'Focus', link: '/foundations/focus' },
         ],
       },
       {

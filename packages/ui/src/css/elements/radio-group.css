@@ -133,8 +133,8 @@
        the input inside it. */
     & > .l-button:has(:focus-visible) {
       z-index: 2;
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-      outline-offset: 2px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+      outline-offset: var(--l-focus-ring-offset);
     }
 
     /* A `<label>` is never `:disabled` either, so the button's own

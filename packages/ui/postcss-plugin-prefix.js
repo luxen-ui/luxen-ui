@@ -70,14 +70,14 @@ plugin.postcss = true;
  *
  * Each element ships its shadow-DOM CSS baked into the element JS, built once
  * with the default `l` prefix — that CSS never passes through this plugin, so
- * it keeps reading `var(--l-focus-ring)` etc. Meanwhile the consumer's imported
+ * it keeps reading `var(--l-focus-ring-color)` etc. Meanwhile the consumer's imported
  * preset now only defines `--{cssPrefix}-*`. Without a bridge the two
  * namespaces never meet and every shadow token resolves to nothing.
  *
  * So for every `--l-*` token declaration we just renamed, append a one-time
  * `:root` alias pointing the canonical name at the prefixed one:
  *
- *   :root { --l-focus-ring: var(--p-focus-ring); … }
+ *   :root { --l-focus-ring-color: var(--p-focus-ring-color); … }
  *
  * The block rides along with whichever imported file defines the tokens
  * (preset / tokens / aliases), stays exhaustive automatically (it mirrors

@@ -71,8 +71,8 @@
     }
 
     &:focus-visible {
-      outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-      outline-offset: 2px;
+      outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+      outline-offset: var(--l-focus-ring-offset);
     }
 
     /* High contrast: the checked fill is forced to Canvas, hiding the accent and

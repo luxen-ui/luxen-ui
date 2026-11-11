@@ -19,8 +19,8 @@ import { cls } from '../../registry.js';
  * @cssproperty --cell-bg-color - Cell background color (default: a faint ink tint over `--l-form-control-background-color`).
  * @cssproperty --cell-border-color - Cell border color (default: `var(--l-form-control-border-color)`).
  * @cssproperty --cell-border-radius - Cell border-radius (default: `var(--l-form-control-border-radius)`, like the other text fields).
- * @cssproperty --cell-focus-color - Border + ring color of the active (focused) cell.
- * @cssproperty --cell-focus-ring - `box-shadow` of the active cell ring (defaults to a 1px solid ring; set to `none` to disable).
+ * @cssproperty --cell-focus-color - Border, stroke and halo color of the active (focused) cell. Defaults to `--l-focus-ring-color`.
+ * @cssproperty --cell-focus-ring - `box-shadow` of the active cell (defaults to the text-field focus halo, `--l-form-control-focus-halo-width` wide; set to `none` to disable).
  */
 export class InputOtp extends LuxenElement {
   override createRenderRoot() {

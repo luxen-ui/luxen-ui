@@ -524,6 +524,7 @@ export class Combobox extends LuxenFormAssociatedElement {
             role="listbox"
             id=${this._listId}
             aria-label=${this.label || this._localize.term('suggestions')}
+            data-nav=${this._nav.keyboard ? 'keyboard' : 'pointer'}
             @pointermove=${this._nav.onPointerMove}
             @pointerleave=${this._nav.onPointerLeave}
           >

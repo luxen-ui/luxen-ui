@@ -3,7 +3,7 @@
   --border-color: var(--l-color-border);
   /* Consumed from the light-DOM stylesheet (luxen-ui/css/prose-editor), which
      is the only place that can see .ProseMirror's focus state. */
-  --border-color-focus: var(--l-focus-ring);
+  --border-color-focus: var(--l-focus-ring-color);
   --border-width: 1px;
   --border-radius: var(--l-radius-md);
   --background: var(--l-color-surface);
@@ -139,8 +139,10 @@
   }
 
   &:focus-visible {
-    outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-    outline-offset: 1px;
+    outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+    /* Half the gap: rows/buttons sit edge to edge, a full offset would
+       reach into the neighbour. */
+    outline-offset: calc(var(--l-focus-ring-offset) / 2);
   }
 
   &.is-active {

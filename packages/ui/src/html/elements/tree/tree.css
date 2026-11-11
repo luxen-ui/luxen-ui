@@ -20,7 +20,7 @@
 }
 
 .tree:focus-visible {
-  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
-  outline-offset: 2px;
-  border-radius: 0.375rem;
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: var(--l-focus-ring-offset);
+  border-radius: var(--l-radius-md);
 }

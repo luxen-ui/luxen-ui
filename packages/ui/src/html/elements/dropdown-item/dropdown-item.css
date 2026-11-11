@@ -29,7 +29,7 @@
      any --l-focus-ring-width, so it never collides with the panel edge or a
      neighboring item. */
   background: var(--l-color-bg-state-hover);
-  outline: var(--l-focus-ring-width) solid var(--l-focus-ring);
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
   outline-offset: calc(var(--l-focus-ring-width) * -1);
 }
 

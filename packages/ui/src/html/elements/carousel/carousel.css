@@ -152,6 +152,16 @@
   }
 }
 
+/* Focus ring from the global tokens. The buttons float over the slides, whose
+   colors are unknown, so the gap is filled with the surface color: the ring
+   always sits next to a known color (a two-color indicator, WCAG technique
+   C40). Same specificity as the hover rule and after it, so it wins. */
+.button:not(:disabled):focus-visible {
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: var(--l-focus-ring-offset);
+  box-shadow: 0 0 0 var(--l-focus-ring-offset) var(--l-color-surface);
+}
+
 .button svg {
   width: var(--button-arrow-size);
   height: var(--button-arrow-size);
@@ -183,6 +193,14 @@
   cursor: pointer;
   transition: transform 180ms ease;
   transform-origin: center;
+}
+
+/* Dots sit edge to edge: the ring goes inside the dot's hit box, like a menu
+   item, so it never reaches into the neighbor. */
+.dot:focus-visible {
+  outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
+  outline-offset: calc(var(--l-focus-ring-width) * -1);
+  border-radius: var(--l-radius-sm);
 }
 
 .dot[data-edge] {
