@@ -33,12 +33,6 @@ const field = {
 
 const halo = { background: 'color-mix(in oklab, var(--l-focus-ring-color) 22%, transparent)' };
 
-/** The stroke band: hatched, since it is `0` wide by default. */
-const hatch = {
-  background:
-    'repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in oklab, var(--l-focus-ring-color) 45%, transparent) 4px 5px)',
-};
-
 /** A ring drawn with box-shadow alone — what forced colors drops. */
 const shadowRing = {
   boxShadow: '0 0 0 2px var(--l-color-surface), 0 0 0 4px var(--l-focus-ring-color)',
@@ -205,17 +199,16 @@ const VERDICT = 'inline-flex items-center gap-1 text-xs font-semibold';
           >
           <span
             :class="BAND"
-            class="row-start-3 col-span-2 col-start-3"
-            :style="hatch"
+            class="row-start-3 col-span-2 col-start-3 bg-(--l-focus-ring-color)"
           />
           <span
             :class="BRACKET_BOTTOM"
-            class="row-start-4 col-span-2 col-start-3 border-dashed"
+            class="row-start-4 col-span-2 col-start-3"
           />
           <span
             :class="LABEL"
             class="row-start-5 col-span-2 col-start-3"
-            ><b>stroke</b>0 by default</span
+            ><b>stroke</b>2px</span
           >
         </div>
       </div>

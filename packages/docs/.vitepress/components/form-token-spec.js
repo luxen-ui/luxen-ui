@@ -101,7 +101,7 @@ export const FORM_TOKEN_GROUPS = {
   focus: {
     '--l-form-control-focus-border-width': {
       preview: 'input-focus',
-      highlight: '3px',
+      highlight: '5px',
       paint: { '--l-focus-ring-color': HL },
       touches: 'Focus stroke width',
     },

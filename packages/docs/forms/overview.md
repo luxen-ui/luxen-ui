@@ -15,4 +15,4 @@ Flip a state and every form control updates at once — a quick way to check tha
 
 ## Focus
 
-A focused text field recolors its border and adds a soft halo; checkboxes, radios and switches draw a ring. Anatomy, tokens and theming recipes: [Focus guide](/foundations/focus).
+A focused text field thickens its border to 2px in the focus color and adds a soft halo; checkboxes, radios and switches draw a ring. Anatomy, tokens and theming recipes: [Focus guide](/foundations/focus).
