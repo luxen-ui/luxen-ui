@@ -15,6 +15,9 @@ jobs:
   check:
     name: 🧹 Check
     runs-on: ubuntu-latest
+    # A healthy run takes ~1.5 min. Cap it so a stalled network step fails fast
+    # instead of running to GitHub's 6 h default.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -34,9 +37,9 @@ jobs:
 
       # Cache the downloaded browser binaries (keyed on the Playwright version,
       # NOT the lockfile hash — the binary only changes when Playwright bumps).
-      # On a warm cache the install step below skips the download and only runs
-      # the cheap apt `--with-deps` portion.
+      # On a warm cache the install step below is skipped entirely.
       - name: Cache the playwright browser download
+        id: pw-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
@@ -50,7 +53,12 @@ jobs:
       # Playwright) — a bare `vp dlx playwright` resolves the latest release,
       # whose browser build (e.g. chrome-headless-shell revision) drifts from the
       # one the test runner launches, leaving the expected binary absent.
-      - run: vp dlx playwright@${{ steps.pwv.outputs.version }} install chromium --with-deps
+      # No `--with-deps`: ubuntu-latest already ships Chromium's shared libs, so
+      # apt only added optional fonts — and an apt mirror DNS outage once hung
+      # this step for 10 min before failing the job.
+      - name: Install the playwright chromium build
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: vp dlx playwright@${{ steps.pwv.outputs.version }} install chromium
       - run: vp run luxen-ui#test
       - run: vp run luxen-ui#test:e2e
 
