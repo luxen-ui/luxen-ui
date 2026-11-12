@@ -14,7 +14,7 @@ After installing `luxen-ui`, run:
 npx luxen-ui generate-skill
 ```
 
-Default output (no config): `.claude/skills/luxen-ui/` with `l-` prefix and Luxen tokens, **integration mode only**.
+Default output (no config): `.claude/skills/luxen-ui/` with `l-` prefix and Luxen tokens, **integration mode only**. Every option is listed in the [CLI reference](/overview/cli#generate-skill).
 
 ::: info MOCKUP MODE IS OPT-IN
 By default the skill targets **integration** (npm + bundler, read by Claude Code / Cursor). The standalone bundle and mockup docs — used only for [Claude Design](#claude-design-claude-ai-design-environment) and single-page HTML artifacts — add ~1.7 MB of committed files, so they're skipped unless you ask for them. Pass `--with-mockups` (or set `mockups: true` in the config) to include them.

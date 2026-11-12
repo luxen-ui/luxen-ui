@@ -100,6 +100,8 @@ Then swap the alias import for your customized one:
 @import './luxen-design-tokens.css';
 ```
 
+The [CLI reference](/overview/cli#import) lists every file you can import this way.
+
 ## Browser Support
 
 Luxen UI targets [Baseline Newly Available](https://web.dev/baseline) browsers.

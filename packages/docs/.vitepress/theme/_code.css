@@ -10,6 +10,10 @@
 
 .vp-doc div[class*='language-'] {
   --vp-code-block-bg: #292d3e;
+  /* Code blocks stay dark in both color schemes, so unhighlighted text (txt
+     blocks) takes the github-dark foreground instead of VitePress's
+     scheme-dependent --vp-c-text-2. */
+  --vp-code-block-color: #e1e4e8;
   --vp-code-line-diff-add-symbol-color: #3dd68c;
 }
 
