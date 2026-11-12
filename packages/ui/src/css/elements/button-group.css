@@ -42,10 +42,10 @@
   */
 
   l-button-group:not([orientation='vertical']) {
-    /* Overlap the shared 1px border. Margin sits on the flex item — either the
-       button itself or the wrapper around it. */
+    /* Overlap the shared border (--l-button-border-width). Margin sits on the
+       flex item — either the button itself or the wrapper around it. */
     & > *:not(:first-child):is(.l-button, :has(.l-button)) {
-      margin-inline-start: -1px;
+      margin-inline-start: calc(var(--l-button-border-width) * -1);
     }
 
     /* Non-first segment: square off the leading (start) corners. */
@@ -71,7 +71,7 @@
 
   l-button-group[orientation='vertical'] {
     & > *:not(:first-child):is(.l-button, :has(.l-button)) {
-      margin-block-start: -1px;
+      margin-block-start: calc(var(--l-button-border-width) * -1);
     }
 
     & > .l-button:not(:first-child),
