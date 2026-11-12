@@ -21,7 +21,7 @@
  * @attribute commandfor - ID of the target element for `command`.
  * @attribute data-variant - primary | destructive — Visual variant. Default is the secondary style.
  * @attribute data-size - sm | lg | xl — Control size. Default is md.
- * @attribute data-icon-only - Icon-only mode (square button, width equals height). Auto-detected for a single icon child.
+ * @attribute data-icon-only - Icon-only mode (square button, width equals height). Set it on a button whose only content is an icon.
  * @attribute data-press-effect - Press effect (scale + translate on active).
  *
  * @cssproperty [--height=36px] - Button height (md size).
