@@ -1,7 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue';
 import tokensJson from '@luxen-ui/design-tokens/json';
+import ColorTokenPreview from './ColorTokenPreview.vue';
 import ComponentTokenPreview from './ComponentTokenPreview.vue';
+import FillTokenMatrix from './FillTokenMatrix.vue';
+import { COLOR_TOKEN_SPEC, statusFill } from './color-token-spec.js';
 import FormTokenPreview from './FormTokenPreview.vue';
 import { COMPONENT_TOKEN_SPEC } from './component-token-spec.js';
 import { FORM_TOKEN_GROUPS, FORM_TOKEN_SPEC, HL } from './form-token-spec.js';
@@ -37,6 +40,18 @@ if (import.meta.env.DEV) {
       `[DesignTokens] form tokens not assigned to a group in form-token-spec.js: ${orphans.map((t) => t.name).join(', ')}`,
     );
   }
+  // Same for a semantic color token missing from color-token-spec.js.
+  const colorOrphans = tokensJson.filter(
+    (t) =>
+      ['text', 'surface', 'border', 'fill'].includes(t.category) &&
+      !COLOR_TOKEN_SPEC[t.name] &&
+      !statusFill(t.name),
+  );
+  if (colorOrphans.length) {
+    console.warn(
+      `[DesignTokens] color tokens without an illustration in color-token-spec.js: ${colorOrphans.map((t) => t.name).join(', ')}`,
+    );
+  }
 }
 
 /** Tokens of a category, narrowed and ordered by a form sub-group when one is given. */
@@ -60,7 +75,6 @@ const groups = computed(() => {
       key,
       label: CATEGORIES[key],
       tokens: tokensFor(key),
-      hasModes: tokens.value.some((t) => t.category === key && t.light != null && t.dark != null),
     }))
     .filter((g) => g.tokens.length > 0);
 });
@@ -75,29 +89,20 @@ function hasModes(t) {
  * branch + scoped styles for context-appropriate rendering.
  */
 function vizKind(t) {
-  const p = t.path;
   if (t.category === 'form') return 'form';
+  if (COLOR_TOKEN_SPEC[t.name]) return 'color';
+  if (statusFill(t.name)) return 'fill-matrix';
   if (t.category === 'shadow') return 'shadow';
   if (t.category === 'focus') return 'focus-ring';
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
-  if (t.category === 'text') return 'text';
-  if (t.category === 'border') {
-    if (p[1] === 'divider') return 'divider';
-    return 'border';
-  }
-  if (t.category === 'surface') {
-    if (p[0] === 'backdrop' || p[0] === 'backdrop-strong') return 'backdrop';
-    if (p[2] === 'hover' || p[2] === 'selected') return 'state-tint';
-    if (p[1] === 'bg' && p[2] === 'disabled') return 'disabled-surface';
-    return 'surface';
-  }
   if (COMPONENT_TOKEN_SPEC[t.name]) return 'component';
-  if (t.category === 'fill') {
-    if (p[3] === undefined) return 'fill-button';
-    return 'fill-tag';
-  }
   return 'swatch';
+}
+
+/** Tokens drawn as a row — the status fills go to the matrix below the rows. */
+function rowTokens(group) {
+  return group.tokens.filter((t) => vizKind(t) !== 'fill-matrix');
 }
 
 /**
@@ -133,24 +138,6 @@ const pinnedRing = {
 /** Lookup helper. */
 function tokenByName(name) {
   return tokensJson.find((t) => t.name === name);
-}
-
-/**
- * Context-appropriate background for a text token, per mode.
- * Matches the real-world surface the token is designed to sit on:
- *   primary/secondary/tertiary  → plain page surface
- *   neutral/info/warning/danger/success → matching `bg-fill-<tone>-soft`
- *   disabled                    → `bg-disabled`
- *   on-fill-brand               → `bg-fill-brand`
- */
-function textBg(token, mode) {
-  const sub = token.path[2];
-  if (sub === 'on-fill-brand') return tokenByName('--l-color-bg-fill-brand')?.[mode] ?? '';
-  if (sub === 'disabled') return tokenByName('--l-color-bg-disabled')?.[mode] ?? '';
-  if (['neutral', 'info', 'warning', 'danger', 'success'].includes(sub)) {
-    return tokenByName(`--l-color-bg-fill-${sub}-soft`)?.[mode] ?? '';
-  }
-  return mode === 'light' ? 'var(--l-color-white)' : 'var(--l-color-gray-900)';
 }
 
 /** Short label for sizing tokens (xs/sm/md/lg/xl). */
@@ -201,6 +188,20 @@ function legend(value) {
   return value;
 }
 
+/**
+ * Default-cell legend of a color token: its light and dark primitives with
+ * `--l-color-` dropped, the shared hue said once (`gray-700 · 200`). `full`
+ * keeps both names whole, for the tooltip.
+ */
+function colorLegend(t, full = false) {
+  const short = (v) => legend(v).replace(/^--l-color-/, '');
+  if (!hasModes(t)) return short(t.value);
+  const [light, dark] = [short(t.light), short(t.dark)];
+  const hue = light.match(/^([a-z]+)-\d+$/)?.[1];
+  if (!full && hue && dark.startsWith(`${hue}-`)) return `${light} · ${dark.slice(hue.length + 1)}`;
+  return `${light} · ${dark}`;
+}
+
 const copied = ref(null);
 let copyTimer;
 
@@ -222,7 +223,7 @@ function copy(name) {
     >
       <!-- Token rows -->
       <div
-        v-for="token in group.tokens"
+        v-for="token in rowTokens(group)"
         :key="token.name"
         class="tokens__row"
         :data-viz="vizKind(token)"
@@ -276,6 +277,60 @@ function copy(name) {
                     highlight ? FORM_TOKEN_SPEC[token.name]?.touches : legend(token.value)
                   }}</span
                 >
+              </div>
+            </div>
+          </template>
+
+          <!-- COLOR: same pattern as FORM — a real piece of UI at the token's
+               default (its light and dark values in the footer), then with
+               only this token painted violet. -->
+          <template v-else-if="vizKind(token) === 'color'">
+            <div
+              v-for="highlight in [false, true]"
+              :key="String(highlight)"
+              class="tokens__cell"
+              :data-mode="highlight ? 'highlight' : 'default'"
+            >
+              <div
+                class="tokens__cell-viz"
+                :style="{ blockSize: COLOR_TOKEN_SPEC[token.name].height ?? '5rem' }"
+              >
+                <ColorTokenPreview
+                  :token="token"
+                  :highlight="highlight"
+                />
+              </div>
+              <div class="tokens__cell-footer">
+                <span
+                  class="tokens__cell-mode"
+                  :class="{ 'tokens__cell-mode--touch': highlight }"
+                  >{{ highlight ? 'Touches' : 'Default' }}</span
+                >
+                <template v-if="highlight">
+                  <span class="tokens__cell-legend tokens__cell-legend--touch">{{
+                    COLOR_TOKEN_SPEC[token.name].touches
+                  }}</span>
+                </template>
+                <template v-else>
+                  <span
+                    class="tokens__cell-dots"
+                    aria-hidden="true"
+                  >
+                    <template v-if="hasModes(token)">
+                      <i :style="{ background: token.light }" />
+                      <i :style="{ background: token.dark }" />
+                    </template>
+                    <i
+                      v-else
+                      :style="{ background: `var(${token.name})` }"
+                    />
+                  </span>
+                  <span
+                    class="tokens__cell-legend"
+                    :title="colorLegend(token, true)"
+                    >{{ colorLegend(token) }}</span
+                  >
+                </template>
               </div>
             </div>
           </template>
@@ -370,190 +425,6 @@ function copy(name) {
             </div>
           </template>
 
-          <!-- Light + dark side by side when modes exist -->
-          <template v-else-if="group.hasModes && hasModes(token)">
-            <div
-              class="tokens__cell"
-              :data-mode="'light'"
-            >
-              <div class="tokens__cell-viz">
-                <div
-                  v-if="vizKind(token) === 'text'"
-                  class="viz-text"
-                  :style="{ background: textBg(token, 'light'), color: token.light }"
-                >
-                  Aa
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'surface'"
-                  class="viz-surface"
-                  :style="{ background: token.light }"
-                />
-                <div
-                  v-else-if="vizKind(token) === 'disabled-surface'"
-                  class="viz-disabled"
-                  :style="{ background: token.light, color: 'var(--l-color-text-disabled)' }"
-                >
-                  abc
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'state-tint'"
-                  class="viz-state"
-                  :style="{ background: 'var(--l-color-surface)' }"
-                >
-                  <span
-                    class="viz-state__overlay"
-                    :style="{ background: token.light }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'backdrop'"
-                  class="viz-backdrop viz-backdrop--light"
-                >
-                  <span
-                    class="viz-backdrop__dim"
-                    :style="{ background: token.light }"
-                  />
-                  <span class="viz-backdrop__modal viz-backdrop__modal--light" />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'border'"
-                  class="viz-border-wrap"
-                  :style="{ background: 'var(--l-color-surface)' }"
-                >
-                  <span
-                    class="viz-border"
-                    :style="{ borderColor: token.light }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'divider'"
-                  class="viz-divider"
-                  :style="{ background: 'var(--l-color-surface)' }"
-                >
-                  <span
-                    class="viz-divider__line"
-                    :style="{ background: token.light }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'fill-button'"
-                  class="viz-fill-btn"
-                  :style="{ background: token.light }"
-                />
-                <div
-                  v-else-if="vizKind(token) === 'fill-tag'"
-                  class="viz-fill-tag-wrap"
-                >
-                  <span
-                    class="viz-fill-tag"
-                    :style="{ background: token.light }"
-                  />
-                </div>
-                <div
-                  v-else
-                  class="viz-swatch"
-                  :style="{ background: token.light }"
-                />
-              </div>
-              <div class="tokens__cell-footer">
-                <span class="tokens__cell-mode">Light</span>
-                <span class="tokens__cell-legend">{{ legend(token.light) }}</span>
-              </div>
-            </div>
-
-            <!-- DARK cell -->
-            <div
-              class="tokens__cell"
-              :data-mode="'dark'"
-            >
-              <div class="tokens__cell-viz">
-                <div
-                  v-if="vizKind(token) === 'text'"
-                  class="viz-text"
-                  :style="{ background: textBg(token, 'dark'), color: token.dark }"
-                >
-                  Aa
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'surface'"
-                  class="viz-surface"
-                  :style="{ background: token.dark }"
-                />
-                <div
-                  v-else-if="vizKind(token) === 'disabled-surface'"
-                  class="viz-disabled"
-                  :style="{ background: token.dark, color: 'var(--l-color-gray-500)' }"
-                >
-                  abc
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'state-tint'"
-                  class="viz-state"
-                  :style="{ background: 'var(--l-color-gray-900)' }"
-                >
-                  <span
-                    class="viz-state__overlay"
-                    :style="{ background: token.dark }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'backdrop'"
-                  class="viz-backdrop viz-backdrop--dark"
-                >
-                  <span
-                    class="viz-backdrop__dim"
-                    :style="{ background: token.dark }"
-                  />
-                  <span class="viz-backdrop__modal viz-backdrop__modal--dark" />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'border'"
-                  class="viz-border-wrap"
-                  :style="{ background: 'var(--l-color-gray-900)' }"
-                >
-                  <span
-                    class="viz-border"
-                    :style="{ borderColor: token.dark }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'divider'"
-                  class="viz-divider"
-                  :style="{ background: 'var(--l-color-gray-900)' }"
-                >
-                  <span
-                    class="viz-divider__line"
-                    :style="{ background: token.dark }"
-                  />
-                </div>
-                <div
-                  v-else-if="vizKind(token) === 'fill-button'"
-                  class="viz-fill-btn"
-                  :style="{ background: token.dark }"
-                />
-                <div
-                  v-else-if="vizKind(token) === 'fill-tag'"
-                  class="viz-fill-tag-wrap"
-                >
-                  <span
-                    class="viz-fill-tag"
-                    :style="{ background: token.dark }"
-                  />
-                </div>
-                <div
-                  v-else
-                  class="viz-swatch"
-                  :style="{ background: token.dark }"
-                />
-              </div>
-              <div class="tokens__cell-footer">
-                <span class="tokens__cell-mode">Dark</span>
-                <span class="tokens__cell-legend">{{ legend(token.dark) }}</span>
-              </div>
-            </div>
-          </template>
-
           <!-- SHADOW: dual cells. The value bakes in light-dark(), so we force
                color-scheme per cell to surface both casts regardless of page theme. -->
           <template v-else-if="vizKind(token) === 'shadow'">
@@ -595,10 +466,7 @@ function copy(name) {
 
           <!-- SINGLE cell (no light/dark: alias-of-alias, sizing, spacing) -->
           <div
-            v-if="
-              !hasModes(token) &&
-              !['shadow', 'form', 'focus-ring', 'component'].includes(vizKind(token))
-            "
+            v-else
             class="tokens__cell"
           >
             <div class="tokens__cell-viz">
@@ -628,16 +496,7 @@ function copy(name) {
                 />
                 <span class="viz-gap__box" />
               </div>
-              <div
-                v-else-if="vizKind(token) === 'shadow'"
-                class="viz-shadow"
-              >
-                <span
-                  class="viz-shadow__card"
-                  :style="{ boxShadow: token.value }"
-                />
-              </div>
-              <!-- Alias-of-alias (e.g. border-overlay → border): show the resolved color as a flat swatch -->
+              <!-- Any other token: its resolved value as a flat swatch. -->
               <div
                 v-else
                 class="viz-swatch"
@@ -656,6 +515,11 @@ function copy(name) {
         </div>
         <!-- /tokens__cells -->
       </div>
+
+      <FillTokenMatrix
+        v-if="group.key === 'fill'"
+        :tokens="group.tokens.filter((t) => vizKind(t) === 'fill-matrix')"
+      />
     </section>
   </div>
 </template>
@@ -798,6 +662,25 @@ function copy(name) {
   color: var(--vp-c-text-1);
 }
 
+/* Color swatches of the Default cell: light value, then dark. */
+.tokens__cell-dots {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-self: center;
+  gap: 0.1875rem;
+}
+.tokens__cell-dots > i {
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--vp-c-text-1) 35%, transparent);
+}
+
+/* Color rows carry two values and a caption in their footers — wider cells. */
+.tokens__row[data-viz='color'] .tokens__cells {
+  inline-size: 32rem;
+}
+
 /* Pixel equivalent for length tokens (sizing/spacing) — a fixed chip on the
    right, so the rem/calc legend keeps the flexible space. */
 .tokens__cell-px {
@@ -809,15 +692,6 @@ function copy(name) {
 }
 
 /* ────────────────────── viz primitives ────────────────────── */
-.viz-text {
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-
-.viz-fill-btn {
-  inline-size: 100%;
-  block-size: 100%;
-}
-.viz-surface,
 .viz-swatch {
   block-size: 100%;
 }
@@ -852,114 +726,12 @@ function copy(name) {
   background: var(--l-color-gray-800);
 }
 
-.viz-disabled {
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-
-.viz-state {
-  position: relative;
-}
-.viz-state__overlay {
-  position: absolute;
-  inset: 0;
-}
-
-.viz-backdrop {
-  position: relative;
-}
-.viz-backdrop--light {
-  background:
-    repeating-linear-gradient(
-      0,
-      transparent 0,
-      transparent 4px,
-      oklch(0% 0 0 / 8%) 4px,
-      oklch(0% 0 0 / 8%) 5px
-    ),
-    var(--l-color-surface);
-}
-.viz-backdrop--dark {
-  background:
-    repeating-linear-gradient(
-      0,
-      transparent 0,
-      transparent 4px,
-      oklch(100% 0 0 / 10%) 4px,
-      oklch(100% 0 0 / 10%) 5px
-    ),
-    var(--l-color-gray-900);
-}
-.viz-backdrop__dim {
-  position: absolute;
-  inset: 0;
-}
-.viz-backdrop__modal {
-  position: absolute;
-  inset-block: 25%;
-  inset-inline: 22%;
-  border-radius: 0.125rem;
-  box-shadow: 0 1px 3px oklch(0% 0 0 / 25%);
-}
-.viz-backdrop__modal--light {
-  background: var(--l-color-surface);
-}
-.viz-backdrop__modal--dark {
-  background: var(--l-color-gray-800);
-}
-
-.viz-border-wrap {
-  inline-size: 100%;
-  block-size: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.viz-border {
-  inline-size: 60%;
-  block-size: 60%;
-  border-style: solid;
-  border-width: 1.5px;
-  border-radius: 0.25rem;
-}
-
-.viz-divider {
-  position: relative;
-  inline-size: 100%;
-  block-size: 100%;
-}
-.viz-divider__line {
-  position: absolute;
-  inset-inline: 1rem;
-  inset-block-start: 50%;
-  block-size: 1px;
-  transform: translateY(-50%);
-}
-
 .viz-focus {
   inline-size: 100%;
   block-size: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.viz-fill-tag-wrap {
-  inline-size: 100%;
-  block-size: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.viz-fill-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.25rem;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 .viz-control-wrap {
@@ -1011,7 +783,8 @@ function copy(name) {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 0.875rem;
   }
-  .tokens__cells {
+  .tokens__cells,
+  .tokens__row[data-viz='color'] .tokens__cells {
     inline-size: 100%;
   }
 }

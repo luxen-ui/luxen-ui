@@ -18,6 +18,8 @@ aside: false
 
 ## Color
 
+Each token is shown on real UI at its **default** (its light and dark values in the footer), then with **only that token** forced to a violet highlight — revealing what it **touches**.
+
 <section class="not-has-[[data-viz]]:hidden">
 
 ### Text
@@ -46,8 +48,7 @@ aside: false
 
 ### Fill
 
-Three-tier status scale ordered by visual weight: **soft** (palest tint),
-**subtle** (clearly tinted), **strong** (full-intensity solid).
+Brand and secondary fills paint the buttons. The status fills follow a three-tier scale ordered by visual weight: **soft** (palest tint, behind callouts and toasts), **subtle** (clearly tinted, behind badges and tags), **strong** (full-intensity solid, for solid badges) — shown below on each tone.
 
 <DesignTokens category="fill" />
 

@@ -82,14 +82,14 @@ const matchStyle = {
     <input
       v-if="preview === 'input'"
       class="l-input w-full"
-      value="Jane Cooper"
+      value="Thelma Lavigne"
       aria-label="Full name"
       :style="paint"
     />
     <input
       v-else-if="preview === 'input-focus'"
       class="l-input w-full"
-      value="Jane Cooper"
+      value="Thelma Lavigne"
       aria-label="Full name"
       :style="[focusStyle, paint]"
     />
@@ -109,7 +109,7 @@ const matchStyle = {
     >
       <input
         class="l-input w-full"
-        value="Jane Cooper"
+        value="Thelma Lavigne"
         aria-label="Full name"
         :disabled="mixedState === 'disabled'"
         :aria-invalid="mixedState === 'invalid' ? 'true' : null"
@@ -213,7 +213,7 @@ const matchStyle = {
       :style="paint"
     >
       <label :class="gapPart">Full name</label>
-      <input value="Jane Cooper" />
+      <input value="Thelma Lavigne" />
     </l-form-field>
     <l-form-field
       v-else-if="preview === 'required'"
