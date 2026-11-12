@@ -3,13 +3,23 @@
 
 @layer base {
   /* Hide Shadow-DOM overlay elements until their custom element upgrades.
-     Without this, slotted/inner content flashes inline before the upgrade. */
+     Without this, slotted/inner content flashes inline before the upgrade.
+     Popover and tooltip attach to an outside trigger (`for`); dialog and
+     drawer have none: the whole host is content. */
   l-dialog:not(:defined),
   l-drawer:not(:defined),
-  l-dropdown:not(:defined),
   l-popover:not(:defined),
-  l-tooltip:not(:defined) {
+  l-tooltip:not(:defined),
+  /* The dropdown slots its own trigger: hide only the menu content, so the
+     trigger is in place from the first paint (no layout shift on upgrade), and
+     a display utility on the host can no longer reveal the menu. */
+  l-dropdown:not(:defined) > :not([slot='trigger']) {
     display: none;
+  }
+
+  /* Match the upgraded host (`:host { display: inline-block }`). */
+  l-dropdown:not(:defined) {
+    display: inline-block;
   }
 
   /* Plain links, buttons and summaries — the ones no Luxen class styles — take
