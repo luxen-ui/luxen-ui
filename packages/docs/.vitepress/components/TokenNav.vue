@@ -7,13 +7,15 @@ import { tokenQuery } from './token-filter.js';
  * every `<DesignTokens>` block through `tokenQuery`) and one tab per `##`
  * section, highlighted while it's in view. Sections with `###` sub-groups get
  * a dropdown listing them. The sections are read from the rendered headings,
- * so the bar follows the markdown — no list to keep in sync.
+ * so the bar follows the markdown — no list to keep in sync. A divider sits
+ * between two tabs whose sections belong to different `[data-token-group]`
+ * wrappers (semantic tokens, then component tokens).
  */
 
 const bar = ref(null);
 // Zero-height marker at the bar's in-flow position (the bar itself moves once stuck).
 const sentinel = ref(null);
-const sections = ref([]); // [{ id, label, subs: [{ id, label }] }]
+const sections = ref([]); // [{ id, label, group, subs: [{ id, label }] }]
 const activeId = ref(null);
 const activeSubId = ref(null);
 const hidden = ref(new Set()); // section ids with no matching token
@@ -51,8 +53,10 @@ function readSections() {
   const list = [];
   for (const h of docRoot().querySelectorAll('h2[id], h3[id]')) {
     const item = { id: h.id, label: headingText(h), el: h };
-    if (h.tagName === 'H2') list.push({ ...item, subs: [] });
-    else list.at(-1)?.subs.push(item);
+    if (h.tagName === 'H2') {
+      const group = h.closest('[data-token-group]')?.dataset.tokenGroup ?? null;
+      list.push({ ...item, group, subs: [] });
+    } else list.at(-1)?.subs.push(item);
   }
   sections.value = list;
 }
@@ -229,9 +233,14 @@ onBeforeUnmount(() => {
       class="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 [scrollbar-width:none]"
     >
       <template
-        v-for="s in sections"
+        v-for="(s, i) in sections"
         :key="s.id"
       >
+        <span
+          v-if="i > 0 && s.group !== sections[i - 1].group"
+          aria-hidden="true"
+          class="mx-1 w-px shrink-0 self-stretch bg-(--vp-c-divider)"
+        />
         <l-dropdown
           v-if="s.subs.length"
           @select="onDropdownSelect"

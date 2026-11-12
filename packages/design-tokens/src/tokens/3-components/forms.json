@@ -1,7 +1,17 @@
 {
   "$description": "Form control tokens — one family, `form.control.*`, for everything a form control is made of: the control itself (checkbox, radio, switch, input, textarea, select) and the parts `l-form-field` lays out around it (label, hint, error message, required indicator, spacing). References semantic aliases so theming/dark-mode is inherited.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "component"
+    }
+  },
   "form": {
     "control": {
+      "$extensions": {
+        "com.luxen-ui": {
+          "component": "form-control"
+        }
+      },
       "activated-color": {
         "$type": "color",
         "$value": "{color.blue.600}",

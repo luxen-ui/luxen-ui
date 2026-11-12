@@ -1,5 +1,10 @@
 {
   "$description": "Spacing primitives. Mirrors Tailwind v4's single-source pattern: `--l-spacing: 0.25rem` is the unit, every step is derived via calc(var(--l-spacing) * N). The calc() stays in the output CSS so a brand override of --l-spacing ripples through the whole scale automatically. Step list matches the common Tailwind defaults (0, px, 0_5, 1, 1_5, 2, 2_5, 3, 4–8, 10, 12, 16, 20, 24, 32).",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
 
   "spacing": { "$type": "dimension", "$value": "0.25rem" },
   "spacing-0": { "$type": "dimension", "$value": "0" },

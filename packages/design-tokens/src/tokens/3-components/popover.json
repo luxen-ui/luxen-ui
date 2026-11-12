@@ -1,6 +1,16 @@
 {
   "$description": "Popover and menu-item component tokens — the panels anchored to a trigger and built on the Popover API (`l-dropdown` and its submenus, `l-popover`, the `l-select` / `l-combobox` listbox, the native `.l-select` picker), and the rows inside them (menu items, listbox options). One source so every anchored panel shares one surface and every menu or listbox row one rhythm. Not used by modal surfaces (`l-dialog`, `l-drawer`). Colors stay semantic aliases (--l-color-surface-overlay, --l-color-border-overlay); these tokens carry the geometry and type.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "component"
+    }
+  },
   "popover": {
+    "$extensions": {
+      "com.luxen-ui": {
+        "component": "popover"
+      }
+    },
     "border-radius": {
       "$type": "dimension",
       "$value": "{radius-md}",
@@ -29,6 +39,11 @@
   },
   "menu": {
     "item": {
+      "$extensions": {
+        "com.luxen-ui": {
+          "component": "menu-item"
+        }
+      },
       "min-height": {
         "$type": "dimension",
         "$value": "2.25rem",

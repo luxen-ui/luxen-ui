@@ -1,5 +1,10 @@
 {
   "$description": "Font-weight primitives. Vendored from Tailwind v4 default theme.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "font-weight-thin": {
     "$type": "fontWeight",
     "$value": "100"

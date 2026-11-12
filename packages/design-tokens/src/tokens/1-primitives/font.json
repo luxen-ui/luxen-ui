@@ -1,5 +1,10 @@
 {
   "$description": "Font-family primitives. `sans`, `serif`, `mono` vendored from Tailwind v4 defaults. `neo-grotesque` is a Luxen-specific stack used by the badge element; override per project.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "font-sans": {
     "$type": "fontFamily",
     "$value": "ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'"

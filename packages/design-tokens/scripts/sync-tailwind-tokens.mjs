@@ -32,9 +32,14 @@ const tailwindPkg = require.resolve('tailwindcss/package.json', {
 });
 const themeCss = readFileSync(join(dirname(tailwindPkg), 'theme.css'), 'utf8');
 
+/** DTCG `$extensions` marking every primitive file as tier 1 — read by build.js into tokens.json. */
+const PRIMITIVE_EXTENSIONS = { 'com.luxen-ui': { tier: 'primitive' } };
+
 function writeJson(filename, data) {
   const path = join(PRIMITIVES_DIR, filename);
-  writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf8');
+  // `$description` stays first, `$extensions` right after it, then the tokens.
+  const file = { $description: data.$description, $extensions: PRIMITIVE_EXTENSIONS, ...data };
+  writeFileSync(path, JSON.stringify(file, null, 2) + '\n', 'utf8');
   console.log(`✓ ${filename}`);
 }
 
