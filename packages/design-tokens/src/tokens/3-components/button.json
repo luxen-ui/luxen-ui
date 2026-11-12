@@ -1,0 +1,15 @@
+{
+  "$description": "Button component tokens — the shape of every `.l-button`: plain buttons, `l-button-group` and `.l-radio-group` segments, and the actions `l-alert-dialog` renders in its shadow root. Colors stay on the button's own `--background-color` / `--border-color` knobs and the semantic aliases behind them; these tokens carry the geometry a theme changes globally.",
+  "button": {
+    "border-radius": {
+      "$type": "dimension",
+      "$value": "initial",
+      "$description": "Corner radius of every button. Unset by default (`initial`): the button then derives its radius from its own height (height / 8, 4.5px at the default 36px), so each size keeps the same proportion. Set a length to give every size one fixed radius — `var(--l-radius-md)` to match the text fields, `0` for square buttons, `var(--l-radius-full)` for pills. Set back to `initial` to restore the proportional default."
+    },
+    "border-width": {
+      "$type": "dimension",
+      "$value": "{form.control.border-width}",
+      "$description": "Border width of every button. Follows --l-form-control-border-width by default, so a button keeps the same edge as the text field it sits next to (input group, toolbar, form actions). Segmented groups (`l-button-group`, `.l-radio-group` with the button appearance) overlap their neighbours by this width, so the shared border stays single. Set it on its own to decouple buttons from fields."
+    }
+  }
+}

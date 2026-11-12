@@ -49,8 +49,13 @@
   gap: var(--l-spacing-2);
   height: var(--height);
   padding-inline: var(--padding-inline);
-  border: 1px solid var(--border-color);
-  border-radius: calc(var(--height) / 8);
+  border: var(--l-button-border-width) solid var(--border-color);
+  /* The one deliberate fallback on an `--l-*` token: --l-button-border-radius
+     ships as `initial` (guaranteed-invalid), and that unset state means
+     "proportional" — a radius that scales with the button's own height. A
+     :root token can't express it (`--height` doesn't exist there), so the
+     fallback is the default, not a guard against a missing stylesheet. */
+  border-radius: var(--l-button-border-radius, calc(var(--height) / 8));
   background: var(--background-color);
   color: var(--text-color);
   outline: none;
