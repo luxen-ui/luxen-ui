@@ -8,6 +8,10 @@
  * elements (l-alert-dialog) from button-core.css; layered here into
  * `@layer components`. Size/icon-only/press-effect variants are button-only.
  */
+
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @import '../../html/shared/styles/button-core.css' layer(components);
 
 @layer components {
