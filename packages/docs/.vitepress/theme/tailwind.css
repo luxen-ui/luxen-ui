@@ -44,6 +44,7 @@
 
 @import './_code.css';
 @import './_component-table.css';
+@import './themes/index.css';
 
 @layer base {
   *,
@@ -201,6 +202,15 @@ body {
    sidebar items. Let it fill the wrapper instead. */
 .VPNavBar .wrapper .container {
   max-width: none;
+}
+
+/* The theme picker renders through the `nav-bar-content-after` slot, after the
+   social links. Push the controls that follow the version menu one step later
+   so the picker (`order-1`) sits between the version menu and the appearance
+   switch. VitePress draws its dividers from DOM order, so the picker brings its
+   own (see ThemePicker.vue). */
+.VPNavBar .content-body > :is(.appearance, .social-links, .extra, .hamburger) {
+  order: 2;
 }
 
 /* Search — a wide field with the shortcut pushed to the right edge. Below

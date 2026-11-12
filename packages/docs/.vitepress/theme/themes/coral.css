@@ -1,0 +1,81 @@
+/* ==============================================
+   Coral — docs showcase theme, inspired by Airbnb
+   ==============================================
+   Built from the public Airbnb DESIGN.md analysis on getdesign.md (not an
+   official Airbnb design system): white canvas, near-black ink, one coral
+   accent, soft rounded shapes, roomy controls.
+   Applied by `data-theme="coral"` on <html> (see ThemePicker.vue).
+
+   Deviations from the spec:
+   - Airbnb Cereal is proprietary — DM Sans stands in.
+   - The spec's accent #ff385c gives white text 3.5:1, below WCAG AA for a
+     button label. The fill uses #e31c5f (4.6:1), the deeper end of the same
+     coral, and keeps #ff385c for the focus ring.
+   - The spec has no dark mode; the dark values are our own. */
+
+:root[data-theme='coral'] {
+  /* --- 1. Tokens ---------------------------------------------------- */
+
+  --l-font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --l-font-neo-grotesque: var(--l-font-sans);
+
+  --_ink: light-dark(#222222, #f7f7f7);
+
+  --l-color-text-primary: var(--_ink);
+  --l-color-text-secondary: light-dark(#484848, #c4c4c4);
+  --l-color-text-tertiary: light-dark(#717171, #8f8f8f);
+  --l-color-text-neutral: light-dark(#3f3f3f, #dddddd);
+  --l-color-text-on-fill-brand: #ffffff;
+
+  --l-color-surface: light-dark(#ffffff, #121212);
+  --l-color-surface-overlay: light-dark(#ffffff, #1e1e1e);
+  --l-color-border: light-dark(#c1c1c1, #484848);
+  --l-color-border-interactive: light-dark(#dddddd, #3f3f3f);
+  --l-color-divider: light-dark(#ebebeb, #2a2a2a);
+
+  --l-color-bg-fill-brand: #e31c5f;
+  --l-color-bg-fill-brand-hover: #d70466;
+  --l-color-bg-fill-brand-active: #bd0a4f;
+  --l-color-bg-fill-secondary: light-dark(#ffffff, #1e1e1e);
+  --l-color-bg-fill-neutral-soft: light-dark(#f7f7f7, #1a1a1a);
+  --l-color-bg-fill-neutral-subtle: light-dark(#f2f2f2, #2a2a2a);
+  --l-color-bg-fill-neutral-strong: var(--_ink);
+  --l-color-bg-state-hover: light-dark(#f7f7f7, rgb(255 255 255 / 6%));
+  --l-color-bg-state-selected: light-dark(#f2f2f2, rgb(255 255 255 / 10%));
+
+  /* Soft everywhere: 8px controls (buttons and fields follow --l-radius-md),
+     14px cards, 20px+ panels. */
+  --l-radius: 0.5rem;
+  --l-radius-xs: 0.25rem;
+  --l-radius-sm: 0.375rem;
+  --l-radius-md: 0.5rem;
+  --l-radius-lg: 0.875rem;
+  --l-radius-xl: 1.25rem;
+  --l-radius-2xl: 1.5rem;
+  --l-radius-3xl: 2rem;
+  --l-radius-4xl: 2rem;
+
+  /* Generous touch targets — Airbnb buttons sit at 48px. */
+  --l-size-control-xs: 2rem;
+  --l-size-control-sm: 2.5rem;
+  --l-size-control-md: 3rem;
+  --l-size-control-lg: 3.25rem;
+  --l-size-control-xl: 3.5rem;
+
+  /* Layered, very soft card shadows. */
+  --l-shadow-sm: 0 0 0 1px rgb(0 0 0 / 2%), 0 2px 4px rgb(0 0 0 / 6%);
+  --l-shadow-md: 0 0 0 1px rgb(0 0 0 / 2%), 0 2px 6px rgb(0 0 0 / 4%), 0 4px 8px rgb(0 0 0 / 10%);
+  --l-shadow-lg: 0 6px 20px rgb(0 0 0 / 20%);
+
+  --l-focus-ring-color: light-dark(#222222, #ff385c);
+
+  --l-form-control-border-color-hover: var(--_ink);
+  --l-form-control-activated-color: var(--_ink);
+  --l-form-control-activated-content-color: light-dark(#ffffff, #222222);
+  --l-form-control-padding-inline: 0.875rem;
+
+  --l-popover-border-radius: var(--l-radius-lg);
+  --l-popover-padding: var(--l-spacing-2);
+  --l-menu-item-border-radius: var(--l-radius-md);
+  --l-tooltip-background-color: var(--_ink);
+}

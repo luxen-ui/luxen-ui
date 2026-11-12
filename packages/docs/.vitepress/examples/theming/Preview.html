@@ -1,0 +1,49 @@
+<div
+  class="grid w-full max-w-md gap-4 rounded-lg border border-divider bg-surface p-5 shadow-[var(--l-shadow-md)]"
+>
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <l-avatar name="Jane Cooper"></l-avatar>
+      <div class="grid">
+        <h3 class="m-0 text-lg leading-tight font-semibold">Jane Cooper</h3>
+        <span class="text-sm text-tertiary">Acme workspace</span>
+      </div>
+    </div>
+    <l-badge variant="success">Active</l-badge>
+  </div>
+
+  <l-segmented-control
+    label="Plan"
+    value="monthly"
+  >
+    <button value="monthly">Monthly</button>
+    <button value="yearly">Yearly</button>
+  </l-segmented-control>
+
+  <l-form-field>
+    <label>Email</label>
+    <input
+      type="email"
+      placeholder="jane@acme.com"
+    />
+  </l-form-field>
+
+  <l-form-field>
+    <label>Send me product updates</label>
+    <input
+      type="checkbox"
+      role="switch"
+      checked
+    />
+  </l-form-field>
+
+  <div class="flex justify-end gap-2">
+    <button class="l-button">Cancel</button>
+    <button
+      class="l-button"
+      data-variant="primary"
+    >
+      Save changes
+    </button>
+  </div>
+</div>
