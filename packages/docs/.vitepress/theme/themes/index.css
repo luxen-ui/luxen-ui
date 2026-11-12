@@ -1,0 +1,17 @@
+/* Showcase themes for the docs theme picker (ThemePicker.vue).
+   Each one sets `--l-*` tokens under `:root[data-theme='<name>']`, so it
+   re-skins every Luxen element on the page while the VitePress chrome — styled
+   with its own `--vp-*` variables — stays put. The fonts are declared in the
+   Google Fonts link in config.js; a browser only downloads the face once a
+   theme actually renders text with it. */
+
+@import './brutalist.css';
+@import './coral.css';
+@import './midnight.css';
+@import './editorial.css';
+
+/* Element previews inherit the VitePress body font by default. A theme brings
+   its own typeface, so hand the previews the theme's `--l-font-sans`. */
+:root[data-theme] .vp-raw {
+  font-family: var(--l-font-sans);
+}

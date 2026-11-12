@@ -1,0 +1,95 @@
+/* ==============================================
+   Editorial — docs showcase theme, inspired by Oura
+   ==============================================
+   Built from the public Oura DESIGN.md analysis on getdesign.md (not an
+   official Oura design system): warm cream paper, a stone-and-earth palette,
+   a high-contrast serif for headings over a quiet grotesque, pill buttons,
+   and a single action blue reserved for the primary call to action.
+   Applied by `data-theme="editorial"` on <html> (see ThemePicker.vue).
+
+   Deviations from the spec:
+   - Editorial New and Akkurat are proprietary — Instrument Serif and
+     Instrument Sans stand in.
+   - The spec's muted ink #838280 reads at 3.4:1 on the cream canvas; tertiary
+     text uses #6e6c69 (4.7:1).
+   - The spec's text inputs are filled stone with white text; they stay light
+     here so every form element keeps one reading.
+   - The spec has no dark mode; the dark values are our own. */
+
+:root[data-theme='editorial'] {
+  /* --- 1. Tokens ---------------------------------------------------- */
+
+  --l-font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --l-font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --l-font-neo-grotesque: var(--l-font-sans);
+
+  --_ink: light-dark(#1c1b1a, #f7f1e8);
+  --_stone: light-dark(#4a4741, #cfc8bc);
+  --_action: #2a72de;
+
+  --l-color-text-primary: var(--_ink);
+  --l-color-text-secondary: var(--_stone);
+  --l-color-text-tertiary: light-dark(#6e6c69, #a8a5a0);
+  --l-color-text-neutral: var(--_stone);
+  --l-color-text-on-fill-brand: #ffffff;
+
+  --l-color-surface: light-dark(#f7f1e8, #1c1a17);
+  --l-color-surface-overlay: light-dark(#ffffff, #26231f);
+  --l-color-border: light-dark(#cccac7, #4a4741);
+  --l-color-border-interactive: light-dark(#e1dcd3, #3a3631);
+  --l-color-divider: light-dark(#e1dcd3, #34302b);
+
+  --l-color-bg-fill-brand: var(--_action);
+  --l-color-bg-fill-brand-hover: #2566c8;
+  --l-color-bg-fill-brand-active: #1f58ad;
+  --l-color-bg-fill-secondary: light-dark(#f7f1e8, #1c1a17);
+  --l-color-bg-fill-neutral-soft: light-dark(#f1eadf, #24211d);
+  --l-color-bg-fill-neutral-subtle: light-dark(#e9e0d2, #2f2b26);
+  --l-color-bg-fill-neutral-strong: var(--_stone);
+  --l-color-bg-state-hover: light-dark(rgb(74 71 65 / 6%), rgb(247 241 232 / 6%));
+  --l-color-bg-state-selected: light-dark(rgb(74 71 65 / 10%), rgb(247 241 232 / 10%));
+
+  /* Soft cards and fields, pill buttons. */
+  --l-radius: 0.5rem;
+  --l-radius-xs: 0.25rem;
+  --l-radius-sm: 0.5rem;
+  --l-radius-md: 0.75rem;
+  --l-radius-lg: 1.5rem;
+  --l-radius-xl: 2.5rem;
+  --l-button-border-radius: var(--l-radius-full);
+
+  /* Paper doesn't cast hard shadows: warm, diffuse, barely there. */
+  --l-shadow-sm: 0 1px 2px light-dark(rgb(57 34 30 / 6%), rgb(0 0 0 / 40%));
+  --l-shadow-md: 0 6px 20px light-dark(rgb(57 34 30 / 8%), rgb(0 0 0 / 45%));
+  --l-shadow-lg: 0 16px 40px light-dark(rgb(57 34 30 / 12%), rgb(0 0 0 / 55%));
+
+  --l-focus-ring-color: var(--_action);
+
+  --l-form-control-background-color: light-dark(#ffffff, #26231f);
+  --l-form-control-border-color-hover: var(--_stone);
+  --l-form-control-activated-color: var(--_stone);
+  --l-form-control-activated-content-color: light-dark(#ffffff, #1c1a17);
+
+  --l-popover-border-radius: var(--l-radius-lg);
+  --l-popover-padding: var(--l-spacing-2);
+  --l-menu-item-border-radius: var(--l-radius-md);
+  --l-tooltip-background-color: var(--_stone);
+}
+
+/* --- 2. Element touches ---------------------------------------------- */
+
+/* The default button takes the spec's stone outline instead of the neutral
+   border. */
+:root[data-theme='editorial'] .l-button:not([data-variant]) {
+  --border-color: var(--l-color-text-secondary);
+  --border-color-hover: var(--l-color-text-primary);
+}
+
+/* The serif carries the theme: headings in previews switch to it. */
+:root[data-theme='editorial'] .vp-raw :is(h1, h2, h3, h4) {
+  font-family: var(--l-font-serif);
+  font-size: 1.375em;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}

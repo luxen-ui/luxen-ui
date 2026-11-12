@@ -1,0 +1,89 @@
+/* ==============================================
+   Brutalist — docs showcase theme
+   ==============================================
+   Square corners, thick ink borders, hard offset shadows, one loud accent.
+   Applied by `data-theme="brutalist"` on <html> (see ThemePicker.vue).
+
+   Section 1 overrides tokens only — every element follows, buttons included
+   (their square corners and 2px border come from the radius and form-control
+   tokens). Section 2 adds the hard offset shadow and press, which are a
+   button look rather than a token. */
+
+:root[data-theme='brutalist'] {
+  /* --- 1. Tokens ---------------------------------------------------- */
+
+  --l-font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --l-font-neo-grotesque: var(--l-font-sans);
+  --l-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --_ink: light-dark(#0a0a0a, #f5f3ea);
+  --_paper: light-dark(#fffdf3, #0a0a0a);
+  --_acid: #ffe14d;
+
+  --l-color-text-primary: var(--_ink);
+  --l-color-text-secondary: light-dark(#2b2b2b, #d6d4cb);
+  --l-color-text-tertiary: light-dark(#575757, #a3a19a);
+  --l-color-text-neutral: var(--_ink);
+  --l-color-text-on-fill-brand: #0a0a0a;
+
+  --l-color-surface: var(--_paper);
+  --l-color-surface-overlay: light-dark(#ffffff, #161616);
+  --l-color-border: var(--_ink);
+  --l-color-border-interactive: var(--_ink);
+  --l-color-divider: var(--_ink);
+
+  --l-color-bg-fill-brand: var(--_acid);
+  --l-color-bg-fill-brand-hover: #ffd400;
+  --l-color-bg-fill-brand-active: #f5c400;
+  --l-color-bg-fill-secondary: light-dark(#ffffff, #161616);
+  --l-color-bg-fill-neutral-soft: light-dark(#f4f1e4, #1c1c1c);
+  --l-color-bg-fill-neutral-subtle: light-dark(#e9e5d3, #2a2a2a);
+  --l-color-bg-state-hover: light-dark(#fff3a8, #3a3416);
+  --l-color-bg-state-selected: light-dark(#ffe14d, #5c5016);
+
+  /* Zero radius everywhere — except `full`, which keeps radios and avatars
+     round so a radio never reads as a checkbox. */
+  --l-radius: 0;
+  --l-radius-xs: 0;
+  --l-radius-sm: 0;
+  --l-radius-md: 0;
+  --l-radius-lg: 0;
+  --l-radius-xl: 0;
+  --l-radius-2xl: 0;
+  --l-radius-3xl: 0;
+  --l-radius-4xl: 0;
+
+  /* Hard offset shadows: no blur, solid ink (acid on dark, where ink is lost). */
+  --_shadow-ink: light-dark(#0a0a0a, var(--_acid));
+  --l-shadow-sm: 2px 2px 0 0 var(--_shadow-ink);
+  --l-shadow-md: 4px 4px 0 0 var(--_shadow-ink);
+  --l-shadow-lg: 6px 6px 0 0 var(--_shadow-ink);
+
+  --l-focus-ring-color: light-dark(#2343ff, var(--_acid));
+  --l-focus-ring-width: 3px;
+
+  --l-form-control-border-width: 2px;
+  --l-form-control-border-color-hover: var(--_ink);
+  --l-form-control-activated-color: var(--_ink);
+  --l-form-control-activated-content-color: var(--_paper);
+
+  --l-popover-shadow: var(--l-shadow-md);
+  --l-tooltip-background-color: var(--_ink);
+}
+
+/* --- 2. Element touches ---------------------------------------------- */
+
+/* Every button — primary included — gets an ink edge and a hard shadow that
+   it loses when pressed, so a click reads as the button sinking. */
+:root[data-theme='brutalist'] .l-button {
+  --border-color: var(--l-color-border);
+  --border-color-hover: var(--l-color-border);
+
+  box-shadow: var(--l-shadow-sm);
+  transition-property: background-color, color, box-shadow, translate;
+
+  &:not(:disabled):not([aria-disabled='true']):active {
+    box-shadow: none;
+    translate: 2px 2px;
+  }
+}
