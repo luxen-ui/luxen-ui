@@ -517,6 +517,16 @@ const sd = new StyleDictionary({
           },
         },
         {
+          destination: 'button.css',
+          format: 'css/luxen',
+          options: {
+            subset: 'components',
+            fileMatch: 'button',
+            header:
+              '/* Luxen design-tokens — button component tokens.\n   Bundled in the Luxen preset via `luxen-ui/css/tokens`. The shape of every\n   `.l-button` (radius, border width), so a theme reaches buttons through\n   tokens alone. */\n\n',
+          },
+        },
+        {
           destination: 'index.css',
           format: 'css/luxen-index',
         },

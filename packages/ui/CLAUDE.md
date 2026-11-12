@@ -317,6 +317,8 @@ A fallback is worse than dead code: it silently masks a typo'd or renamed token.
 
 Fallbacks remain correct for **public component variables**, which consumers may legitimately not set: `var(--padding, 0.25rem)`, `var(--border-radius, 6px)`.
 
+One deliberate exception: a component token whose default depends on the element itself. `--l-button-border-radius` ships as `initial` (guaranteed-invalid) because its default — `height / 8` — can't be computed on `:root`, so `button-core.css` reads `var(--l-button-border-radius, calc(var(--height) / 8))`. The token is still emitted and documented; the fallback is its default, not a guard. Don't add one anywhere else without the same reason.
+
 ### Never hardcode a numeric `font-weight`
 
 Weights come from the scale — `var(--l-font-weight-medium)`, `-semibold`, … —

@@ -17,3 +17,6 @@
 /* Popover and menu-item tokens (--l-popover-*, --l-menu-item-*): panels
    anchored to a trigger and their rows. */
 @import '@luxen-ui/design-tokens/css/popover';
+
+/* Button tokens (--l-button-*): the shape of every `.l-button`. */
+@import '@luxen-ui/design-tokens/css/button';

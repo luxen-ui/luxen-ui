@@ -37,6 +37,10 @@
       "style": "./dist/css/popover.css",
       "import": "./dist/css/popover.css"
     },
+    "./css/button": {
+      "style": "./dist/css/button.css",
+      "import": "./dist/css/button.css"
+    },
     "./tailwind": {
       "style": "./dist/tailwind/theme.css",
       "import": "./dist/tailwind/theme.css"

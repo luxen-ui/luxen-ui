@@ -175,12 +175,12 @@
   */
 
   .l-radio-group[data-appearance='button']:not([data-orientation='vertical']) {
-    /* Overlap the shared 1px border. Sibling selectors rather than
-       `:not(:first-child)` / `:not(:last-child)`: the group's first child is
-       the `<legend>`, so the positional pseudo-classes would be off by one and
-       square the first segment's leading corners. */
+    /* Overlap the shared border (--l-button-border-width). Sibling selectors
+       rather than `:not(:first-child)` / `:not(:last-child)`: the group's first
+       child is the `<legend>`, so the positional pseudo-classes would be off by
+       one and square the first segment's leading corners. */
     & > .l-button + .l-button {
-      margin-inline-start: -1px;
+      margin-inline-start: calc(var(--l-button-border-width) * -1);
       border-start-start-radius: 0;
       border-end-start-radius: 0;
     }
@@ -193,7 +193,7 @@
 
   .l-radio-group[data-appearance='button'][data-orientation='vertical'] {
     & > .l-button + .l-button {
-      margin-block-start: -1px;
+      margin-block-start: calc(var(--l-button-border-width) * -1);
       border-start-start-radius: 0;
       border-start-end-radius: 0;
     }
