@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress';
 import tailwindcss from '@tailwindcss/vite';
 import { luxenCdnPlugin } from './plugins/luxen-cdn.js';
+import { version } from '../../ui/package.json' with { type: 'json' };
 
 function el(name, tag, link) {
   const isCustom = tag.startsWith('l-');
@@ -68,20 +69,28 @@ export default defineConfig({
 
     search: {
       provider: 'local',
+      options: {
+        translations: {
+          button: {
+            buttonText: 'Search documentation…',
+            buttonAriaLabel: 'Search documentation',
+          },
+        },
+      },
     },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/luxen-ui/luxen-ui' }],
 
+    // The sidebar already lists every docs page, so the nav only carries what
+    // the sidebar can't: release and package links.
     nav: [
       {
-        text: 'Getting started',
-        link: '/overview/getting-started',
-        activeMatch: '/overview/',
-      },
-      {
-        text: 'Components',
-        link: '/elements/badge',
-        activeMatch: '/elements/',
+        text: `v${version}`,
+        items: [
+          { text: 'Changelog', link: '/resources/changelog' },
+          { text: 'npm package', link: 'https://www.npmjs.com/package/luxen-ui' },
+          { text: 'Report an issue', link: 'https://github.com/luxen-ui/luxen-ui/issues' },
+        ],
       },
     ],
 
@@ -93,6 +102,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/overview/introduction' },
           { text: 'Quick start', link: '/overview/getting-started' },
           { text: 'Using with Tailwind', link: '/overview/using-with-tailwind' },
+          { text: 'Using with AI ✧', link: '/resources/agent-skills' },
           {
             text: 'Customizing the <span class="sidebar-tag sidebar-tag--custom" style="display:inline;margin:0">l-</span> prefix',
             link: '/overview/customizing-prefix',
@@ -175,11 +185,6 @@ export default defineConfig({
           el('Switch', 'input', 'switch'),
           el('Textarea', 'textarea', 'textarea'),
         ],
-      },
-      {
-        text: 'AI ✧',
-        collapsed: false,
-        items: [{ text: 'Agent Skills', link: '/resources/agent-skills' }],
       },
       {
         text: 'Resources',

@@ -191,17 +191,20 @@ body {
   color: var(--vp-c-brand-1);
 }
 
-/* Search — fill available nav space */
+/* Search — a wide field with the shortcut pushed to the right edge. Below
+   48rem VitePress collapses the button to an icon, so leave it alone there. */
 .VPNavBarSearch {
   flex: 1;
+}
 
-  #local-search,
-  .DocSearch-Button {
-    width: calc(100% - 24px);
-  }
+@media (min-width: 48rem) {
+  .VPNavBarSearch .VPNavBarSearchButton {
+    width: 100%;
+    max-width: 18rem;
 
-  .DocSearch-Button-Keys {
-    margin-left: auto;
+    .keys {
+      margin-left: auto;
+    }
   }
 }
 
