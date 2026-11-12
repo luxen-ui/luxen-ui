@@ -5,6 +5,7 @@ import '../../src/css/tokens.css';
 import '../../src/html/elements/dropdown/index.js';
 import '../../src/html/elements/dropdown-item/index.js';
 import '../../src/html/elements/dropdown-label/index.js';
+import '../../src/html/elements/divider/index.js';
 import type { Dropdown } from '../../src/html/elements/dropdown/dropdown.js';
 import { DropdownSelectEvent } from '../../src/html/elements/dropdown/dropdown.js';
 import type { DropdownItem } from '../../src/html/elements/dropdown-item/dropdown-item.js';
@@ -111,6 +112,8 @@ const menuTrigger = () => page.getByRole('button', { name: 'Menu' });
 const menuItem = (name: string) => page.getByRole('menuitem', { name, disabled: false });
 const disabledMenuItem = (name: string) => page.getByRole('menuitem', { name, disabled: true });
 const checkboxItem = (name: string) => page.getByRole('menuitemcheckbox', { name });
+const radioItem = (name: string, opts: { checked?: boolean } = {}) =>
+  page.getByRole('menuitemradio', { name, exact: true, ...opts });
 
 const FIXTURE = `
   <l-dropdown style="--show-duration: 0; --hide-duration: 0">
@@ -419,6 +422,26 @@ describe('Selecting items', () => {
     expect(isOpen()).toBe(true);
   });
 
+  it('Space toggles a focused checkbox item and keeps the menu open; Enter toggles it and closes the menu (APG)', async () => {
+    await mount(FIXTURE);
+    // ArrowUp opens on the last enabled item: Notifications
+    await openViaKey('{ArrowUp}');
+    expect(item('check').shadowRoot!.activeElement).not.toBeNull();
+
+    await userEvent.keyboard(' ');
+    await settle();
+    expect(item('check').checked).toBe(true);
+    expect(isOpen()).toBe(true);
+
+    const hidden = waitForEvent(el(), 'after-hide');
+    await userEvent.keyboard('{Enter}');
+    await hidden;
+    await settle();
+    expect(item('check').checked).toBe(false);
+    expect(isOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger());
+  });
+
   it('a programmatic click dispatched on the item host still fires select', async () => {
     // A real pointer lands on the inner `.item` row, so its composed path
     // includes the row. A synthetic click — item.click(), a dispatched
@@ -444,6 +467,210 @@ describe('Selecting items', () => {
 
     expect(selectedItem).toBe(item('apple'));
     expect(isOpen()).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Radio items
+// ---------------------------------------------------------------------------
+
+/** Two radio groups split by a divider: a group ends at a separator or section label. */
+const RADIO_FIXTURE = `
+  <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+    <button slot="trigger">Menu</button>
+    <l-dropdown-label>Sort by</l-dropdown-label>
+    <l-dropdown-item id="name" type="radio" value="name" checked>Name</l-dropdown-item>
+    <l-dropdown-item id="date" type="radio" value="date">Date</l-dropdown-item>
+    <l-dropdown-item id="size" type="radio" value="size">Size</l-dropdown-item>
+    <l-divider></l-divider>
+    <l-dropdown-item id="asc" type="radio" value="asc" checked>Ascending</l-dropdown-item>
+    <l-dropdown-item id="desc" type="radio" value="desc">Descending</l-dropdown-item>
+  </l-dropdown>
+`;
+
+async function openByClick() {
+  const shown = waitForEvent(el(), 'after-show');
+  await userEvent.click(menuTrigger());
+  await shown;
+  await settle();
+}
+
+/** The checked radio items, by accessible name — what a screen reader reports. */
+function checkedRadios(): string[] {
+  return ['Name', 'Date', 'Size', 'Ascending', 'Descending'].filter(
+    (name) => radioItem(name, { checked: true }).elements().length === 1,
+  );
+}
+
+describe('Radio items', () => {
+  it('exposes each radio item as menuitemradio with its checked state (WCAG 4.1.2 / RGAA 7.1)', async () => {
+    await mount(RADIO_FIXTURE);
+    await openByClick();
+
+    expect(radioItem('Name', { checked: true }).elements()).toHaveLength(1);
+    expect(radioItem('Date', { checked: false }).elements()).toHaveLength(1);
+    expect(radioItem('Size', { checked: false }).elements()).toHaveLength(1);
+    expect(checkedRadios()).toEqual(['Name', 'Ascending']);
+  });
+
+  it('clicking a radio item checks it, unchecks the rest of its group only, fires select, and keeps the menu open', async () => {
+    await mount(RADIO_FIXTURE);
+    await openByClick();
+
+    let selectedItem: DropdownItem | null = null;
+    el().addEventListener('select', (e: Event) => {
+      selectedItem = (e as DropdownSelectEvent).item;
+    });
+
+    await userEvent.click(radioItem('Date'));
+    await settle();
+
+    expect(selectedItem).toBe(item('date'));
+    // The other group, past the divider, keeps its own choice.
+    expect(checkedRadios()).toEqual(['Date', 'Ascending']);
+    expect(isOpen()).toBe(true);
+
+    await userEvent.click(radioItem('Descending'));
+    await settle();
+    expect(checkedRadios()).toEqual(['Date', 'Descending']);
+  });
+
+  it('Space on a focused radio item checks it, unchecks the rest of its group, and keeps the menu open', async () => {
+    await mount(RADIO_FIXTURE);
+    await openViaKey('{ArrowDown}');
+    // At Name — move to Date
+    await userEvent.keyboard('{ArrowDown}');
+    await settle();
+    expect(item('date').shadowRoot!.activeElement).not.toBeNull();
+
+    await userEvent.keyboard(' ');
+    await settle();
+    expect(checkedRadios()).toEqual(['Date', 'Ascending']);
+    expect(isOpen()).toBe(true);
+  });
+
+  it('Enter on a focused radio item checks it and closes the menu (APG)', async () => {
+    await mount(RADIO_FIXTURE);
+    await openViaKey('{ArrowDown}');
+    // At Name — move to Size
+    await userEvent.keyboard('{ArrowDown}');
+    await userEvent.keyboard('{ArrowDown}');
+    await settle();
+
+    const hidden = waitForEvent(el(), 'after-hide');
+    await userEvent.keyboard('{Enter}');
+    await hidden;
+    await settle();
+
+    expect(isOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger());
+    expect(item('size').checked).toBe(true);
+    expect(item('name').checked).toBe(false);
+  });
+
+  it('the select listener already sees a single checked item in the group', async () => {
+    await mount(RADIO_FIXTURE);
+    await openByClick();
+
+    let checkedInListener: string[] = [];
+    el().addEventListener('select', () => {
+      checkedInListener = [...host.querySelectorAll<DropdownItem>('l-dropdown-item')]
+        .filter((i) => i.checked)
+        .map((i) => i.value);
+    });
+
+    await userEvent.click(radioItem('Date'));
+    await settle();
+
+    expect(checkedInListener).toEqual(['date', 'asc']);
+  });
+
+  it('selecting the checked radio item again keeps it checked and still fires select', async () => {
+    await mount(RADIO_FIXTURE);
+    await openByClick();
+
+    let selectCount = 0;
+    el().addEventListener('select', () => selectCount++);
+
+    await userEvent.click(radioItem('Name'));
+    await settle();
+
+    expect(selectCount).toBe(1);
+    expect(checkedRadios()).toEqual(['Name', 'Ascending']);
+  });
+
+  it('checking a radio item programmatically unchecks the rest of its group at once', async () => {
+    await mount(RADIO_FIXTURE);
+
+    item('size').checked = true;
+    expect(item('name').checked).toBe(false);
+    await settle();
+
+    expect(item('size').hasAttribute('checked')).toBe(true);
+    expect(item('name').hasAttribute('checked')).toBe(false);
+    expect(item('asc').checked).toBe(true);
+  });
+
+  it('the last radio checked wins, in markup and in a script', async () => {
+    await mount(`
+      <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+        <button slot="trigger">Menu</button>
+        <l-dropdown-item id="a" checked type="radio">A</l-dropdown-item>
+        <l-dropdown-item id="b" type="radio" checked>B</l-dropdown-item>
+        <l-dropdown-item id="c" type="radio">C</l-dropdown-item>
+      </l-dropdown>
+    `);
+    expect([item('a').checked, item('b').checked, item('c').checked]).toEqual([false, true, false]);
+
+    item('a').checked = true;
+    item('c').checked = true;
+    await settle();
+    expect([item('a').checked, item('b').checked, item('c').checked]).toEqual([false, false, true]);
+  });
+
+  it('removing the separator between two groups leaves one checked radio in the merged group', async () => {
+    await mount(RADIO_FIXTURE);
+    // A section label also bounds a group, so drop the divider only.
+    host.querySelector('l-divider')!.remove();
+    await settle();
+    expect([item('name').checked, item('asc').checked]).toEqual([false, true]);
+  });
+
+  it('honours check-placement="end": the check moves to the trailing edge and the prefix shows', async () => {
+    await mount(`
+      <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+        <button slot="trigger">Menu</button>
+        <l-dropdown-item id="dark" type="radio" check-placement="end" checked>
+          <span slot="prefix">*</span>Dark
+        </l-dropdown-item>
+      </l-dropdown>
+    `);
+    const row = item('dark').shadowRoot!.querySelector('.item')!;
+    const children = [...row.children];
+    const check = row.querySelector('.check')!;
+    expect(check).not.toBeNull();
+    expect(row.querySelector('slot[name="prefix"]')).not.toBeNull();
+    expect(children.indexOf(check)).toBeGreaterThan(children.indexOf(row.querySelector('.label')!));
+  });
+
+  it('a submenu holds its own radio group, apart from the root level', async () => {
+    await mount(`
+      <l-dropdown style="--show-duration: 0; --hide-duration: 0">
+        <button slot="trigger">Menu</button>
+        <l-dropdown-item id="small" type="radio" checked>Small</l-dropdown-item>
+        <l-dropdown-item id="more">
+          More
+          <l-dropdown-item id="large" slot="submenu" type="radio" checked>Large</l-dropdown-item>
+          <l-dropdown-item id="huge" slot="submenu" type="radio">Huge</l-dropdown-item>
+        </l-dropdown-item>
+      </l-dropdown>
+    `);
+
+    item('huge').checked = true;
+    await settle();
+
+    expect(item('large').checked).toBe(false);
+    expect(item('small').checked).toBe(true);
   });
 });
 

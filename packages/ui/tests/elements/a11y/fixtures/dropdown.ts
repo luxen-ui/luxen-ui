@@ -25,6 +25,10 @@ export default defineA11yFixture({
           <l-dropdown-item>Banana</l-dropdown-item>
           <l-dropdown-item disabled>Cherry</l-dropdown-item>
           <l-dropdown-item type="checkbox">Notifications</l-dropdown-item>
+          <l-divider></l-divider>
+          <l-dropdown-label>Density</l-dropdown-label>
+          <l-dropdown-item type="radio" checked>Compact</l-dropdown-item>
+          <l-dropdown-item type="radio">Comfortable</l-dropdown-item>
         </l-dropdown>`,
       setup: (host) => openOverlay(host.querySelector('l-dropdown')!),
     },

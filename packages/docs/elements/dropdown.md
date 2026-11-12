@@ -6,6 +6,7 @@ outline: deep
 import dropdownBasic from '../.vitepress/examples/dropdown/DropdownBasic.html?raw'
 import dropdownDisabledItem from '../.vitepress/examples/dropdown/DropdownDisabledItem.html?raw'
 import dropdownCheckbox from '../.vitepress/examples/dropdown/DropdownCheckbox.html?raw'
+import dropdownRadio from '../.vitepress/examples/dropdown/DropdownRadio.html?raw'
 import dropdownDestructive from '../.vitepress/examples/dropdown/DropdownDestructive.html?raw'
 import dropdownSections from '../.vitepress/examples/dropdown/DropdownSections.html?raw'
 import dropdownSubmenu from '../.vitepress/examples/dropdown/DropdownSubmenu.html?raw'
@@ -48,13 +49,24 @@ Add `disabled` to individual items to prevent selection.
 
 ### Checkbox items
 
-Set `type="checkbox"` for toggleable items. The dropdown stays open when checking items.
+Set `type="checkbox"` for toggleable items. A click or <kbd>Space</kbd> keeps the dropdown open while checking items; <kbd>Enter</kbd> toggles the item and closes it.
 
 <ComponentWrapper :html="dropdownCheckbox" />
 
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/dropdown/DropdownCheckbox.html [HTML]
+:::
+
+### Radio items
+
+Set `type="radio"` for a single choice — a sort order, a density, a theme. Checking a radio item unchecks the other radio items of its group, and selecting the checked item again leaves it checked. A group is the radio items between the same separators (`<l-divider>`, `<hr>`) or section labels, so one menu can hold several groups. As with checkbox items, a click or <kbd>Space</kbd> keeps the dropdown open and <kbd>Enter</kbd> closes it.
+
+<ComponentWrapper :html="dropdownRadio" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/dropdown/DropdownRadio.html [HTML]
 :::
 
 ### Destructive items
@@ -81,7 +93,7 @@ Add `<l-dropdown-label>` to caption a group of items. It is non-interactive — 
 
 ### Submenus
 
-Nest `<l-dropdown-item slot="submenu">` elements inside an item to create a submenu — at any depth. A parent item shows a chevron, opens on hover, click, <kbd>Enter</kbd> or <kbd>ArrowRight</kbd>, and closes with <kbd>ArrowLeft</kbd> or <kbd>Escape</kbd>. Selecting a nested item fires the same `select` event on the dropdown and closes the whole menu (checkbox items keep it open). Use `<hr slot="submenu">` for separators inside a submenu.
+Nest `<l-dropdown-item slot="submenu">` elements inside an item to create a submenu — at any depth. A parent item shows a chevron, opens on hover, click, <kbd>Enter</kbd> or <kbd>ArrowRight</kbd>, and closes with <kbd>ArrowLeft</kbd> or <kbd>Escape</kbd>. Selecting a nested item fires the same `select` event on the dropdown and closes the whole menu (checkbox and radio items keep it open). Use `<hr slot="submenu">` for separators inside a submenu.
 
 <ComponentWrapper :html="dropdownSubmenu" />
 
@@ -158,10 +170,10 @@ The row reflects and changes the page's [color scheme](/overview/color-scheme); 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Trigger is a menu button (`aria-haspopup=&quot;menu&quot;`); panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;` or `role=&quot;menuitemcheckbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Role', Description: 'Trigger is a menu button (`aria-haspopup=&quot;menu&quot;`); panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;`, `role=&quot;menuitemcheckbox&quot;` or `role=&quot;menuitemradio&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Accessible name', Description: 'Each `role=&quot;menu&quot;` panel is named — the root menu after its trigger, every submenu after its parent item', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
   { Check: 'Expanded state', Description: 'Trigger receives `aria-expanded` reflecting open state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Checked state', Description: 'Checkbox items use `aria-checked` to communicate toggle state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Checked state', Description: 'Checkbox and radio items use `aria-checked` to communicate their state; checking a radio item unchecks the others of its group', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Submenu state', Description: 'Items with a submenu expose `aria-haspopup=&quot;menu&quot;`, `aria-controls`, and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Disabled state', Description: 'Disabled items use `aria-disabled`, remaining in the DOM for discoverability', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
   { Check: 'Focus management', Description: 'Focus moves into menu on open and returns to trigger on close; Tab closes the menu', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
@@ -171,13 +183,14 @@ The row reflects and changes the page's [color scheme](/overview/color-scheme); 
   'Use a `<button>` element for the trigger in the `trigger` slot',
   'Every item must have visible text content for its accessible name',
   'For checkbox items, set `type=&quot;checkbox&quot;` — the component handles `aria-checked` automatically',
+  'For a single choice, set `type=&quot;radio&quot;` instead of checkbox items, so assistive tech announces mutually exclusive options',
 ]" />
 
 ### Keyboard interactions
 
 <KeyboardTable :data="[
-  { Key: 'Enter', Description: 'Opens menu and focuses first item; selects the focused item; or opens the focused item\'s submenu' },
-  { Key: 'Space', Description: 'Opens menu and focuses first item; selects the focused item; or opens the focused item\'s submenu' },
+  { Key: 'Enter', Description: 'Opens menu and focuses first item; selects the focused item (checking a checkbox or radio item) and closes the menu; or opens the focused item\'s submenu' },
+  { Key: 'Space', Description: 'Opens menu and focuses first item; selects the focused item, keeping the menu open for a checkbox or radio item; or opens the focused item\'s submenu' },
   { Key: 'ArrowDown', Description: 'Opens menu and focuses first item; or moves focus to the next item of the current level (wraps)' },
   { Key: 'ArrowUp', Description: 'Opens menu and focuses last item; or moves focus to the previous item of the current level (wraps)' },
   { Key: 'ArrowRight', Description: 'Opens the focused item\'s submenu and focuses its first item' },

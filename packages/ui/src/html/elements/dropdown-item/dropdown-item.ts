@@ -14,7 +14,7 @@ const styles = unsafeCSS(rawStyles);
  * A menu item for use inside `<l-dropdown>`.
  *
  * @slot - Label text.
- * @slot prefix - Leading content (e.g. icon). A `type="checkbox"` item ignores it unless `check-placement="end"` frees the leading column.
+ * @slot prefix - Leading content (e.g. icon). A `type="checkbox"` or `type="radio"` item ignores it unless `check-placement="end"` frees the leading column.
  * @slot suffix - Trailing content.
  * @slot submenu - Nested `l-dropdown-item` elements rendered in a submenu panel anchored to this item. Drop an `<hr>` between them for a separator.
  *
@@ -23,6 +23,7 @@ const styles = unsafeCSS(rawStyles);
  * @cssproperty --color - Text color.
  *
  * @attribute variant - destructive — Renders the item as a destructive action (red), for delete-style entries.
+ * @attribute type - normal | checkbox | radio — `checkbox` is an independent on/off item (`menuitemcheckbox`); `radio` is one choice among the radio items of its group (`menuitemradio`), and checking it unchecks the others. A group is the radio items between the same separators or section labels.
  *
  * @customElement l-dropdown-item
  */
@@ -43,24 +44,42 @@ export class DropdownItem extends LuxenElement {
   @property({ type: Boolean, reflect: true })
   accessor disabled = false;
 
-  /** The type of item: `normal` or `checkbox`. */
+  /**
+   * The type of item: `normal`, `checkbox`, or `radio`. Radio items are
+   * mutually exclusive within their group — the radio items of the same menu
+   * level between the same separators (`<l-divider>`, `<hr>`) or section
+   * labels (`<l-dropdown-label>`).
+   */
   @property()
-  accessor type: 'normal' | 'checkbox' = 'normal';
+  accessor type: 'normal' | 'checkbox' | 'radio' = 'normal';
 
   /** Visual variant. `destructive` marks a delete-style action in red. */
   @property({ reflect: true })
   accessor variant: 'destructive' | undefined = undefined;
 
-  /** Whether the checkbox item is checked. */
+  /**
+   * Whether the checkbox or radio item is checked. Checking a radio item
+   * unchecks the other radio items of its group at once.
+   */
   @property({ type: Boolean, reflect: true })
-  accessor checked = false;
+  get checked(): boolean {
+    return this._checked;
+  }
+  set checked(value: boolean) {
+    this._checked = value;
+    // Native radio semantics: the rest of the group is unchecked in the same
+    // task, so a select listener (or the next line of a script) already sees a
+    // single checked item, and the last write wins.
+    if (value && this._isRadio()) this._uncheckRadioPeers();
+  }
+  private _checked = false;
 
   /** Whether this item's submenu is open. Managed by the parent `l-dropdown`. */
   @property({ type: Boolean, reflect: true, attribute: 'submenu-open' })
   accessor submenuOpen = false;
 
   /**
-   * Which side of a `type="checkbox"` item carries the check mark. `start` (the
+   * Which side of a `type="checkbox"` or `type="radio"` item carries the check mark. `start` (the
    * default) puts it in the leading column, where it takes the place of any
    * `prefix`. `end` moves it to the trailing edge, freeing that column so the
    * item can show its own icon alongside the state.
@@ -70,6 +89,11 @@ export class DropdownItem extends LuxenElement {
 
   @state()
   private accessor _hasSubmenu = false;
+
+  /** @internal Whether the item carries a checked state: a `checkbox` or `radio` item. */
+  get _checkable(): boolean {
+    return this.type === 'checkbox' || this.type === 'radio';
+  }
 
   /** Whether this item has nested `slot="submenu"` items. */
   get hasSubmenu(): boolean {
@@ -120,6 +144,51 @@ export class DropdownItem extends LuxenElement {
   closeSubmenu() {
     for (const child of this.getSubmenuItems()) child.closeSubmenu();
     if (this.submenuOpen) this.submenuOpen = false;
+  }
+
+  /**
+   * The other radio items of this item's group: the `type="radio"` items of
+   * the same menu level (same parent, same slot) up to the nearest separator
+   * or section label on each side — the APG's separator-delimited group.
+   */
+  private _radioGroupPeers(): DropdownItem[] {
+    const item = tagName('dropdown-item');
+    const boundaries = new Set(['hr', tagName('divider'), tagName('dropdown-label')]);
+    const peers: DropdownItem[] = [];
+    for (const step of ['previousElementSibling', 'nextElementSibling'] as const) {
+      for (let el = this[step]; el; el = el[step]) {
+        if (el.slot !== this.slot) continue;
+        if (boundaries.has(el.localName)) break;
+        if (el.localName === item && (el as DropdownItem).type === 'radio') {
+          peers.push(el as DropdownItem);
+        }
+      }
+    }
+    return peers;
+  }
+
+  /**
+   * Whether this is a radio item. While the element upgrades, its attributes
+   * arrive one by one, and `checked` may come before `type`: the attribute
+   * stands in for the property until the first update.
+   */
+  private _isRadio(): boolean {
+    return this.type === 'radio' || (!this.hasUpdated && this.getAttribute('type') === 'radio');
+  }
+
+  /** @internal Unchecks the other radio items of this item's group. */
+  _uncheckRadioPeers() {
+    for (const peer of this._radioGroupPeers()) {
+      if (peer.checked) peer.checked = false;
+    }
+  }
+
+  override willUpdate(changed: PropertyValues<this>) {
+    // A checked item turned into a radio later on. The first update is left
+    // out: there, the checked setter has already settled the group.
+    if (this.hasUpdated && changed.has('type') && this.type === 'radio' && this.checked) {
+      this._uncheckRadioPeers();
+    }
   }
 
   override updated(changed: PropertyValues<this>) {
@@ -181,20 +250,24 @@ export class DropdownItem extends LuxenElement {
 
   private _onSubmenuSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    this._hasSubmenu = slot
+    const items = slot
       .assignedElements()
-      .some((el) => el.tagName === tagName('dropdown-item').toUpperCase());
+      .filter((el) => el.tagName === tagName('dropdown-item').toUpperCase()) as DropdownItem[];
+    this._hasSubmenu = items.length > 0;
+    settleRadioGroups(items);
   };
 
   override render() {
     const isCheckbox = this.type === 'checkbox';
-    const leadingCheck = isCheckbox && this.checkPlacement === 'start';
+    const isRadio = this.type === 'radio';
+    const checkable = this._checkable;
+    const leadingCheck = checkable && this.checkPlacement === 'start';
 
     return html`
       <div
         class="item"
-        role=${isCheckbox ? 'menuitemcheckbox' : 'menuitem'}
-        aria-checked=${isCheckbox ? String(this.checked) : nothing}
+        role=${isCheckbox ? 'menuitemcheckbox' : isRadio ? 'menuitemradio' : 'menuitem'}
+        aria-checked=${checkable ? String(this.checked) : nothing}
         aria-disabled=${this.disabled ? 'true' : nothing}
         aria-haspopup=${this._hasSubmenu ? 'menu' : nothing}
         aria-expanded=${this._hasSubmenu ? String(this.submenuOpen) : nothing}
@@ -202,7 +275,7 @@ export class DropdownItem extends LuxenElement {
         tabindex="-1"
       >
         <!-- The check owns the leading column by default, which is why a
-             checkbox item has no room for a prefix there. Moving it to the
+             checkbox or radio item has no room for a prefix there. Moving it to the
              trailing edge frees that column, so an item can carry its own icon
              and still show whether it is on — a theme row with a sun/moon, a
              Show-grid row with a grid glyph. The aria-checked above is what
@@ -216,7 +289,7 @@ export class DropdownItem extends LuxenElement {
           ><slot></slot
         ></span>
         <slot name="suffix"></slot>
-        ${isCheckbox && this.checkPlacement === 'end' ? this._renderCheck() : nothing}
+        ${checkable && this.checkPlacement === 'end' ? this._renderCheck() : nothing}
         ${
           this._hasSubmenu
             ? html`<span
@@ -240,5 +313,18 @@ export class DropdownItem extends LuxenElement {
         ></slot>
       </div>
     `;
+  }
+}
+
+/**
+ * Leaves at most one checked radio per group among the items of one menu level:
+ * the last one, as with native radios. Run when the level changes shape, since
+ * an item moved in or a separator removed can put two checked radios in one
+ * group without either `checked` changing.
+ */
+export function settleRadioGroups(items: DropdownItem[]) {
+  for (let i = items.length - 1; i >= 0; i--) {
+    const item = items[i];
+    if (item.type === 'radio' && item.checked) item._uncheckRadioPeers();
   }
 }
