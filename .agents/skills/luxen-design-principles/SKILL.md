@@ -115,7 +115,7 @@ Size systems use private variables for predefined sizes and a public variable fo
 }
 ```
 
-Proportional border-radius scales with size: `border-radius: calc(var(--height) / 8)`. When a theme must reach it, expose a component token that ships as `initial` and read it with the proportional value as fallback — `var(--l-button-border-radius, calc(var(--height) / 8))` — since a `:root` token can't see the element's `--height`.
+Border-radius comes from a component token, shared by every size: `border-radius: var(--l-button-border-radius)`.
 
 ## 9. Animation Patterns
 
