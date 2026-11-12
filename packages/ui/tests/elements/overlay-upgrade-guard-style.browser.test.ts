@@ -2,9 +2,12 @@ import { afterEach, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 // Asserts the `:not(:defined)` guard in base CSS — what a visitor sees before
 // the element script has loaded (slow network, SSR, a CDN hiccup). The browser
-// config has no setup file, so the base stylesheet is imported here. No element
-// is imported on purpose: every `l-*` tag in this suite stays undefined.
+// config has no setup file, so the base stylesheet is imported here, plus the
+// divider skin: a Luxen light-DOM child whose own `display` competes with the
+// guard. No element script is imported on purpose: every `l-*` tag in this
+// suite stays undefined.
 import '../../src/css/base/_base.css';
+import '../../src/css/elements/divider.css';
 
 let host: HTMLElement;
 
@@ -33,6 +36,7 @@ const DROPDOWN = (hostClass = '') => `
     <button slot="trigger" type="button">Theme</button>
     <div slot="header">Signed in as Jane Cooper</div>
     <l-dropdown-item>Light</l-dropdown-item>
+    <l-divider></l-divider>
     <l-dropdown-item>Dark</l-dropdown-item>
     <div slot="footer">v1.0</div>
   </l-dropdown>
@@ -61,11 +65,11 @@ describe('A dropdown whose script has not loaded yet', () => {
     expect(getComputedStyle(dropdown).display).toBe('inline-block');
   });
 
-  it('hides the menu items, header and footer', () => {
+  it('hides the menu items, dividers, header and footer', () => {
     const dropdown = mount(DROPDOWN());
     const content = [...dropdown.children].filter((el) => el.slot !== 'trigger');
 
-    expect(content).toHaveLength(4);
+    expect(content).toHaveLength(5);
     for (const el of content) expect(visible(el)).toBe(false);
   });
 
