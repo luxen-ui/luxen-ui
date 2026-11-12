@@ -116,6 +116,7 @@ export default defineConfig({
         items: [
           { text: 'Design Tokens', link: '/overview/design-tokens' },
           { text: 'Color scheme', link: '/overview/color-scheme' },
+          { text: 'Theming', link: '/overview/theming' },
           { text: 'Focus', link: '/foundations/focus' },
         ],
       },
@@ -203,9 +204,16 @@ export default defineConfig({
       'link',
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sora:wght@400;500;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Inter:wght@400;500;600;700&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sora:wght@400;500;600;700&family=Space+Grotesk:wght@400..700&display=swap',
         crossorigin: '',
       },
+    ],
+    // Apply the saved showcase theme before first paint, so a themed visitor
+    // never sees the default theme flash in. ThemePicker.vue owns the key.
+    [
+      'script',
+      {},
+      "try{var t=localStorage.getItem('luxen-docs-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}",
     ],
     ['link', { rel: 'canonical', href: 'https://luxen-ui.com/' }],
     ['meta', { property: 'og:type', content: 'website' }],
