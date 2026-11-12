@@ -59,7 +59,7 @@ Add `data-variant="destructive"`.
 
 ### Icon-only
 
-Auto-detected when containing a single `<svg>`, `<l-icon>`, or `<iconify-icon>`.
+Add `data-icon-only` and an `aria-label`.
 
 <ComponentWrapper :html="buttonIcon" />
 
