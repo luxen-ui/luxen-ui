@@ -9,15 +9,13 @@
   l-dialog:not(:defined),
   l-drawer:not(:defined),
   l-popover:not(:defined),
-  l-tooltip:not(:defined),
-  /* The dropdown slots its own trigger: hide only the menu content, so the
-     trigger is in place from the first paint (no layout shift on upgrade), and
-     a display utility on the host can no longer reveal the menu. */
-  l-dropdown:not(:defined) > :not([slot='trigger']) {
+  l-tooltip:not(:defined) {
     display: none;
   }
 
-  /* Match the upgraded host (`:host { display: inline-block }`). */
+  /* The dropdown slots its own trigger and stays in place from the first paint
+     (no layout shift on upgrade); only its content is hidden, below. Match the
+     upgraded host (`:host { display: inline-block }`). */
   l-dropdown:not(:defined) {
     display: inline-block;
   }
@@ -31,5 +29,17 @@
   :where(a:any-link, button, summary):focus-visible {
     outline: var(--l-focus-ring-width) solid var(--l-focus-ring-color);
     outline-offset: var(--l-focus-ring-offset);
+  }
+}
+
+/* Dropdown content before upgrade. In the components layer, not base: the
+   children are often Luxen light-DOM elements whose own `display` lives there
+   (`l-divider { display: flex }`, a `.l-button` in the header), and a base rule
+   would lose to them. Here the guard's specificity (0,2,1) wins over theirs.
+   Targeting the children, not the host, keeps a display utility on the host
+   from revealing the menu. */
+@layer components {
+  l-dropdown:not(:defined) > :not([slot='trigger']) {
+    display: none;
   }
 }
