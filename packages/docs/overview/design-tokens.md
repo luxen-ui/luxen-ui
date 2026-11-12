@@ -7,7 +7,12 @@ aside: false
 
 <TokenNav />
 
-<!-- Each section hides itself when the filter leaves it without a token row. -->
+<!-- Each section hides itself when the filter leaves it without a token row.
+     The two groups also tell TokenNav where to draw its separator. -->
+
+<div class="not-has-[[data-viz]]:hidden" data-token-group="semantic">
+
+<div class="mt-8 -mb-8 text-sm font-semibold tracking-wider text-(--vp-c-brand-1) uppercase">Semantic tokens</div>
 
 <section class="not-has-[[data-viz]]:hidden">
 
@@ -64,25 +69,9 @@ Elevation scale for floating surfaces, ordered by how far they lift off the page
 
 ## Focus
 
-The focus indicator, in one color and two shapes: a ring around most controls, a thicker border in the focus color on text fields. Usage, theming and accessibility: [Focus guide](/foundations/focus).
-
-<section class="not-has-[[data-viz]]:hidden">
-
-### Ring
+The focus indicator, in one color and two shapes: a ring around most controls, a thicker border in the focus color on text fields (its tokens are under [Field focus](#field-focus)). Usage, theming and accessibility: [Focus guide](/foundations/focus).
 
 <DesignTokens category="focus" />
-
-</section>
-
-<section class="not-has-[[data-viz]]:hidden">
-
-### Field
-
-Input, textarea, select, `l-input-group`, `l-select`, `l-combobox` and `l-prose-editor`.
-
-<DesignTokens category="form" group="focus" />
-
-</section>
 
 </section>
 
@@ -105,6 +94,12 @@ Single-source scale: `--l-spacing` is the unit, every step is derived via `calc(
 <DesignTokens category="spacing" />
 
 </section>
+
+</div>
+
+<div class="not-has-[[data-viz]]:hidden" data-token-group="component">
+
+<div class="mt-20 -mb-8 text-sm font-semibold tracking-wider text-(--vp-c-brand-1) uppercase">Component tokens</div>
 
 <section class="not-has-[[data-viz]]:hidden">
 
@@ -129,6 +124,16 @@ Shared by text fields and the checkbox and radio box (the invalid border also ri
 Input, textarea and select only — toggles are sized by `--l-form-control-toggle-size`.
 
 <DesignTokens category="form" group="field" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Field focus
+
+Text fields: input, textarea, select, `l-input-group`, `l-select`, `l-combobox` and `l-prose-editor`. The ring around other controls is under [Focus](#focus).
+
+<DesignTokens category="form" group="focus" />
 
 </section>
 
@@ -181,3 +186,41 @@ Highlighted query match in `l-combobox` and searchable `l-select` options.
 </section>
 
 </section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+## Components
+
+Component tokens for the elements outside form controls, one family per section.
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Button
+
+Every `.l-button`, including `l-button-group` segments, button-style `.l-radio-group` options and `l-alert-dialog` actions. Defaults to the form-control radius and border width, so a button matches the field beside it.
+
+<DesignTokens category="button" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Popover & menus
+
+Panels anchored to a trigger (`l-dropdown`, `l-popover`, the `l-select` / `l-combobox` listbox, the native `.l-select` picker) and the rows inside them.
+
+<DesignTokens category="popover" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Tooltip
+
+<DesignTokens category="tooltip" />
+
+</section>
+
+</section>
+
+</div>

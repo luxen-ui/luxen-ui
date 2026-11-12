@@ -1,7 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
 import tokensJson from '@luxen-ui/design-tokens/json';
+import ComponentTokenPreview from './ComponentTokenPreview.vue';
 import FormTokenPreview from './FormTokenPreview.vue';
+import { COMPONENT_TOKEN_SPEC } from './component-token-spec.js';
 import { FORM_TOKEN_GROUPS, FORM_TOKEN_SPEC, HL } from './form-token-spec.js';
 import { matchesQuery, tokenQuery } from './token-filter.js';
 
@@ -21,6 +23,9 @@ const CATEGORIES = {
   sizing: 'Sizing',
   spacing: 'Spacing',
   form: 'Form',
+  button: 'Button',
+  popover: 'Popover & menus',
+  tooltip: 'Tooltip',
 };
 
 // A form token missing from every group would silently vanish from the page.
@@ -87,6 +92,7 @@ function vizKind(t) {
     if (p[1] === 'bg' && p[2] === 'disabled') return 'disabled-surface';
     return 'surface';
   }
+  if (COMPONENT_TOKEN_SPEC[t.name]) return 'component';
   if (t.category === 'fill') {
     if (p[3] === undefined) return 'fill-button';
     return 'fill-tag';
@@ -268,6 +274,38 @@ function copy(name) {
                   :class="{ 'tokens__cell-legend--touch': highlight }"
                   >{{
                     highlight ? FORM_TOKEN_SPEC[token.name]?.touches : legend(token.value)
+                  }}</span
+                >
+              </div>
+            </div>
+          </template>
+
+          <!-- COMPONENT: same pattern as FORM — the illustration at its
+               default, then with only this token highlighted. -->
+          <template v-else-if="vizKind(token) === 'component'">
+            <div
+              v-for="highlight in [false, true]"
+              :key="String(highlight)"
+              class="tokens__cell"
+              :data-mode="highlight ? 'highlight' : 'default'"
+            >
+              <div class="tokens__cell-viz">
+                <ComponentTokenPreview
+                  :token="token"
+                  :highlight="highlight"
+                />
+              </div>
+              <div class="tokens__cell-footer">
+                <span
+                  class="tokens__cell-mode"
+                  :class="{ 'tokens__cell-mode--touch': highlight }"
+                  >{{ highlight ? 'Touches' : 'Default' }}</span
+                >
+                <span
+                  class="tokens__cell-legend"
+                  :class="{ 'tokens__cell-legend--touch': highlight }"
+                  >{{
+                    highlight ? COMPONENT_TOKEN_SPEC[token.name]?.touches : legend(token.value)
                   }}</span
                 >
               </div>
@@ -557,7 +595,10 @@ function copy(name) {
 
           <!-- SINGLE cell (no light/dark: alias-of-alias, sizing, spacing) -->
           <div
-            v-if="!hasModes(token) && !['shadow', 'form', 'focus-ring'].includes(vizKind(token))"
+            v-if="
+              !hasModes(token) &&
+              !['shadow', 'form', 'focus-ring', 'component'].includes(vizKind(token))
+            "
             class="tokens__cell"
           >
             <div class="tokens__cell-viz">
@@ -703,11 +744,17 @@ function copy(name) {
   line-height: 1;
 }
 
-/* Form tokens render a live control — a stacked field (label + input) needs
-   more room than a swatch. Focus rows need room for an exaggerated ring. */
+/* Form and component tokens render a live control — a stacked field (label +
+   input) needs more room than a swatch. Focus rows need room for an
+   exaggerated ring; the menu panel, for two rows at their highlighted size. */
 .tokens__group[data-category='form'] .tokens__cell-viz,
-.tokens__group[data-category='focus'] .tokens__cell-viz {
+.tokens__group[data-category='focus'] .tokens__cell-viz,
+.tokens__group[data-category='button'] .tokens__cell-viz,
+.tokens__group[data-category='tooltip'] .tokens__cell-viz {
   block-size: 5rem;
+}
+.tokens__group[data-category='popover'] .tokens__cell-viz {
+  block-size: 8.5rem;
 }
 
 /* Footer with mode tag + legend (or just legend for single-value cells) */

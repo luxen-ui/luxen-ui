@@ -1,5 +1,10 @@
 {
   "$description": "Primitive color palette. Values vendored verbatim from Tailwind CSS v4 default theme. Update via scripts/sync-tailwind-tokens.mjs when bumping Tailwind.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "color": {
     "white": {
       "$type": "color",

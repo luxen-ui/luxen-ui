@@ -1,5 +1,10 @@
 {
   "$description": "Line-height primitives. Vendored from Tailwind v4 default theme (`leading-*` family).",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "leading-tight": {
     "$type": "number",
     "$value": "1.25"

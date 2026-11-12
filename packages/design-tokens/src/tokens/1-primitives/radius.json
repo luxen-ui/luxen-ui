@@ -1,5 +1,10 @@
 {
   "$description": "Border-radius primitives. Values vendored from Tailwind v4 default theme + `radius-full` (Luxen-specific pill shape). Update via scripts/sync-tailwind-tokens.mjs.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "radius": {
     "$type": "dimension",
     "$value": "0.25rem"

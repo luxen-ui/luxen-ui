@@ -1,4 +1,9 @@
 {
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "semantic"
+    }
+  },
   "color": {
     "text": {
       "primary": {
