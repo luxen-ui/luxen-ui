@@ -124,7 +124,7 @@ const attr = (on) => (on ? '' : null);
             placeholder="Placeholder text"
             pattern="[A-Za-z ]+"
             title="Letters and spaces only"
-            :value="invalid ? 'Jane123' : 'Jane Cooper'"
+            :value="invalid ? 'Thelma123' : 'Thelma Lavigne'"
             :required="required"
             :disabled="disabled"
           />
