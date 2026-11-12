@@ -147,7 +147,7 @@ const VERDICT = 'inline-flex items-center gap-1 text-xs font-semibold';
         <div :class="STAGE">
           <input
             class="l-input w-full max-w-48"
-            value="Jane Cooper"
+            value="Thelma Lavigne"
             aria-label="Full name"
             :style="field"
           />
@@ -274,7 +274,7 @@ const VERDICT = 'inline-flex items-center gap-1 text-xs font-semibold';
         <div :class="STAGE">
           <input
             class="l-input w-full"
-            value="Jane Cooper"
+            value="Thelma Lavigne"
             aria-label="Full name"
             :style="field"
           />
