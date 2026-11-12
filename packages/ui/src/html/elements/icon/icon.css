@@ -8,3 +8,12 @@
 iconify-icon {
   color: inherit;
 }
+
+/* `<iconify-icon>` stays empty until its data arrives (from storage or the
+   API), so it would take no room and push its neighbours aside when the glyph
+   appears. Hold the 1em square most icon sets use while it loads. An icon that
+   fails to resolve drops the state and collapses again. */
+:host(:state(loading)) iconify-icon {
+  min-inline-size: 1em;
+  min-block-size: 1em;
+}
