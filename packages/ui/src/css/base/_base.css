@@ -20,6 +20,18 @@
     display: inline-block;
   }
 
+  /* An icon is empty until it upgrades, so it would take no room and push its
+     neighbours aside when its glyph appears. Reserve the glyph's 1em square,
+     the box the upgraded `<iconify-icon>` gets. Minimums, not sizes: an
+     element rule that sizes the icon itself (`l-story` gives it a width and an
+     aspect ratio) keeps control. Once upgraded, the host is
+     `display: contents` and the shadow root holds the room (icon.css). */
+  l-icon:not(:defined) {
+    display: inline-block;
+    min-inline-size: 1em;
+    min-block-size: 1em;
+  }
+
   /* Plain links, buttons and summaries — the ones no Luxen class styles — take
      the same focus ring as the elements, instead of the browser default,
      whose contrast is not guaranteed on a themed page. Zero specificity, in
