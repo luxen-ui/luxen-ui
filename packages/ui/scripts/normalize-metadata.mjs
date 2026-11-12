@@ -140,8 +140,9 @@ function normalizeSlots(list = []) {
   return list.map((s) => ({ name: s.name ?? '', description: s.description ?? '' }));
 }
 
-function normalizeParts(list = []) {
-  return list.map((p) => ({ name: p.name, description: p.description ?? '' }));
+// Parts, states, commands and classes all reduce to a name and a description.
+function nameAndDescription(list = []) {
+  return list.map((x) => ({ name: x.name, description: x.description ?? '' }));
 }
 
 function normalizeEvents(list = []) {
@@ -162,20 +163,6 @@ function normalizeAttributes(list = []) {
     values: a.values ?? [],
     description: a.description ?? '',
   }));
-}
-
-// `@cssstate` tags; CEM reads them on its own (`cssStates`). A shared base
-// class's states arrive through scripts/cem-plugins/inherited-css-states.js.
-function normalizeCssStates(list = []) {
-  return list.map((s) => ({ name: s.name, description: s.description ?? '' }));
-}
-
-function normalizeCommands(list = []) {
-  return list.map((c) => ({ name: c.name, description: c.description ?? '' }));
-}
-
-function normalizeCssClasses(list = []) {
-  return list.map((c) => ({ name: c.name, description: c.description ?? '' }));
 }
 
 function normalizeExamples(list = []) {
@@ -269,11 +256,13 @@ async function normalizeElement(entry, decl) {
     events: sortLifecycleFirst(normalizeEvents(decl?.events)),
     methods: sortLifecycleFirst(normalizeMethods(decl?.members)),
     slots: byName(normalizeSlots(decl?.slots)),
-    cssClasses: byName(normalizeCssClasses(decl?._cssClasses)),
-    cssParts: byName(normalizeParts(decl?.cssParts)),
-    cssStates: byName(normalizeCssStates(decl?.cssStates)),
+    cssClasses: byName(nameAndDescription(decl?._cssClasses)),
+    cssParts: byName(nameAndDescription(decl?.cssParts)),
+    // `@cssstate` tags, read by CEM; a shared base class's states arrive
+    // through scripts/cem-plugins/inherited-css-states.js.
+    cssStates: byName(nameAndDescription(decl?.cssStates)),
     cssProperties: byName(normalizeCssProperties(decl?.cssProperties)),
-    commands: sortLifecycleFirst(normalizeCommands(decl?.commands)),
+    commands: sortLifecycleFirst(nameAndDescription(decl?.commands)),
     examples: normalizeExamples(decl?.examples),
   };
 }
