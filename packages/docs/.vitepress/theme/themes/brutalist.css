@@ -73,17 +73,26 @@
 
 /* --- 2. Element touches ---------------------------------------------- */
 
-/* Every button — primary included — gets an ink edge and a hard shadow that
-   it loses when pressed, so a click reads as the button sinking. */
+/* Every button — primary included — gets an ink edge. */
 :root[data-theme='brutalist'] .l-button {
   --border-color: var(--l-color-border);
   --border-color-hover: var(--l-color-border);
+}
 
+/* A standalone button casts a hard shadow that it loses when pressed, so a
+   click reads as the button sinking. Segments of a joined group overlap their
+   neighbours, so the group casts one shadow instead and doesn't move. */
+:root[data-theme='brutalist'] .l-button:not(l-button-group > *, .l-radio-group > *) {
   box-shadow: var(--l-shadow-sm);
-  transition-property: background-color, color, box-shadow, translate;
+  transition-property:
+    background-color, color, text-decoration, border-color, box-shadow, translate;
 
   &:not(:disabled):not([aria-disabled='true']):active {
     box-shadow: none;
     translate: 2px 2px;
   }
+}
+
+:root[data-theme='brutalist'] :is(l-button-group, .l-radio-group[data-appearance='button']) {
+  box-shadow: var(--l-shadow-sm);
 }

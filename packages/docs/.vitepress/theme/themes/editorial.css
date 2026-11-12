@@ -85,8 +85,9 @@
   --border-color-hover: var(--l-color-text-primary);
 }
 
-/* The serif carries the theme: headings in previews switch to it. */
-:root[data-theme='editorial'] .vp-raw :is(h1, h2, h3, h4) {
+/* The serif carries the theme: headings in previews, and the display text
+   marked `data-display`, switch to it. */
+:root[data-theme='editorial'] .vp-raw :is(h1, h2, h3, h4, [data-display]) {
   font-family: var(--l-font-serif);
   font-size: 1.375em;
   font-weight: 400;
