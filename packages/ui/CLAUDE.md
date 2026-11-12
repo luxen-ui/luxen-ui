@@ -11,7 +11,7 @@ Luxen elements fall into four buckets. Pick one at creation time — it drives t
 | **Custom**      | Lit + `createRenderRoot() { return this }`, no native element wrapped                                                     | New custom tag in light DOM holding text or imperative children — no native upgrade (e.g. `<l-badge>`, `<l-divider>`, `<l-toast>`) | `type="custom"`      |
 | **Shadow DOM**  | Lit with default Shadow DOM                                                                                               | Encapsulated rendering for UI patterns where SSR isn't required (e.g. `<l-dialog>`, `<l-tooltip>`)                                 | `type="shadow"`      |
 
-**Rule of thumb**: if the element queries a native child it wraps, it's `progressive`. If it's light-DOM without wrapping a native element, it's `custom`. Otherwise, it's `shadow`.
+**Rule of thumb**: if the element wraps native children that already work without JS and only enhances them (behavior, ARIA, semantics — whether or not it queries them, e.g. `<l-button-group>` just adds `role="group"` around native `<button>`s), it's `progressive`. If it's light-DOM without wrapping a native element, it's `custom`. Otherwise, it's `shadow`.
 
 The README element tables (root `README.md` and `packages/ui/README.md`) are generated from `dist/metadata/index.json`. After adding an element, run `node scripts/generate-readme-tables.mjs --write` to regenerate them; the build's `--check` call will fail if they drift. The docs grid (`<ElementTypeGrid />`) reads `luxen-ui/metadata` directly and shows a card for every element whose docs page exists under `packages/docs/elements/` — so only `elements.json` (and the docs page) need updating when adding a new element.
 

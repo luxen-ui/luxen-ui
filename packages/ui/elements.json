@@ -55,7 +55,7 @@
       "name": "button-group",
       "displayName": "Button group",
       "kind": "element",
-      "type": "custom",
+      "type": "progressive",
       "inSkill": true,
       "inMockups": true
     },
