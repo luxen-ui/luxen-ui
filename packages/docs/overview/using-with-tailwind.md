@@ -35,6 +35,8 @@ That's it. You can now write:
 
 The bridge generates ~40 semantic utilities (`text-primary`, `bg-fill-brand`, `bg-fill-info-soft`, `border-interactive`, etc.) plus the standard Tailwind scales (`p-4`, `rounded-md`, `text-sm`, etc.) mapped to Luxen primitives.
 
+The cascade layers line up too: Luxen's tokens sit in `@layer theme`, next to Tailwind's theme variables, and its element styles in `base` and `components`. Tailwind's `@layer theme, base, components, utilities;` order applies to both, so a utility class always beats a Luxen element style and a `:root` theme of your own beats Luxen's tokens.
+
 ## Customize
 
 For full control — add palette families, custom tokens, strip pieces — copy the preset into your project:

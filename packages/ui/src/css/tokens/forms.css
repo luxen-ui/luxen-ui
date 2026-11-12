@@ -5,4 +5,7 @@
    (checkbox, radio, switch, input, …) and the `l-form-field` wrapper.
 */
 
+/* Layer order: tokens (`theme`) < `base` < `components` — see tokens.css. */
+@layer theme, base, components;
+
 @import '@luxen-ui/design-tokens/css/forms';

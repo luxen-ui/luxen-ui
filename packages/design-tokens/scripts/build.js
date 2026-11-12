@@ -124,11 +124,16 @@ StyleDictionary.registerFormat({
       }
       const v = renderValue(token.original.$value, dictionary);
       const desc = token.original.$description
-        ? `  /* ${token.original.$description.replace(/\*\//g, '*\\/')} */\n`
+        ? `    /* ${token.original.$description.replace(/\*\//g, '*\\/')} */\n`
         : '';
-      blocks.push(`${desc}  --${token.name}: ${v};`);
+      blocks.push(`${desc}    --${token.name}: ${v};`);
     }
-    return `${header}${selector} {\n${blocks.join('\n')}\n}\n`;
+    // Every token sits in `@layer theme` (Tailwind v4's own name for its theme
+    // variables), so any consumer override wins without depending on load
+    // order or specificity: unlayered CSS beats every layer, and `base`,
+    // `components`, `utilities` all come after `theme`. The order itself is
+    // declared by the `luxen-ui` entry files (`@layer theme, base, components;`).
+    return `${header}@layer theme {\n  ${selector} {\n${blocks.join('\n')}\n  }\n}\n`;
   },
 });
 
