@@ -48,6 +48,8 @@ const warnedNames = new Set<string>();
  * @customElement l-icon
  *
  * @cssproperty --color - The color of the icon. Defaults to `currentColor`.
+ *
+ * @cssstate loading - The icon data has not arrived yet: the icon holds a 1em square until the glyph paints. Dropped once it paints, or when the name cannot be resolved.
  */
 export class Icon extends LuxenElement {
   static override styles = [hostStyles, styles];
