@@ -132,7 +132,7 @@ StyleDictionary.registerFormat({
     // variables), so any consumer override wins without depending on load
     // order or specificity: unlayered CSS beats every layer, and `base`,
     // `components`, `utilities` all come after `theme`. The order itself is
-    // declared by the `luxen-ui` entry files (`@layer theme, base, components;`).
+    // declared once in `luxen-ui`'s `src/css/_layers.css`, which every entry imports.
     return `${header}@layer theme {\n  ${selector} {\n${blocks.join('\n')}\n  }\n}\n`;
   },
 });

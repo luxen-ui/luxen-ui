@@ -4,6 +4,9 @@
    `required` / `optional`, and `invalid`. This file only
    styles the anatomy; the control keeps its own styling (`.l-checkbox`, …). */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   l-form-field {
     display: grid;

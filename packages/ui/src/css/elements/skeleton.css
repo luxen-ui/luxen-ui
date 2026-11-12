@@ -1,3 +1,6 @@
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   l-skeleton {
     --_fill: var(--l-color-bg-loading);

@@ -13,6 +13,9 @@
      through the --l-popover-* / --l-menu-item-* tokens (plus --l-color-surface-overlay /
      --l-color-border-overlay). */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 /* The option row and rich-option content are shared with the l-select shadow
    root from select-item.css; the rich-option suffix (`.l-select-item-suffix`)
    with the l-select / l-combobox shadow roots from select-item-suffix.css. */
