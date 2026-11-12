@@ -1,7 +1,7 @@
 @layer components {
   l-skeleton {
-    --_fill: light-dark(var(--l-color-gray-200), var(--l-color-gray-700));
-    --_shimmer: light-dark(var(--l-color-gray-100), var(--l-color-gray-600));
+    --_fill: var(--l-color-bg-placeholder);
+    --_shimmer: var(--l-color-bg-placeholder-shimmer);
 
     position: relative;
     overflow: hidden;
