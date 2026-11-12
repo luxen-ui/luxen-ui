@@ -236,6 +236,10 @@ import 'luxen-ui/combobox';
 
 <ApiTable element="combobox" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="combobox" section="cssStates" />
+
 ### CSS classes
 
 <ApiTable element="combobox" section="cssClasses" />

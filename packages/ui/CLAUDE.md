@@ -29,6 +29,7 @@ Maintain the JSDoc block above the `export class …` declaration. The class **m
 - `@cssproperty [--name=default] - description` — public CSS custom property (bracket-default syntax; never document `--_private` ones)
 - `@event name - description` — every event the element emits (write "Not cancelable" / "Cancelable" — the word is parsed)
 - `@slot name - description`, `@csspart name - description`
+- `@cssstate name - description` — a custom state the element sets on itself (`:state(name)`). A shared base class outside `src/html/elements/` (e.g. `LuxenFormAssociatedElement`) documents its states on its own class; `scripts/cem-plugins/inherited-css-states.js` copies them into every subclass
 - `@attribute name - a | b — description` — public `data-*` or HTML attributes (reactive `@property` fields are picked up automatically; use `@attribute` only for non-property attributes)
 - `@cssClass .l-<name>-<child> - description` — internal light-DOM classes (custom/progressive only)
 - `@command --name - description` — Invoker commands (e.g. dialog/drawer)

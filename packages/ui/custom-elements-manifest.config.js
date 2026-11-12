@@ -2,8 +2,8 @@
 //
 // Source of truth = the element source under src/html/elements (NOT the built
 // `dist/`/`cdn/` output — that strips JSDoc and minifies). The analyzer reads
-// the JSDoc on each element class (@property/@event/@slot/@csspart/@cssproperty)
-// plus our custom tags (@command, @nativeElement, @cssClass) via the plugins below.
+// the JSDoc on each element class (@property/@event/@slot/@csspart/@cssproperty/
+// @cssstate) plus our custom tags (@command, @nativeElement, @cssClass) via the plugins below.
 //
 // Output: dist/custom-elements.json (standard CEM). The downstream
 // scripts/normalize-metadata.mjs turns that into the tooling-friendly
@@ -13,6 +13,7 @@ import { commandPlugin } from './scripts/cem-plugins/command.js';
 import { eventsPlugin } from './scripts/cem-plugins/events.js';
 import { cssClassPlugin } from './scripts/cem-plugins/css-class.js';
 import { nativeMetaPlugin } from './scripts/cem-plugins/native-meta.js';
+import { inheritedCssStatesPlugin } from './scripts/cem-plugins/inherited-css-states.js';
 import { filterPrivatePlugin } from './scripts/cem-plugins/filter-private.js';
 
 export default {
@@ -29,6 +30,7 @@ export default {
     eventsPlugin(),
     cssClassPlugin(),
     nativeMetaPlugin(),
+    inheritedCssStatesPlugin(),
     // Runs last so it strips private members the other plugins may have read.
     filterPrivatePlugin(),
   ],
