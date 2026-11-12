@@ -2,6 +2,15 @@
   box-sizing: border-box;
 }
 
+/* An element's `:host { display: … }` is an author rule, so it beats the
+   browser's own `[hidden] { display: none }` and `hidden` would do nothing.
+   Restore it for every Shadow-DOM element. Same exception as the browser:
+   `hidden="until-found"` stays rendered, hidden by `content-visibility`, so
+   find-in-page can reveal it. */
+:host([hidden]:not([hidden='until-found' i])) {
+  display: none;
+}
+
 :host *,
 :host *::before,
 :host *::after {
