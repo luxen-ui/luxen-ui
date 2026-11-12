@@ -34,7 +34,7 @@
  * @cssproperty --border-color - Border color.
  * @cssproperty --border-color-hover - Border color on hover.
  * @cssproperty [--font-size=0.875rem] - Label font size. Stays 14px across all sizes; override to opt into a larger label.
- * @cssproperty [--l-button-border-radius=initial] - Design token: corner radius of every button. Unset (`initial`) by default, so the radius follows the button height (height / 8, 4.5px at 36px). Set a length on `:root` to give every size one radius — `var(--l-radius-md)`, `0` for square, `var(--l-radius-full)` for pills.
+ * @cssproperty [--l-button-border-radius=var(--l-form-control-border-radius)] - Design token: corner radius of every button, at every size (6px). Follows the text-field radius by default; set it on `:root` to decouple — `0` for square buttons, `var(--l-radius-full)` for pills.
  * @cssproperty [--l-button-border-width=var(--l-form-control-border-width)] - Design token: border width of every button (1px). Follows the text-field border by default; `l-button-group` and button-appearance radio groups overlap their segments by this width.
  *
  * @example Primary
