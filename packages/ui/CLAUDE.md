@@ -297,9 +297,13 @@ OKLCH-lightness threshold reaches only ~7/27.
 
 Base tokens for colors, radius, spacing, transitions, etc. come from Tailwind CSS v4 (`node_modules/tailwindcss/index.css`). Luxen semantic tokens build on top of these base values.
 
-### Semantic tokens only
+### Semantic colors, scale dimensions
 
-Components must always reference semantic design tokens (defined in `packages/design-tokens/src/tokens/`, shipped as CSS via `@luxen-ui/design-tokens` and re-exported as `luxen-ui/css/tokens`) — never use Tailwind palette colors (e.g. `var(--color-gray-700)`) directly. This ensures dark mode, theming, and future token changes propagate automatically.
+Components reference design tokens (defined in `packages/design-tokens/src/tokens/`, shipped as CSS via `@luxen-ui/design-tokens` and re-exported as `luxen-ui/css/tokens`), never raw values. This ensures dark mode, theming, and future token changes propagate automatically. Which tier an element may read depends on the token family:
+
+- **Colors** — semantic (`--l-color-text-*`, `--l-color-bg-*`, `--l-color-surface*`, …) or component tokens only, never palette primitives (`--l-color-gray-700`, `light-dark(var(--l-color-gray-100), …)`). A palette step carries no intent and has no theming reach: re-theming `--l-color-bg-fill-neutral-subtle` restyles every subtle fill, but nothing can retarget a hardcoded `gray-100`. When no semantic token fits, add one to `2-aliases/default.json` with a `$description` that says when to use it.
+- **Dimension scales** — `--l-spacing-*`, `--l-radius-*`, `--l-text-*`, `--l-font-weight-*` may be read directly in element CSS. They are steps on a scale, not intents, and they are themable at their source: every spacing step is `calc(var(--l-spacing) * N)`.
+- **Family knobs** — when a group of elements needs its own handle on a dimension, add a component token that points at the step (`--l-popover-padding → --l-spacing-1`) and read that instead.
 
 ### Never write fallback values for `--l-*` tokens
 

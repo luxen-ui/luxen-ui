@@ -47,8 +47,10 @@ Public variables use semantic names (`--size`, `--icon-color`, `--width`) rather
 
 ## 6. Design Token Usage
 
-Always use semantic tokens (defined in `packages/design-tokens`, shipped via `@luxen-ui/design-tokens` / `luxen-ui/css/tokens`). Never reference raw Tailwind palette values (like `var(--color-gray-700)`) directly in element CSS — those belong only inside the token definitions.
+Always use design tokens (defined in `packages/design-tokens`, shipped via `@luxen-ui/design-tokens` / `luxen-ui/css/tokens`), never raw values. Which tier an element may read depends on the family:
 
+- **Colors: semantic or component tokens only** — never a palette primitive (`--l-color-gray-700`, `light-dark(var(--l-color-gray-100), …)`); those belong only inside the token definitions. A palette step has no intent and no theming reach. If no semantic token fits, add one to `2-aliases/default.json` with a `$description` saying when to use it.
+- **Dimension scales may be read directly** — `--l-spacing-*`, `--l-radius-*`, `--l-text-*`, `--l-font-weight-*`. The spacing scale is themable at its source (every step is `calc(var(--l-spacing) * N)`). When a family needs its own knob, add a component token pointing at the step (`--l-popover-padding → --l-spacing-1`).
 - **No fallbacks on `--l-*` tokens**: the tokens stylesheet is a required dependency, so write `var(--l-color-border-overlay)`, never `var(--l-color-border-overlay, light-dark(...))`. A fallback is dead code that silently masks a typo'd or renamed token — verify the token name exists instead. Fallbacks stay correct for public component variables only (`var(--padding, 0.25rem)`).
 - **Theming**: Use `light-dark(light-value, dark-value)` on all semantic tokens. For complex color derivations (e.g., `oklch(from ...)`), use `@media (prefers-color-scheme: dark)` instead since `light-dark()` doesn't reliably resolve nested relative color functions.
 - **State colors**: Derive hover/active variants with `color-mix()` instead of defining separate tokens
