@@ -1,6 +1,6 @@
-// Defines <iconify-icon> as a side effect, and gives us the storage lookup the
-// unresolved-name warning below needs.
-import { loadIcon } from 'iconify-icon';
+// Defines <iconify-icon> as a side effect, and gives us the storage lookups the
+// loading state and the unresolved-name warning below need.
+import { iconLoaded, loadIcon } from 'iconify-icon';
 import type { PropertyValues } from 'lit';
 import { html, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -59,7 +59,13 @@ export class Icon extends LuxenElement {
   @property()
   label?: string;
 
+  private _internals = this.attachInternals();
+
   /**
+   * Holds the glyph's room while its data loads (`:state(loading)` in
+   * icon.css): `iconify-icon` renders nothing until then, and the icon would
+   * push its neighbours aside when the glyph appears.
+   *
    * An unresolved name is otherwise completely silent: `iconify-icon` renders
    * no `<svg>`, the box collapses to 0px, and the API answers a well-formed
    * "not found" — so there is no console error and no failed request to
@@ -68,25 +74,42 @@ export class Icon extends LuxenElement {
    *
    * `loadIcon()` resolves from storage when the icon is already there and
    * otherwise joins the request the element itself makes, so this costs no
-   * extra network.
+   * extra network. It settles after `iconify-icon` has painted: both listen
+   * to the same request, and the promise resolves on a microtask after it.
    */
-  private _warnIfUnresolved(name: string) {
-    if (!name || warnedNames.has(name)) return;
-    loadIcon(name).catch(() => {
-      if (warnedNames.has(name)) return;
-      warnedNames.add(name);
-      // eslint-disable-next-line no-console
-      console.warn(
-        `<${this.localName}>: icon "${name}" could not be resolved. Icons outside the ` +
-          `Iconify CDN must be registered with the addCollection() re-exported from ` +
-          `this package — the one from a framework binding writes to a different store.`,
-      );
-    });
+  private _load(name: string) {
+    const pending = Boolean(name) && !iconLoaded(name);
+    this._setState('loading', pending);
+    if (!pending) return;
+
+    loadIcon(name)
+      .catch(() => {
+        if (warnedNames.has(name)) return;
+        warnedNames.add(name);
+        // eslint-disable-next-line no-console
+        console.warn(
+          `<${this.localName}>: icon "${name}" could not be resolved. Icons outside the ` +
+            `Iconify CDN must be registered with the addCollection() re-exported from ` +
+            `this package — the one from a framework binding writes to a different store.`,
+        );
+      })
+      .finally(() => {
+        if (this.name === name) this._setState('loading', false);
+      });
+  }
+
+  private _setState(name: string, on: boolean) {
+    if (!this._internals.states) return;
+    if (on) this._internals.states.add(name);
+    else this._internals.states.delete(name);
+  }
+
+  // Before the first render, so the room is held from the first paint.
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has('name')) this._load(this.name);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has('name')) this._warnIfUnresolved(this.name);
-
     if (changedProperties.has('label')) {
       if (this.label) {
         this.setAttribute('role', 'img');
