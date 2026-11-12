@@ -6,5 +6,8 @@
    Imports zero tokens. Use this if you want to swap the token layer entirely
    (e.g. plug in Radix UI primitives + your own aliases). */
 
+/* Layer order: tokens (`theme`) < `base` < `components` — see tokens.css. */
+@layer theme, base, components;
+
 @import 'css-extras';
 @import './base/_base.css';

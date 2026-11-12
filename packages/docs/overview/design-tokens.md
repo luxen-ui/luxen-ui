@@ -5,6 +5,16 @@ aside: false
 
 # Design Tokens
 
+Luxen declares every token on `:root` inside `@layer theme`, the layer Tailwind v4 uses for its own theme variables. A theme you write on `:root` outside any layer overrides them wherever it loads, before or after Luxen's CSS, with no extra specificity:
+
+```css
+:root {
+  --l-color-bg-fill-brand: light-dark(var(--l-color-rose-600), var(--l-color-rose-400));
+}
+```
+
+A theme inside a layer wins too when that layer comes after `theme`. Luxen's CSS opens with `@layer theme, base, components;` and Tailwind's with the same order plus `utilities`, so `base`, `components` and `utilities` all do, provided Luxen or Tailwind loads before your first layered rule.
+
 <TokenNav />
 
 <!-- Each section hides itself when the filter leaves it without a token row.

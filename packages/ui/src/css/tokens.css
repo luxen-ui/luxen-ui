@@ -6,6 +6,14 @@
      @import 'luxen-ui/css/tokens/aliases';
 */
 
+/* Cascade layer order, declared before anything else (every token and base
+   entry file repeats it, so it holds whichever loads first): tokens (`theme`)
+   < runtime base (`base`) < element skins (`components`). Same order as
+   Tailwind v4's own `@layer theme, base, components, utilities;`. Unlayered
+   CSS beats every layer, so a consumer theme on `:root` wins regardless of
+   load order. */
+@layer theme, base, components;
+
 @import '@luxen-ui/design-tokens/css';
 
 /* Form component tokens (--l-form-control-*). */
