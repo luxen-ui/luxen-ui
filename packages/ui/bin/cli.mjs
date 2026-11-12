@@ -70,7 +70,7 @@ const IMPORTABLES = {
       "         @import 'luxen-ui/css/tokens/primitives';   /* or your own */",
       `         @import '${importPath}';`,
       '',
-      '  2. Edit ./luxen-design-tokens.css — every semantic alias is yours to',
+      `  2. Edit ${importPath} — every semantic alias is yours to`,
       '     repurpose (text-primary, bg-fill-brand, focus-ring, …).',
       '',
       '  3. Tokens reference primitives via `var(--l-color-*)`. Either keep the',
@@ -81,6 +81,7 @@ const IMPORTABLES = {
 };
 
 function cmdImport([noun, destArg]) {
+  if (noun === '-h' || noun === '--help') usageImport(0);
   if (!noun) {
     console.error('✗ Missing noun after `import`. Try: luxen-ui import preset');
     usageImport(1);
@@ -106,6 +107,7 @@ function cmdImport([noun, destArg]) {
   }
 
   const content = readFileSync(recipe.source, 'utf8');
+  mkdirSync(dirname(destPath), { recursive: true });
   writeFileSync(destPath, content, 'utf8');
 
   const importPath = dest.startsWith('.') || dest.startsWith('/') ? dest : `./${dest}`;
@@ -643,15 +645,15 @@ function buildTagsList(allElements) {
 // =============================================================================
 
 function usageImport(code = 1) {
-  console.error('Usage: luxen-ui import <noun> [path]');
-  console.error('');
-  console.error('Available nouns:');
-  console.error('  preset            Import the CSS preset (base + tokens).');
-  console.error('                    Default: ./luxen-preset.css');
-  console.error('  tailwind          Import the Tailwind theme preset (bridge).');
-  console.error('                    Default: ./luxen-tailwind.css');
-  console.error('  design-tokens     Import the semantic aliases for customization.');
-  console.error('                    Default: ./luxen-design-tokens.css');
+  const log = code === 0 ? console.log : console.error;
+  log('Usage: luxen-ui import <noun> [path]');
+  log('');
+  log('Copies a file out of luxen-ui into your project, at [path] or the default below.');
+  log('');
+  log('Nouns:            Copied from                   Written to (default)');
+  log('  preset          luxen-ui/css/preset           ./luxen-preset.css');
+  log('  tailwind        luxen-ui/tailwind/preset      ./luxen-tailwind.css');
+  log('  design-tokens   luxen-ui/css/tokens/aliases   ./luxen-design-tokens.css');
   process.exit(code);
 }
 
