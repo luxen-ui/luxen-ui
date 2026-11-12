@@ -167,6 +167,10 @@ import 'luxen-ui/slider';
 
 <ApiTable element="slider" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="slider" section="cssStates" />
+
 ### CSS custom properties
 
 <ApiTable element="slider" section="cssProperties" />

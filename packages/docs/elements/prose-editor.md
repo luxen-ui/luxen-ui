@@ -161,6 +161,10 @@ import 'luxen-ui/prose-editor';
 
 <ApiTable element="prose-editor" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="prose-editor" section="cssStates" />
+
 ### CSS custom properties
 
 <ApiTable element="prose-editor" section="cssProperties" />

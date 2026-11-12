@@ -41,6 +41,7 @@ const SECTION_LABEL = {
   slots: 'Slot',
   cssClasses: 'Class',
   cssParts: 'Part',
+  cssStates: 'Custom state',
   cssProperties: 'Custom property',
   commands: 'Command',
 };
@@ -66,6 +67,9 @@ function sectionToRows(section, items) {
       const sig = (it.params ?? []).map((p) => `${p.name}: ${p.type ?? 'unknown'}`).join(', ');
       name = `${it.name}(${sig})`;
       if (it.returns) annotations.push({ label: '→', value: it.returns });
+    } else if (section === 'cssStates') {
+      // The selector a consumer writes, not the bare state name.
+      name = `:state(${it.name})`;
     } else if (section === 'slots') {
       if (name === '') name = '(default)';
     } else if (section === 'events') {

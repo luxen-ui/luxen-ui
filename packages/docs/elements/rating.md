@@ -204,6 +204,10 @@ import 'luxen-ui/rating';
 
 <ApiTable element="rating" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="rating" section="cssStates" />
+
 ### CSS custom properties
 
 <ApiTable element="rating" section="cssProperties" />

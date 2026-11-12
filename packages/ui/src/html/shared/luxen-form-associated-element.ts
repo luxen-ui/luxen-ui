@@ -8,6 +8,16 @@ import { toggleState } from './custom-states.js';
  *
  * Subclasses own their typed `value` property and call `_syncFormValue()`
  * whenever it changes.
+ *
+ * The `@cssstate` tags below are copied into every subclass's reference by
+ * `scripts/cem-plugins/inherited-css-states.js`.
+ *
+ * @cssstate required - The control has the `required` attribute.
+ * @cssstate optional - The control does not have the `required` attribute.
+ * @cssstate valid - The value meets every constraint.
+ * @cssstate invalid - The value fails a constraint, such as a missing required value.
+ * @cssstate user-valid - The value is valid and the user has interacted with the control. Use it to show success only after input, like `:user-valid`.
+ * @cssstate user-invalid - The value is invalid and the user has interacted with the control. Use it to show errors only after input, like `:user-invalid`.
  */
 export class LuxenFormAssociatedElement extends LuxenElement {
   static formAssociated = true;

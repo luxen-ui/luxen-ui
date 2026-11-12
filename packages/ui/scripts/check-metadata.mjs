@@ -47,6 +47,7 @@ const VALID_SECTIONS = new Set([
   'slots',
   'cssClasses',
   'cssParts',
+  'cssStates',
   'cssProperties',
   'commands',
   'examples',
@@ -68,6 +69,7 @@ const API_SECTION_ORDER = [
   ['Events', ['events']],
   ['Slots', ['slots']],
   ['CSS parts', ['cssParts']],
+  ['Custom states', ['cssStates']],
   ['CSS classes', ['cssClasses']],
   ['CSS custom properties', ['cssProperties']],
 ];

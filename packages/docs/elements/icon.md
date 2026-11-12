@@ -126,6 +126,10 @@ import 'luxen-ui/icon';
 
 <ApiTable element="icon" section="properties" />
 
+### Custom states
+
+<ApiTable element="icon" section="cssStates" />
+
 ### CSS custom properties
 
 <ApiTable element="icon" section="cssProperties" />

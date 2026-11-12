@@ -42,6 +42,10 @@ import 'luxen-ui/tree-item';
 
 <ApiTable element="tree-item" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="tree-item" section="cssStates" />
+
 ### CSS custom properties
 
 All layout tokens (`--row-height`, `--row-padding-inline`, `--chevron-size`, `--item-gap`, `--indent-*`) are declared on `<l-tree>` and cascade to every item. See [Tree › CSS custom properties](/elements/tree#css-custom-properties).

@@ -76,6 +76,9 @@ declare global {
  *
  * Layout tokens (`--chevron-size`, `--row-height`, `--row-padding-inline`, `--item-gap`) live on `<l-tree>` and cascade down — see its CSS custom properties.
  *
+ * @cssstate has-children - The item holds nested `<l-tree-item>` elements, so it can expand.
+ * @cssstate checkbox - The item shows a checkbox: its `<l-tree>` has `selection="multiple"`.
+ *
  * @event expand - Fired when the item is expanded.
  * @event collapse - Fired when the item is collapsed.
  * @event lazy-load - Fired when a lazy item is expanded for the first time. Consumers should append children and set `lazy=false`.

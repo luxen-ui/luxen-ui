@@ -273,6 +273,10 @@ import 'luxen-ui/select';
 
 <ApiTable element="select" section="cssParts" />
 
+### Custom states
+
+<ApiTable element="select" section="cssStates" />
+
 ### CSS classes
 
 <ApiTable element="select" section="cssClasses" />
