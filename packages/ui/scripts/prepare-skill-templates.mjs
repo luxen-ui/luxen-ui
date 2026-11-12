@@ -294,6 +294,8 @@ function renderSectionBullet(section, it) {
   ) {
     name = `\`${it.name}\``; // CSS tokens / selectors read as code, not bold
     if (section === 'cssProperties' && it.default != null) tail += ` (default: \`${it.default}\`)`;
+  } else if (section === 'cssStates') {
+    name = `\`:state(${it.name})\``; // the selector a consumer writes
   } else if (section === 'slots') {
     name = `**${it.name === '' ? '(default)' : it.name}**`;
   } else if (section === 'methods') {

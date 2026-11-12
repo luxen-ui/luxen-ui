@@ -14,7 +14,7 @@
  *     name, displayName, type, isCustomElement, tag, nativeTag, selector,
  *     subItemOf, summary, status, appearances, import: { css, js },
  *     properties[], attributes[], events[], methods[], slots[],
- *     cssClasses[], cssParts[], cssProperties[], commands[], examples[]
+ *     cssClasses[], cssParts[], cssStates[], cssProperties[], commands[], examples[]
  *   }
  *
  * `properties` are reactive custom-element properties (each with its reflected
@@ -22,7 +22,7 @@
  * `@attribute` tags (native attrs like `disabled` plus `data-*` knobs).
  *
  * Sources of truth:
- *   - WC props/events/slots/parts/cssprops/commands/examples → element JSDoc
+ *   - WC props/events/slots/parts/states/cssprops/commands/examples → element JSDoc
  *     (via the CEM analyzer + scripts/cem-plugins/*).
  *   - Native attributes/cssprops/summary/examples → <name>.meta.ts sidecar JSDoc.
  *   - type / status / appearances / displayName / flags → elements.json.
@@ -164,6 +164,12 @@ function normalizeAttributes(list = []) {
   }));
 }
 
+// `@cssstate` tags; CEM reads them on its own (`cssStates`). A shared base
+// class's states arrive through scripts/cem-plugins/inherited-css-states.js.
+function normalizeCssStates(list = []) {
+  return list.map((s) => ({ name: s.name, description: s.description ?? '' }));
+}
+
 function normalizeCommands(list = []) {
   return list.map((c) => ({ name: c.name, description: c.description ?? '' }));
 }
@@ -265,6 +271,7 @@ async function normalizeElement(entry, decl) {
     slots: byName(normalizeSlots(decl?.slots)),
     cssClasses: byName(normalizeCssClasses(decl?._cssClasses)),
     cssParts: byName(normalizeParts(decl?.cssParts)),
+    cssStates: byName(normalizeCssStates(decl?.cssStates)),
     cssProperties: byName(normalizeCssProperties(decl?.cssProperties)),
     commands: sortLifecycleFirst(normalizeCommands(decl?.commands)),
     examples: normalizeExamples(decl?.examples),

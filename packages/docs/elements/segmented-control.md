@@ -146,6 +146,10 @@ import 'luxen-ui/segmented-control';
 
 <ApiTable element="segmented-control" section="events" />
 
+### Custom states
+
+<ApiTable element="segmented-control" section="cssStates" />
+
 ### CSS custom properties
 
 <ApiTable element="segmented-control" section="cssProperties" />
