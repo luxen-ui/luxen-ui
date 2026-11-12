@@ -13,6 +13,16 @@
     display: none;
   }
 
+  /* The guards below give an element a `display` before it upgrades. That is
+     an author rule, so it would beat the browser's own `[hidden]` rule and show
+     a `hidden` element, which then vanishes on upgrade (host.css honours
+     `hidden`). Restore it for every guard at once: (0,3,0) beats each of them.
+     Same exception as the browser and host.css: `hidden="until-found"` keeps
+     its box, hidden by `content-visibility`, so find-in-page can reveal it. */
+  :not(:defined)[hidden]:not([hidden='until-found' i]) {
+    display: none;
+  }
+
   /* The dropdown slots its own trigger and stays in place from the first paint
      (no layout shift on upgrade); only its content is hidden, below. Match the
      upgraded host (`:host { display: inline-block }`). */
@@ -26,12 +36,64 @@
      element rule that sizes the icon itself (`l-story` gives it a width and an
      aspect ratio) keeps control. Once upgraded, the host hugs its
      `iconify-icon` and the shadow root holds the room (icon.css). An icon
-     with no name or a `hidden` one takes no room once upgraded, so none here
-     either. */
-  l-icon[name]:not(:defined, [name=''], [hidden]) {
+     with no name takes no room once upgraded, so none here either. */
+  l-icon[name]:not(:defined, [name='']) {
     display: inline-block;
     min-inline-size: 1em;
     min-block-size: 1em;
+  }
+
+  /* Shadow-DOM elements that draw a box of their own are empty tags until
+     they upgrade, so the text beside them jumps when they do. Reserve the
+     upgraded host's box (their `:host` rules). Sizes, not minimums: in the base
+     layer any width/height rule on the host still overrides them, as it
+     overrides `:host` after the upgrade.
+
+     `--size` is declared here, on the element itself, like `:host` does: that
+     blocks a `--size` inherited from an ancestor (a drawer sets its own), while
+     any author `--size` on the element (inline, a class, a utility) still wins
+     over the base layer. */
+  l-avatar:not(:defined) {
+    --size: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+
+    /* The size steps of avatar.css `:host([size])`. */
+    &[size='xs'] {
+      --size: 24px;
+    }
+    &[size='sm'] {
+      --size: 32px;
+    }
+    &[size='lg'] {
+      --size: 48px;
+    }
+    &[size='xl'] {
+      --size: 56px;
+    }
+    /* With a name or an image, the upgraded avatar draws initials or the
+       image, never its slotted children. */
+    &:is([name]:not([name='']), [src]:not([src=''])) {
+      content-visibility: hidden;
+    }
+  }
+
+  /* A 1em square by default; their children are never rendered. */
+  l-spinner:not(:defined),
+  l-color-scheme-icon:not(:defined) {
+    --size: 1em;
+    display: inline-flex;
+    flex: none;
+    box-sizing: border-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+    content-visibility: hidden;
   }
 
   /* Plain links, buttons and summaries — the ones no Luxen class styles — take
