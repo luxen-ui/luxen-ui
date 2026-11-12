@@ -83,7 +83,6 @@ function apply(value) {
     // Storage blocked (private mode, sandbox): the theme still applies for this visit.
   }
   paint();
-  syncChecks();
 }
 
 // A saved value the registry no longer knows (a renamed or removed theme)
@@ -99,16 +98,13 @@ function readSaved() {
   return 'default';
 }
 
-// Checkbox items toggle themselves on click; a theme picker is single-choice,
-// so the checks are re-derived from `current` after every selection — which
-// also re-checks the active row when a visitor clicks it a second time.
-// `checked` is set as a property, never bound in the template: Vue would
-// render `checked="false"`, and a boolean attribute reads as true whatever
-// its value.
-function syncChecks() {
-  for (const item of dropdown.value?.querySelectorAll('l-dropdown-item[type="checkbox"]') ?? []) {
-    item.checked = item.value === current.value;
-  }
+// Radio items keep their group to a single check on their own; only the
+// initial one is set here. `checked` is set as a property, never bound in the
+// template: Vue would render `checked="false"`, and a boolean attribute reads
+// as true whatever its value.
+function checkCurrent() {
+  const items = dropdown.value?.querySelectorAll('l-dropdown-item[type="radio"]') ?? [];
+  for (const item of items) if (item.value === current.value) item.checked = true;
 }
 
 function onSelect(event) {
@@ -123,7 +119,7 @@ onMounted(async () => {
   current.value = readSaved();
   paint();
   await customElements.whenDefined('l-dropdown-item');
-  syncChecks();
+  checkCurrent();
 });
 </script>
 
@@ -177,7 +173,7 @@ onMounted(async () => {
       <l-dropdown-item
         v-for="theme in themes"
         :key="theme.value"
-        type="checkbox"
+        type="radio"
         check-placement="end"
         :value="theme.value"
       >
