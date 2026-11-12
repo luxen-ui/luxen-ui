@@ -107,6 +107,7 @@ export default defineConfig({
             text: 'Customizing the <span class="sidebar-tag sidebar-tag--custom" style="display:inline;margin:0">l-</span> prefix',
             link: '/overview/customizing-prefix',
           },
+          { text: 'CLI', link: '/overview/cli' },
         ],
       },
       {

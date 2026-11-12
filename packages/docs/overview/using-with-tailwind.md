@@ -44,7 +44,7 @@ npx luxen-ui import tailwind
 # → creates ./luxen-tailwind.css
 ```
 
-Then replace `@import 'luxen-ui/tailwind/preset'` with `@import './luxen-tailwind.css'` and edit freely. The file is self-documenting.
+Then replace `@import 'luxen-ui/tailwind/preset'` with `@import './luxen-tailwind.css'` and edit freely. The file is self-documenting. See the [CLI reference](/overview/cli#import) for the other files you can import.
 
 ## Reference: full bridge source
 

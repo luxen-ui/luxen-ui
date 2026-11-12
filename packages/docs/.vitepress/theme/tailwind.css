@@ -59,6 +59,11 @@
    ============================================== */
 
 :root {
+  /* Full-width layout — the nav, sidebar and content span the whole viewport
+     instead of a centered 90rem box. VitePress derives the sidebar and content
+     gutters from this value, so 100% collapses them to the 2rem edge padding. */
+  --vp-layout-max-width: 100%;
+
   /* Brand palette — light mode */
   --vp-c-brand-1: #d9461f;
   --vp-c-brand-2: #c53d1a;
@@ -189,6 +194,13 @@ body {
 .VPFeature .icon {
   background-color: var(--vp-c-brand-soft) !important;
   color: var(--vp-c-brand-1);
+}
+
+/* Full-width layout: the nav container subtracts 4rem from the layout width on
+   top of the wrapper's own 2rem padding, which would indent the logo past the
+   sidebar items. Let it fill the wrapper instead. */
+.VPNavBar .wrapper .container {
+  max-width: none;
 }
 
 /* Search — a wide field with the shortcut pushed to the right edge. Below
