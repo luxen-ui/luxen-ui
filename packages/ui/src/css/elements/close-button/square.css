@@ -4,7 +4,7 @@
   .l-close:not([data-appearance]),
   .l-close[data-appearance='square'] {
     --background-color: transparent;
-    --background-color-hover: var(--l-color-bg-fill-neutral-subtle);
+    --background-color-hover: var(--l-color-bg-state-hover);
 
     border-radius: var(--l-radius-sm);
     background-color: var(--background-color);
@@ -16,8 +16,14 @@
       background-color: var(--background-color-hover);
     }
 
+    /* Toward the ink, not black: the hover tint is translucent, so mixing in
+       black would press darker than a dark page instead of lighter. */
     &:active {
-      background-color: color-mix(in oklab, var(--background-color-hover) 80%, black);
+      background-color: color-mix(
+        in oklab,
+        var(--background-color-hover),
+        var(--l-color-text-primary) 10%
+      );
     }
   }
 }

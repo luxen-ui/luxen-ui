@@ -5,7 +5,11 @@
   .l-close[data-appearance='circle'] {
     --size: 44px;
     --background-color: var(--l-color-bg-fill-neutral-subtle);
-    --background-color-hover: var(--l-color-bg-fill-neutral-subtle-hover);
+    --background-color-hover: color-mix(
+      in oklab,
+      var(--background-color),
+      var(--l-color-text-primary) 10%
+    );
 
     border-radius: var(--l-radius-full);
     background-color: var(--background-color);
