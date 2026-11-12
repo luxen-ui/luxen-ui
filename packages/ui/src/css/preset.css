@@ -5,6 +5,9 @@
    `npx luxen-ui import <thing>` to copy a layer into your project for full
    ownership. */
 
+/* Layer order: tokens (`theme`) < `base` < `components` — see tokens.css. */
+@layer theme, base, components;
+
 /* Runtime helpers (a11y, custom-element FOUC prevention). */
 @import './base.css';
 

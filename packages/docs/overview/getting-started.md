@@ -85,6 +85,8 @@ For one-off overrides, just redefine the alias in your CSS:
 }
 ```
 
+Luxen's tokens live in `@layer theme`, so this rule wins wherever it sits in your CSS, before or after Luxen's imports. See [Design Tokens](/overview/design-tokens) for overrides written inside a layer.
+
 For full ownership of every alias (semantic mappings, descriptions inline), copy the file into your project:
 
 ```bash
