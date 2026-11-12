@@ -13,7 +13,7 @@ Luxen declares every token on `:root` inside `@layer theme`, the layer Tailwind 
 }
 ```
 
-A theme inside a layer wins too when that layer comes after `theme`. Luxen's CSS opens with `@layer theme, base, components;` and Tailwind's with the same order plus `utilities`, so `base`, `components` and `utilities` all do, provided Luxen or Tailwind loads before your first layered rule.
+A theme inside a layer wins too when that layer comes after `theme`. Every Luxen stylesheet, element skins included, opens with `@layer theme, base, components;`, and Tailwind's with the same order plus `utilities`, so `base`, `components` and `utilities` all qualify. The first stylesheet to name a layer fixes its place, though: if your `@layer base` rule loads before any Luxen or Tailwind CSS, `base` is created first, lands below `theme`, and the token wins. Load Luxen first, or put `@layer theme, base, components;` at the top of your own CSS.
 
 <TokenNav />
 

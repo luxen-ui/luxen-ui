@@ -23,6 +23,9 @@
  * - Icons (a leading home glyph, etc.) compose via <l-icon> inside the <a>.
  */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   .l-breadcrumb {
     /* Public knobs */

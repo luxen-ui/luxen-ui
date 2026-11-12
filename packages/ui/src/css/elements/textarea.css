@@ -12,6 +12,9 @@
    progressive enhancement: where unsupported the textarea simply keeps its
    `rows` height. */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   .l-textarea,
   :where(l-form-field:not([unstyled])) > textarea {

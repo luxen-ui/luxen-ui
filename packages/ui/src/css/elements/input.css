@@ -19,6 +19,9 @@
    `--calendar-icon` / `--clock-icon` / `--clear-icon`). This is CSS-only —
    Firefox simply keeps its default native controls. */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   .l-input,
   :where(l-form-field:not([unstyled]))

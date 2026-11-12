@@ -3,7 +3,7 @@
    defined (either via 'luxen-ui/css/tokens/primitives' or by your own mapping).
 */
 
-/* Layer order: tokens (`theme`) < `base` < `components` — see tokens.css. */
-@layer theme, base, components;
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
 
 @import '@luxen-ui/design-tokens/css/aliases';

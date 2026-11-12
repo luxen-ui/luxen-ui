@@ -28,6 +28,9 @@
    `l-form-field` auto-styles a bare switch via a zero-specificity `:where()`
    selector, so inside a field no class is needed (`unstyled` opts out). */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   .l-switch,
   :where(l-form-field:not([unstyled])) > input[type='checkbox'][role='switch'] {

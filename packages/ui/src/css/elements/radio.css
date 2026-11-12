@@ -16,6 +16,9 @@
    `l-form-field` auto-styles a bare radio via a zero-specificity `:where()`
    selector, so inside a field no class is needed (`unstyled` opts out). */
 
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @layer components {
   .l-radio,
   :where(l-form-field:not([unstyled])) > input[type='radio'] {

@@ -3,4 +3,8 @@
  * rich content (l-select / l-combobox options) can adopt it too; layered here
  * into `@layer components`.
  */
+
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
 @import '../../html/shared/styles/badge-core.css' layer(components);

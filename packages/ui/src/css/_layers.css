@@ -1,0 +1,11 @@
+/* Cascade layer order for every Luxen stylesheet: tokens (`theme`) < runtime
+   base (`base`) < element skins (`components`). The same order as Tailwind
+   v4's own `@layer theme, base, components, utilities;`.
+
+   Every entry file (preset, base, tokens, each element skin) imports this
+   partial first, so the order holds whichever Luxen file loads first. The
+   first stylesheet to name a layer fixes its position: a consumer's own
+   `@layer base` rule loaded before any Luxen or Tailwind CSS lands below
+   `theme`. Unlayered CSS beats every layer, so a consumer theme on `:root`
+   overrides the tokens regardless of load order. */
+@layer theme, base, components;
