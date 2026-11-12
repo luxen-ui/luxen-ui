@@ -39,7 +39,7 @@ Visit https://luxen-ui.com to explore the documentation.
 | Badge             | `<l-badge>`             | ◇ Custom HTML Element (no Shadow DOM)   |
 | Breadcrumb        | `<nav>`                 | ⏣ Native HTML Element                   |
 | Button            | `<button>`              | ⏣ Native HTML Element                   |
-| Button group      | `<l-button-group>`      | ◇ Custom HTML Element (no Shadow DOM)   |
+| Button group      | `<l-button-group>`      | ⬡ Progressive Custom HTML Element       |
 | Carousel          | `<l-carousel>`          | ⬢ Custom HTML Element (with Shadow DOM) |
 | Carousel item     | `<l-carousel-item>`     | ⬢ Custom HTML Element (with Shadow DOM) |
 | Checkbox          | `<input>`               | ⏣ Native HTML Element                   |
