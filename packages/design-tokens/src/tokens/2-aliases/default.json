@@ -101,15 +101,15 @@
         "$value": { "light": "{color.gray.100}", "dark": "{color.gray.800}" },
         "$description": "Background color for disabled form controls, buttons, and interactive elements. Subtle tint to reinforce non-interactivity."
       },
-      "placeholder": {
+      "loading": {
         "$type": "color",
         "$value": { "light": "{color.gray.200}", "dark": "{color.gray.700}" },
-        "$description": "Fill for loading placeholders that stand in for content not yet loaded — skeleton blocks, lines, and avatars. Opaque and neutral so the shape reads without competing with real content."
+        "$description": "Fill for loading states that stand in for content not yet loaded — skeleton blocks, lines, and avatars. Opaque and neutral so the shape reads without competing with real content. Not for form-field placeholders: those use --l-form-control-placeholder-color."
       },
-      "placeholder-shimmer": {
+      "loading-shimmer": {
         "$type": "color",
         "$value": { "light": "{color.gray.100}", "dark": "{color.gray.600}" },
-        "$description": "Highlight of the sheen that sweeps across a loading placeholder (skeleton `wave` animation). Lighter than --l-color-bg-placeholder in both schemes so the sweep reads as light passing over the fill."
+        "$description": "Highlight of the sheen that sweeps across a loading fill (skeleton `wave` animation). Lighter than --l-color-bg-loading in both schemes so the sweep reads as light passing over the fill."
       },
       "state": {
         "hover": {
@@ -155,11 +155,6 @@
             "$type": "color",
             "$value": { "light": "{color.gray.100}", "dark": "{color.gray.700}" },
             "$description": "Subtle neutral fill — tinted background for badges, tags, selected states, and secondary highlights."
-          },
-          "subtle-hover": {
-            "$type": "color",
-            "$value": { "light": "{color.gray.200}", "dark": "{color.gray.600}" },
-            "$description": "Hover state of controls resting on --l-color-bg-fill-neutral-subtle, like the circle close button. One step further from the surface than the resting fill in both schemes."
           },
           "strong": {
             "$type": "color",
