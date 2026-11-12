@@ -1,5 +1,29 @@
 # luxen-ui
 
+## 0.27.0
+
+### Minor Changes
+
+- 0afb15f: Buttons now follow two new design tokens, `--l-button-border-radius` and `--l-button-border-width`. Set them on `:root` to reshape every button, including button groups, button-style radio groups and alert-dialog actions. By default they follow the text-field tokens (`--l-form-control-border-radius` and `--l-form-control-border-width`), so a button matches the field beside it and a theme that changes `--l-radius-md` now reaches buttons too. Set `--l-button-border-radius: 0` for square buttons or `var(--l-radius-full)` for pills.
+  
+  Visual change: buttons now have the text-field corner radius (6px) at every size. Before, the radius was derived from the button height (4px to 5.5px). Borders are unchanged.
+- 22060d9: `l-dropdown-item` accepts `type="radio"` for single-choice menus such as a sort order, a density or a theme. A radio item is announced as `menuitemradio`, shows the same check mark as a checkbox item (honouring `check-placement`), and checking it unchecks the other radio items of its group at once — the radio items between the same separators or section labels. Selecting the checked item again keeps it checked; when several radios of a group end up checked, the last one wins, as with native radios.
+  
+  <kbd>Enter</kbd> on a checkbox or radio item now checks it and closes the menu, as the WAI-ARIA menu pattern expects. A click or <kbd>Space</kbd> still keeps the menu open.
+- f56192e: `luxen-ui/metadata` lists each element's custom states in a new `cssStates` field: the `:state()` selectors you can style it with. The form elements (`l-combobox`, `l-prose-editor`, `l-rating`, `l-segmented-control`, `l-select`, `l-slider`) expose `required`, `optional`, `valid`, `invalid`, `user-valid` and `user-invalid`, `l-tree-item` exposes `checkbox` and `has-children`, and `l-icon` exposes `loading`. The generated AI skill lists them too.
+  
+  The form states now match from the first render and follow the element. `l-slider`, `l-rating` and `l-segmented-control` used to set none of them until `reportValidity()` or a form reset, and on every form element `required` and `optional` stayed stale when `required` changed.
+- 6dec364: Design tokens now live in `@layer theme`, so your own theme overrides them without depending on load order. A `:root { --l-… }` rule outside any layer wins whether it loads before or after Luxen's CSS. One inside `@layer base`, `components` or `utilities`, which used to always lose, now wins too, as long as Luxen's or Tailwind's CSS loads before it: the first stylesheet to name a layer fixes its place. Every Luxen stylesheet, element skins included, now opens with `@layer theme, base, components;`, the same order Tailwind v4 declares, so Luxen and Tailwind share one layer stack, and importing an element skin before the preset no longer lets base styles outrank it.
+
+### Patch Changes
+
+- d033a83: `npx luxen-ui import` now creates missing folders in the destination path (e.g. `src/styles/tokens.css`) instead of crashing, and its next steps for `design-tokens` name the file you actually wrote rather than the default `./luxen-design-tokens.css`. `npx luxen-ui import --help` now prints the usage, which lists each file's source in the package next to the path it is copied to.
+- 6b0f8e8: Close buttons and skeletons now take their colors from semantic tokens (new: `--l-color-bg-loading`, `--l-color-bg-loading-shimmer`) instead of fixed grays, so they follow your theme. The square close button's hover uses the shared hover tint, which is subtler in dark mode, and its pressed state no longer disappears into a dark page. The circle close button's hover and pressed colors shift slightly.
+- 2a3fdb9: Before its script loads, `<l-dropdown>` now shows its `slot="trigger"` element in place and hides only the menu content, instead of hiding the whole element. The trigger no longer pops in and shifts the layout when the element upgrades. A display utility on the host, such as Tailwind `flex`, no longer makes the menu items flash inline. `<l-dialog>`, `<l-drawer>`, `<l-popover>` and `<l-tooltip>` stay fully hidden until they upgrade, as before.
+- 58f3af1: `l-icon` holds the room its glyph will take, a 1em square, before its script has loaded and while its icon data is on its way, so the text and controls beside it no longer shift when the glyph appears. The pre-upgrade box comes from `luxen-ui/css/base`. An icon with no name, or one whose name cannot be resolved, still takes no room.
+  
+  The `hidden` attribute now hides an `l-icon`. It used to be ignored once the element had upgraded.
+
 ## 0.26.0
 
 ### Minor Changes
