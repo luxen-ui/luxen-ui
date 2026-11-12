@@ -4,7 +4,7 @@ import { property } from 'lit/decorators.js';
 import type { Placement } from '@floating-ui/dom';
 import { PopoverController } from '../../shared/controllers/popover.js';
 import { tagName } from '../../registry.js';
-import type { DropdownItem } from '../dropdown-item/dropdown-item.js';
+import { settleRadioGroups, type DropdownItem } from '../dropdown-item/dropdown-item.js';
 import { ShowEvent, AfterShowEvent, HideEvent, AfterHideEvent } from '../../events/index.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import menuPanelStyles from '../../shared/styles/menu-panel.styles.js';
@@ -478,7 +478,9 @@ export class Dropdown extends LuxenElement {
       case 'Enter':
       case ' ':
         e.preventDefault();
-        this._selectCurrentItem();
+        // APG: Enter activates the item and closes the menu; Space checks a
+        // checkbox or radio item and leaves the menu open.
+        this._selectCurrentItem({ close: e.key === 'Enter' });
         break;
       default:
         if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -532,22 +534,32 @@ export class Dropdown extends LuxenElement {
     this._cancelHoverIntent({ forget: true });
   };
 
-  private _selectCurrentItem() {
+  private _onMenuSlotChange = () => {
+    settleRadioGroups(this._getAllItems());
+  };
+
+  private _selectCurrentItem(opts: { close?: boolean } = {}) {
     const current = this._getCurrentItem();
     if (!current) return;
     if (current.hasSubmenu) {
       void this._openSubmenu(current, { focus: true });
     } else {
-      this._selectItem(current);
+      this._selectItem(current, opts);
     }
   }
 
-  private _selectItem(item: DropdownItem) {
+  private _selectItem(item: DropdownItem, { close = false }: { close?: boolean } = {}) {
     if (item.type === 'checkbox') {
       item.checked = !item.checked;
+    } else if (item.type === 'radio') {
+      // A radio can't be unchecked by selecting it again; the item unchecks
+      // the rest of its group itself.
+      item.checked = true;
     }
     this.dispatchEvent(new DropdownSelectEvent(item));
-    if (item.type !== 'checkbox') {
+    // A click or Space on a checkable item keeps the menu open so the new
+    // state is visible; Enter closes it like any other item.
+    if (close || !item._checkable) {
       this.hide();
       this._triggerEl?.focus();
     }
@@ -606,7 +618,7 @@ export class Dropdown extends LuxenElement {
       >
         <slot name="header"></slot>
         <div role="menu">
-          <slot></slot>
+          <slot @slotchange=${this._onMenuSlotChange}></slot>
         </div>
         <slot name="footer"></slot>
       </div>
