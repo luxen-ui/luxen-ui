@@ -1,4 +1,4 @@
-# Agent Skills
+# Using with AI
 
 Luxen UI ships a CLI that generates an [Agent Skill](https://agentskills.io/) tailored to your project — same name as your design system, same prefix, same brand tokens. AI assistants (Claude Code, Cursor, others that support the spec) read the skill to produce accurate Luxen UI code on the first try.
 
