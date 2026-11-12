@@ -1,10 +1,16 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useRouter, withBase } from 'vitepress';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter, withBase } from 'vitepress';
+import {
+  STORAGE_KEY,
+  THEME_FONTS,
+  UNTHEMED_PATH,
+  fontHref,
+  isTheme,
+} from '../theme/themes/registry.js';
 
 // Showcase themes live in theme/themes/*.css, keyed by `data-theme` on <html>.
-// The head script in config.js re-applies the saved one before first paint.
-const STORAGE_KEY = 'luxen-docs-theme';
+// registry.js holds their behavior; this list holds what the menu shows.
 
 const themes = [
   {
@@ -42,22 +48,55 @@ const themes = [
   },
 ];
 
+const route = useRoute();
 const router = useRouter();
 const dropdown = ref();
 const current = ref('default');
 
+// The Design Tokens page shows each token at its default value, so no theme
+// applies there and the menu is disabled.
+const unthemed = computed(() => UNTHEMED_PATH.test(route.path));
+
+function loadFonts(value) {
+  const families = THEME_FONTS[value];
+  if (!families) return;
+  const href = fontHref(families);
+  if (document.head.querySelector(`link[href="${href}"]`)) return;
+  document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href }));
+}
+
+function paint() {
+  const root = document.documentElement;
+  if (current.value === 'default' || unthemed.value) delete root.dataset.theme;
+  else {
+    loadFonts(current.value);
+    root.dataset.theme = current.value;
+  }
+}
+
 function apply(value) {
   current.value = value;
-  const root = document.documentElement;
-  if (value === 'default') delete root.dataset.theme;
-  else root.dataset.theme = value;
   try {
     if (value === 'default') localStorage.removeItem(STORAGE_KEY);
     else localStorage.setItem(STORAGE_KEY, value);
   } catch {
     // Storage blocked (private mode, sandbox): the theme still applies for this visit.
   }
+  paint();
   syncChecks();
+}
+
+// A saved value the registry no longer knows (a renamed or removed theme)
+// falls back to the default and is cleared.
+function readSaved() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (isTheme(saved)) return saved;
+    if (saved !== null) localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Storage blocked: fall through to the default.
+  }
+  return 'default';
 }
 
 // Checkbox items toggle themselves on click; a theme picker is single-choice,
@@ -78,8 +117,11 @@ function onSelect(event) {
   else if (themes.some((theme) => theme.value === value)) apply(value);
 }
 
+watch(() => route.path, paint);
+
 onMounted(async () => {
-  current.value = document.documentElement.dataset.theme || 'default';
+  current.value = readSaved();
+  paint();
   await customElements.whenDefined('l-dropdown-item');
   syncChecks();
 });
@@ -102,7 +144,11 @@ onMounted(async () => {
       <button
         slot="trigger"
         type="button"
-        class="flex h-[var(--vp-nav-height)] items-center gap-1.5 px-3 text-sm font-medium text-[var(--vp-c-text-1)] transition-colors hover:text-[var(--vp-c-brand-1)]"
+        :disabled="unthemed"
+        :title="
+          unthemed ? 'This page shows token defaults, so showcase themes are off here' : undefined
+        "
+        class="flex h-[var(--vp-nav-height)] items-center gap-1.5 px-3 text-sm font-medium text-[var(--vp-c-text-1)] transition-colors not-disabled:hover:text-[var(--vp-c-brand-1)] disabled:cursor-not-allowed disabled:opacity-50"
       >
         <l-icon
           name="lucide:palette"
