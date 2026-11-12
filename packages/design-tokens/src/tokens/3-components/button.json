@@ -1,6 +1,16 @@
 {
   "$description": "Button component tokens — the shape of every `.l-button`: plain buttons, `l-button-group` and `.l-radio-group` segments, and the actions `l-alert-dialog` renders in its shadow root. Colors stay on the button's own `--background-color` / `--border-color` knobs and the semantic aliases behind them; these tokens carry the geometry a theme changes globally.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "component"
+    }
+  },
   "button": {
+    "$extensions": {
+      "com.luxen-ui": {
+        "component": "button"
+      }
+    },
     "border-radius": {
       "$type": "dimension",
       "$value": "{form.control.border-radius}",

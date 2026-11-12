@@ -1,6 +1,16 @@
 {
   "$description": "Tooltip component tokens. The tooltip surface is a neutral inverse surface (dark in light mode, light in dark mode) — intentionally decoupled from the brand fill so re-theming primary buttons leaves tooltips untouched. The text color is auto-derived from this background's luminance by the element, so only the background is exposed.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "component"
+    }
+  },
   "tooltip": {
+    "$extensions": {
+      "com.luxen-ui": {
+        "component": "tooltip"
+      }
+    },
     "background-color": {
       "$type": "color",
       "$value": { "light": "{color.gray.900}", "dark": "{color.gray.50}" },

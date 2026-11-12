@@ -1,5 +1,10 @@
 {
   "$description": "Letter-spacing primitives. Vendored from Tailwind v4 default theme (`tracking-*` family).",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "primitive"
+    }
+  },
   "tracking-tighter": {
     "$type": "dimension",
     "$value": "-0.05em"

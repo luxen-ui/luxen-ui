@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import StyleDictionary from 'style-dictionary';
 import { usesReferences, getReferences } from 'style-dictionary/utils';
 
@@ -383,10 +384,12 @@ StyleDictionary.registerFormat({
 function categorize(token) {
   const path = token.path;
   const [head] = path;
-  // Form component tokens (form.control.*) get their own bucket.
+  // Component tokens (3-components/*) — one bucket per family, so the docs
+  // list each under its own heading.
   if (head === 'form') return 'form';
-  // Tooltip component token — a floating surface.
-  if (head === 'tooltip') return 'surface';
+  if (head === 'button') return 'button';
+  if (head === 'popover' || head === 'menu') return 'popover';
+  if (head === 'tooltip') return 'tooltip';
   // Spacing primitives are exposed in the design-tokens docs as their own
   // section — they're scale-y and useful to reference directly.
   if (head === 'spacing' || head.startsWith('spacing-')) return 'spacing';
@@ -409,6 +412,34 @@ function categorize(token) {
   return 'other';
 }
 
+/*
+ * Luxen metadata lives in DTCG `$extensions` under `com.luxen-ui`: `tier`
+ * (primitive | semantic | component) on each source file's root group, and
+ * `component` on each component family's group. DTCG doesn't define how a
+ * group's `$extensions` reach its tokens, so it's inherited here: the source
+ * file's root, then every group down the token's path, then the token itself —
+ * the closest one wins.
+ */
+const EXT_KEY = 'com.luxen-ui';
+const sourceCache = new Map();
+function luxenExtensions(token) {
+  let source = sourceCache.get(token.filePath);
+  if (!source) {
+    source = JSON.parse(readFileSync(token.filePath, 'utf8'));
+    sourceCache.set(token.filePath, source);
+  }
+  const meta = { ...source.$extensions?.[EXT_KEY] };
+  let node = source;
+  for (const key of token.path) {
+    node = node?.[key];
+    Object.assign(meta, node?.$extensions?.[EXT_KEY]);
+  }
+  if (!meta.tier) {
+    throw new Error(`${token.name}: no "${EXT_KEY}" tier in $extensions (${token.filePath})`);
+  }
+  return meta;
+}
+
 StyleDictionary.registerFormat({
   name: 'json/luxen-meta',
   format: async ({ dictionary }) => {
@@ -416,9 +447,12 @@ StyleDictionary.registerFormat({
     for (const token of dictionary.allTokens) {
       const v = token.original.$value;
       const composed = renderValue(v, dictionary);
+      const { tier, component } = luxenExtensions(token);
       const entry = {
         name: `--${token.name}`,
         path: token.path,
+        tier,
+        ...(component && { component }),
         category: categorize(token),
         type: token.$type ?? token.original.$type,
         description: token.original.$description ?? '',
