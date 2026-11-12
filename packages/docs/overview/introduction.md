@@ -390,7 +390,7 @@ Every HTML element — the highlighted ones are styled or extended by Luxen, eac
 <a class="luxen-tag" data-type="shadow" href="/elements/alert-dialog"><code>&lt;l-alert-dialog&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/avatar"><code>&lt;l-avatar&gt;</code></a>
 <a class="luxen-tag" data-type="custom" href="/elements/badge"><code>&lt;l-badge&gt;</code></a>
-<a class="luxen-tag" data-type="custom" href="/elements/button-group"><code>&lt;l-button-group&gt;</code></a>
+<a class="luxen-tag" data-type="progressive" href="/elements/button-group"><code>&lt;l-button-group&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/carousel"><code>&lt;l-carousel&gt;</code></a>
 <a class="luxen-tag" data-type="shadow"><code>&lt;l-carousel-item&gt;</code></a>
 <a class="luxen-tag" data-type="shadow" href="/elements/combobox"><code>&lt;l-combobox&gt;</code></a>
