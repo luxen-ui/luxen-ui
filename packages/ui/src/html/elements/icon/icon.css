@@ -5,6 +5,11 @@
   color: var(--color);
 }
 
+/* A `:host` display beats the browser's own `[hidden] { display: none }`. */
+:host([hidden]) {
+  display: none;
+}
+
 iconify-icon {
   color: inherit;
 }

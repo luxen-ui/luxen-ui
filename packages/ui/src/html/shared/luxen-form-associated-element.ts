@@ -1,5 +1,6 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from './luxen-element.js';
+import { toggleState } from './custom-states.js';
 
 /**
  * Base class for form-associated Luxen custom elements.
@@ -101,23 +102,15 @@ export class LuxenFormAssociatedElement extends LuxenElement {
 
   /** Update `:state()` custom states based on current validity and interaction. */
   private _updateCustomStates(): void {
-    const states = this._internals.states;
-    const isValid = this._internals.validity.valid;
+    const internals = this._internals;
+    const isValid = internals.validity.valid;
 
-    this._toggleState(states, 'required', this.required);
-    this._toggleState(states, 'optional', !this.required);
-    this._toggleState(states, 'valid', isValid);
-    this._toggleState(states, 'invalid', !isValid);
-    this._toggleState(states, 'user-valid', isValid && this.hasInteracted);
-    this._toggleState(states, 'user-invalid', !isValid && this.hasInteracted);
-  }
-
-  private _toggleState(states: CustomStateSet, name: string, force: boolean): void {
-    if (force) {
-      states.add(name);
-    } else {
-      states.delete(name);
-    }
+    toggleState(internals, 'required', this.required);
+    toggleState(internals, 'optional', !this.required);
+    toggleState(internals, 'valid', isValid);
+    toggleState(internals, 'invalid', !isValid);
+    toggleState(internals, 'user-valid', isValid && this.hasInteracted);
+    toggleState(internals, 'user-invalid', !isValid && this.hasInteracted);
   }
 
   // --- Form lifecycle callbacks ---

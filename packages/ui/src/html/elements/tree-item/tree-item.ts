@@ -2,6 +2,7 @@ import { html, unsafeCSS, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { live } from 'lit/directives/live.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
+import { toggleState } from '../../shared/custom-states.js';
 import { cls, tagName } from '../../registry.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import checkboxAppearance from '../../shared/styles/checkbox-appearance.styles.js';
@@ -140,7 +141,7 @@ export class TreeItem extends LuxenElement {
   /** Set by `<l-tree>`: whether a checkbox is shown. */
   set showCheckbox(value: boolean) {
     this._showCheckbox = value;
-    this._setState('checkbox', value);
+    toggleState(this._internals, 'checkbox', value);
   }
   get showCheckbox(): boolean {
     return this._showCheckbox;
@@ -258,12 +259,6 @@ export class TreeItem extends LuxenElement {
     else this.setAttribute(attr, value);
   }
 
-  private _setState(name: string, on: boolean) {
-    if (!this._internals.states) return;
-    if (on) this._internals.states.add(name);
-    else this._internals.states.delete(name);
-  }
-
   private _syncChildren() {
     // Auto-slot nested tree-items into the `children` slot so they render in the group container,
     // while label text/elements remain in the default slot.
@@ -276,7 +271,7 @@ export class TreeItem extends LuxenElement {
       }
     }
     this._hasChildren = count > 0;
-    this._setState('has-children', this._hasChildren);
+    toggleState(this._internals, 'has-children', this._hasChildren);
     if (!this._hasChildren && !this.lazy && this.expanded) {
       this.expanded = false;
     }

@@ -1,9 +1,10 @@
 // Defines <iconify-icon> as a side effect, and gives us the storage lookups the
 // loading state and the unresolved-name warning below need.
-import { iconLoaded, loadIcon } from 'iconify-icon';
+import { getIcon, loadIcon } from 'iconify-icon';
 import type { PropertyValues } from 'lit';
 import { html, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
+import { toggleState } from '../../shared/custom-states.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import hostStyles from '../../shared/styles/host.styles.js';
 import rawStyles from './icon.css?inline';
@@ -78,9 +79,13 @@ export class Icon extends LuxenElement {
    * to the same request, and the promise resolves on a microtask after it.
    */
   private _load(name: string) {
-    const pending = Boolean(name) && !iconLoaded(name);
-    this._setState('loading', pending);
-    if (!pending) return;
+    // Icon data when it is in storage, `null` when Iconify already knows the
+    // name is missing, `undefined` when it has not been asked yet. Only the
+    // last one is worth room: a known-missing icon would hold it for a tick
+    // and collapse.
+    const data = name ? getIcon(name) : null;
+    toggleState(this._internals, 'loading', data === undefined);
+    if (!name || data) return;
 
     loadIcon(name)
       .catch(() => {
@@ -94,14 +99,8 @@ export class Icon extends LuxenElement {
         );
       })
       .finally(() => {
-        if (this.name === name) this._setState('loading', false);
+        if (this.name === name) toggleState(this._internals, 'loading', false);
       });
-  }
-
-  private _setState(name: string, on: boolean) {
-    if (!this._internals.states) return;
-    if (on) this._internals.states.add(name);
-    else this._internals.states.delete(name);
   }
 
   // Before the first render, so the room is held from the first paint.
