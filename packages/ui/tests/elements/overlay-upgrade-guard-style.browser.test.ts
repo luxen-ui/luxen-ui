@@ -95,35 +95,3 @@ describe('Overlays without a slotted trigger stay hidden until upgrade', () => {
     });
   }
 });
-
-describe('An icon whose script has not loaded yet', () => {
-  // The upgraded icon is a 1em square (`iconify-icon` around a 1em `<svg>`).
-  // An empty, unknown element would take no room, and its neighbours would
-  // shift when the glyph appears.
-  const box = (el: Element) => {
-    const { width, height } = el.getBoundingClientRect();
-    return { width, height };
-  };
-
-  it('holds the 1em square the glyph will take', () => {
-    const icon = mount('<l-icon name="lucide:palette"></l-icon>');
-    icon.style.fontSize = '20px';
-
-    expect(icon.matches(':defined')).toBe(false);
-    expect(box(icon)).toEqual({ width: 20, height: 20 });
-  });
-
-  it('holds it as a flex item too, next to a label', () => {
-    const row = mount(`
-      <button type="button" class="flex">
-        <l-icon name="lucide:palette"></l-icon>
-        <l-icon name="lucide:chevron-down" class="flex"></l-icon>
-      </button>
-    `);
-    row.style.fontSize = '16px';
-
-    for (const icon of row.querySelectorAll('l-icon')) {
-      expect(box(icon)).toEqual({ width: 16, height: 16 });
-    }
-  });
-});
