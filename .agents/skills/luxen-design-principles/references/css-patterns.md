@@ -90,7 +90,7 @@ Private predefined sizes reference global tokens + public active size variable:
   --_button-size-xl: var(--l-size-xl); /* 40px */
 
   --height: var(--_button-size-md);
-  border-radius: calc(var(--height) / 8);
+  border-radius: var(--l-button-border-radius);
 }
 
 .l-button[data-size='sm'] {

@@ -3,8 +3,8 @@
   "button": {
     "border-radius": {
       "$type": "dimension",
-      "$value": "initial",
-      "$description": "Corner radius of every button. Unset by default (`initial`): the button then derives its radius from its own height (height / 8, 4.5px at the default 36px), so each size keeps the same proportion. Set a length to give every size one fixed radius — `var(--l-radius-md)` to match the text fields, `0` for square buttons, `var(--l-radius-full)` for pills. Set back to `initial` to restore the proportional default."
+      "$value": "{form.control.border-radius}",
+      "$description": "Corner radius of every button, at every size. Follows --l-form-control-border-radius by default (--l-radius-md, 6px), so a button and the text field beside it share one corner — and a theme that reshapes --l-radius-md reshapes both. Set it on its own to decouple buttons from fields: `0` for square buttons, `var(--l-radius-full)` for pills. Segmented groups (`l-button-group`, `.l-radio-group` with the button appearance) square off the inner corners whatever the value."
     },
     "border-width": {
       "$type": "dimension",
