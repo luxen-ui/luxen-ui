@@ -4,8 +4,8 @@
   .l-close:not([data-appearance]),
   .l-close[data-appearance='circle'] {
     --size: 44px;
-    --background-color: light-dark(var(--l-color-gray-100), var(--l-color-gray-700));
-    --background-color-hover: light-dark(var(--l-color-gray-200), var(--l-color-gray-600));
+    --background-color: var(--l-color-bg-fill-neutral-subtle);
+    --background-color-hover: var(--l-color-bg-fill-neutral-subtle-hover);
 
     border-radius: var(--l-radius-full);
     background-color: var(--background-color);

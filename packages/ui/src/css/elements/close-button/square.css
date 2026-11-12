@@ -4,7 +4,7 @@
   .l-close:not([data-appearance]),
   .l-close[data-appearance='square'] {
     --background-color: transparent;
-    --background-color-hover: light-dark(var(--l-color-gray-100), var(--l-color-gray-700));
+    --background-color-hover: var(--l-color-bg-fill-neutral-subtle);
 
     border-radius: var(--l-radius-sm);
     background-color: var(--background-color);
