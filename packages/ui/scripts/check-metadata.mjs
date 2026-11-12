@@ -17,6 +17,8 @@
  *      missing from `ElementBaseName` in `src/html/registry.ts`.
  *   7. A doc whose `## API reference` headings are out of the canonical order,
  *      misspelled, or labelled differently from the table they hold.
+ *   8. A documented element with custom states (`@cssstate`) whose docs never
+ *      render its `cssStates` table: the states would be silently missing.
  *
  * Usage: node scripts/check-metadata.mjs   (exit 0 = pass, 1 = problems)
  */
@@ -213,12 +215,15 @@ async function main() {
   }
 
   // 4–5: every doc reference resolves to real, non-empty data.
+  // `element#section` pairs the docs render, for 8 below.
+  const rendered = new Set();
   for (const [file, src] of docSources) {
     for (const m of src.matchAll(/<ApiTable\s+([^>]*?)\/>/g)) {
       const attrs = m[1];
       if (!/\belement=/.test(attrs)) continue; // inline :data table — not metadata-driven
       const element = attrs.match(/element="([^"]*)"/)?.[1];
       const section = attrs.match(/section="([^"]*)"/)?.[1];
+      rendered.add(`${element}#${section}`);
       const el = byName.get(element);
       if (!el) {
         errors.push(`${file}: <ApiTable> references unknown element "${element}"`);
@@ -245,6 +250,18 @@ async function main() {
     }
 
     errors.push(...checkApiReferenceOrder(file, src));
+  }
+
+  // 8: an element documented anywhere lists its custom states too. Unlike
+  // the other sections, nothing else on a page hints at them, so a new
+  // `@cssstate` tag would otherwise never reach the reference.
+  const documented = new Set([...rendered].map((pair) => pair.split('#')[0]));
+  for (const el of meta.elements) {
+    if (el.cssStates.length && documented.has(el.name) && !rendered.has(`${el.name}#cssStates`)) {
+      errors.push(
+        `${el.name}: has custom states (${el.cssStates.map((s) => s.name).join(', ')}) but no docs page renders <ApiTable element="${el.name}" section="cssStates" />`,
+      );
+    }
   }
 
   // 6: the Vite plugin can type every element it defines.

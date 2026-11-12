@@ -1,3 +1,4 @@
+import type { PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from './luxen-element.js';
 import { toggleState } from './custom-states.js';
@@ -108,6 +109,16 @@ export class LuxenFormAssociatedElement extends LuxenElement {
 
   get willValidate(): boolean {
     return this._internals.willValidate;
+  }
+
+  /**
+   * Every render re-syncs the custom states: `required` and `hasInteracted`
+   * change outside any validity call, and some subclasses (slider, rating,
+   * segmented control) never set validity at all.
+   */
+  protected override update(changedProperties: PropertyValues): void {
+    super.update(changedProperties);
+    this._updateCustomStates();
   }
 
   /** Update `:state()` custom states based on current validity and interaction. */
