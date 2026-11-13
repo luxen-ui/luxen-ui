@@ -38,19 +38,19 @@ Each token is shown on real UI at its **default** (its light and dark values in 
 
 <section class="not-has-[[data-viz]]:hidden">
 
-### Border
-
-<DesignTokens category="border" />
-
-</section>
-
-<section class="not-has-[[data-viz]]:hidden">
-
 ### Fill
 
 Brand and secondary fills paint the buttons. The status fills follow a three-tier scale ordered by visual weight: **soft** (palest tint, behind callouts and toasts), **subtle** (clearly tinted, behind badges and tags), **strong** (full-intensity solid, for solid badges) — shown below on each tone.
 
 <DesignTokens category="fill" />
+
+</section>
+
+<section class="not-has-[[data-viz]]:hidden">
+
+### Border
+
+<DesignTokens category="border" />
 
 </section>
 
