@@ -24,8 +24,8 @@
      neighbours aside when its glyph appears. Reserve the glyph's 1em square,
      the box the upgraded `<iconify-icon>` gets. Minimums, not sizes: an
      element rule that sizes the icon itself (`l-story` gives it a width and an
-     aspect ratio) keeps control. Once upgraded, the host is
-     `display: contents` and the shadow root holds the room (icon.css). An icon
+     aspect ratio) keeps control. Once upgraded, the host hugs its
+     `iconify-icon` and the shadow root holds the room (icon.css). An icon
      with no name or a `hidden` one takes no room once upgraded, so none here
      either. */
   l-icon[name]:not(:defined, [name=''], [hidden]) {
