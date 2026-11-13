@@ -446,9 +446,11 @@ Never write inline `<svg>` / `<path>` markup in an element template. Pick the te
     inline-size: 1em;
     block-size: 1em;
     background-color: currentColor;
-    mask: var(--_chevron-icon) center / contain no-repeat;
+    mask: var(--l-icon-chevron-down) center / contain no-repeat;
   }
   ```
+
+  **The URL is a system icon token, never a local copy.** `--l-icon-chevron-down`, `-chevron-right`, `-check`, `-close`, `-clear`, `-plus`, `-minus` (`packages/design-tokens/src/tokens/2-aliases/icons.json`) are the one source: a brand re-skins one on `:root` and every element follows, shadow DOM included (custom properties inherit across the boundary). A public per-element glyph property defaults to the token (`--chevron-icon: var(--l-icon-chevron-down)`). Need a glyph the set lacks and that two elements share? Add a token rather than a second data URI. A single-use glyph (the input calendar, the table sort arrows) may stay local. `tests/elements/icon-tokens-style.browser.test.ts` checks that each site reads its token.
 
   Drive the color through `color`, never through `background-color: var(--some-color)`. When the element exposes a public color knob, map it onto `color` (`color: var(--caret-color)`) so both work. Reference: `.submenu-indicator` in `dropdown-item.css`.
 
@@ -456,7 +458,7 @@ Never write inline `<svg>` / `<path>` markup in an element template. Pick the te
 
 - **Content icons** — media controls, actions, anything that reads as content rather than as the element's own affordance: `<l-icon name="set:icon">` from an Iconify collection, rendered through the registry tag (see `stories-viewer`), sized with `font-size` and colored with `color`.
 
-Not migrated yet: `l-tree-item` expand/collapse and `l-carousel` arrows (inline `<svg>`); the native `.l-select` `::picker-icon` and the `l-disclosure` marker (masks painted through `--caret-color` / `--marker-color` instead of `currentColor`).
+Not migrated yet: `l-carousel` arrows (inline `<svg>` carrying `part="button-icon"`, which consumers may style with `fill`); the checkbox and radio marks (baked-white `background-image`, not a mask); the native `.l-select` `::picker-icon` and the `l-disclosure` marker (masks painted through `--caret-color` / `--marker-color` instead of `currentColor`).
 
 ### Use modern CSS features
 

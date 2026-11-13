@@ -62,10 +62,14 @@
   }
 }
 
+/* The check mark of a checkbox or radio item. It holds its 16px column when
+   unchecked (hidden below), so checked and unchecked labels stay aligned. */
 .check {
-  display: flex;
-  width: 16px;
+  inline-size: 16px;
+  block-size: 16px;
   flex-shrink: 0;
+  background-color: currentColor;
+  mask: var(--l-icon-check) center / contain no-repeat;
 }
 
 /* Inline-end chevron marking an item that opens a submenu. */
@@ -74,8 +78,7 @@
   block-size: 16px;
   flex-shrink: 0;
   background-color: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6 4l4 4-4 4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
-    no-repeat center / contain;
+  mask: var(--l-icon-chevron-right) center / contain no-repeat;
 }
 
 :host(:dir(rtl)) .submenu-indicator {
@@ -84,7 +87,7 @@
 
 /* The submenu panel and its <hr> separators: shared/styles/menu-panel.css. */
 
-:host(:not([checked])) .check svg {
+:host(:not([checked])) .check {
   visibility: hidden;
 }
 

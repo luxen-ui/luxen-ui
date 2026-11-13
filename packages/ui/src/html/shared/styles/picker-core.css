@@ -259,10 +259,13 @@ mark.match {
 
 :host {
   /* Public glyphs of the end actions, as a `url()`. Set either on the element
-     to re-skin it; the glyph is masked, so its color comes from the control. */
-  --chevron-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  --clear-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
-  --_check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+     to re-skin it alone; the glyph is masked, so its color comes from the
+     control. They default to the system icon tokens, which a brand re-skins on
+     :root for every element at once — custom properties inherit into this
+     shadow root. */
+  --chevron-icon: var(--l-icon-chevron-down);
+  --clear-icon: var(--l-icon-clear);
+  --_check-icon: var(--l-icon-check);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -395,6 +395,8 @@ function categorize(token) {
   if (head === 'button') return 'button';
   if (head === 'popover' || head === 'menu') return 'popover';
   if (head === 'tooltip') return 'tooltip';
+  // System icons (2-aliases/icons.json) — mask images, their own docs section.
+  if (head === 'icon') return 'icon';
   // Spacing primitives are exposed in the design-tokens docs as their own
   // section — they're scale-y and useful to reference directly.
   if (head === 'spacing' || head.startsWith('spacing-')) return 'spacing';
@@ -476,6 +478,7 @@ StyleDictionary.registerFormat({
 const sources = [
   'src/tokens/1-primitives/**/*.@(js|json)',
   'src/tokens/2-aliases/default.json',
+  'src/tokens/2-aliases/icons.json',
   'src/tokens/3-components/**/*.@(js|json)',
 ];
 

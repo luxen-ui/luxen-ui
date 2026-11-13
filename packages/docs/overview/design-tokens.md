@@ -224,4 +224,14 @@ Panels anchored to a trigger (`l-dropdown`, `l-popover`, the `l-select` / `l-com
 
 </section>
 
+<section class="not-has-[[data-viz]]:hidden">
+
+## Icons
+
+The icons elements draw themselves, painted in the element's color. Content icons you place in markup are [`<l-icon>`](/elements/icon). To match your icon set, see [Theming](/overview/theming#icons).
+
+<DesignTokens category="icon" />
+
+</section>
+
 </div>

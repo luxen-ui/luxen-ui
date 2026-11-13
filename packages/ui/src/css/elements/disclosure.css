@@ -115,9 +115,8 @@
   /* arrow */
   .l-disclosure[data-marker='arrow'] summary::after {
     background-color: var(--marker-color);
-    /* mdi:chevron-down */
-    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>')
-      center no-repeat;
+    /* System icon token — re-skin it on :root, for every element at once. */
+    mask: var(--l-icon-chevron-down) center / contain no-repeat;
     rotate: 0deg;
   }
 
@@ -128,9 +127,7 @@
   /* plus */
   .l-disclosure[data-marker='plus'] summary::after {
     background-color: var(--marker-color);
-    /* mdi:plus */
-    mask: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z'/></svg>")
-      center no-repeat;
+    mask: var(--l-icon-plus) center / contain no-repeat;
     rotate: 0deg;
   }
 
