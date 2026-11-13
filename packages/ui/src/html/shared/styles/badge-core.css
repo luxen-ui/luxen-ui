@@ -202,8 +202,8 @@ l-badge {
    `l-icon`, a raw `iconify-icon`, or the inline `<svg>` a framework Iconify
    binding renders. `l-icon` needs naming explicitly: its `iconify-icon` sits
    in a shadow root this selector cannot see, so matching the inner element
-   alone silently skipped the correction (the icon still laid out — `l-icon`
-   is `display: contents` — it just sat 2px too far in). Same element set
+   alone silently skipped the correction (the icon still laid out, it just
+   sat 2px too far in). Same element set
    `toast.css` and `story.css` already use. */
 l-badge:has(:is(iconify-icon, l-icon, svg):first-child) {
   padding-inline-start: 0.25rem;
