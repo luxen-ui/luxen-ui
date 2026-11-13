@@ -32,7 +32,7 @@ Flags:
 
 ## import
 
-Use the `import` command to eject a Luxen CSS file into your project and own it — to adjust a few values, [override the tokens](/overview/getting-started#customizing-tokens) instead.
+Use the `import` command to eject a Luxen CSS file into your project and own it — to adjust a few values, [override the tokens](/overview/theming) instead.
 
 ```bash
 npx luxen-ui import design-tokens

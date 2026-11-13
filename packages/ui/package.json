@@ -32,7 +32,6 @@
     "bin/",
     "templates/",
     "elements.json",
-    "vite-plugin.ts",
     "postcss-plugin-prefix.js",
     "postcss-plugin-prefix.d.ts",
     "README.md",
@@ -95,7 +94,10 @@
     "./dist/elements/*": "./dist/elements/*",
     "./dist/css/*": "./dist/css/*",
     "./cdn/*": "./cdn/*",
-    "./vite-plugin": "./vite-plugin.ts",
+    "./vite-plugin": {
+      "types": "./dist/vite-plugin.d.ts",
+      "import": "./dist/vite-plugin.js"
+    },
     "./postcss-plugin-prefix": "./postcss-plugin-prefix.js",
     "./*/element": {
       "types": "./dist/elements/*/*.d.ts",

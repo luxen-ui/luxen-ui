@@ -178,7 +178,7 @@ const railTags = metadata.elements
         <div class="ctas">
           <a
             class="btn primary"
-            href="/overview/getting-started"
+            href="/overview/installation"
           >
             Get started
             <span
