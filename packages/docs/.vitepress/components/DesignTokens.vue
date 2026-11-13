@@ -19,8 +19,8 @@ const props = defineProps({
 const CATEGORIES = {
   text: 'Text',
   surface: 'Surface',
-  border: 'Border',
   fill: 'Fill',
+  border: 'Border',
   shadow: 'Shadow',
   focus: 'Focus',
   sizing: 'Sizing',
