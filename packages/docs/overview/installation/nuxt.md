@@ -6,6 +6,8 @@ outline: deep
 
 Install and configure Luxen UI for Nuxt.
 
+<div class="steps">
+
 ## Create project
 
 ::: code-group
@@ -112,5 +114,7 @@ export default defineNuxtPlugin(() => {});
   </div>
 </template>
 ```
+
+</div>
 
 Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.

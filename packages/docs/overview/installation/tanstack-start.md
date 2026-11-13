@@ -6,6 +6,8 @@ outline: deep
 
 Install and configure Luxen UI for TanStack Start.
 
+<div class="steps">
+
 ## Create project
 
 Pick React. The scaffold comes with Tailwind CSS.
@@ -134,5 +136,7 @@ function Home() {
   );
 }
 ```
+
+</div>
 
 Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.

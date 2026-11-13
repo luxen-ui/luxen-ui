@@ -1,0 +1,47 @@
+/* Numbered steps joined by a vertical line, for installation guides.
+   Wrap the step headings in <div class="steps"> (blank lines around the
+   markdown inside); each `##` becomes a numbered step. */
+.vp-doc .steps {
+  counter-reset: step;
+  margin-block: 32px;
+  margin-inline-start: 14px;
+  padding-inline-start: 34px;
+  border-inline-start: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc .steps > h2 {
+  counter-increment: step;
+  position: relative;
+  margin-block: 40px 12px;
+  padding-block-start: 0;
+  border-block-start: 0;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.vp-doc .steps > h2:first-child {
+  margin-block-start: 0;
+}
+
+.vp-doc .steps > h2::before {
+  content: counter(step);
+  position: absolute;
+  inset-inline-start: -49px;
+  inset-block-start: 0;
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  outline: 4px solid var(--vp-c-bg);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The hover `#` anchor sits where the number is. */
+.vp-doc .steps > h2 > .header-anchor {
+  display: none;
+}
