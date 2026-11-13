@@ -30,7 +30,7 @@ Renders icons from any Iconify icon set. Icons are loaded on demand from the Ico
 
 ### Sizes
 
-Icons scale with `font-size`. Use Tailwind `text-*` classes.
+Icons scale with `font-size`. Use Tailwind `text-*` classes. To centre an icon in a larger box, make it `flex` (`flex size-6`); a `block` icon is centred vertically only. Never set `inline` or `contents` on an icon inside text: it breaks the line.
 
 <ComponentWrapper :html="iconSizes" />
 

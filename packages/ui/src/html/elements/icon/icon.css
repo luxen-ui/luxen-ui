@@ -1,19 +1,25 @@
-/* The host is a real box that hugs its glyph. A page rule that sets its
-   `display` (`hidden md:block`, `block size-4`) beats `:host`, and must not
-   move the glyph: in a block or inline-block host an inline `iconify-icon`
-   would sit on the baseline of a line box, with the descender room under it,
-   and a centring parent would centre that line box instead of the glyph. A
-   block `iconify-icon` opens no line box, whatever the host's display.
+/* A page rule may set the icon's `display` (`hidden md:block`, `flex size-6`)
+   and it beats `:host`, so the glyph must keep its place whatever the host is.
 
-   Inline, the flex box takes its baseline from the bottom of the glyph, so
-   the icon sits on the text baseline. The centring only shows when a page
-   rule makes the host bigger than its glyph. */
+   `iconify-icon` is a block: an inline one would open a line box in a block
+   or inline-block host, with the descender room under the glyph, and a
+   centring parent would centre that box instead of the glyph. It keeps the
+   glyph's width (`fit-content`), as iconify centres its `svg` with
+   `margin: auto` in whatever width it gets.
+
+   A host larger than its glyph centres it: on both axes as a flex or grid
+   box, vertically only as a block (`align-content`), because centring a block
+   horizontally would also move an icon set `block` above a heading.
+
+   Limit: `inline` or `contents` on an icon inside running text breaks the
+   line, as the block glyph cannot sit in it. */
 :host {
   --color: currentColor;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  align-content: center;
   color: var(--color);
 }
 
@@ -24,6 +30,7 @@
 
 iconify-icon {
   display: block;
+  inline-size: fit-content;
   color: inherit;
 }
 
