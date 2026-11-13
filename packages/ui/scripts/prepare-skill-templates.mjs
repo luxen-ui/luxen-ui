@@ -28,6 +28,7 @@
 import { readFile, writeFile, mkdir, readdir, realpath } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { absolutizeDocsUrls } from './absolutize-docs-urls.mjs';
 
 // eslint-disable-next-line no-underscore-dangle -- ESM idiom for resolving the script's directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -39,6 +40,8 @@ const OUT_ROOT = resolve(PKG_ROOT, 'dist', 'templates');
 // Absolute origin of the docs site: root-relative links (`/overview/…`) are
 // dead outside it, so templates point back at the published page.
 const DOCS_ORIGIN = 'https://luxen-ui.com';
+// Static files the docs site serves at its root (example images, previews).
+const DOCS_PUBLIC_DIR = resolve(DOCS_ROOT, 'public');
 
 // Built design tokens (the same JSON the docs' <DesignTokens> reads) and the
 // docs' form-token grouping, for rendering <DesignTokens> blocks as lists.
@@ -150,15 +153,12 @@ async function transformDoc(content, docDir) {
   content = stripFigures(content);
   content = stripLeftoverComponents(content);
 
-  // 5f. Point root-relative links at the published docs
-  content = absolutizeDocsLinks(content);
-
   // 6. Convert VitePress container directives and file includes
   content = await convertVitePressBlocks(content, wrapperResult.inlinedFiles);
 
-  // 6b. Point root-relative asset URLs in the inlined examples at the
-  //     published docs (runs after 6 so `<<<` file includes are covered too)
-  content = absolutizeAssetUrls(content);
+  // 6b. Point root-relative links and docs assets at the published docs
+  //     (after 6, so `<<<` file includes are covered too)
+  content = absolutizeDocsUrls(content, { origin: DOCS_ORIGIN, publicDir: DOCS_PUBLIC_DIR });
 
   // 7. Clean up extra blank lines
   content = content.replace(/\n{3,}/g, '\n\n').trim() + '\n';
@@ -447,17 +447,6 @@ function convertDesignTokens(content) {
 // components whose children are content (e.g. <ComponentWrapper>…) are kept.
 function stripFigures(content) {
   return content.replace(/<([A-Z]\w*Figure)\b[^>]*>[\s\S]*?<\/\1>\s*/g, '');
-}
-
-// Root-relative markdown links resolve only on the docs site.
-function absolutizeDocsLinks(content) {
-  return content.replace(/\]\(\/(?!\/)/g, `](${DOCS_ORIGIN}/`);
-}
-
-// Examples load images self-hosted in packages/docs/public (`src="/images/…"`),
-// which only resolve on the docs site.
-function absolutizeAssetUrls(content) {
-  return content.replace(/\b(src|poster)="\/(?!\/)/g, `$1="${DOCS_ORIGIN}/`);
 }
 
 // Strips leftover docs-only Vue components (interactive demos such as
