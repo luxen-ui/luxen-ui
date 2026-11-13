@@ -101,7 +101,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Introduction', link: '/overview/introduction' },
-          { text: 'Quick start', link: '/overview/getting-started' },
+          { text: 'Installation', link: '/overview/installation' },
           { text: 'Using with Tailwind', link: '/overview/using-with-tailwind' },
           { text: 'Using with AI ✧', link: '/resources/agent-skills' },
           {
