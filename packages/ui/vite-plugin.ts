@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import type { Plugin } from 'vite-plus';
+import type { Plugin } from 'vite';
 import postcssPrefix from './postcss-plugin-prefix.js';
 
 /**
