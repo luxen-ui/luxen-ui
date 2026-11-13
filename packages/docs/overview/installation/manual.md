@@ -6,6 +6,8 @@ outline: deep
 
 Add Luxen UI to any project with a bundler.
 
+<div class="steps">
+
 ## Install Luxen UI
 
 ::: code-group
@@ -63,6 +65,8 @@ import 'luxen-ui/dialog';
 ```
 
 Light-DOM elements (`badge`, `divider`, `toast`…) need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS. CSS-only elements (`button`, `disclosure`, `kbd`…) need no JS.
+
+</div>
 
 ## Atomic imports
 

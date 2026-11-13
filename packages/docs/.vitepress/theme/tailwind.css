@@ -44,6 +44,7 @@
 
 @import './_code.css';
 @import './_component-table.css';
+@import './_steps.css';
 @import './themes/index.css';
 
 @layer base {

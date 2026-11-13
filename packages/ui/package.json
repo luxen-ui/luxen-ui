@@ -149,7 +149,8 @@
     "test": "vp test run --passWithNoTests && vp test run --config vitest.browser.config.ts",
     "test:unit": "vp test run --passWithNoTests",
     "test:components": "vp test run --config vitest.browser.config.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prepare": "tsc -p tsconfig.tooling.json"
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:",

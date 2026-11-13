@@ -6,6 +6,8 @@ outline: deep
 
 Install and configure Luxen UI for Vite.
 
+<div class="steps">
+
 ## Create project
 
 ::: code-group
@@ -104,5 +106,7 @@ import 'luxen-ui/badge'; // [!code ++]
   <script type="module" src="/src/main.ts"></script>
 </body>
 ```
+
+</div>
 
 Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.
