@@ -15,7 +15,7 @@
  * @attribute command - Invoker command (typically `close`).
  * @attribute commandfor - ID of the target element to close.
  *
- * @cssClass .l-close - Base close button with X icon via CSS mask.
+ * @cssClass .l-close - Base close button with X icon via CSS mask (the `--l-icon-close` token; re-skin it on `:root`).
  *
  * @cssproperty [--size=36px] - Button size.
  * @cssproperty --icon-color - Icon color.

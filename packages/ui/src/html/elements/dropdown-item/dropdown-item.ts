@@ -225,27 +225,12 @@ export class DropdownItem extends LuxenElement {
   }
 
   private _renderCheck() {
-    return html`
-      <span
-        class="check"
-        aria-hidden="true"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-        >
-          <path
-            d="M3.5 8.5L6.5 11.5L12.5 4.5"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </span>
-    `;
+    // The glyph is the --l-icon-check mask painted on the span itself
+    // (dropdown-item.css): it keeps its 16px column whether checked or not.
+    return html`<span
+      class="check"
+      aria-hidden="true"
+    ></span>`;
   }
 
   private _onSubmenuSlotChange = (e: Event) => {

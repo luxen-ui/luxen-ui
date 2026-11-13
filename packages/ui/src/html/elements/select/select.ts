@@ -111,8 +111,10 @@ interface SelectEventMap {
  *   each take a square of this height (borders excluded), so their hit area and spacing follow it.
  * @cssproperty [--l-form-control-icon-size=1em] - Glyph size of the clear button and the chevron (global form-control
  *   token; set it here or on any ancestor). Changes the glyph only — the hit area follows `--height`.
- * @cssproperty --chevron-icon - Chevron glyph as a `url()`. Masked, so its color comes from the control, not the image.
- * @cssproperty --clear-icon - Clear button glyph as a `url()`.
+ * @cssproperty [--chevron-icon=var(--l-icon-chevron-down)] - Chevron glyph as a `url()`, for this element alone. Masked, so its color comes from
+ *   the control, not the image. Re-skin `--l-icon-chevron-down` on `:root` to change every chevron at once.
+ * @cssproperty [--clear-icon=var(--l-icon-clear)] - Clear button glyph as a `url()`, for this element alone. Re-skin `--l-icon-clear` on
+ *   `:root` to change every clear button at once.
  * @cssproperty [--border-radius] - Trigger + panel radius.
  * @cssproperty [--background] - Panel background.
  *

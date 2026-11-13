@@ -32,6 +32,18 @@ Override tokens on `:root`. Luxen declares its own in `@layer theme`, so yours w
 
 Write colors with `light-dark()` to support both [color schemes](/overview/color-scheme). All tokens are listed on [Design Tokens](/overview/design-tokens).
 
+### Icons
+
+The chevrons, check marks and crosses elements draw are tokens too. Point one at your own SVG and every element that draws it follows:
+
+```css
+:root {
+  --l-icon-chevron-down: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 9h12l-6 7z'/></svg>");
+}
+```
+
+Only the shape counts: the element paints it in its own color. See [Icons](/overview/design-tokens#icons) for which element draws which token.
+
 ### In a cascade layer
 
 A theme inside `@layer base`, `components` or `utilities` wins too, as long as the layer order `theme, base, components` is set first. Luxen and Tailwind both declare it; if your CSS loads before them, start it with `@layer theme, base, components;`.

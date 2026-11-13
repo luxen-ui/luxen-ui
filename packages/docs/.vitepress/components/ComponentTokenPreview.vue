@@ -63,6 +63,15 @@ const menuItems = [
   { icon: 'lucide:copy', label: 'Duplicate' },
 ];
 
+/** A bare menu panel around the icon-token rows, sized to one item. */
+const iconMenuStyle = {
+  inlineSize: '9rem',
+  padding: '0.25rem',
+  border: '1px solid var(--l-color-border-overlay)',
+  borderRadius: 'var(--l-popover-border-radius)',
+  background: 'var(--l-color-surface-overlay)',
+};
+
 /** Copies the l-tooltip bubble (tooltip.css). Text: white on the dark default and on the violet highlight, near-black on the light dark-mode default. */
 const bubbleStyle = computed(() => ({
   padding: '4px 8px',
@@ -132,6 +141,115 @@ const bubbleStyle = computed(() => ({
         <span :style="[paint('content'), paint('label')]">{{ item.label }}</span>
       </l-dropdown-item>
     </div>
+
+    <!-- Icons: the real elements that draw the token, stacked to fit a cell.
+         The Touches caption names the ones left out. -->
+    <div
+      v-else-if="preview === 'icon-chevron-down'"
+      class="flex flex-col items-center gap-2"
+    >
+      <l-select
+        label="Country"
+        class="w-32"
+        :style="paint('picker')"
+      >
+        <datalist>
+          <option
+            value="fr"
+            selected
+          >
+            France
+          </option>
+        </datalist>
+      </l-select>
+      <details
+        class="l-disclosure"
+        data-marker="arrow"
+        :style="paint('marker')"
+      >
+        <summary>Shipping</summary>
+      </details>
+    </div>
+
+    <div
+      v-else-if="preview === 'icon-chevron-right'"
+      class="flex flex-col items-center gap-1"
+    >
+      <div :style="iconMenuStyle">
+        <l-dropdown-item :style="paint('menuItem')"
+          ><span :style="paint('menuLabel')">Share</span
+          ><l-dropdown-item slot="submenu">Email</l-dropdown-item></l-dropdown-item
+        >
+      </div>
+      <l-tree>
+        <l-tree-item :style="paint('tree')">Vegetables<l-tree-item>Leek</l-tree-item></l-tree-item>
+      </l-tree>
+    </div>
+
+    <div
+      v-else-if="preview === 'icon-check'"
+      :style="iconMenuStyle"
+    >
+      <l-dropdown-item
+        type="checkbox"
+        checked
+        :style="paint('menuItem')"
+        ><span :style="paint('menuLabel')">Show grid</span></l-dropdown-item
+      >
+    </div>
+
+    <button
+      v-else-if="preview === 'icon-close'"
+      type="button"
+      class="l-close"
+      data-appearance="ring"
+      aria-label="Close"
+      :style="paint('close')"
+    />
+
+    <l-select
+      v-else-if="preview === 'icon-clear'"
+      label="Country"
+      with-clear
+      class="w-36"
+    >
+      <datalist>
+        <option
+          value="fr"
+          selected
+        >
+          France
+        </option>
+      </datalist>
+    </l-select>
+
+    <div
+      v-else-if="preview === 'icon-plus'"
+      class="flex flex-col items-center gap-2"
+    >
+      <details
+        class="l-disclosure"
+        data-marker="plus"
+        :style="paint('marker')"
+      >
+        <summary>Shipping</summary>
+      </details>
+      <l-input-stepper>
+        <input
+          type="number"
+          value="2"
+          aria-label="Quantity"
+        />
+      </l-input-stepper>
+    </div>
+
+    <l-input-stepper v-else-if="preview === 'icon-minus'">
+      <input
+        type="number"
+        value="2"
+        aria-label="Quantity"
+      />
+    </l-input-stepper>
 
     <!-- Tooltip: the bubble and its arrow above an icon-only button. -->
     <div

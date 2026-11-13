@@ -29,9 +29,11 @@
     --height: var(--l-form-control-height);
     --border-radius: var(--l-form-control-border-radius);
     --caret-color: var(--l-form-control-placeholder-color);
-    /* mdi:chevron-down — same glyph as l-disclosure's `data-marker="arrow"`.
-       Override with any url()/image to re-skin; pairs with --caret-color. */
-    --caret-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"></path></svg>');
+    /* The system chevron — the same glyph as l-select, l-combobox and the
+       l-disclosure arrow. Override with any url()/image to re-skin this select
+       alone (pairs with --caret-color); re-skin --l-icon-chevron-down on :root
+       to change them all. */
+    --caret-icon: var(--l-icon-chevron-down);
     /* The chevron takes a square as tall as the field inside its borders, like
        the l-select / l-combobox chevron and the native input actions. */
     --_action-size: calc(var(--height) - 2 * var(--l-form-control-border-width));
@@ -238,9 +240,7 @@
       inline-size: 1rem;
       block-size: calc(var(--l-popover-font-size) * var(--l-popover-line-height));
       background-color: currentColor;
-      /* https://lucide.dev/icons/check */
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>')
-        center / 1rem no-repeat;
+      mask: var(--l-icon-check) center / 1rem no-repeat;
     }
   }
 

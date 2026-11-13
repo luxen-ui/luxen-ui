@@ -62,18 +62,35 @@
   cursor: pointer;
 }
 
-/* Hide the DEFAULT fallback chevron SVG on a leaf — slotted content
-   (user-provided icon, avatar, etc.) remains visible because it lives outside
-   the slot in the DOM tree. The `.expand` span keeps its fixed --chevron-size
-   so leaf rows stay aligned with branches. */
-:host(:not(:state(has-children)):not([lazy])) .expand > slot > svg {
-  display: none;
+/* The DEFAULT chevron, the fallback of the expand-icon / collapse-icon slots:
+   the system icon tokens, masked over `currentColor`. Collapsed points to the
+   inline end (mirrored in right-to-left), expanded points down. */
+.expand-glyph {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: currentColor;
+  mask: var(--_glyph) center / contain no-repeat;
 }
 
-.expand svg {
-  width: 100%;
-  height: 100%;
-  display: block;
+slot[name='collapse-icon'] > .expand-glyph {
+  --_glyph: var(--l-icon-chevron-down);
+}
+
+slot[name='expand-icon'] > .expand-glyph {
+  --_glyph: var(--l-icon-chevron-right);
+}
+
+:host(:dir(rtl)) slot[name='expand-icon'] > .expand-glyph {
+  scale: -1 1;
+}
+
+/* Hide the default chevron on a leaf — slotted content (user-provided icon,
+   avatar, etc.) remains visible because it lives outside the slot in the DOM
+   tree. The `.expand` span keeps its fixed --chevron-size so leaf rows stay
+   aligned with branches. */
+:host(:not(:state(has-children)):not([lazy])) .expand > slot > .expand-glyph {
+  display: none;
 }
 
 /* The checkbox appearance comes from the shared `.l-checkbox` skin imported

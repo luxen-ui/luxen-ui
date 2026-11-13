@@ -1,7 +1,7 @@
 import { property } from 'lit/decorators.js';
 import { LuxenElement } from '../../shared/luxen-element.js';
 import { LocalizeController } from '../../shared/localize.js';
-import { cls, tagName } from '../../registry.js';
+import { cls } from '../../registry.js';
 
 export type InputStepperSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -35,6 +35,12 @@ interface InputStepperEventMap {
  *
  * @cssproperty --border-color - Edge color of the stepper container (default and pill appearances) and of each button (rounded appearance). Defaults to `--l-color-border`.
  * @cssproperty --border-radius - Border radius of the stepper container (default appearance). Defaults to `--radius-md`.
+ * @cssproperty [--decrement-icon=var(--l-icon-minus)] - Decrement button icon, as a `url()`. Masked, so its color comes from the
+ *   button. Re-skin `--l-icon-minus` on `:root` to change it with every other minus icon.
+ * @cssproperty [--increment-icon=var(--l-icon-plus)] - Increment button icon, as a `url()`. Masked, so its color comes from the
+ *   button. Re-skin `--l-icon-plus` on `:root` to change it with every other plus icon.
+ * @cssClass .l-input-stepper-decrement - The generated decrement button.
+ * @cssClass .l-input-stepper-increment - The generated increment button.
  *
  * @customElement l-input-stepper
  */
@@ -65,14 +71,6 @@ export class InputStepper extends LuxenElement {
   /** Enable the animated number roller overlay. */
   @property({ type: Boolean, reflect: true, attribute: 'with-roller' })
   withRoller = false;
-
-  /** Icon name for the decrement button. */
-  @property({ attribute: 'decrement-icon' })
-  decrementIcon = 'lucide:minus';
-
-  /** Icon name for the increment button. */
-  @property({ attribute: 'increment-icon' })
-  incrementIcon = 'lucide:plus';
 
   private _initialized = false;
   private _setupTimer = 0;
@@ -161,14 +159,8 @@ export class InputStepper extends LuxenElement {
     }
 
     // Create buttons
-    this._decrementBtn = this._createButton(
-      this.decrementIcon,
-      this._localize.term('decreaseValue'),
-    );
-    this._incrementBtn = this._createButton(
-      this.incrementIcon,
-      this._localize.term('increaseValue'),
-    );
+    this._decrementBtn = this._createButton('decrement', this._localize.term('decreaseValue'));
+    this._incrementBtn = this._createButton('increment', this._localize.term('increaseValue'));
 
     this._valueWrapper.before(this._decrementBtn);
     this._valueWrapper.after(this._incrementBtn);
@@ -212,13 +204,16 @@ export class InputStepper extends LuxenElement {
 
   // --- DOM helpers ---
 
-  private _createButton(icon: string, label: string): HTMLButtonElement {
+  /**
+   * An empty button: its icon is a CSS mask (`--decrement-icon` /
+   * `--increment-icon`, see input-stepper/_base.css), painted in the button's
+   * color — no icon element, no network request.
+   */
+  private _createButton(name: 'decrement' | 'increment', label: string): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.className = cls(`input-stepper-${name}`);
     btn.setAttribute('aria-label', label);
-    const iconEl = document.createElement(tagName('icon'));
-    iconEl.setAttribute('name', icon);
-    btn.append(iconEl);
     return btn;
   }
 
