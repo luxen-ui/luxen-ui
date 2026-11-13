@@ -1,7 +1,19 @@
+/* The host is a real box that hugs its glyph. A page rule that sets its
+   `display` (`hidden md:block`, `block size-4`) beats `:host`, and must not
+   move the glyph: in a block or inline-block host an inline `iconify-icon`
+   would sit on the baseline of a line box, with the descender room under it,
+   and a centring parent would centre that line box instead of the glyph. A
+   block `iconify-icon` opens no line box, whatever the host's display.
+
+   Inline, the flex box takes its baseline from the bottom of the glyph, so
+   the icon sits on the text baseline. The centring only shows when a page
+   rule makes the host bigger than its glyph. */
 :host {
   --color: currentColor;
 
-  display: contents;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color);
 }
 
@@ -11,6 +23,7 @@
 }
 
 iconify-icon {
+  display: block;
   color: inherit;
 }
 
