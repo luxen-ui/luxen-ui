@@ -29,6 +29,7 @@ const CATEGORIES = {
   button: 'Button',
   popover: 'Popover & menus',
   tooltip: 'Tooltip',
+  icon: 'Icons',
 };
 
 // A form token missing from every group would silently vanish from the page.
@@ -97,6 +98,8 @@ function vizKind(t) {
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
   if (COMPONENT_TOKEN_SPEC[t.name]) return 'component';
+  // An icon token no element draws by default: the icon alone.
+  if (t.category === 'icon') return 'icon';
   return 'swatch';
 }
 
@@ -360,7 +363,9 @@ function copy(name) {
                   class="tokens__cell-legend"
                   :class="{ 'tokens__cell-legend--touch': highlight }"
                   >{{
-                    highlight ? COMPONENT_TOKEN_SPEC[token.name]?.touches : legend(token.value)
+                    highlight
+                      ? COMPONENT_TOKEN_SPEC[token.name]?.touches
+                      : (COMPONENT_TOKEN_SPEC[token.name]?.legend ?? legend(token.value))
                   }}</span
                 >
               </div>
@@ -496,6 +501,16 @@ function copy(name) {
                 />
                 <span class="viz-gap__box" />
               </div>
+              <!-- An icon token: the mask painted over currentColor, as elements do. -->
+              <div
+                v-else-if="vizKind(token) === 'icon'"
+                class="grid size-full place-items-center text-[var(--l-color-text-primary)]"
+              >
+                <span
+                  class="block size-8 bg-current"
+                  :style="{ mask: `var(${token.name}) center / contain no-repeat` }"
+                />
+              </div>
               <!-- Any other token: its resolved value as a flat swatch. -->
               <div
                 v-else
@@ -504,7 +519,9 @@ function copy(name) {
               />
             </div>
             <div class="tokens__cell-footer">
-              <span class="tokens__cell-legend">{{ legend(token.value) }}</span>
+              <span class="tokens__cell-legend">{{
+                vizKind(token) === 'icon' ? 'Mask image' : legend(token.value)
+              }}</span>
               <span
                 v-if="pxEquiv(token.value)"
                 class="tokens__cell-px"
@@ -619,6 +636,10 @@ function copy(name) {
 }
 .tokens__group[data-category='popover'] .tokens__cell-viz {
   block-size: 8.5rem;
+}
+/* Icon tokens: the elements that draw them, up to two stacked. */
+.tokens__group[data-category='icon'] .tokens__cell-viz {
+  block-size: 7.5rem;
 }
 
 /* Footer with mode tag + legend (or just legend for single-value cells) */

@@ -1,0 +1,38 @@
+{
+  "$description": "System icons — the icons elements draw themselves, as mask images: an element paints its own color through the icon's shape, so only the alpha counts. Override one on `:root` with any square, single-color `url()` to re-skin it in every element at once. Content icons the page author picks stay `<l-icon>`.",
+  "$extensions": {
+    "com.luxen-ui": {
+      "tier": "semantic"
+    }
+  },
+  "icon": {
+    "chevron-down": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+      "$description": "Downward chevron. Drawn by the caret of `.l-select`, l-select and l-combobox, the `arrow` marker of l-disclosure, and an expanded l-tree-item."
+    },
+    "chevron-right": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E\")",
+      "$description": "Inline-end chevron, mirrored in right-to-left layouts. Drawn by the submenu indicator of l-dropdown-item and a collapsed l-tree-item."
+    },
+    "check": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E\")",
+      "$description": "Check mark. Drawn by the selected option of `.l-select`, l-select and l-combobox, and a checked l-dropdown-item."
+    },
+    "close": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E\")",
+      "$description": "Close cross. Drawn by `.l-close`."
+    },
+    "clear": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E\")",
+      "$description": "Clear cross. Drawn by the clear button of l-select and l-combobox."
+    },
+    "plus": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M12 5v14'/%3E%3C/svg%3E\")",
+      "$description": "Plus sign. Drawn by the `plus` marker of l-disclosure, turned into a cross when open, and the increment button of l-input-stepper."
+    },
+    "minus": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E\")",
+      "$description": "Minus sign. Drawn by the decrement button of l-input-stepper."
+    }
+  }
+}
