@@ -40,10 +40,12 @@ const svgOf = (icon: Element) =>
     .getBoundingClientRect();
 
 const middle = (rect: DOMRect) => rect.top + rect.height / 2;
+const centre = (rect: DOMRect) => rect.left + rect.width / 2;
+const showing = (display: string) => (display ? `display: ${display}` : 'no display set');
 
 describe('An icon in a centring row', () => {
-  for (const display of ['', 'block', 'inline-block', 'flex', 'inline-flex', 'grid']) {
-    it(`centres its glyph with ${display ? `display: ${display}` : 'no display set'}`, async () => {
+  for (const display of ['', 'inline', 'block', 'inline-block', 'flex', 'inline-flex', 'grid']) {
+    it(`centres its glyph with ${showing(display)}`, async () => {
       const root = await mount(
         `<div style="display: flex; align-items: center; height: 40px">
           <l-icon name="luxen-display:dot" style="${display ? `display: ${display}` : ''}"></l-icon>
@@ -60,27 +62,68 @@ describe('An icon in a centring row', () => {
   }
 });
 
+describe('An icon made larger than its glyph', () => {
+  for (const display of ['', 'flex', 'inline-flex', 'grid']) {
+    it(`centres its glyph in its box with ${showing(display)}`, async () => {
+      const root = await mount(
+        `<l-icon
+          name="luxen-display:dot"
+          style="width: 24px; height: 24px; ${display ? `display: ${display}` : ''}"
+        ></l-icon>`,
+      );
+      const box = root.querySelector('l-icon')!.getBoundingClientRect();
+      const glyph = svgOf(root.querySelector('l-icon')!);
+
+      expect(box.height).toBe(24);
+      expect(middle(glyph)).toBeCloseTo(middle(box), 1);
+      expect(centre(glyph)).toBeCloseTo(centre(box), 1);
+    });
+  }
+
+  // A block is only centred vertically: centring it across would also move an
+  // icon set `block` above a heading to the middle of its card.
+  for (const display of ['block', 'inline-block']) {
+    it(`centres its glyph vertically, at the start across, with ${showing(display)}`, async () => {
+      const root = await mount(
+        `<l-icon name="luxen-display:dot" style="width: 24px; height: 24px; display: ${display}"></l-icon>`,
+      );
+      const box = root.querySelector('l-icon')!.getBoundingClientRect();
+      const glyph = svgOf(root.querySelector('l-icon')!);
+
+      expect(box.height).toBe(24);
+      expect(middle(glyph)).toBeCloseTo(middle(box), 1);
+      expect(glyph.left).toBeCloseTo(box.left, 1);
+    });
+  }
+});
+
 describe('An icon in running text', () => {
-  it('stays inline, on the line of its text', async () => {
-    const root = await mount(
-      '<p style="margin: 0">Before <l-icon name="luxen-display:dot"></l-icon> after</p>',
-    );
-    const line = root.firstElementChild!.getBoundingClientRect();
+  // `inline` and `contents` are left out: the block glyph cannot sit in a line
+  // of text, a documented limit.
+  for (const display of ['', 'inline-block', 'inline-flex']) {
+    it(`stays on the line of its text with ${showing(display)}`, async () => {
+      const root = await mount(
+        `<p style="margin: 0">Before
+          <l-icon name="luxen-display:dot" style="${display ? `display: ${display}` : ''}"></l-icon>
+          after</p>`,
+      );
+      const line = root.firstElementChild!.getBoundingClientRect();
 
-    expect(line.height).toBe(20);
-    expect(svgOf(root.querySelector('l-icon')!).height).toBe(14);
-  });
+      expect(line.height).toBe(20);
+      expect(svgOf(root.querySelector('l-icon')!).height).toBe(14);
+    });
 
-  it('sits on the text baseline', async () => {
-    const root = await mount(
-      `<p style="margin: 0">Before
-        <l-icon name="luxen-display:dot"></l-icon>
-        <span style="display: inline-block; width: 0; height: 0"></span>
-      </p>`,
-    );
-    // A zero-size inline-block sits with its bottom edge on the baseline.
-    const baseline = root.querySelector('span')!.getBoundingClientRect().bottom;
+    it(`sits on the text baseline with ${showing(display)}`, async () => {
+      const root = await mount(
+        `<p style="margin: 0">Before
+          <l-icon name="luxen-display:dot" style="${display ? `display: ${display}` : ''}"></l-icon>
+          <span style="display: inline-block; width: 0; height: 0"></span>
+        </p>`,
+      );
+      // A zero-size inline-block sits with its bottom edge on the baseline.
+      const baseline = root.querySelector('span')!.getBoundingClientRect().bottom;
 
-    expect(svgOf(root.querySelector('l-icon')!).bottom).toBeCloseTo(baseline, 1);
-  });
+      expect(svgOf(root.querySelector('l-icon')!).bottom).toBeCloseTo(baseline, 1);
+    });
+  }
 });
