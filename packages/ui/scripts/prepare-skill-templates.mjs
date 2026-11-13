@@ -156,6 +156,10 @@ async function transformDoc(content, docDir) {
   // 6. Convert VitePress container directives and file includes
   content = await convertVitePressBlocks(content, wrapperResult.inlinedFiles);
 
+  // 6b. Point root-relative asset URLs in the inlined examples at the
+  //     published docs (runs after 6 so `<<<` file includes are covered too)
+  content = absolutizeAssetUrls(content);
+
   // 7. Clean up extra blank lines
   content = content.replace(/\n{3,}/g, '\n\n').trim() + '\n';
 
@@ -448,6 +452,12 @@ function stripFigures(content) {
 // Root-relative markdown links resolve only on the docs site.
 function absolutizeDocsLinks(content) {
   return content.replace(/\]\(\/(?!\/)/g, `](${DOCS_ORIGIN}/`);
+}
+
+// Examples load images self-hosted in packages/docs/public (`src="/images/…"`),
+// which only resolve on the docs site.
+function absolutizeAssetUrls(content) {
+  return content.replace(/\b(src|poster)="\/(?!\/)/g, `$1="${DOCS_ORIGIN}/`);
 }
 
 // Strips leftover docs-only Vue components (interactive demos such as
