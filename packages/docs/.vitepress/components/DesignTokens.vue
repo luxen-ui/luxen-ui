@@ -98,8 +98,6 @@ function vizKind(t) {
   if (t.category === 'sizing') return 'control';
   if (t.category === 'spacing') return 'gap';
   if (COMPONENT_TOKEN_SPEC[t.name]) return 'component';
-  // An icon token no element draws by default: the icon alone.
-  if (t.category === 'icon') return 'icon';
   return 'swatch';
 }
 
@@ -501,16 +499,6 @@ function copy(name) {
                 />
                 <span class="viz-gap__box" />
               </div>
-              <!-- An icon token: the mask painted over currentColor, as elements do. -->
-              <div
-                v-else-if="vizKind(token) === 'icon'"
-                class="grid size-full place-items-center text-[var(--l-color-text-primary)]"
-              >
-                <span
-                  class="block size-8 bg-current"
-                  :style="{ mask: `var(${token.name}) center / contain no-repeat` }"
-                />
-              </div>
               <!-- Any other token: its resolved value as a flat swatch. -->
               <div
                 v-else
@@ -519,9 +507,7 @@ function copy(name) {
               />
             </div>
             <div class="tokens__cell-footer">
-              <span class="tokens__cell-legend">{{
-                vizKind(token) === 'icon' ? 'Mask image' : legend(token.value)
-              }}</span>
+              <span class="tokens__cell-legend">{{ legend(token.value) }}</span>
               <span
                 v-if="pxEquiv(token.value)"
                 class="tokens__cell-px"

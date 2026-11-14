@@ -71,6 +71,15 @@
   block-size: 100%;
   background-color: currentColor;
   mask: var(--_glyph) center / contain no-repeat;
+  /* Forced colors would repaint the fill with Canvas, hiding the icon: opt
+     out, and paint it in the system text color instead. */
+  forced-color-adjust: none;
+}
+
+@media (forced-colors: active) {
+  .expand-glyph {
+    background-color: CanvasText;
+  }
 }
 
 slot[name='collapse-icon'] > .expand-glyph {
