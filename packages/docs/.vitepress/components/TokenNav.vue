@@ -106,10 +106,27 @@ function observeHeadings() {
   for (const s of sections.value) for (const x of [s, ...s.subs]) spy.observe(x.el);
 }
 
+/**
+ * The page is long, and a smooth scroll lasts longer the farther it goes:
+ * jump to within this fraction of a viewport of the target, then glide the
+ * rest, so every tab lands in the same short time.
+ */
+const GLIDE_VIEWPORTS = 0.75;
+
 function go(id, behavior = 'smooth') {
   const el = document.getElementById(id);
   if (!el) return;
   const top = el.getBoundingClientRect().top + window.scrollY - stuckBottom() - 16;
+  if (behavior === 'smooth') {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) behavior = 'instant';
+    else {
+      const glide = window.innerHeight * GLIDE_VIEWPORTS;
+      const distance = top - window.scrollY;
+      if (Math.abs(distance) > glide) {
+        window.scrollTo({ top: top - Math.sign(distance) * glide, behavior: 'instant' });
+      }
+    }
+  }
   window.scrollTo({ top, behavior });
   history.replaceState(history.state, '', `#${id}`);
 }
