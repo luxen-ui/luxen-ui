@@ -100,7 +100,7 @@ describe('The declaration file emitTypes writes', () => {
   });
 
   // The whole reason this file is emitted per-project rather than shipped:
-  // packages/ui/CLAUDE.md forbids the library from carrying a fixed-prefix
+  // .claude/rules/element-ts.md forbids the library from carrying a fixed-prefix
   // `HTMLElementTagNameMap` augmentation, so a rebranded consumer gets its
   // typing from here or not at all.
   it('follows a rebranded element prefix everywhere it names a tag', async () => {
