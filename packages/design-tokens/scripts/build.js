@@ -532,7 +532,7 @@ const sd = new StyleDictionary({
             subset: 'components',
             fileMatch: 'forms',
             header:
-              '/* Luxen design-tokens — form component tokens.\n   Opt-in via `@import "luxen-ui/css/tokens/forms"` (already bundled in the\n   Luxen preset). Reference semantic aliases, so dark mode is inherited. */\n\n',
+              '/* Luxen design-tokens — form component tokens.\n   Part of `luxen-ui/css/tokens/components` (already bundled in\n   `luxen-ui/css/tokens`). Reference semantic aliases, so dark mode is inherited. */\n\n',
           },
         },
         {

@@ -5,6 +5,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test';
+import { declaredTokens } from './helpers/declared-tokens';
 
 const CLI = resolve(import.meta.dirname, '../bin/cli.mjs');
 let cwd: string;
@@ -45,10 +46,6 @@ describe('luxen-ui import --help tells the source from the destination', () => {
     );
   });
 });
-
-// The custom properties a stylesheet declares (`--l-foo: …`), not the ones it reads.
-const declaredTokens = (css: string) =>
-  new Set(css.replace(/\/\*[\s\S]*?\*\//g, '').match(/--l-[\w-]+(?=\s*:)/g));
 
 // Resolves an `@import` the recipe prints: a `luxen-ui/css/*` entry through the
 // package's own exports map, a relative path against the project folder.
