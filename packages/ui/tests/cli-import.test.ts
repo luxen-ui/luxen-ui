@@ -46,6 +46,38 @@ describe('luxen-ui import --help tells the source from the destination', () => {
   });
 });
 
+// The custom properties a stylesheet declares (`--l-foo: …`), not the ones it reads.
+const declaredTokens = (css: string) => new Set(css.match(/--l-[\w-]+(?=\s*:)/g));
+
+// Resolves an `@import` the recipe prints: a `luxen-ui/css/*` entry through the
+// package's own exports map, a relative path against the project folder.
+const PKG_ROOT = resolve(import.meta.dirname, '..');
+const { exports } = JSON.parse(readFileSync(join(PKG_ROOT, 'package.json'), 'utf-8'));
+const readImport = (specifier: string) =>
+  specifier.startsWith('luxen-ui/')
+    ? readFileSync(join(PKG_ROOT, exports[specifier.replace('luxen-ui', '.')].import), 'utf-8')
+    : readFileSync(join(cwd, specifier), 'utf-8');
+
+describe('The design-tokens recipe keeps every token Luxen ships', () => {
+  it('declares every token of luxen-ui/css/tokens, component tokens included', () => {
+    const out = run('design-tokens');
+    // The recipe is the run of consecutive `@import` lines that loads the copy.
+    const lines = out.split('\n');
+    const isImport = (line = '') => /^\s*@import '/.test(line);
+    let start = lines.indexOf("         @import './luxen-design-tokens.css';");
+    let end = start + 1;
+    expect(start).toBeGreaterThan(-1);
+    while (isImport(lines[start - 1])) start--;
+    while (isImport(lines[end])) end++;
+    const recipe = lines.slice(start, end).map((line) => line.match(/@import '([^']+)'/)![1]);
+
+    const declared = declaredTokens(recipe.map(readImport).join('\n'));
+    const tokens = readFileSync(join(PKG_ROOT, 'dist/css/tokens.css'), 'utf-8');
+    const missing = [...declaredTokens(tokens)].filter((token) => !declared.has(token));
+    expect(missing).toEqual([]);
+  });
+});
+
 describe('The next steps it prints name the file that was written', () => {
   it('points every step at a custom path, never at the default one', () => {
     const out = run('design-tokens', 'src/styles/tokens.css');
