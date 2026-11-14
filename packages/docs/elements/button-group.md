@@ -127,17 +127,15 @@ Pair an action with an `<l-dropdown>` of related ones. The group rounds the corn
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Host gets `role=&quot;group&quot;` to expose the buttons as a set', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.3)' },
-  { Check: 'Accessible name', Description: '`label` sets `aria-label` so assistive tech announces the group purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Orientation', Description: '`orientation` is visual only. ARIA 1.2 does not allow `aria-orientation` on `role=&quot;group&quot;`, so no ARIA attribute is set', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
-  { Check: 'Focus order', Description: 'Each button is an independent `Tab` stop; the focus ring is raised above neighbours so it is never clipped', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Toggle state', Description: 'Buttons that carry state expose it with `aria-pressed`; the group never sets it', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Icon-only buttons', Description: 'Each icon-only button needs its own `aria-label`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Buttons exposed as a group', Description: 'The host gets `role=&quot;group&quot;` to expose the buttons as a set', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.3)' },
+  { Check: 'Group named from `label`', Description: 'It sets `aria-label` so assistive tech announces the group purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus ring never clipped', Description: 'The focused button is raised above its neighbours', Note: 'Each button stays an independent `Tab` stop', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: '`orientation` is visual only', Description: 'No ARIA attribute is set', Note: 'ARIA 1.2 does not allow `aria-orientation` on `role=&quot;group&quot;`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
 ]" :rules="[
-  'Always add a `label` describing the group purpose',
-  'Children must be native `&lt;button class=&quot;l-button&quot;&gt;` elements (optionally wrapped in `l-dropdown` for split buttons)',
-  'Give each icon-only button its own `aria-label`',
-  'For toggle buttons, set `aria-pressed` on every button of the group, not only the pressed one',
+  { Check: 'Name the group', Description: 'Add a `label` describing its purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Label icon-only buttons', Description: 'Give each one its own `aria-label`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Set `aria-pressed` on every toggle button', Description: 'Every button of a toggle group gets it, not only the pressed one', Note: 'The group never sets it', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Use native `<button>` children', Description: '`&lt;button class=&quot;l-button&quot;&gt;`, optionally wrapped in `l-dropdown` for split buttons' },
 ]" />
 
 ### Keyboard interactions

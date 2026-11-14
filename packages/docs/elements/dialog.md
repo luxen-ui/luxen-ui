@@ -102,17 +102,31 @@ Add `without-header` to drop the header row entirely (title and close slot). Use
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Rendered as a native `<dialog>` in the shadow root — built-in `dialog` role and modal semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'The `title` property renders as an `<h2>` in the header, or provide a custom heading via `slot=&quot;title&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Focus management', Description: 'Focus is trapped inside the modal; moves to the first focusable element on open', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Focus restoration', Description: 'Focus returns to the trigger element when the dialog closes', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
-  { Check: 'Close button', Description: 'Consumer provides the close button via `slot=&quot;close&quot;` with `aria-label=&quot;Close&quot;`', WCAG: '[WCAG 2.4.6](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Dialog role exposed', Description: 'A native modal `<dialog>` in the shadow root provides it', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Title names the dialog', Description: 'The `title` property renders as an `<h2>` in the header', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus trapped while open', Description: 'Focus moves to the first focusable element on open', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus returns to the trigger on close', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Always set a meaningful `title` — it becomes the dialog heading and accessible name',
-  'Put the close button in `slot=&quot;close&quot;` with `class=&quot;l-close&quot;` and `command=&quot;--hide&quot;` `commandfor=&quot;<id>&quot;`',
-  'Use `command=&quot;--show&quot;` and `command=&quot;--hide&quot;` with `commandfor` pointing at the dialog id. The `--` prefix is mandatory for custom elements',
-]" />
+  { Check: 'Name the dialog', Description: 'Set a meaningful `title`, or slot a custom heading in `slot=&quot;title&quot;`', Note: 'It becomes the dialog heading and accessible name', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Provide a labelled close button', Description: 'Put a `class=&quot;l-close&quot;` button in `slot=&quot;close&quot;` with `aria-label=&quot;Close&quot;`', WCAG: '[WCAG 2.4.6](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels)', Code: 'close' },
+]">
+
+<template #close>
+
+```html
+<button
+  slot="close"
+  class="l-close"
+  aria-label="Close"
+  command="--hide"
+  commandfor="my-dialog"
+></button>
+```
+
+</template>
+
+</AccessibilityTable>
 
 ### Keyboard interactions
 

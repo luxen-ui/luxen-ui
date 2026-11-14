@@ -147,17 +147,16 @@ A roadmap of phases and tasks, where collapsing folds away phase details for a h
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Container has `role=&quot;tree&quot;`, items have `role=&quot;treeitem&quot;`, groups have `role=&quot;group&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Expanded state', Description: 'Branches expose `aria-expanded` reflecting open state. Leaf nodes omit the attribute.', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Selected state', Description: 'Selected items expose `aria-selected=&quot;true&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Multi-selectable', Description: 'Container sets `aria-multiselectable=&quot;true&quot;` when `selection=&quot;multiple&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Disabled state', Description: 'Disabled items expose `aria-disabled=&quot;true&quot;` and stay in the DOM for discoverability', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Roving tabindex: only one item is in the tab order at a time; arrow keys move focus within the tree', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Motion', Description: 'Chevron rotation and spinner respect `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Tree roles exposed', Description: '`tree` on the container, `treeitem` on items, `group` on groups', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'One Tab stop for the tree', Description: 'Roving tabindex: only one item is in the tab order at a time; arrow keys move focus within the tree', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Open state exposed', Description: 'Branches reflect it in `aria-expanded`; leaf nodes omit the attribute', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Selection exposed', Description: 'Selected items carry `aria-selected=&quot;true&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Multiple selection exposed', Description: 'The container has `aria-multiselectable=&quot;true&quot;` when `selection=&quot;multiple&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Disabled items stay discoverable', Description: 'They carry `aria-disabled=&quot;true&quot;` and stay in the DOM', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Reduced motion respected', Description: 'Chevron rotation and the spinner follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Every item needs visible text content for its accessible name',
-  'Use `selection=&quot;leaf&quot;` when branches are never valid values — this prevents keyboard users from accidentally selecting aggregations',
-  'Prefer `selection=&quot;multiple&quot; independent` for forms where parent selection is a distinct choice from the children',
+  { Check: 'Give every item visible text', Note: 'It provides the item’s accessible name' },
+  { Check: 'Use `selection=&quot;leaf&quot;` for leaf-only values', Description: 'Choose it when branches are never valid values', Note: 'It prevents keyboard users from accidentally selecting aggregations' },
 ]" />
 
 ### Keyboard interactions

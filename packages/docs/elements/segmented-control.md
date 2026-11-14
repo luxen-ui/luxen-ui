@@ -99,15 +99,14 @@ Several controls can share one filter bar. Give each its own `label` so assistiv
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Host gets `role=&quot;radiogroup&quot;`; each segment gets `role=&quot;radio&quot;` with `aria-checked`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.3)' },
-  { Check: 'Accessible name', Description: '`label` sets `aria-label` so assistive tech announces the control purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Keyboard', Description: 'Arrow keys move selection through the segments; `Home`/`End` jump to the ends', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
-  { Check: 'Focus order', Description: 'Roving `tabindex`: the group is a single `Tab` stop, arrows move within it', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8)' },
-  { Check: 'Icon-only segments', Description: 'A segment with no visible text needs its own `aria-label`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Radio group roles exposed', Description: 'The host gets `role=&quot;radiogroup&quot;`; each segment gets `role=&quot;radio&quot;` with `aria-checked`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.3)' },
+  { Check: 'Control named from `label`', Description: 'It sets `aria-label` so assistive tech announces the control purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'One Tab stop for the group', Description: 'Roving `tabindex`: arrows move within it', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8)' },
+  { Check: 'Arrow keys move the selection', Description: 'Through the segments; `Home` / `End` jump to the ends', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
 ]" :rules="[
-  'Always add a `label` describing the control purpose',
-  'Segments must be native `&lt;button&gt;` elements with a `value`',
-  'Give each icon-only segment its own `aria-label`',
+  { Check: 'Name the control', Description: 'Add a `label` describing its purpose', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Label icon-only segments', Description: 'Give each segment with no visible text its own `aria-label`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Use native `<button>` segments', Description: 'Give each one a `value`' },
 ]" />
 
 ### Keyboard interactions

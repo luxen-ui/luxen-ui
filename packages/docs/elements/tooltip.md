@@ -118,16 +118,16 @@ All 12 placement options with aligned variants (`-start`, `-end`).
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Popover has `role=&quot;tooltip&quot;` with a generated `id`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible description', Description: 'Trigger receives `aria-describedby` pointing to the tooltip when open', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Hover state', Description: 'Shows on `pointerenter`; safe polygon hover bridge prevents flickering', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
-  { Check: 'Focus state', Description: 'Shows on `focusin`, hides on `focusout`', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus), [WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible)' },
-  { Check: 'Dismissible', Description: 'Closes on `Escape` without moving focus', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Tooltip role exposed', Description: 'The popover gets `role=&quot;tooltip&quot;` and a generated `id`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Tooltip describes the trigger', Description: 'While open, the trigger gets `aria-describedby` pointing to the tooltip', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Shows on keyboard focus', Description: 'Shows on `focusin`, hides on `focusout`', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus), [WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible)' },
+  { Check: 'Shows on hover without flicker', Description: 'Shows on `pointerenter`; a safe polygon hover bridge prevents flickering', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
+  { Check: '`Escape` dismisses without moving focus', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'The trigger element must have meaningful text or `aria-label` — the tooltip supplements, it does not replace, the accessible name',
-  'Never put interactive content inside a tooltip; use `<l-popover>` instead',
-  'Tooltip content should be short and text-only',
+  { Check: 'Name the trigger', Description: 'Give it meaningful text or an `aria-label`', Note: 'The tooltip supplements the accessible name, it doesn’t replace it' },
+  { Check: 'Don’t put interactive content in a tooltip', Description: 'Use `<l-popover>` instead' },
+  { Check: 'Keep tooltip content short and text-only' },
 ]" />
 
 ### Keyboard interactions

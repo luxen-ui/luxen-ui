@@ -86,15 +86,15 @@ E-commerce style mega menu: `full-width` stretches the popover to the viewport, 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Expanded state', Description: 'Trigger receives `aria-expanded` and `aria-controls` pointing to the popover', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Dismissible', Description: 'Closes on `Escape` and click outside (light-dismiss via `popover=&quot;auto&quot;`)', WCAG: '[WCAG 3.2.2](https://www.w3.org/WAI/WCAG22/Understanding/on-input)' },
-  { Check: 'Hover bridge', Description: 'Safe polygon prevents flickering when moving cursor from trigger to popover', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
-  { Check: 'Focus state', Description: 'Visible focus ring on trigger for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Open state exposed', Description: 'The trigger gets `aria-expanded` and `aria-controls` pointing to the popover', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Closes on `Escape` and outside click', Description: 'Light dismiss via `popover=&quot;auto&quot;`', WCAG: '[WCAG 3.2.2](https://www.w3.org/WAI/WCAG22/Understanding/on-input)' },
+  { Check: 'Hover bridge prevents flicker', Description: 'A safe polygon keeps the popover open while the cursor moves from trigger to popover', WCAG: '[WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'The trigger shows a visible focus ring for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Use a `<button>` element as the trigger — the component links it via `aria-controls` automatically',
-  'If the popover contains interactive content, ensure a logical focus order inside it',
-  'Add an accessible label to the popover content when it functions as a distinct region',
+  { Check: 'Use a `<button>` as the trigger', Note: 'The element links it to the popover via `aria-controls` automatically' },
+  { Check: 'Name popovers that act as regions', Description: 'Give the popover content an accessible label when it works as a distinct region' },
+  { Check: 'Keep focus order logical inside', Description: 'Applies when the popover holds interactive content' },
 ]" />
 
 ### Keyboard interactions

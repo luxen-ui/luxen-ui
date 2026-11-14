@@ -86,16 +86,15 @@ Add the `dismissible` attribute to show a close button. Clicking it emits a canc
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Live region', Description: 'A static alert in the markup is read in normal reading order. For an alert injected dynamically, add `role=&quot;alert&quot;` (assertive) or `role=&quot;status&quot;` (polite) so screen readers announce it', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)' },
-  { Check: 'Not color alone', Description: 'Meaning is carried by the icon and text, not color alone', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
-  { Check: 'Color contrast', Description: 'Text meets the minimum contrast ratio against the tinted background across all variants', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
-  { Check: 'Decorative icon', Description: 'The leading icon is hidden with `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Close button name', Description: 'The dismiss button has a localized `aria-label` (`Close`)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Static alerts read in reading order', Description: 'An alert present in the markup is read in normal reading order', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)' },
+  { Check: 'Icon and text carry the meaning', Description: 'Variants never rely on color alone', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Text contrast passes', Description: 'Text meets the minimum ratio against the tinted background in every variant', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Decorative icon hidden', Description: 'The leading icon carries `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Close button labelled', Description: 'The dismiss button has a localized `aria-label` (`Close`)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
 ]" :rules="[
-  'Do not rely on variant color alone — always include a text label',
-  'Add `role=&quot;alert&quot;` when the alert is inserted in response to a user action, so it is announced',
-  'Use `variant=&quot;danger&quot;` for errors and `variant=&quot;warning&quot;` for cautionary messages',
-  'Use a heading element for the title (e.g. `&lt;h3 class=&quot;l-alert-title&quot;&gt;`) when the alert is a section callout, so it is reachable by heading navigation',
+  { Check: 'Announce injected alerts', Description: 'Add `role=&quot;alert&quot;` (assertive) or `role=&quot;status&quot;` (polite) to an alert inserted dynamically', Note: 'An alert inserted in response to a user action takes `role=&quot;alert&quot;`', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)' },
+  { Check: 'Add visible text', Description: 'Include a text label; the variant color alone never carries the meaning', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Use a heading for section callouts', Description: 'Mark the title up as a heading, e.g. `&lt;h3 class=&quot;l-alert-title&quot;&gt;`', Note: 'It is then reachable by heading navigation' },
 ]" />
 
 ### Keyboard interactions

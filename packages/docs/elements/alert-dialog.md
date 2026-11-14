@@ -137,17 +137,16 @@ dialog.addEventListener('confirm', async (event) => {
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Rendered as a native `<dialog>` with `role=&quot;alertdialog&quot;` — interruptive modal semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'The `title` property renders as an `<h2>` and names the dialog', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible description', Description: 'The body content is wired as the dialog description via `aria-describedby`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Focus is trapped inside the modal and lands on the cancel action — the least destructive choice', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Focus restoration', Description: 'Focus returns to the trigger element when the dialog closes', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Alert dialog role exposed', Description: 'Rendered as a native `<dialog>` with `role=&quot;alertdialog&quot;`, for interruptive modal semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Title names the dialog', Description: 'The `title` property renders as an `<h2>`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Body describes the dialog', Description: 'The body content is wired as the dialog description via `aria-describedby`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Focus trapped while open', Description: 'Focus lands on the cancel action, the least destructive choice', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus returns to the trigger on close', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Always set a meaningful `title` — it becomes the dialog heading and accessible name',
-  'Write a body that describes the consequence — it becomes the accessible description',
-  'Reserve `tone=&quot;danger&quot;` for irreversible actions',
-  'When slotting a custom action, keep it focusable (a `<button>` or `<a href>`)',
+  { Check: 'Name the dialog', Description: 'Set a meaningful `title`', Note: 'It becomes the dialog heading and accessible name', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Describe the consequence in the body', Note: 'The body becomes the accessible description', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Keep custom actions focusable', Description: 'Slot a `<button>` or an `<a href>`' },
 ]" />
 
 ### Keyboard interactions

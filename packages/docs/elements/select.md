@@ -225,12 +225,13 @@ The native tier inherits the platform's `<select>` semantics — pair it with a 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'The trigger is a `role=&quot;combobox&quot;` named by `label`, so the chosen value is announced alongside it, and exposes `aria-haspopup=&quot;listbox&quot;` / `aria-expanded` / `aria-controls`; options are `role=&quot;option&quot;` in a `role=&quot;listbox&quot;` (with `aria-multiselectable` when `multiple`)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Set `label` (or wrap with `<l-form-field>`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Focus management', Description: 'Opening moves focus into the search box (or the listbox when not searchable); closing returns it to the trigger', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8)' },
-  { Check: 'Target size', Description: 'The trigger and chip remove buttons keep a minimum 24×24px hit target', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
+  { Check: 'Combobox and listbox roles exposed', Description: 'The trigger is a `role=&quot;combobox&quot;`; options are `role=&quot;option&quot;` in a `role=&quot;listbox&quot;`, with `aria-multiselectable` when `multiple`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Open state exposed', Description: 'The trigger exposes `aria-haspopup=&quot;listbox&quot;`, `aria-expanded` and `aria-controls`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Trigger named from `label`', Description: 'The chosen value is announced alongside it', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus moves in on open, back on close', Description: 'Opening moves focus into the search box, or into the listbox when not searchable; closing returns it to the trigger', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 12.8](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.8)' },
+  { Check: '24px minimum target', Description: 'On the trigger and the chip remove buttons', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
 ]" :rules="[
-  'Always set `label` so the trigger has an accessible name',
+  { Check: 'Label the field', Description: 'Set `label`, or wrap the select in `<l-form-field>`', Note: 'It gives the trigger its accessible name', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions

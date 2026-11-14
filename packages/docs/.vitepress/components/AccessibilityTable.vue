@@ -1,10 +1,23 @@
 <script setup>
-import { useId } from 'vue';
+import { computed, useId } from 'vue';
 
+// `data` lists what the element guarantees on its own ("Built in").
+// `rules` lists what the integrator must do ("Your part"). A rule is either a
+// plain string or a row shaped like `data` ({ Check, Description, Note, WCAG }).
+// `Description` may be omitted when the `Check` title already says it all.
+// `Note` is an optional second sentence: the why, or the edge case.
+// `Code` names a slot holding a fenced code block, folded behind "Show code":
+//   <template #label>
+//
+//   ```html
+//   …
+//   ```
+//
+//   </template>
 const props = defineProps({
   data: {
     type: Array,
-    required: true,
+    default: () => [],
   },
   rules: {
     type: Array,
@@ -43,9 +56,8 @@ const parseInlineMarkdown = (text) => {
   return parts.join('');
 };
 
-const rulesLabelId = useId();
-const refsLabelId = useId();
-
+// "[WCAG 1.4.3](url), [RGAA 3.2](url), [WCAG 1.4.11](url)" →
+// [{ source: 'WCAG', links: [1.4.3, 1.4.11] }, { source: 'RGAA', links: [3.2] }]
 const parseCriteriaGroups = (wcag) => {
   if (!wcag) return [];
   const groups = new Map();
@@ -62,205 +74,361 @@ const parseCriteriaGroups = (wcag) => {
   }
   return [...groups.entries()].map(([source, links]) => ({ source, links }));
 };
+
+const normalize = (row) => (typeof row === 'string' ? { Description: row } : row);
+
+const groups = computed(() =>
+  [
+    {
+      key: 'yours',
+      title: 'Your part',
+      hint: 'Check these in your markup',
+      done: false,
+      rows: props.rules.map(normalize),
+    },
+    {
+      key: 'builtin',
+      title: 'Built in',
+      hint: 'Handled by the element',
+      done: true,
+      rows: props.data.map(normalize),
+    },
+  ].filter((group) => group.rows.length),
+);
+
+const groupIds = { yours: useId(), builtin: useId() };
+const refsLabelId = useId();
 </script>
 
 <template>
-  <dl class="vp-raw a11y-list">
-    <div
-      v-for="(row, i) in data"
-      :key="i"
-      class="a11y-list-item"
+  <div class="a11y">
+    <section
+      v-for="group in groups"
+      :key="group.key"
+      class="a11y-group"
+      :aria-labelledby="groupIds[group.key]"
     >
-      <dt>
-        <span
-          class="a11y-check-icon"
-          aria-hidden="true"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M13.5 4.5L6.5 11.5L2.5 7.5"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </span>
-        <span class="a11y-check-name">{{ row.Check }}</span>
-      </dt>
-      <dd>
+      <div class="a11y-group-head">
         <p
-          class="a11y-description"
-          v-html="parseInlineMarkdown(row.Description)"
-        />
-        <div
-          v-for="group in parseCriteriaGroups(row.WCAG)"
-          :key="group.source"
-          class="a11y-criteria-row"
+          :id="groupIds[group.key]"
+          class="a11y-group-title"
         >
-          <span class="a11y-criteria-source">{{ group.source }}</span>
-          <span class="a11y-criteria-links">
-            <a
-              v-for="link in group.links"
-              :key="link.criterion"
-              :href="link.href"
-              target="_blank"
-              rel="noopener"
-              class="a11y-criterion"
-              >{{ link.criterion }}</a
+          {{ group.title }}
+          <span class="a11y-group-count">{{ group.rows.length }}</span>
+        </p>
+        <span class="a11y-group-hint">{{ group.hint }}</span>
+      </div>
+
+      <ul class="a11y-rows">
+        <li
+          v-for="(row, i) in group.rows"
+          :key="i"
+          class="a11y-row"
+          :data-owner="group.key"
+        >
+          <span
+            class="a11y-mark"
+            aria-hidden="true"
+          >
+            <svg
+              v-if="group.done"
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
             >
+              <path
+                d="M13.5 4.5L6.5 11.5L2.5 7.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </span>
-        </div>
-      </dd>
-    </div>
-  </dl>
 
-  <div
-    v-if="rules.length"
-    class="vp-raw a11y-rules"
-  >
-    <p
-      :id="rulesLabelId"
-      class="a11y-rules-title"
-    >
-      Rules
-    </p>
-    <ul
-      class="a11y-rules-list"
-      :aria-labelledby="rulesLabelId"
-    >
-      <li
-        v-for="(rule, i) in rules"
-        :key="i"
-        class="a11y-rule"
-        v-html="parseInlineMarkdown(rule)"
-      />
-    </ul>
-  </div>
+          <div class="a11y-body">
+            <p
+              v-if="row.Check"
+              class="a11y-name"
+              v-html="parseInlineMarkdown(row.Check)"
+            />
+            <p
+              v-if="row.Description"
+              class="a11y-description"
+              v-html="parseInlineMarkdown(row.Description)"
+            />
+            <p
+              v-if="row.Note"
+              class="a11y-note"
+              v-html="parseInlineMarkdown(row.Note)"
+            />
+            <details
+              v-if="row.Code && $slots[row.Code]"
+              class="a11y-code"
+            >
+              <summary>Show code</summary>
+              <slot :name="row.Code" />
+            </details>
+          </div>
 
-  <div
-    v-if="references.length"
-    class="vp-raw a11y-refs"
-  >
-    <p
-      :id="refsLabelId"
-      class="a11y-refs-title"
-    >
-      References
-    </p>
-    <ul
-      class="a11y-refs-list"
+          <div
+            v-if="row.WCAG"
+            class="a11y-criteria"
+          >
+            <span
+              v-for="ref in parseCriteriaGroups(row.WCAG)"
+              :key="ref.source"
+              class="a11y-criteria-row"
+            >
+              <span class="a11y-criteria-source">{{ ref.source }}</span>
+              <a
+                v-for="link in ref.links"
+                :key="link.criterion"
+                :href="link.href"
+                target="_blank"
+                rel="noopener"
+                class="a11y-criterion"
+                :aria-label="`${ref.source} ${link.criterion}`"
+                >{{ link.criterion }}</a
+              >
+            </span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section
+      v-if="references.length"
+      class="a11y-refs"
       :aria-labelledby="refsLabelId"
     >
-      <li
-        v-for="(reference, i) in references"
-        :key="i"
-        class="a11y-ref"
-        v-html="parseInlineMarkdown(reference)"
-      />
-    </ul>
+      <p
+        :id="refsLabelId"
+        class="a11y-group-title"
+      >
+        References
+      </p>
+      <ul class="a11y-refs-list">
+        <li
+          v-for="(reference, i) in references"
+          :key="i"
+          class="a11y-ref"
+          v-html="parseInlineMarkdown(reference)"
+        />
+      </ul>
+    </section>
   </div>
 </template>
 
 <style>
-.a11y-list {
-  margin: 16px 0;
+/* Plain (unscoped, unlayered) rules on purpose, all anchored on `.a11y` so they
+   outrank the unlayered `.vp-doc p/ul/li/a/code` rules. The table is not a
+   `.vp-raw` block: the snippet slots hold regular VitePress code blocks, whose
+   styles (and copy button) `postcssIsolateStyles` strips inside `.vp-raw`. */
+.a11y {
+  margin: 16px 0 24px;
 }
 
-.a11y-list-item {
+.a11y .a11y-group + .a11y-group,
+.a11y .a11y-refs {
+  margin-top: 28px;
+}
+
+.a11y .a11y-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.a11y .a11y-group-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--vp-c-text-1);
+}
+
+.a11y .a11y-group-count {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--vp-c-text-3);
+}
+
+.a11y .a11y-group-hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3);
+}
+
+.a11y .a11y-rows,
+.a11y .a11y-refs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.a11y .a11y-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  column-gap: 12px;
+  margin: 0;
   padding: 12px 0;
 }
 
-.a11y-list-item + .a11y-list-item {
+.a11y .a11y-row + .a11y-row {
   border-top: 1px solid var(--vp-c-divider);
 }
 
-.a11y-list dt {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.a11y-check-icon {
+.a11y .a11y-mark {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 22px;
   height: 22px;
-  flex-shrink: 0;
   border-radius: 50%;
-  background-color: var(--vp-c-green-soft);
-  color: var(--vp-c-green-2);
 }
 
-.a11y-check-name {
-  font-weight: 600;
-  font-size: 0.875rem;
-  line-height: 1;
-  color: var(--vp-c-text-1);
+/* One checkbox, two states: the same ring is empty for "Your part" and filled
+   with a check for "Built in" — same size, stroke and color. */
+.a11y .a11y-mark {
+  box-shadow: inset 0 0 0 2px var(--vp-c-brand-1);
 }
 
-.a11y-list dd {
-  margin: 6px 0 0 30px;
+.a11y [data-owner='builtin'] .a11y-mark {
+  background-color: var(--vp-c-brand-1);
+  color: var(--vp-c-white);
+}
+
+.a11y .a11y-body {
+  min-width: 0;
+}
+
+.a11y .a11y-body p {
+  margin: 0;
   font-size: 0.875rem;
-  color: var(--vp-c-text-2);
   line-height: 1.5;
 }
 
-.a11y-list dd code,
-.a11y-rule code {
-  font-weight: 500;
-  font-size: 0.8125rem;
-  padding: 2px 6px;
-  background-color: var(--vp-c-bg-soft);
-  border-radius: 4px;
+.a11y .a11y-body .a11y-name {
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--vp-c-text-1);
 }
 
-.a11y-list dd a:not(.a11y-criterion),
-.vp-raw .a11y-rule a {
+.a11y .a11y-body .a11y-description {
+  color: var(--vp-c-text-2);
+}
+
+.a11y .a11y-name + .a11y-description {
+  margin-top: 2px;
+}
+
+/* A rule without a name: the description is the headline, aligned on the mark. */
+.a11y .a11y-body .a11y-description:first-child {
+  line-height: 22px;
+}
+
+.a11y [data-owner='yours'] .a11y-description {
+  color: var(--vp-c-text-1);
+}
+
+.a11y .a11y-body .a11y-note {
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  color: var(--vp-c-text-3);
+}
+
+/* Optional snippet, folded by default so the checklist still scans. */
+.a11y .a11y-code {
+  margin-top: 6px;
+}
+
+.a11y .a11y-code summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--vp-c-brand-1);
+  cursor: pointer;
+  list-style: none;
+}
+
+.a11y .a11y-code summary::-webkit-details-marker {
+  display: none;
+}
+
+.a11y .a11y-code summary::after {
+  content: '';
+  width: 0.4em;
+  height: 0.4em;
+  margin-left: 2px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-1px) rotate(-45deg);
+  transition: transform 0.15s;
+}
+
+.a11y .a11y-code[open] summary::after {
+  transform: translateY(-3px) rotate(45deg);
+}
+
+.a11y .a11y-code summary:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* The snippet is a regular VitePress code block (Shiki, copy button, lang
+   label) passed through a named slot; only its outer spacing changes here. */
+.a11y .a11y-code div[class*='language-'] {
+  margin: 8px 0 0;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a11y .a11y-code summary::after {
+    transition: none;
+  }
+}
+
+.a11y .a11y-body a,
+.a11y .a11y-ref a {
   font-weight: 500;
   color: var(--vp-c-brand-1);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.a11y-description {
-  margin: 0;
+.a11y .a11y-criteria {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding-top: 4px;
 }
 
-.a11y-criteria-row {
+.a11y .a11y-criteria-row {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 6px;
+  white-space: nowrap;
 }
 
-.a11y-criteria-row + .a11y-criteria-row {
-  margin-top: 4px;
-}
-
-.a11y-criteria-source {
+.a11y .a11y-criteria-source {
   font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--vp-c-text-3);
-  flex-shrink: 0;
-  min-width: 36px;
 }
 
-.a11y-criteria-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.vp-raw .a11y-criterion {
+.a11y .a11y-criterion {
   font-size: 0.75rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -274,109 +442,53 @@ const parseCriteriaGroups = (wcag) => {
   transition: text-decoration-color 0.2s;
 }
 
-.vp-raw .a11y-criterion:hover {
+.a11y .a11y-criterion:hover {
   text-decoration-color: var(--vp-c-brand-1);
 }
 
-.a11y-rules {
-  margin: 16px 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--vp-c-divider);
+.a11y .a11y-refs .a11y-group-title {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
-.a11y-rules-title {
-  margin: 0 0 8px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--vp-c-text-3);
-}
-
-.vp-raw .a11y-rules-list {
+.a11y .a11y-ref {
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.vp-raw .a11y-rule {
-  position: relative;
-  padding-left: 30px;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--vp-c-text-2);
-}
-
-.vp-raw .a11y-rule + .a11y-rule {
-  margin-top: 6px;
-}
-
-.a11y-rule::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 0.75em;
-  width: 6px;
-  height: 6px;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  background-color: var(--vp-c-text-3);
-}
-
-.a11y-refs {
-  margin: 16px 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.a11y-refs-title {
-  margin: 0 0 8px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--vp-c-text-3);
-}
-
-.vp-raw .a11y-refs-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.vp-raw .a11y-ref {
-  position: relative;
-  padding-left: 30px;
+  padding: 10px 0;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--vp-c-text-3);
 }
 
-.vp-raw .a11y-ref + .a11y-ref {
-  margin-top: 6px;
+.a11y .a11y-ref + .a11y-ref {
+  border-top: 1px solid var(--vp-c-divider);
 }
 
-.a11y-ref::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 0.75em;
-  width: 6px;
-  height: 6px;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  background-color: var(--vp-c-text-3);
-}
-
-.vp-raw .a11y-ref a {
-  font-weight: 500;
+.a11y .a11y-ref a {
   color: var(--vp-c-text-2);
   text-decoration: none;
-  text-underline-offset: 2px;
 }
 
-.vp-raw .a11y-ref a:hover {
+.a11y .a11y-ref a:hover {
   color: var(--vp-c-text-1);
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .a11y .a11y-row {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+
+  .a11y .a11y-criteria {
+    grid-column: 2;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+    padding-top: 8px;
+  }
+
+  .a11y .a11y-group-hint {
+    display: none;
+  }
 }
 </style>

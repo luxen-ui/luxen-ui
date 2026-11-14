@@ -148,18 +148,15 @@ Wrap related buttons in [`<l-button-group>`](./button-group) to join them into a
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Color', Description: 'Text and background colors meet AA contrast ratios across all variants', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
-  { Check: 'Focus state', Description: 'Visible 2px focus ring for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Hover state', Description: 'Clear visual change on hover', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
-  { Check: 'Active state', Description: 'Visual feedback on press', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
-  { Check: 'Disabled state', Description: 'Reduced opacity, `cursor: not-allowed`, not focusable when disabled', WCAG: '[WCAG 2.5.2](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation)' },
-  { Check: 'Icon-only', Description: 'Icon-only buttons must have `aria-label` for an accessible name', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Role', Description: 'Uses native `<button>` or `<a>` — no extra ARIA role needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A visible 2px ring for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Text contrast passes', Description: 'Text and background colors meet AA ratios across all variants', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Disabled buttons not focusable', Description: 'With `disabled`, they also get reduced opacity and `cursor: not-allowed`' },
+  { Check: 'Visual change on hover', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
+  { Check: 'Visual feedback on press', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
 ]" :rules="[
-  'Use a native `<button>` element — never a `<div>` or `<span>`',
-  'Always add `aria-label` to icon-only buttons',
-  'Include `type=&quot;button&quot;` to prevent form submission (except for submit buttons)',
-  'When using `<a>` as a link button, add `role=&quot;button&quot;` only if it triggers an action rather than navigating',
+  { Check: 'Use a native `<button>`', Description: 'Or an `<a>` for a link button, never a `<div>` or `<span>`', Note: 'No extra ARIA role is needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Label icon-only buttons', Description: 'Give each one an `aria-label` as its accessible name', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Add `role=&quot;button&quot;` to action links', Description: 'Only on an `<a>` link button that triggers an action rather than navigating' },
 ]" />
 
 ### Keyboard interactions

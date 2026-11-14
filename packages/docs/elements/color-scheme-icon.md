@@ -133,13 +133,12 @@ Do not put a [switch](/elements/switch) in a menu row instead: a `role="menu"` m
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Decorative by default', Description: 'With no `label` the icon is `aria-hidden` — the surrounding row or button carries the accessible name, so nothing is announced twice', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.2)' },
-  { Check: 'Meaningful when named', Description: 'Setting `label` exposes `role=img` with that name, for the rare case where the glyph stands alone', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Reduced motion', Description: 'The morph collapses to 0ms under `prefers-reduced-motion`; the glyph still changes, it just does not animate', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Decorative icons hidden', Description: 'With no `label`, the icon is `aria-hidden`', Note: 'The surrounding row or button carries the accessible name, so nothing is announced twice', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.2)' },
+  { Check: 'Labelled icons announced', Description: 'Setting `label` exposes `role=img` with that name', Note: 'For the rare case where the glyph stands alone', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Reduced motion respected', Description: 'The morph collapses to 0ms under `prefers-reduced-motion`', Note: 'The glyph still changes, it just does not animate', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Leave the icon decorative when it sits inside a control that already has a name — a menu row, a button',
-  'Never rely on the glyph alone to convey the state; pair it with a label or an `aria-checked` row',
-  'Leave `scheme` unset unless the glyph must be pinned — it then follows the page and cannot disagree with it',
+  { Check: 'Don’t rely on the glyph alone', Description: 'Pair it with a label or an `aria-checked` row to convey the state' },
+  { Check: 'Omit `label` inside a named control', Description: 'Leave the icon decorative in a menu row or a button that already has a name' },
 ]" />
 
 ## API reference

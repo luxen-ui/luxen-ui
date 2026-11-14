@@ -112,14 +112,25 @@ Keep `variant` for the four interface states. A business family belongs in your 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Color contrast', Description: 'Text and background meet minimum contrast ratio across all appearances and variants', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
-  { Check: 'Non-text contrast', Description: 'Badge borders meet non-text contrast minimum against adjacent surfaces', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
-  { Check: 'Not color alone', Description: 'Do not rely on badge color alone to convey status — always include a text label', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Text contrast passes', Description: 'Every appearance and variant meets the minimum text ratio', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Border contrast passes', Description: 'Borders meet the non-text minimum against adjacent surfaces', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
 ]" :rules="[
-  'Always include visible text inside the badge — do not use color alone to convey meaning',
-  'When a badge conveys dynamic status, wrap it in a `role=&quot;status&quot;` container so screen readers announce changes',
-  'Verify a custom `--text-color` / `--background-color` pair yourself — the built-in variants are contrast-checked, a consumer palette is not',
-]" />
+  { Check: 'Add visible text', Description: 'Color alone must never carry the meaning', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Announce changing badges', Description: 'Wrap a badge whose content changes in a `role=&quot;status&quot;` container', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)', Code: 'status' },
+  { Check: 'Check custom color pairs', Description: 'Test your own `--text-color` / `--background-color` pair for contrast', Note: 'The built-in variants are already checked; a consumer palette is not', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+]">
+
+<template #status>
+
+```html
+<span role="status">
+  <l-badge variant="success">3 new</l-badge>
+</span>
+```
+
+</template>
+
+</AccessibilityTable>
 
 ## API reference
 
