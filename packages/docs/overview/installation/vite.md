@@ -54,18 +54,24 @@ bun add luxen-ui
 
 ## Configure the prefix
 
-Create `luxen.config.js` at the project root. Replace `l` with your own prefix — `acme` gives `<acme-badge>` and `.acme-button`. This guide keeps `l`.
+Create `luxen.config.js` at the project root. Uncomment to rename the `l-` prefix.
+
+::: code-group
 
 ```js [luxen.config.js]
 import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
-  elementPrefix: 'l', // <l-badge>
-  cssPrefix: 'l', // .l-button, --l-color-*
+  // elementPrefix: 'my', // <my-badge>
+  // cssPrefix: 'my', // .my-button, --my-color-*
 });
 ```
 
+:::
+
 Then create `vite.config.ts` to load it:
+
+::: code-group
 
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
@@ -76,26 +82,39 @@ export default defineConfig({
 });
 ```
 
+:::
+
 ## Import the CSS
 
 Replace the contents of `src/style.css`:
 
+::: code-group
+
+<!-- prettier-ignore -->
 ```css [src/style.css]
-@import 'luxen-ui/css/preset';
-@import 'luxen-ui/css/button';
-@import 'luxen-ui/css/badge';
+<!--@include: ./_snippets/imports.css-->
 ```
+
+:::
 
 ## Import the elements
 
 Replace the contents of `src/main.ts`:
 
+::: code-group
+
+<!-- prettier-ignore -->
 ```ts [src/main.ts]
 import './style.css';
-import 'luxen-ui/badge'; // [!code ++]
+
+<!--@include: ./_snippets/imports.ts-->
 ```
 
+:::
+
 ## Use the elements
+
+::: code-group
 
 <!-- prettier-ignore -->
 ```html [index.html]
@@ -107,6 +126,6 @@ import 'luxen-ui/badge'; // [!code ++]
 </body>
 ```
 
-</div>
+:::
 
-Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.
+</div>

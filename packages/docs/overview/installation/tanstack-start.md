@@ -56,52 +56,92 @@ bun add luxen-ui
 
 ## Configure the prefix
 
-Create `luxen.config.js` at the project root. Replace `l` with your own prefix — `acme` gives `<acme-badge>` and `.acme-button`. This guide keeps `l`.
+Create `luxen.config.js` at the project root. Uncomment to rename the `l-` prefix.
+
+::: code-group
 
 ```js [luxen.config.js]
 import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
-  elementPrefix: 'l', // <l-badge>
-  cssPrefix: 'l', // .l-button, --l-color-*
+  // elementPrefix: 'my', // <my-badge>
+  // cssPrefix: 'my', // .my-button, --my-color-*
 });
 ```
+
+:::
 
 Then load it in `vite.config.ts`:
 
+::: code-group
+
 <!-- prettier-ignore -->
 ```ts [vite.config.ts]
-import { defineConfig } from 'vite';
-import { devtools } from '@tanstack/devtools-vite';
-import { tanstackStart } from '@tanstack/react-start/plugin/vite';
-import viteReact from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import luxen from 'luxen-ui/vite-plugin'; // [!code ++]
+import { defineConfig } from 'vite'
+import { devtools } from '@tanstack/devtools-vite'
 
-export default defineConfig({
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+
+import viteReact from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import luxen from 'luxen-ui/vite-plugin' // [!code ++]
+
+const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()], // [!code --]
   plugins: [devtools(), tailwindcss(), luxen(), tanstackStart(), viteReact()], // [!code ++]
-});
+})
+
+export default config
 ```
+
+:::
 
 ## Import the CSS
 
+::: code-group
+
+<!-- prettier-ignore -->
 ```css [src/styles.css]
 @import 'tailwindcss';
-@import 'luxen-ui/tailwind/preset'; /* [!code ++] */
-@import 'luxen-ui/css/preset'; /* [!code ++] */
-@import 'luxen-ui/css/button'; /* [!code ++] */
-@import 'luxen-ui/css/badge'; /* [!code ++] */
+/* [!code ++:99] */
+/* ── Optional · Luxen tokens as Tailwind utilities ───────── */
+@import 'luxen-ui/tailwind/preset';
+
+<!--@include: ./_snippets/imports.css-->
 ```
 
-`luxen-ui/tailwind/preset` maps Luxen tokens to Tailwind utilities — see [Using with Tailwind](/overview/using-with-tailwind).
+:::
+
+## Import the elements
+
+::: code-group
+
+<!-- prettier-ignore -->
+```ts [src/luxen.ts]
+<!--@include: ./_snippets/imports.ts-->
+```
+
+:::
+
+Then import it once in the root route:
+
+::: code-group
+
+```tsx [src/routes/__root.tsx]
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
+import '../luxen'; // [!code ++]
+```
+
+:::
 
 ## Type the custom elements
 
-Create `src/luxen.d.ts` so TypeScript accepts `<l-*>` tags in JSX:
+Create `src/custom-elements.d.ts` so TypeScript accepts `<l-*>` tags in JSX:
 
-```ts [src/luxen.d.ts]
+::: code-group
+
+```ts [src/custom-elements.d.ts]
 import type { HTMLAttributes } from 'react';
 
 declare module 'react' {
@@ -114,12 +154,15 @@ declare module 'react' {
 }
 ```
 
+:::
+
 ## Use the elements
+
+::: code-group
 
 <!-- prettier-ignore -->
 ```tsx [src/routes/index.tsx]
 import { createFileRoute } from '@tanstack/react-router';
-import 'luxen-ui/badge'; // [!code ++]
 
 export const Route = createFileRoute('/')({ component: Home });
 
@@ -137,6 +180,6 @@ function Home() {
 }
 ```
 
-</div>
+:::
 
-Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.
+</div>
