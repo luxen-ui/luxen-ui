@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents working in this repository.
 
 ## Project Overview
 
@@ -13,33 +13,40 @@ Luxen UI is a web component library monorepo built with:
 - **Vite+ (`vp run`)** for monorepo task orchestration
 - **pnpm** with workspaces and `catalog:` protocol for centralized dependency versions
 
-Component naming convention: All custom elements use the `l-` prefix (e.g., `<l-badge>`, `<l-tab-group>`).
+Component naming convention: custom elements use the `l-` prefix by default (e.g. `<l-badge>`, `<l-tabs>`). Consumers can rename it, so element source never hardcodes it.
 
-## Designing UI mockups with this library
+## Where the rules live
 
-If you're an AI assistant composing page mockups (e.g. in a Claude.ai artifact) that consume `<l-*>` tags, read [`packages/ui/MOCKUPS.md`](./packages/ui/MOCKUPS.md). It contains the CDN-loading template that turns `l-*` tags into real custom elements rather than styled unknown elements.
+This file covers the repository as a whole. Read the file that matches what you are changing:
+
+| Working on                                      | Read                                  |
+| ----------------------------------------------- | ------------------------------------- |
+| Anything in `packages/ui`                       | `packages/ui/AGENTS.md`               |
+| Element CSS                                     | `.claude/rules/element-css.md`        |
+| Element TypeScript                              | `.claude/rules/element-ts.md`         |
+| Tests in `packages/ui/tests`                    | `.claude/rules/element-tests.md`      |
+| Anything in `packages/docs`                     | `packages/docs/AGENTS.md`             |
+| The Accessibility section of a docs page        | `.claude/rules/docs-accessibility.md` |
+| A page mockup that consumes `<l-*>` tags by CDN | `packages/ui/MOCKUPS.md`              |
+
+Claude Code loads the `.claude/rules/` files automatically when it touches a matching path; other agents must open them.
 
 ## Monorepo Structure
 
 The repository contains three packages under `packages/` and demo apps under `demos/`:
 
 1. **`luxen-ui`** (`packages/ui`) - Unified CSS + web components package
-   - CSS source in `src/css/` — design tokens, base styles, per-element CSS (flat files or appearance directories)
+   - CSS source in `src/css/` — token entry points, base styles, per-element CSS (flat files or appearance directories)
    - TypeScript + Lit custom elements in `src/html/elements/`
-   - Shared controllers in `src/html/controllers/`
-   - Builds modular CSS files using Vite (`vite.config.css.ts`)
-   - Builds JS to dual outputs:
-     - `dist/` - NPM package (ESM + types via `tsc`)
-     - `cdn/` - CDN-ready individual modules (via `vite.config.ts`)
-   - CSS output in `dist/css/`
-   - Generates `custom-elements.json` manifest via CEM analyzer
-   - Uses TypeScript decorators (`experimentalDecorators: true`)
-   - Exports: `luxen-ui` (JS), `luxen-ui/css` (CSS bundle), `luxen-ui/css/*` (per-element CSS), `luxen-ui/css/element/appearance` (per-appearance CSS), `luxen-ui/*` (per-element JS)
+   - Shared base classes, controllers and styles in `src/html/shared/`
+   - `elements.json` — the element registry (name and type of every element)
+   - Builds to `dist/` (npm: ESM + types + CSS + metadata) and `cdn/` (CDN-ready modules)
+   - Exports: `luxen-ui` (JS), `luxen-ui/css` (CSS bundle), `luxen-ui/css/*` (per-element CSS), `luxen-ui/css/element/appearance` (per-appearance CSS), `luxen-ui/*` (per-element JS), `luxen-ui/metadata` (element reference data)
 
 2. **`@luxen-ui/docs`** (`packages/docs`) - VitePress documentation site
    - Depends on `luxen-ui` via workspace protocol
    - Configuration: `packages/docs/.vitepress/config.js`
-   - Content in `packages/docs/` (markdown files)
+   - Content in `packages/docs/` (markdown files) — also the source of the Agent Skill consumers generate
 
 3. **`@luxen-ui/design-tokens`** (`packages/design-tokens`) - Standalone design-token distribution
    - CSS primitives, semantic aliases, palette, and an optional Tailwind bridge
@@ -53,13 +60,17 @@ The repository contains three packages under `packages/` and demo apps under `de
 ### Building
 
 ```bash
-# Build all packages (recursive via vp run)
+# Build all packages (recursive, cached, in dependency order)
 vp run -r build
 
 # Build specific package
 vp run luxen-ui#build
 vp run @luxen-ui/docs#build:docs
 ```
+
+The `luxen-ui` build is one long chain (`packages/ui/package.json` → `build`): CSS, TypeScript, CDN bundles, then the element metadata and several **checks that fail the build** — metadata gaps, README element tables out of date, malformed docs Accessibility tables — and finally the skill templates. When a build fails, read which script failed before touching the code.
+
+- CSS build scans `src/css/**/[^_]*.css` (files prefixed with `_` are partials) and uses the PostCSS transformer, not Lightning CSS.
 
 ### Development
 
@@ -74,83 +85,42 @@ cd packages/ui && pnpm dev:elements
 cd packages/docs && pnpm dev
 ```
 
-### Linting & Formatting
+### Checking & Testing
 
 ```bash
-# Lint all code (using oxlint - Rust-based fast linter)
-pnpm lint
+# Format, lint and type check
+vp check
 
-# Format code (using oxfmt)
-pnpm format
+# All tests (Node unit tests + browser component tests)
+vp run test
 
-# Check formatting without changes
-pnpm format:check
+# From packages/ui: one runner at a time
+pnpm test:unit
+pnpm test:components
 ```
 
 ### Element-Specific Commands
 
 ```bash
-# Generate custom elements manifest
-cd packages/ui && pnpm run manifest
+# Regenerate the element metadata (manifest → dist/metadata) and validate it
+cd packages/ui && pnpm run metadata
 ```
-
-## Key Architecture Details
-
-### Build Process
-
-The `luxen-ui` package has a multi-step build:
-
-1. **CSS build** (`vite build --config vite.config.css.ts`) — scans `src/css/**/[^_]*.css` (excluding `_` prefixed), outputs to `dist/css/`
-2. **TypeScript compilation** (`tsc`) — generates JS + types in `dist/`
-3. **CDN build** (`vite build`) — Rollup with glob input, outputs to `cdn/`
-4. **Manifest** (`cem analyze --litelement`) — generates `custom-elements.json`
-5. **Skill template preparation** (`node scripts/prepare-skill-templates.mjs`) — transforms VitePress element docs into plain markdown templates at `dist/templates/elements/` and copies `MOCKUPS.md` to `dist/templates/mockups.md`. Consumers then run `npx luxen-ui generate-skill` to assemble their own brand-aware skill folder.
-
-- Uses PostCSS transformer (not Lightning CSS) for CSS
-- CSS build supports watch mode via `WATCH=true` environment variable
-- Uses `@` alias pointing to `./src`
-
-### Web Component Pattern
-
-Components follow this structure:
-
-```typescript
-import { LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
-
-@customElement('l-component-name')
-export class ComponentName extends LitElement {
-  // Component implementation
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'l-component-name': ComponentName;
-  }
-}
-```
-
-Components document CSS custom properties via JSDoc `@cssproperty` tags for manifest generation.
-
-### Dependency Flow
-
-- `luxen-ui` depends on `lit` and `@floating-ui/dom`
-- `@luxen-ui/docs` depends on `luxen-ui` via `workspace:^`
-- `vp run -r` handles build order via the workspace dependency graph
-
-### Task Runner Configuration
-
-- `vp run -r --cache build` runs builds across all workspace packages with caching
-- Use `vp run <package>#<task>` to target a specific package
 
 ## Development Requirements
 
 - Node.js >= 24.x
 - pnpm (automatically used via `packageManager` field)
 
+## Commits
+
+Conventional commits, enforced by commitlint (`commitlint.config.js`):
+
+- Scope, when given, is one of `css`, `elements`, `docs`, `deps`, `monorepo`, `ai`.
+- Subject in lower case, including component and file names.
+
 ## Release Process
 
-Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR with user-facing impact must include a `.changeset/*.md` file. The `🦋 Changeset` CI job fails the PR otherwise.
+Releases are managed with [Changesets](https://github.com/changesets/changesets). A PR with user-facing impact must include a `.changeset/*.md` file. The `🦋 Changeset` CI job enforces it by PR title: it requires a changeset when the title type is `feat` or `fix`, and skips every other type (`docs`, `chore`, `test`, `refactor`…).
 
 ### Adding a changeset to a PR
 
@@ -164,11 +134,7 @@ The CLI prompts: which packages changed → patch/minor/major → write a one-pa
 - **minor** — new feature, backward-compatible
 - **major** — breaking change
 
-For PRs with no user-facing impact (docs, CI, internal refactor), create an empty changeset:
-
-```bash
-vp run changeset --empty
-```
+A PR with no user-facing impact (docs, CI, tests, internal refactor) takes no changeset: title it with a non-release type.
 
 ### How a release happens
 
