@@ -68,3 +68,21 @@ Keep the `.meta.ts` in sync with the element's `.css` file (the CSS custom prope
 ### Registry
 
 Every element has an entry in `elements.json` with a `type` field (`native` | `progressive` | `custom` | `shadow`) — add it for new elements; it drives metadata extraction and the `<ElementSpec>` banner.
+
+## Adding an element
+
+Every step below is needed; the ones marked ⛔ fail the build or CI when skipped, the others fail silently.
+
+1. **Registry** — add the entry to `elements.json` (`name`, `displayName`, `kind`, `type`, `inSkill`, `inMockups`). A custom element also joins the `ElementBaseName` union in `src/html/registry.ts`.
+2. **Source** — per the element type: CSS in `src/css/elements/<name>.css` (light DOM) or co-located in `src/html/elements/<name>/` (shadow), the class plus `index.ts` calling `define()`, or the `<name>.meta.ts` sidecar for a native element. Rules: `.claude/rules/element-css.md`, `.claude/rules/element-ts.md`.
+3. **Metadata** ⛔ — JSDoc on the class or the `.meta.ts`, then `pnpm run metadata` (see above).
+4. **Accessibility fixture** ⛔ — `tests/elements/a11y/fixtures/<name>.ts` with `defineA11yFixture({ name, states })`, one state per variant that changes colors, roles or structure. The suite's completeness guard fails for any `elements.json` entry without a fixture (or not listed in another fixture's `covers`, for sub-items). Run `pnpm test:components a11y`.
+5. **Component tests** — `tests/elements/<name>.browser.test.ts` for anything with behavior. Rules: `.claude/rules/element-tests.md`.
+6. **Docs page** — `packages/docs/elements/<name>.md`, following `packages/docs/AGENTS.md`. Then, in `packages/docs`:
+   - add `@import 'luxen-ui/css/<name>';` to `.vitepress/theme/tailwind.css` for a light-DOM element — without it the page renders the element unstyled, and nothing fails;
+   - add the sidebar entry in `.vitepress/config.js` (`el('Name', 'l-name', 'name')`);
+   - add the element to the list in `overview/introduction.md`.
+7. **README tables** ⛔ — `node scripts/generate-readme-tables.mjs --write` (root `README.md` and `packages/ui/README.md`; never edit them by hand).
+8. **Changeset** — `minor` for `luxen-ui`.
+
+Check the result in a browser: the docs page is the only place where a missing stylesheet import or a broken `:data` attribute shows.

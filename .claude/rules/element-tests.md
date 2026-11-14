@@ -12,7 +12,30 @@ Two runners, two jobs:
 
 Run: `vp run test` (both) · `pnpm test:unit` · `pnpm test:components`.
 
-How to write component tests:
+## Traps
+
+- **Component suites load no CSS.** An assertion on a computed style in
+  `tests/elements/<name>.browser.test.ts` passes whatever the stylesheet says.
+  Style behavior goes in its own `*-style.browser.test.ts` suite that imports
+  the tokens and the skin it tests (`src/css/tokens.css`,
+  `src/css/elements/<name>.css`). Reference:
+  `tests/elements/focus-ring-style.browser.test.ts`.
+- **Prove the test can fail.** Run a new test against the code before the fix
+  (set the change aside, do not weaken the test) and watch it fail. Polling
+  assertions on position or style pass on unfixed code more often than expected.
+- **The viewport is narrow** (414px wide by default). An anchored overlay placed
+  past that edge is clamped back by `shift()`, so a position assertion measures
+  the clamp, not the placement. Keep anchors inside the viewport.
+- **A popover's `:popover-open` stays true until its hide animation resolves**,
+  even at a duration of 0, and `document.getAnimations()` does not see into
+  shadow roots. Wait for the element's `after-hide` event, not for a fixed delay.
+- **`vp check` does not run the tests.** Before pushing: `pnpm test:components`,
+  which includes the axe suite (`pnpm test:components a11y` alone). That suite
+  runs with the real CSS and fails on contrast and on interactive targets under
+  24px, and it needs a fixture for every element — see `packages/ui/AGENTS.md` →
+  "Adding an element".
+
+## Writing component tests
 
 - **User-oriented, never theatre.** Drive the element like a person (click rows, press keys via a real `KeyboardEvent`) then assert what a user, their screen reader, or their CSS observes — focus, selection, the accessibility tree, selector targetability. Don't assert internal wiring or re-test the framework.
 - **`describe`/`it` read like a book's table of contents.** `describe` = a capability or persona scenario ("A keyboard user can move through the tree"); `it` = one observable outcome ("jumps to the first and last item with Home and End"). The verbose reporter should read as prose.

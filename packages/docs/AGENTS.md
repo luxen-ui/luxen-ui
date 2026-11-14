@@ -151,10 +151,13 @@ Don't write "as of v0.2" or "will be added in the next release". Use an "old pat
 
 ## When Adding a New Element
 
-Always update the element list in these files:
+The full checklist (registry, metadata, accessibility fixture, tests, README tables) is in `packages/ui/AGENTS.md` → "Adding an element". The steps that belong to this package:
 
-- `README.md` (repository root) — the element table in the project README
-- `packages/docs/overview/introduction.md` — the element list on the introduction page
+- `.vitepress/theme/tailwind.css` — add `@import 'luxen-ui/css/<name>';` for a light-DOM element. Without it the element renders unstyled on its page, and no check fails.
+- `.vitepress/config.js` — add the sidebar entry (`el('Name', 'l-name', 'name')`).
+- `overview/introduction.md` — add the element to the list on the introduction page.
+
+The element tables in `README.md` are generated (`node packages/ui/scripts/generate-readme-tables.mjs --write`), never edited by hand.
 
 The homepage "N custom elements" count and the marquee in `LandingTerminal.vue` are **not** hand-maintained — they derive from `luxen-ui/metadata` (the rail lists every top-level custom element, i.e. `isCustomElement && !subItemOf`). Adding or removing an element in `packages/ui/elements.json` and rebuilding metadata (`cd packages/ui && pnpm run metadata`) updates the count automatically. Don't reintroduce a hardcoded list or number.
 
