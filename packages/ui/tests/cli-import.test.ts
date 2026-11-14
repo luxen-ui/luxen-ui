@@ -47,16 +47,19 @@ describe('luxen-ui import --help tells the source from the destination', () => {
 });
 
 // The custom properties a stylesheet declares (`--l-foo: …`), not the ones it reads.
-const declaredTokens = (css: string) => new Set(css.match(/--l-[\w-]+(?=\s*:)/g));
+const declaredTokens = (css: string) =>
+  new Set(css.replace(/\/\*[\s\S]*?\*\//g, '').match(/--l-[\w-]+(?=\s*:)/g));
 
 // Resolves an `@import` the recipe prints: a `luxen-ui/css/*` entry through the
 // package's own exports map, a relative path against the project folder.
 const PKG_ROOT = resolve(import.meta.dirname, '..');
 const { exports } = JSON.parse(readFileSync(join(PKG_ROOT, 'package.json'), 'utf-8'));
-const readImport = (specifier: string) =>
-  specifier.startsWith('luxen-ui/')
-    ? readFileSync(join(PKG_ROOT, exports[specifier.replace('luxen-ui', '.')].import), 'utf-8')
-    : readFileSync(join(cwd, specifier), 'utf-8');
+const readImport = (specifier: string) => {
+  if (!specifier.startsWith('luxen-ui/')) return readFileSync(join(cwd, specifier), 'utf-8');
+  const entry = exports[specifier.replace('luxen-ui', '.')];
+  if (!entry) throw new Error(`The recipe imports ${specifier}, which luxen-ui does not export`);
+  return readFileSync(join(PKG_ROOT, entry.import), 'utf-8');
+};
 
 describe('The design-tokens recipe keeps every token Luxen ships', () => {
   it('declares every token of luxen-ui/css/tokens, component tokens included', () => {
@@ -64,12 +67,14 @@ describe('The design-tokens recipe keeps every token Luxen ships', () => {
     // The recipe is the run of consecutive `@import` lines that loads the copy.
     const lines = out.split('\n');
     const isImport = (line = '') => /^\s*@import '/.test(line);
-    let start = lines.indexOf("         @import './luxen-design-tokens.css';");
+    let start = lines.findIndex((line) => line.includes("@import './luxen-design-tokens.css';"));
     let end = start + 1;
-    expect(start).toBeGreaterThan(-1);
+    expect(start, 'the recipe imports the copied file').toBeGreaterThan(-1);
     while (isImport(lines[start - 1])) start--;
     while (isImport(lines[end])) end++;
     const recipe = lines.slice(start, end).map((line) => line.match(/@import '([^']+)'/)![1]);
+    // Same :root rule in the same layer: the copy must load last for its edits to win.
+    expect(recipe[recipe.length - 1]).toBe('./luxen-design-tokens.css');
 
     const declared = declaredTokens(recipe.map(readImport).join('\n'));
     const tokens = readFileSync(join(PKG_ROOT, 'dist/css/tokens.css'), 'utf-8');
