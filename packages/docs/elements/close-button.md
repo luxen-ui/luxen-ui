@@ -68,19 +68,16 @@ Pick a visual style via `data-appearance`. Each appearance has its own CSS impor
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Color', Description: 'Icon and background colors meet AA contrast ratios', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
-  { Check: 'Size', Description: 'Minimum 24×24px target size; larger for touch contexts', WCAG: '[WCAG 2.5.5](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced), [WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
-  { Check: 'Icon', Description: 'Decorative icon; `aria-label` on the button provides the accessible name', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1), [RGAA 1.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.3)' },
-  { Check: 'Hover state', Description: 'Clear visual change on hover', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
-  { Check: 'Focus state', Description: 'Visible focus ring for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Active state', Description: 'Visual feedback on press', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
-  { Check: 'Disabled state', Description: 'Appears inactive, not focusable when disabled', WCAG: '[WCAG 2.5.2](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation)' },
-  { Check: 'Accessible name', Description: 'Always provide `aria-label` or context-specific label', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1), [RGAA 11.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.2)' },
-  { Check: 'Role', Description: 'Uses native `<button>` — no extra ARIA role needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A visible ring for keyboard users', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Icon contrast passes', Description: 'Icon and background colors meet AA ratios', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: '24px minimum target', Description: 'At least 24×24px, larger for touch contexts', WCAG: '[WCAG 2.5.5](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced), [WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
+  { Check: 'Icon is decorative', Description: 'The accessible name comes from the button’s `aria-label`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1), [RGAA 1.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.3)' },
+  { Check: 'Disabled buttons not focusable', Description: 'With `disabled`, they also appear inactive' },
+  { Check: 'Visual change on hover', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [WCAG 1.4.13](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus)' },
+  { Check: 'Visual feedback on press', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color)' },
 ]" :rules="[
-  'Always add `aria-label=&quot;Close&quot;` (or a context-specific label like `aria-label=&quot;Close dialog&quot;`)',
-  'Use a native `<button>` element — never a `<div>` or `<span>`',
-  'Include `type=&quot;button&quot;` to prevent form submission',
+  { Check: 'Label the close button', Description: 'Add `aria-label=&quot;Close&quot;`, or a context-specific label like `aria-label=&quot;Close dialog&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1), [RGAA 11.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.2)' },
+  { Check: 'Use a native `<button>`', Description: 'Never a `<div>` or `<span>`', Note: 'No extra ARIA role is needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
 ]" />
 
 ### Keyboard interactions

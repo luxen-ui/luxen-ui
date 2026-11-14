@@ -107,17 +107,14 @@ Wrap the group in a `<fieldset class="l-radio-group">` with a `<legend>` so assi
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Uses native `<input type=radio>` — built-in `radio` semantics, grouped into a `radiogroup` by a shared `name` inside a `fieldset`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Group name', Description: 'Wrap the group in `<fieldset>` with a `<legend>` so the shared question is announced', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.5)' },
-  { Check: 'Accessible name', Description: 'Each radio must have an associated `<label>` (wrap the input or use `for`/`id`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Target size', Description: 'The label is part of the click target; keep the interactive area at least 24×24px', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
-  { Check: 'Focus visible', Description: 'Keyboard focus shows a 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Required state', Description: 'Native `required` on the group communicates a mandatory choice to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
 ]" :rules="[
-  'Always pair each radio with a `<label>` — wrap the input or link with `for`/`id`',
-  'Group related radios with a shared `name` and wrap them in `<fieldset>` + `<legend>`',
-  'Pre-select a sensible default unless the choice must be deliberate',
-  'For a single on/off setting, use a checkbox or a switch — not one radio',
+  { Check: 'Label the field', Description: 'Wrap each radio in a `<label>`, or link one with `for` / `id`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Group radios in a named `<fieldset>`', Description: 'Give related radios a shared `name` and wrap them in a `<fieldset>` with a `<legend>`', Note: 'The legend announces the shared question', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.5)' },
+  { Check: 'Use a native `<input type=&quot;radio&quot;>`', Note: 'It brings built-in `radio` semantics, grouped into a `radiogroup` by a shared `name` inside a `fieldset`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Keep the target at least 24×24px', Note: 'The label is part of the click target', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
+  { Check: 'Mark required fields with `required`', Description: 'Native `required` on the group communicates a mandatory choice to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Don’t use a single radio for on/off', Description: 'Use a checkbox or a switch instead' },
 ]" />
 
 ### Keyboard interactions

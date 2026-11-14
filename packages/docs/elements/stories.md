@@ -88,15 +88,15 @@ Slot a CTA into `<l-story slot="cta">`. The viewer surfaces it only on the activ
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Roles', Description: 'Row is a `list` of triggers; viewer is a native modal `<dialog>`; progress bar has `role=&quot;progressbar&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'Each thumbnail uses `label` as its `aria-label`; viewer announces &quot;Story X of N — label&quot; on change', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Focus management', Description: 'Native dialog traps focus; closes restore focus to the originating thumbnail', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Autoplay policy', Description: 'Video opens muted by default — `m` or the mute toggle requires a user gesture to unmute', WCAG: '[WCAG 1.4.2](https://www.w3.org/WAI/WCAG22/Understanding/audio-control)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion` for transitions and progress fill smoothing', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'List and dialog roles exposed', Description: 'The row is a `list` of triggers, the viewer a native modal `<dialog>`, the progress bar a `role=&quot;progressbar&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Thumbnails named from `label`', Description: 'Each thumbnail uses `label` as its `aria-label`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Story changes announced', Description: 'The viewer announces &quot;Story X of N — label&quot; on change', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus trapped while open', Description: 'The native dialog traps focus', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus returns to the thumbnail on close', Description: 'Closing restores focus to the originating thumbnail', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Video opens muted', Description: 'Only a user gesture unmutes it: `m` or the mute toggle', WCAG: '[WCAG 1.4.2](https://www.w3.org/WAI/WCAG22/Understanding/audio-control)' },
+  { Check: 'Reduced motion respected', Description: 'Transitions and progress fill smoothing follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Always provide a `label` on every `l-story` — it becomes the trigger `aria-label`',
-  'Pair the row and viewer with matching `for` ↔ `id` so multiple rows can share one viewer',
-  'Provide poster images so the row renders without loading any video',
+  { Check: 'Label every story', Description: 'Set a `label` on every `l-story`', Note: 'It becomes the trigger `aria-label`' },
 ]" />
 
 ### Keyboard interactions

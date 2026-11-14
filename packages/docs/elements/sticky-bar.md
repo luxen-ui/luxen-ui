@@ -77,13 +77,13 @@ Both demos start with the bar **revealed** (the Add to cart button sits below th
 The element is a positioning shell — it adds no role of its own. Slotted content keeps its native semantics: a `<button>` stays a button, a `<form>` stays a form, links remain in the focus order.
 
 <AccessibilityTable :data="[
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion` — the slide animation collapses to instant', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
-  { Check: 'Focus order', Description: 'Slotted content stays in the natural focus order. Do not focus-trap inside the bar — it is not a dialog', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
-  { Check: 'Contrast', Description: 'The bar inherits text and background from slotted content — apply your own contrast tokens', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum)' },
+  { Check: 'Natural focus order kept', Description: 'Slotted content stays in the natural focus order', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
+  { Check: 'Reduced motion respected', Description: 'The slide animation collapses to instant under `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Keep the bar action self-explanatory (e.g. duplicate the in-page button label, do not introduce a new verb)',
-  'Use `--offset` to clear a sticky header when `placement=&quot;top&quot;` to avoid overlap',
-  'Do not nest live regions or modal-like behavior inside the bar',
+  { Check: 'Check your content’s contrast', Description: 'Apply your own contrast tokens', Note: 'The bar inherits text and background from slotted content', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum)' },
+  { Check: 'Don’t trap focus in the bar', Note: 'It is not a dialog', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order)' },
+  { Check: 'Don’t nest live regions or modal-like behavior' },
+  { Check: 'Keep the bar action self-explanatory', Description: 'Duplicate the in-page button label rather than introducing a new verb' },
 ]" />
 
 ## API reference

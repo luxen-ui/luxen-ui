@@ -54,13 +54,12 @@ Add `data-orientation="vertical"` attribute.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Uses native `<progress>` — implicit `progressbar` role', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'Must have an associated `<label>` or `aria-label`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Color', Description: 'Indicator and track colors meet non-text contrast ratio', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast)' },
-  { Check: 'Motion', Description: 'Indeterminate animation respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Indicator contrast passes', Description: 'Indicator and track colors meet the non-text minimum', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast)' },
+  { Check: 'Reduced motion respected', Description: 'The indeterminate animation follows `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Always pair the `<progress>` element with a visible `<label>` or `aria-label`',
-  'Set `value` for determinate progress; omit for indeterminate',
+  { Check: 'Label the progress bar', Description: 'Pair the `<progress>` with a visible `<label>` or an `aria-label`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Use a native `<progress>`', Description: 'It has the implicit `progressbar` role', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Omit `value` for indeterminate progress', Description: 'Set it for determinate progress' },
 ]" />
 
 ## API reference

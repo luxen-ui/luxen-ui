@@ -107,12 +107,13 @@ Add `unstyled` to keep the accessibility wiring while opting out of auto-styling
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Label association', Description: 'Links `<label for>` to the control `id`, generating an `id` when missing', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Description', Description: 'Links `.l-hint` and the visible `.l-error` to the control via `aria-describedby`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
-  { Check: 'Error identification', Description: 'Sets `aria-invalid` and announces `.l-error` (`role=alert`) once invalid after interaction', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Label associated with the control', Description: 'Links `<label for>` to the control `id`, generating an `id` when missing', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Hint and error linked to the control', Description: 'Links `.l-hint` and the visible `.l-error` via `aria-describedby`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Errors announced after interaction', Description: 'Sets `aria-invalid` and announces `.l-error` (`role=&quot;alert&quot;`) once the control is invalid', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
 ]" :rules="[
-  'Put exactly one control (input / select / textarea) per `l-form-field`',
-  'Provide a `<label>`; use `.l-hint` for guidance and `.l-error` for the validation message',
+  { Check: 'Label the field', Description: 'Put a `<label>` in the `l-form-field`' },
+  { Check: 'Wrap exactly one control', Description: 'One input, select or textarea per `l-form-field`' },
+  { Check: 'Use `.l-hint` and `.l-error` for messages', Description: '`.l-hint` for guidance, `.l-error` for the validation message' },
 ]" />
 
 ## API reference

@@ -116,12 +116,12 @@ Drag-free with scrollbar and outside navigation buttons.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Each `<l-carousel-item>` has `role=&quot;group&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Dot navigation', Description: 'Dots use `role=&quot;tab&quot;` with `aria-label` and `aria-selected`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Disabled buttons', Description: 'Previous/next buttons are `disabled` when at scroll boundaries', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Slides exposed as groups', Description: 'Each `<l-carousel-item>` has `role=&quot;group&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Dots exposed as tabs', Description: 'Each dot has `role=&quot;tab&quot;`, an `aria-label` and `aria-selected`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Arrows disabled at the ends', Description: 'Previous and next buttons are `disabled` at the scroll boundaries', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
 ]" :rules="[
-  'Add descriptive `aria-label` to the carousel element when context is needed',
-  'Provide meaningful alt text on images inside carousel items',
+  { Check: 'Add alt text to slide images', Description: 'Give every image inside a carousel item meaningful `alt` text' },
+  { Check: 'Name the carousel', Description: 'Add a descriptive `aria-label` to the carousel element when context is needed' },
 ]" />
 
 ### Keyboard interactions

@@ -125,12 +125,12 @@ Once upgraded, the shadow root renders the interactive track and thumbs.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Each thumb is a `role=&quot;slider&quot;` with `aria-valuemin` / `aria-valuemax` / `aria-valuenow`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Set `label`; in range mode each thumb is suffixed Minimum / Maximum', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Target size', Description: 'Each thumb exposes a ≥24×24px hit area', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
-  { Check: 'Focus', Description: 'Focused thumb shows a focus ring via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Slider role and value exposed', Description: 'Each thumb is a `role=&quot;slider&quot;` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Range thumbs suffixed Minimum / Maximum', Description: 'In range mode, each thumb’s name gets a Minimum or Maximum suffix', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'The focused thumb shows it via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: '24px minimum target', Description: 'Each thumb exposes a ≥24×24px hit area', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
 ]" :rules="[
-  'Always set `label` so each thumb has an accessible name',
+  { Check: 'Label the field', Description: 'Set `label`', Note: 'It gives each thumb its accessible name', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions

@@ -99,7 +99,7 @@ One-line description.
 ...
 
 ## Accessibility             ← required for interactive elements
-### Criteria                 ← <AccessibilityTable> with WCAG + RGAA criteria
+### Criteria                 ← <AccessibilityTable>: Your part + Built in checklist
 ### Keyboard interactions    ← <KeyboardTable> with Key/Description
 
 ## API reference              ← headings in exactly this order; omit the ones the element doesn't have
@@ -120,9 +120,7 @@ One-line description.
 - **Options** subsections each have a one-line description explaining the "how" (e.g., "Add `data-variant=\"primary\"`.", "Native `disabled` attribute."), followed by `<ComponentWrapper>` + `::: details Code`
 - **Examples** shows realistic compositions (icon+text, button group, form actions...)
 - **Appearance** (optional) — for elements with multiple visual themes via `data-appearance`. List each appearance as an `####` subheading with a `<ComponentWrapper>` preview and a `::: code-group` CSS import block. See `close-button.md` for reference.
-- **Accessibility** (required for interactive elements) — two subsections:
-  - **Criteria** uses `<AccessibilityTable>` with `Check`, `Description`, and `WCAG` columns. Always include both **WCAG** and **RGAA** criteria where applicable. Format: `[WCAG 1.4.3](url), [RGAA 3.2](url)`. The `:rules` prop lists integration rules (e.g., "Always add `aria-label`") — they render as a **Rules** list under the criteria on the docs site _and_ feed the generated skill, so write them for both audiences. See `close-button.md` for reference.
-  - **Keyboard interactions** uses `<KeyboardTable>` with `Key` and `Description` columns. Keys support `+` separator (e.g., `Shift + Tab`). See `close-button.md` for reference.
+- **Accessibility** (required for interactive elements) — a **Criteria** checklist (`<AccessibilityTable>`) and a **Keyboard interactions** table (`<KeyboardTable>`). The writing rules live in their own file: read `.claude/rules/docs-accessibility.md` (repository root) before touching this section. Claude Code loads it automatically on element docs and Foundations guides; other agents must open it.
 - **API reference** tables are **generated from the element source**, not hand-written. Use `<ApiTable element="<name>" section="<section>" />` (sections: `properties`, `attributes`, `events`, `methods`, `slots`, `cssClasses`, `cssParts`, `cssStates`, `cssProperties`, `commands`) and `<ElementSpec element="<name>" />`. The data comes from the element's JSDoc / native `*.meta.ts` sidecar via `luxen-ui/metadata` — to add or fix a row, edit the **source**, not the doc (see `packages/ui/CLAUDE.md` → "Element Reference Metadata"). The `metadata` build check fails if a referenced section is empty or mis-routed, and if the `###` headings drift from the order and spelling above (a heading not in that list, like `ToastOptions`, is allowed and stays right below the section it belongs to). Rows inside each table are sorted at build time — alphabetically, except the default slot first and the overlay lifecycle events (`show`, `after-show`, `hide`, `after-hide`) in firing order — so JSDoc tag order doesn't matter. Inline `<ApiTable :data="[…]" />` remains only for data that isn't code-derived (e.g. a function's options object).
 
 ### Examples over explanations
@@ -171,7 +169,7 @@ The homepage "N custom elements" count and the marquee in `LandingTerminal.vue` 
 - [ ] Options section covers each feature in isolation with `<ComponentWrapper>`
 - [ ] Examples section shows real-world patterns and compositions
 - [ ] Has `outline: deep` frontmatter
-- [ ] Accessibility section (for interactive elements): Criteria with both WCAG + RGAA references, Keyboard interactions table
+- [ ] Accessibility section (for interactive elements) follows `.claude/rules/docs-accessibility.md`
 - [ ] API reference uses `<ApiTable element section>` / `<ElementSpec element>` (metadata-driven) — and the underlying element source (JSDoc / `*.meta.ts`) actually exposes every referenced section
 - [ ] No inline styles — use Tailwind CSS utility classes instead
 - [ ] No time-sensitive language

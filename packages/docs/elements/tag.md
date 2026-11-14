@@ -155,16 +155,16 @@ Pair a semantic text token with its matching `-soft` fill — those two are desi
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Accessible name', Description: 'The remove button exposes a localized `Remove` label', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Target size', Description: 'The remove button keeps a minimum 24×24px hit target, and a selectable chip is taller than a display one', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
-  { Check: 'Keyboard', Description: 'The remove button is reachable with Tab and removes the tag with Backspace / Delete; a selectable tag toggles with Enter or Space', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.9](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.9)' },
-  { Check: 'State', Description: 'A selectable tag exposes `aria-pressed`, or the checked state of its checkbox with `control=checkbox`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Color contrast', Description: 'The label keeps the minimum contrast ratio over the chip background in every state, including selected and disabled', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
-  { Check: 'Not colour alone', Description: 'With `control=checkbox` the checkmark conveys selection alongside the tint', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Remove button labelled', Description: 'It exposes a localized `Remove` label', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Selection exposed', Description: 'A selectable tag exposes `aria-pressed`, or the checked state of its checkbox with `control=checkbox`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Remove and toggle work by keyboard', Description: 'The remove button is reachable with `Tab` and removes the tag with `Backspace` / `Delete`; a selectable tag toggles with `Enter` or `Space`', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.9](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.9)' },
+  { Check: 'Selection not shown by color alone', Description: 'With `control=checkbox` the checkmark conveys selection alongside the tint', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Text contrast passes', Description: 'The label keeps the minimum ratio over the chip background in every state, including selected and disabled', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: '24px minimum target', Description: 'On the remove button; a selectable chip is taller than a display one', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [RGAA 13.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#13.10)' },
 ]" :rules="[
-  'Always give a removable tag a visible text label so its remove button has context',
-  'Group related selectable tags under a visible heading, and give the group a role of `group` with an `aria-label` when the heading is not adjacent',
-  'Use `control=checkbox` for a multi-select axis and the default toggle for a single-value one — never radios, which cannot be released once checked',
+  { Check: 'Give removable tags visible text', Note: 'It gives the remove button its context' },
+  { Check: 'Group related selectable tags', Description: 'Put them under a visible heading, and give the group `role=&quot;group&quot;` with an `aria-label` when the heading is not adjacent' },
+  { Check: 'Use `control=checkbox` for multi-select', Description: 'Keep the default toggle for a single-value axis, and never use radios', Note: 'Radios cannot be released once checked' },
 ]" />
 
 ### Keyboard interactions

@@ -56,15 +56,13 @@ Put a `<button>` in each sortable header, and `aria-sort="ascending"` or `"desce
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Table name', Description: 'A `<caption>` (visible or `.l-visually-hidden`) or `aria-label` names the table', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 5.4](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.4)' },
-  { Check: 'Headers', Description: 'Column headers are `<th scope=&quot;col&quot;>` and each row has a `<th scope=&quot;row&quot;>`, so a screen reader announces the column and the record with every cell', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 5.6](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.6), [RGAA 5.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.7)' },
-  { Check: 'Sort state', Description: '`aria-sort` on the sorted `<th>` is announced with the header; the control is a native `<button>`, as in the APG sortable table example', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Sort glyph', Description: 'The direction glyph of an unsorted column uses the tertiary text color, above 3:1 against the surface in both schemes', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
-  { Check: 'Focus ring', Description: 'Header buttons show the Luxen focus ring', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Unsorted glyph contrast passes', Description: 'The direction glyph of an unsorted column uses the tertiary text color, above 3:1 against the surface in both schemes', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
+  { Check: 'Focus ring on header buttons', Description: 'Header buttons show the Luxen focus ring', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
 ]" :rules="[
-  'Name the table with a `&lt;caption&gt;` or `aria-label`',
-  'Use `&lt;th scope=&quot;col&quot;&gt;` for column headers and `&lt;th scope=&quot;row&quot;&gt;` for the cell that identifies each row',
-  'Put the sort control in a `&lt;button&gt;` (or a link, when the server sorts) inside the header, and `aria-sort` on the sorted `&lt;th&gt;` only',
+  { Check: 'Mark up column and row headers', Description: 'Use `<th scope=&quot;col&quot;>` for column headers and `<th scope=&quot;row&quot;>` for the cell that identifies each row', Note: 'A screen reader then announces the column and the record with every cell', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 5.6](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.6), [RGAA 5.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.7)' },
+  { Check: 'Name the table', Description: 'Add a `<caption>` (visible or `.l-visually-hidden`) or an `aria-label`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 5.4](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#5.4)' },
+  { Check: 'Set `aria-sort` on the sorted `<th>` only', Note: 'It is announced with the header', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Sort with a native `<button>`', Description: 'Put it inside the header, or use a link when the server sorts', Note: 'As in the [APG sortable table example](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
 ]" />
 
 ### Keyboard interactions

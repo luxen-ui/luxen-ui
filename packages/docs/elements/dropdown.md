@@ -170,20 +170,21 @@ The row reflects and changes the page's [color scheme](/overview/color-scheme); 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Trigger is a menu button (`aria-haspopup=&quot;menu&quot;`); panel has `role=&quot;menu&quot;`, items have `role=&quot;menuitem&quot;`, `role=&quot;menuitemcheckbox&quot;` or `role=&quot;menuitemradio&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Accessible name', Description: 'Each `role=&quot;menu&quot;` panel is named — the root menu after its trigger, every submenu after its parent item', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Expanded state', Description: 'Trigger receives `aria-expanded` reflecting open state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Checked state', Description: 'Checkbox and radio items use `aria-checked` to communicate their state; checking a radio item unchecks the others of its group', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Submenu state', Description: 'Items with a submenu expose `aria-haspopup=&quot;menu&quot;`, `aria-controls`, and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Disabled state', Description: 'Disabled items use `aria-disabled`, remaining in the DOM for discoverability', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Focus moves into menu on open and returns to trigger on close; Tab closes the menu', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Focus visible', Description: 'The focused item shows a focus ring distinct from the hover state', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Menu roles exposed', Description: 'The trigger is a menu button (`aria-haspopup=&quot;menu&quot;`); the panel has `role=&quot;menu&quot;`; items have `role=&quot;menuitem&quot;`, `role=&quot;menuitemcheckbox&quot;` or `role=&quot;menuitemradio&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Every menu panel named', Description: 'The root menu is named after its trigger, every submenu after its parent item', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Focus moves into the menu on open', Description: '`Tab` closes the menu', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Focus returns to the trigger on close', WCAG: '[WCAG 2.4.3](https://www.w3.org/WAI/WCAG22/Understanding/focus-order), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Open state exposed', Description: '`aria-expanded` on the trigger reflects the open state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Checked state exposed', Description: 'Checkbox and radio items carry `aria-checked`; checking a radio item unchecks the others of its group', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Submenu state exposed', Description: 'Items with a submenu carry `aria-haspopup=&quot;menu&quot;` and `aria-controls`, and reflect `aria-expanded`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Disabled items stay discoverable', Description: 'They carry `aria-disabled` and remain in the DOM', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'The focused item shows a ring distinct from the hover state', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Use a `<button>` element for the trigger in the `trigger` slot',
-  'Every item must have visible text content for its accessible name',
-  'For checkbox items, set `type=&quot;checkbox&quot;` — the component handles `aria-checked` automatically',
-  'For a single choice, set `type=&quot;radio&quot;` instead of checkbox items, so assistive tech announces mutually exclusive options',
+  { Check: 'Use a `<button>` as the trigger', Description: 'Put it in the `trigger` slot' },
+  { Check: 'Give every item visible text', Note: 'It becomes the item’s accessible name' },
+  { Check: 'Use `type=&quot;radio&quot;` for a single choice', Description: 'Instead of checkbox items', Note: 'Assistive tech then announces mutually exclusive options' },
+  { Check: 'Set `type=&quot;checkbox&quot;` on checkbox items', Note: 'The element then handles `aria-checked` itself' },
 ]" />
 
 ### Keyboard interactions

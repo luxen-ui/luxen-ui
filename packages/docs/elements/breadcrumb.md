@@ -80,15 +80,13 @@ Add `data-unstyled-links` to opt out of Luxen's link theming and apply your own 
 ### Criteria
 
 <AccessibilityTable :data="[
-{ Check: 'Landmark', Description: 'A `<nav>` with an `aria-label` of `Breadcrumb` exposes the trail as a named navigation region', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.2)' },
-{ Check: 'Structure', Description: 'Crumbs sit in an ordered list (`<ol>`/`<li>`), conveying sequence to assistive tech', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
-{ Check: 'Current page', Description: 'An `aria-current` of `page` on the last crumb identifies the user\'s location', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-{ Check: 'Decorative separators', Description: 'Separators are CSS pseudo-elements, never in the DOM, so they are not announced', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
-{ Check: 'Color contrast', Description: 'Link and separator colors meet contrast against the background', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Separators hidden from assistive tech', Description: 'They are CSS pseudo-elements, never in the DOM, so they are not announced', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
+  { Check: 'Text contrast passes', Description: 'Link and separator colors meet the minimum against the background', WCAG: '[WCAG 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
 ]" :rules="[
-'Wrap the trail in a `<nav>` with an `aria-label` of `Breadcrumb` and use a single `<ol>` of `<li>` crumbs',
-'Mark the current page with `aria-current` set to `page` on its `<a>`',
-'Give standalone icons (e.g. a home glyph) an accessible name via the `label` attribute',
+  { Check: 'Mark the current page', Description: 'Set `aria-current=&quot;page&quot;` on the `<a>` of the last crumb', Note: 'It identifies the user’s location', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Label the `<nav>` landmark', Description: 'Wrap the trail in a `<nav>` with `aria-label=&quot;Breadcrumb&quot;`', Note: 'It exposes the trail as a named navigation region', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.2)' },
+  { Check: 'Use a single `<ol>` of crumbs', Description: 'One `<li>` per crumb', Note: 'An ordered list conveys the sequence to assistive tech', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
+  { Check: 'Label standalone icons', Description: 'Give an icon such as a home glyph an accessible name with its `label` attribute' },
 ]" />
 
 ### Keyboard interactions

@@ -105,20 +105,57 @@ The check runs again whenever a panel's content changes, so a panel filled after
 
 ### Criteria
 
+Follows the [APG tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) with [automatic activation](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#decidingwhentomakeselectionautomaticallyfollowfocus): arrow keys move focus and select the tab in one step.
+
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'First child div gets `role=&quot;tablist&quot;`, buttons get `role=&quot;tab&quot;`, remaining divs get `role=&quot;tabpanel&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
-  { Check: 'Linked controls', Description: 'Each tab has `aria-controls` pointing to its panel; each panel has `aria-labelledby` pointing back to its tab', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
-  { Check: 'Selection state', Description: 'Active tab has `aria-selected=&quot;true&quot;`; inactive tabs have `aria-selected=&quot;false&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Focus management', Description: 'Roving tabindex — active tab has `tabindex=&quot;0&quot;`, others `tabindex=&quot;-1&quot;`. A panel takes `tabindex=&quot;0&quot;` unless its first content is already focusable, per the APG', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.13)' },
-  { Check: 'Disabled tabs', Description: 'Tabs marked `disabled` or `aria-disabled=&quot;true&quot;` are skipped by arrow keys, `Home` and `End`, and never take the roving `tabindex=&quot;0&quot;` — so the tablist always keeps a reachable entry point', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
-  { Check: 'Hidden content', Description: 'Inactive panels use the `hidden` attribute', WCAG: '[WCAG 1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence)' },
-  { Check: 'Motion', Description: 'Indicator animation respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Tab roles exposed', Description: '`tablist`, `tab` and `tabpanel` go on the matching children', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 7.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.1)' },
+  { Check: 'Tabs and panels linked', Description: '`aria-controls` points from each tab to its panel; `aria-labelledby` points back', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
+  { Check: 'Selection exposed', Description: '`aria-selected` follows the active tab', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'One Tab stop for the tablist', Description: 'Roving tabindex: only the active tab is in the tab order', Note: 'A panel takes `tabindex=&quot;0&quot;` unless its first content is already focusable, per the [APG](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/#keyboardinteraction)', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 12.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#12.13)' },
+  { Check: 'Disabled tabs skipped', Description: 'Arrow keys, `Home` and `End` pass over tabs with `disabled` or `aria-disabled=&quot;true&quot;`', Note: 'They never take the roving `tabindex=&quot;0&quot;`, so the tablist always keeps a reachable entry point', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
+  { Check: 'Inactive panels hidden', Description: 'They carry the `hidden` attribute', WCAG: '[WCAG 1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence)' },
+  { Check: 'Reduced motion respected', Description: 'The indicator animation follows `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'The first child of `l-tabs` must be a `div` containing `button` elements for the tab triggers',
-  'Each remaining child `div` maps to a tab panel in order',
-  'Do not add `role` or `aria-*` attributes manually — the custom element sets them automatically',
-  '`l-tabs` has no host-level `disabled` attribute — put `inert` on the tablist `div` to freeze tab switching',
-]" />
+  { Check: 'Put tab buttons first, panels after', Description: 'The first child is a `div` of `button` triggers; each following `div` is a panel, in order', Code: 'structure' },
+  { Check: 'Label every tab', Description: 'Use visible text, or an `aria-label` when the tab shows only an icon', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)', Code: 'label' },
+  { Check: 'Don’t add ARIA yourself', Description: 'Leave `role` and `aria-*` to the custom element', Note: 'It sets and updates them; hand-written values go stale' },
+  { Check: 'Freeze with `inert`, not `disabled`', Description: 'Put `inert` on the tablist `div` to stop tab switching', Note: '`l-tabs` has no host-level `disabled` attribute', Code: 'freeze' },
+]">
+
+<template #structure>
+
+```html
+<l-tabs>
+  <div><button>Account</button><button>Billing</button></div>
+  <div>Account settings</div>
+  <div>Billing details</div>
+</l-tabs>
+```
+
+</template>
+
+<template #label>
+
+```html
+<button aria-label="Settings">
+  <l-icon name="lucide:settings"></l-icon>
+</button>
+```
+
+</template>
+
+<template #freeze>
+
+```html
+<l-tabs>
+  <div inert>…</div>
+  …
+</l-tabs>
+```
+
+</template>
+
+</AccessibilityTable>
 
 ### Keyboard interactions
 

@@ -93,18 +93,15 @@ In a `dir="rtl"` context the thumb rests at the inline-start (right) and slides 
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Native `<input type=checkbox>` plus `role=switch` — exposes the `switch` role with an on/off state', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Pair the switch with a `<label>` (wrap the input or use `for`/`id`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'State, not color', Description: 'On/off is conveyed by the thumb position and the `checked` state, not by color alone', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
-  { Check: 'Target size', Description: 'The label is part of the click target; keep the interactive area at least 24×24px', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
-  { Check: 'Focus visible', Description: 'Keyboard focus shows a 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Reduced motion', Description: 'The slide and squish animations collapse to 0ms under `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
-  { Check: 'High contrast', Description: 'In forced-colors mode the track gains a system-color outline and the on state switches it to `Highlight`', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast)' },
+  { Check: 'State not conveyed by color alone', Description: 'The thumb position and the `checked` state carry on/off', WCAG: '[WCAG 1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color), [RGAA 3.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.1)' },
+  { Check: 'Track visible in forced-colors mode', Description: 'The track gains a system-color outline, and the on state switches it to `Highlight`', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Reduced motion respected', Description: 'The slide and squish animations collapse to 0ms under `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Always add `role=\'switch\'` to the `<input type=\'checkbox\'>` — the skin and the inline field layout depend on it',
-  'Always pair the switch with a `<label>` — wrap the input or link with `for`/`id`',
-  'Use a switch only for settings that apply immediately; use a checkbox when the change is committed on submit',
-  'Write the label as the thing being turned on (e.g. `Email notifications`), not an instruction',
+  { Check: 'Label the field', Description: 'Wrap the input in a `<label>`, or link one with `for` / `id`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Add `role=&quot;switch&quot;` to a checkbox input', Description: 'Put it on a native `<input type=&quot;checkbox&quot;>`', Note: 'It exposes the `switch` role with an on/off state, and the skin and inline field layout depend on it', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Keep the target at least 24×24px', Note: 'The label is part of the click target', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
+  { Check: 'Name the setting, not an action', Description: 'Write the label as the thing being turned on, such as `Email notifications`' },
 ]" />
 
 ### Keyboard interactions

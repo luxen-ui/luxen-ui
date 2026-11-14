@@ -54,11 +54,10 @@ Set `animation` to `pulse` (default) or `wave`.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Motion', Description: 'Animation respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
-  { Check: 'Loading state', Description: 'Wrap skeleton groups in a container with `aria-busy=&quot;true&quot;` and `aria-label` while loading', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages)' },
+  { Check: 'Reduced motion respected', Description: 'The animation follows `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Wrap skeleton placeholders in a container with `aria-busy=&quot;true&quot;` while content is loading, and remove it when done',
-  'Add `aria-label=&quot;Loading&quot;` to the skeleton container for screen reader context',
+  { Check: 'Mark the loading region busy', Description: 'Wrap the placeholders in a container with `aria-busy=&quot;true&quot;` while content loads, and remove it when done', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages)' },
+  { Check: 'Name the loading container', Description: 'Add `aria-label=&quot;Loading&quot;` to it', Note: 'It gives screen readers context', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages)' },
 ]" />
 
 ## API reference

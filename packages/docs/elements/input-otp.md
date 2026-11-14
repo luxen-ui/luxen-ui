@@ -108,14 +108,12 @@ Native `disabled` attribute.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Uses a native `<input>` element — built-in textbox semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Requires `<label>` or `aria-label` to describe the purpose of the code input', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Input purpose', Description: '`autocomplete=&quot;one-time-code&quot;` identifies the field for browser and password manager autofill', WCAG: '[WCAG 1.3.5](https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose)' },
-  { Check: 'Validation', Description: '`pattern` and `maxlength` provide client-side validation; `inputmode=&quot;numeric&quot;` triggers the numeric keyboard on mobile', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification)' },
-  { Check: 'Visual cells', Description: 'Cell container is `aria-hidden=&quot;true&quot;` — screen readers interact with the native input only', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Visual cells hidden from screen readers', Description: 'The cell container is `aria-hidden=&quot;true&quot;`', Note: 'Screen readers interact with the native input only', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Input purpose identified', Description: '`autocomplete=&quot;one-time-code&quot;` identifies the field for browser and password manager autofill', WCAG: '[WCAG 1.3.5](https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose)' },
+  { Check: 'Invalid codes flagged natively', Description: '`pattern` and `maxlength` provide client-side validation; `inputmode=&quot;numeric&quot;` triggers the numeric keyboard on mobile', Note: 'The custom element also sets `type=&quot;text&quot;`', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification)' },
 ]" :rules="[
-  'Always provide an accessible name via `<label>` or `aria-label`',
-  '`autocomplete=&quot;one-time-code&quot;`, `inputmode=&quot;numeric&quot;`, `type=&quot;text&quot;`, `maxlength`, and `pattern` are set automatically by the custom element',
+  { Check: 'Label the field', Description: 'Use a `<label>` or `aria-label` that describes the purpose of the code input', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Use a native `<input>`', Description: 'Put it inside `<l-input-otp>`', Note: 'It brings built-in textbox semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions
