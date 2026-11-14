@@ -32,8 +32,6 @@
     "bin/",
     "templates/",
     "elements.json",
-    "postcss-plugin-prefix.js",
-    "postcss-plugin-prefix.d.ts",
     "README.md",
     "LICENSE"
   ],
@@ -96,9 +94,12 @@
     "./cdn/*": "./cdn/*",
     "./vite-plugin": {
       "types": "./dist/vite-plugin.d.ts",
-      "import": "./dist/vite-plugin.js"
+      "default": "./dist/vite-plugin.js"
     },
-    "./postcss-plugin-prefix": "./postcss-plugin-prefix.js",
+    "./postcss-plugin-prefix": {
+      "types": "./dist/postcss-plugin-prefix.d.ts",
+      "default": "./dist/postcss-plugin-prefix.js"
+    },
     "./*/element": {
       "types": "./dist/elements/*/*.d.ts",
       "import": "./dist/elements/*/*.js"
@@ -184,6 +185,14 @@
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
   },
   "customElements": "dist/custom-elements.json"
 }
