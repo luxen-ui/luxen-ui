@@ -142,14 +142,15 @@ const bubbleStyle = computed(() => ({
       </l-dropdown-item>
     </div>
 
-    <!-- Icons: the real elements that draw the token, stacked to fit a cell.
-         The Touches caption names the ones left out. -->
+    <!-- Icons: the real elements that draw the token, stacked to fit a cell and
+         labelled with their element name. The Touches caption names the ones
+         left out. -->
     <div
       v-else-if="preview === 'icon-chevron-down' || preview === 'icon-clear'"
       class="flex flex-col items-center gap-2"
     >
       <l-select
-        label="Country"
+        label="Select"
         class="w-36"
         :with-clear="preview === 'icon-clear' ? '' : null"
         :style="paint('picker')"
@@ -159,17 +160,19 @@ const bubbleStyle = computed(() => ({
             value="fr"
             selected
           >
-            France
+            Select
           </option>
         </datalist>
       </l-select>
       <details
         v-if="preview === 'icon-chevron-down'"
-        class="l-disclosure"
+        class="l-disclosure w-36"
         data-marker="arrow"
         :style="paint('marker')"
       >
-        <summary>Shipping</summary>
+        <!-- VitePress's unlayered `.vp-doc summary { margin: 1rem 0 }` outranks a
+             Tailwind m-0: clear it inline, or it pushes the select to the top. -->
+        <summary :style="{ margin: 0 }">Disclosure</summary>
       </details>
     </div>
 
@@ -179,12 +182,12 @@ const bubbleStyle = computed(() => ({
     >
       <div :style="iconMenuStyle">
         <l-dropdown-item :style="paint('menuItem')"
-          ><span :style="paint('menuLabel')">Share</span
-          ><l-dropdown-item slot="submenu">Email</l-dropdown-item></l-dropdown-item
+          ><span :style="paint('menuLabel')">Dropdown item</span
+          ><l-dropdown-item slot="submenu">Submenu item</l-dropdown-item></l-dropdown-item
         >
       </div>
       <l-tree>
-        <l-tree-item :style="paint('tree')">Vegetables<l-tree-item>Leek</l-tree-item></l-tree-item>
+        <l-tree-item :style="paint('tree')">Tree item<l-tree-item>Child item</l-tree-item></l-tree-item>
       </l-tree>
     </div>
 
@@ -196,7 +199,7 @@ const bubbleStyle = computed(() => ({
         type="checkbox"
         checked
         :style="paint('menuItem')"
-        ><span :style="paint('menuLabel')">Show grid</span></l-dropdown-item
+        ><span :style="paint('menuLabel')">Dropdown item</span></l-dropdown-item
       >
     </div>
 
