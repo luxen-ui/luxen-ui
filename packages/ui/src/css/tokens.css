@@ -1,25 +1,16 @@
-/* Luxen design tokens — primitives (core 5 color families + spacing + radius
-   + text + …) and semantic aliases (text-primary, bg-fill-brand, …) in one
-   import. Equivalent to combining:
+/* Luxen design tokens — every token the elements read, in one import:
+   primitives (core 5 color families + spacing + radius + text + …), semantic
+   aliases (text-primary, bg-fill-brand, …) and component tokens
+   (--l-button-*, --l-popover-*, --l-form-control-*, …). Exactly:
 
      @import 'luxen-ui/css/tokens/primitives';
      @import 'luxen-ui/css/tokens/aliases';
+     @import 'luxen-ui/css/tokens/components';
 */
 
 /* Layer order (theme < base < components), declared once in _layers.css. */
 @import './_layers.css';
 
-@import '@luxen-ui/design-tokens/css';
-
-/* Form component tokens (--l-form-control-*). */
-@import '@luxen-ui/design-tokens/css/forms';
-
-/* Tooltip component token (--l-tooltip-background-color). */
-@import '@luxen-ui/design-tokens/css/tooltip';
-
-/* Popover and menu-item tokens (--l-popover-*, --l-menu-item-*): panels
-   anchored to a trigger and their rows. */
-@import '@luxen-ui/design-tokens/css/popover';
-
-/* Button tokens (--l-button-*): the shape of every `.l-button`. */
-@import '@luxen-ui/design-tokens/css/button';
+@import './tokens/primitives.css';
+@import './tokens/aliases.css';
+@import './tokens/components.css';

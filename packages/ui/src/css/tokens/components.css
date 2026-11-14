@@ -1,0 +1,16 @@
+/* Luxen component tokens only — one family per element group, each pointing
+   at a semantic alias or a scale step, so dark mode and theming are inherited:
+   --l-form-control-* (form controls, l-form-field), --l-tooltip-*,
+   --l-popover-* and --l-menu-item-* (anchored panels and their rows),
+   --l-button-* (every `.l-button`).
+
+   Needs the semantic aliases ('luxen-ui/css/tokens/aliases' or your own copy).
+*/
+
+/* Layer order (theme < base < components), declared once in _layers.css. */
+@import '../_layers.css';
+
+@import '@luxen-ui/design-tokens/css/forms';
+@import '@luxen-ui/design-tokens/css/tooltip';
+@import '@luxen-ui/design-tokens/css/popover';
+@import '@luxen-ui/design-tokens/css/button';
