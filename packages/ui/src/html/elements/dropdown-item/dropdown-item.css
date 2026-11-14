@@ -70,6 +70,9 @@
   flex-shrink: 0;
   background-color: currentColor;
   mask: var(--l-icon-check) center / contain no-repeat;
+  /* Forced colors would repaint the fill with Canvas, hiding the icon: opt
+     out, and paint it in the system text color (below). */
+  forced-color-adjust: none;
 }
 
 /* Inline-end chevron marking an item that opens a submenu. */
@@ -79,6 +82,14 @@
   flex-shrink: 0;
   background-color: currentColor;
   mask: var(--l-icon-chevron-right) center / contain no-repeat;
+  forced-color-adjust: none;
+}
+
+@media (forced-colors: active) {
+  .check,
+  .submenu-indicator {
+    background-color: CanvasText;
+  }
 }
 
 :host(:dir(rtl)) .submenu-indicator {

@@ -166,7 +166,7 @@ export const COMPONENT_TOKEN_SPEC = {
     highlight: HL_ICON,
     // No color paint: the clear button shares its color with the chevron.
     legend: 'lucide:x',
-    touches: 'Select & combobox clear button',
+    touches: 'Select, combobox & search clear',
   },
   '--l-icon-plus': {
     preview: 'icon-plus',

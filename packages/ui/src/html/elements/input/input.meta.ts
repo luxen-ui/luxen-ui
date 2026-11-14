@@ -28,7 +28,8 @@
  * @cssproperty [--border-radius=var(--l-form-control-border-radius)] - Control border radius.
  * @cssproperty --calendar-icon - Date picker glyph as a `url()`. Masked, so color is taken from the control, not the image.
  * @cssproperty --clock-icon - Time picker glyph as a `url()`.
- * @cssproperty --clear-icon - Search clear glyph as a `url()`.
+ * @cssproperty [--clear-icon=var(--l-icon-clear)] - Search clear glyph as a `url()`, for this field alone. Re-skin `--l-icon-clear` on
+ *   `:root` to change every clear button at once.
  * @cssproperty [--l-form-control-icon-size=1em] - Glyph size of the date/time picker icon and the search clear (global
  *   form-control token). Their hit area is a square of the control height (borders excluded).
  *

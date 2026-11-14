@@ -9,6 +9,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vite-plus/test';
 import '../../src/css/tokens.css';
 import '../../src/css/elements/disclosure.css';
 import '../../src/css/elements/select.css';
+import '../../src/css/elements/input.css';
 import '../../src/css/elements/close-button/ring.css';
 import '../../src/css/elements/input-stepper/default.css';
 import '../../src/html/elements/select/index.js';
@@ -189,6 +190,16 @@ describe('A brand re-skins a system icon once, on :root', () => {
       const clear = el.shadowRoot!.querySelector('.clear-button')!;
       expect(maskOf(clear, '::before')).toContain(SENTINEL.clear);
     });
+
+    it('paints the search clear of a native .l-input', async () => {
+      const input = await mount(
+        '<input class="l-input" type="search" value="Lyon" aria-label="City" />',
+        'input',
+      );
+      // getComputedStyle cannot read ::-webkit-search-cancel-button: assert the
+      // property its mask reads (input.css) instead.
+      expect(getComputedStyle(input).getPropertyValue('--clear-icon')).toContain(SENTINEL.clear);
+    });
   });
 
   describe('the plus sign', () => {
@@ -238,5 +249,15 @@ describe('An element-level icon property still beats the token', () => {
     );
     expect(maskOf(button('decrement'), '::before')).toContain('own-minus');
     expect(maskOf(button('increment'), '::before')).toContain('own-plus');
+  });
+
+  it('lets --decrement-icon set on an ancestor reach the l-input-stepper inside', async () => {
+    const wrapper = await mount(
+      `<div style='--decrement-icon: url("data:,area-minus")'><l-input-stepper><input type="number" value="5" /></l-input-stepper></div>`,
+      'div',
+    );
+    await new Promise((r) => setTimeout(r, 0));
+    const decrement = wrapper.querySelector('.l-input-stepper-decrement') as HTMLElement;
+    expect(maskOf(decrement, '::before')).toContain('area-minus');
   });
 });

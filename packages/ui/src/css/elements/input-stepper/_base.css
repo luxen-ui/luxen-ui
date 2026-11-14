@@ -41,10 +41,6 @@
       --border-radius: var(--l-form-control-border-radius);
       --_button-bg-hover: var(--l-color-bg-fill-neutral-soft);
       --_button-bg-active: var(--l-color-bg-fill-neutral-subtle);
-      /* Button icons, as a `url()`: the system minus and plus by default. Set
-         either on the element to re-skin it alone. */
-      --decrement-icon: var(--l-icon-minus);
-      --increment-icon: var(--l-icon-plus);
 
       display: inline-flex;
       align-items: stretch;
@@ -130,14 +126,29 @@
       block-size: 1em;
       background-color: currentColor;
       mask: var(--_icon) center / contain no-repeat;
+      /* Forced colors would repaint the fill with Canvas, hiding the icon:
+         opt out, and paint it in the system button text color instead. */
+      forced-color-adjust: none;
     }
 
+    @media (forced-colors: active) {
+      button::before {
+        background-color: ButtonText;
+      }
+
+      button:disabled::before {
+        background-color: GrayText;
+      }
+    }
+
+    /* Read at the use site, so --decrement-icon / --increment-icon set on any
+       ancestor reach the stepper too. */
     .l-input-stepper-decrement {
-      --_icon: var(--decrement-icon);
+      --_icon: var(--decrement-icon, var(--l-icon-minus));
     }
 
     .l-input-stepper-increment {
-      --_icon: var(--increment-icon);
+      --_icon: var(--increment-icon, var(--l-icon-plus));
     }
 
     button:focus-visible {

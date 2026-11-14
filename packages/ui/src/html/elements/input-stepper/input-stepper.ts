@@ -14,6 +14,24 @@ export class StepperChangeEvent extends Event {
   }
 }
 
+let warnedIconAttributes = false;
+
+/**
+ * `decrement-icon` / `increment-icon` were removed for the `--decrement-icon` /
+ * `--increment-icon` CSS custom properties. An upgraded page that still sets
+ * them would silently show the default icons: say it once.
+ */
+function warnRemovedIconAttributes(el: HTMLElement) {
+  if (warnedIconAttributes) return;
+  if (!el.hasAttribute('decrement-icon') && !el.hasAttribute('increment-icon')) return;
+  warnedIconAttributes = true;
+  // eslint-disable-next-line no-console
+  console.warn(
+    `<${el.localName}>: the decrement-icon and increment-icon attributes were removed. ` +
+      `Set the --decrement-icon / --increment-icon CSS custom properties to a url() instead.`,
+  );
+}
+
 interface InputStepperEventMap {
   change: StepperChangeEvent;
 }
@@ -144,6 +162,7 @@ export class InputStepper extends LuxenElement {
     this._input = this.querySelector('input[type="number"]');
     if (!this._input) return;
     this._initialized = true;
+    warnRemovedIconAttributes(this);
 
     this._input.inputMode = 'numeric';
 
