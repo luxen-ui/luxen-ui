@@ -8,7 +8,7 @@ outline: deep
 
 ## Quick start
 
-Add two lines on top of the [installation CSS block](/overview/installation/manual#import-the-css) :
+Add two lines on top of the [installation CSS block](/overview/installation/vite#import-the-css) :
 
 ```css [CSS]{1,2}
 @import 'tailwindcss';

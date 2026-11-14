@@ -54,18 +54,24 @@ bun add luxen-ui
 
 ## Configure the prefix
 
-Create `luxen.config.js` at the project root. Replace `l` with your own prefix — `acme` gives `<acme-badge>` and `.acme-button`. This guide keeps `l`.
+Create `luxen.config.js` at the project root. Uncomment to rename the `l-` prefix.
+
+::: code-group
 
 ```js [luxen.config.js]
 import { defineConfig } from 'luxen-ui';
 
 export default defineConfig({
-  elementPrefix: 'l', // <l-badge>
-  cssPrefix: 'l', // .l-button, --l-color-*
+  // elementPrefix: 'my', // <my-badge>
+  // cssPrefix: 'my', // .my-button, --my-color-*
 });
 ```
 
+:::
+
 ## Configure Nuxt
+
+::: code-group
 
 <!-- prettier-ignore -->
 ```ts [nuxt.config.ts]
@@ -85,23 +91,34 @@ export default defineNuxtConfig({
 });
 ```
 
+:::
+
 ## Import the CSS
 
+::: code-group
+
+<!-- prettier-ignore -->
 ```css [app/assets/css/main.css]
-@import 'luxen-ui/css/preset';
-@import 'luxen-ui/css/button';
-@import 'luxen-ui/css/badge';
+<!--@include: ./_snippets/imports.css-->
 ```
+
+:::
 
 ## Import the elements
 
-```ts [app/plugins/luxen.client.ts]
-import 'luxen-ui/badge';
+::: code-group
 
+<!-- prettier-ignore -->
+```ts [app/plugins/luxen.client.ts]
+<!--@include: ./_snippets/imports.ts-->
 export default defineNuxtPlugin(() => {});
 ```
 
+:::
+
 ## Use the elements
+
+::: code-group
 
 <!-- prettier-ignore -->
 ```vue [app/app.vue]
@@ -115,6 +132,6 @@ export default defineNuxtPlugin(() => {});
 </template>
 ```
 
-</div>
+:::
 
-Each element page lists its imports. Light-DOM elements need both their CSS and their JS; Shadow-DOM elements (`dialog`, `popover`, `tooltip`…) need only the JS.
+</div>

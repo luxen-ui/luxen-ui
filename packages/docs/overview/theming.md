@@ -36,6 +36,31 @@ Write colors with `light-dark()` to support both [color schemes](/overview/color
 
 A theme inside `@layer base`, `components` or `utilities` wins too, as long as the layer order `theme, base, components` is set first. Luxen and Tailwind both declare it; if your CSS loads before them, start it with `@layer theme, base, components;`.
 
+## Token stylesheets
+
+`luxen-ui/css/preset` bundles the pieces below. Import them one by one to swap a layer — your own primitives, say:
+
+::: code-group
+
+<!-- prettier-ignore -->
+```css [CSS]
+/* ── luxen-ui/css/preset = base + tokens ─────────────────── */
+@import 'luxen-ui/css/base'; /* runtime helpers, FOUC fix — no tokens */
+@import 'luxen-ui/css/tokens'; /* primitives + aliases + component tokens */
+
+/* ── Finer grained ───────────────────────────────────────── */
+/* @import 'luxen-ui/css/tokens/primitives'; */ /* 5 color families, spacing, radius, text… */
+/* @import 'luxen-ui/css/tokens/aliases'; */ /* semantic aliases only */
+/* @import 'luxen-ui/css/tokens/forms'; */ /* form control tokens */
+
+/* ── Optional ────────────────────────────────────────────── */
+/* @import 'luxen-ui/css/tokens/palette'; */ /* 21 more Tailwind color families */
+```
+
+:::
+
+To own every semantic alias, eject them with [`npx luxen-ui import design-tokens`](/overview/cli#import).
+
 ## Showcase themes
 
 Docs-only, not shipped in `luxen-ui`. To reuse one, replace its `:root[data-theme='…']` selector with `:root`.

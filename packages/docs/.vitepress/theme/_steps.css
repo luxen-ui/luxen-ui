@@ -41,7 +41,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The hover `#` anchor sits where the number is. */
+/* The hover `#` anchor sits where the number is: show it after the title. */
 .vp-doc .steps > h2 > .header-anchor {
-  display: none;
+  position: static;
+  margin-inline-start: 0.4em;
 }

@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
+    "dev": "pnpm --filter luxen-ui run prepare && nuxt dev",
+    "build": "pnpm --filter luxen-ui run prepare && nuxt build",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
