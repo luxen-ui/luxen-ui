@@ -145,12 +145,13 @@ const bubbleStyle = computed(() => ({
     <!-- Icons: the real elements that draw the token, stacked to fit a cell.
          The Touches caption names the ones left out. -->
     <div
-      v-else-if="preview === 'icon-chevron-down'"
+      v-else-if="preview === 'icon-chevron-down' || preview === 'icon-clear'"
       class="flex flex-col items-center gap-2"
     >
       <l-select
         label="Country"
-        class="w-32"
+        class="w-36"
+        :with-clear="preview === 'icon-clear' ? '' : null"
         :style="paint('picker')"
       >
         <datalist>
@@ -163,6 +164,7 @@ const bubbleStyle = computed(() => ({
         </datalist>
       </l-select>
       <details
+        v-if="preview === 'icon-chevron-down'"
         class="l-disclosure"
         data-marker="arrow"
         :style="paint('marker')"
@@ -207,27 +209,12 @@ const bubbleStyle = computed(() => ({
       :style="paint('close')"
     />
 
-    <l-select
-      v-else-if="preview === 'icon-clear'"
-      label="Country"
-      with-clear
-      class="w-36"
-    >
-      <datalist>
-        <option
-          value="fr"
-          selected
-        >
-          France
-        </option>
-      </datalist>
-    </l-select>
-
     <div
-      v-else-if="preview === 'icon-plus'"
+      v-else-if="preview === 'icon-plus' || preview === 'icon-minus'"
       class="flex flex-col items-center gap-2"
     >
       <details
+        v-if="preview === 'icon-plus'"
         class="l-disclosure"
         data-marker="plus"
         :style="paint('marker')"
@@ -242,14 +229,6 @@ const bubbleStyle = computed(() => ({
         />
       </l-input-stepper>
     </div>
-
-    <l-input-stepper v-else-if="preview === 'icon-minus'">
-      <input
-        type="number"
-        value="2"
-        aria-label="Quantity"
-      />
-    </l-input-stepper>
 
     <!-- Tooltip: the bubble and its arrow above an icon-only button. -->
     <div

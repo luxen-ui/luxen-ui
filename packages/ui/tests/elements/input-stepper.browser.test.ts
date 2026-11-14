@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser/context';
 import '../../src/html/elements/input-stepper/index.js';
 import { StepperChangeEvent } from '../../src/html/elements/input-stepper/input-stepper.js';
@@ -112,6 +112,24 @@ describe('l-input-stepper does not initialize after an immediate disconnect', ()
     stepper.remove();
     await settle();
     expect(stepper.querySelectorAll('button')).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Removed icon attributes
+// ---------------------------------------------------------------------------
+
+describe('A page upgraded from the icon attributes is told what replaced them', () => {
+  it('warns once that decrement-icon moved to the --decrement-icon custom property', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    await mount(`
+      <l-input-stepper decrement-icon="lucide:arrow-down">
+        <input type="number" min="0" max="10" value="5" />
+      </l-input-stepper>
+    `);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(String(warn.mock.calls[0][0])).toContain('--decrement-icon');
+    warn.mockRestore();
   });
 });
 
