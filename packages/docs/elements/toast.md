@@ -120,18 +120,18 @@ toast({
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Live region', Description: 'Container uses `role=&quot;log&quot;` with `aria-live=&quot;polite&quot;` for screen reader announcements', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)' },
-  { Check: 'Role', Description: 'Items use `role=&quot;status&quot;` (`role=&quot;alert&quot;` for `danger` variant)', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Accessible name', Description: 'Heading and message linked via `aria-labelledby` / `aria-describedby`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Decorative elements', Description: 'Icons, accent bar, and timer bar are hidden with `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Timer pausing', Description: 'Timer pauses on hover and focus, providing keyboard parity', WCAG: '[WCAG 2.2.1](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)' },
-  { Check: 'Motion', Description: 'Respects `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
+  { Check: 'Toasts announced politely', Description: 'The container uses `role=&quot;log&quot;` with `aria-live=&quot;polite&quot;`', WCAG: '[WCAG 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages), [RGAA 7.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.5)' },
+  { Check: 'Status roles exposed', Description: 'Items use `role=&quot;status&quot;`, or `role=&quot;alert&quot;` for the `danger` variant', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Heading and message linked', Description: 'Through `aria-labelledby` / `aria-describedby`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Timer pauses on hover and focus', Note: 'Keyboard users get the same pause as pointer users', WCAG: '[WCAG 2.2.1](https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable)' },
+  { Check: 'Decorative elements hidden', Description: 'Icons, accent bar and timer bar carry `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Reduced motion respected', Description: 'Animations follow `prefers-reduced-motion`', WCAG: '[WCAG 2.3.3](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions)' },
 ]" :rules="[
-  'Keep messages short and readable within the auto-dismiss duration',
-  'Set `duration` to `5000` or longer for readability',
-  'Use `variant=&quot;danger&quot;` for critical alerts — it promotes the toast to `role=&quot;alert&quot;`',
-  'Ensure any actions in toasts are also available elsewhere on the page',
-  'Use dialogs instead of toasts for information that requires user action',
+  { Check: 'Use a dialog when action is required', Description: 'Information that requires user action belongs in a dialog, not a toast' },
+  { Check: 'Repeat toast actions elsewhere on the page' },
+  { Check: 'Set `duration` to `5000` or longer', Note: 'For readability' },
+  { Check: 'Keep messages short', Description: 'Readable within the auto-dismiss duration' },
+  { Check: 'Use `variant=&quot;danger&quot;` for critical alerts', Note: 'It promotes the toast to `role=&quot;alert&quot;`' },
 ]" />
 
 ### Keyboard interactions

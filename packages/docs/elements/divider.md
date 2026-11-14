@@ -66,9 +66,9 @@ Add a `label` attribute. The text renders over the divider line.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Automatically sets role=separator in connectedCallback', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.1)' },
-  { Check: 'Orientation', Description: 'Automatically sets aria-orientation=vertical when orientation is vertical', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
-  { Check: 'Color', Description: 'Divider color meets non-text contrast minimum against adjacent surfaces', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.2](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.2)' },
+  { Check: 'Separator role exposed', Description: '`role=&quot;separator&quot;` is added in `connectedCallback`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 9.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#9.1)' },
+  { Check: 'Vertical orientation exposed', Description: '`aria-orientation=&quot;vertical&quot;` is added when `orientation` is vertical', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships)' },
+  { Check: 'Line contrast passes', Description: 'The divider color meets the non-text minimum against adjacent surfaces', WCAG: '[WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [RGAA 3.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#3.3)' },
 ]" />
 
 ## API reference

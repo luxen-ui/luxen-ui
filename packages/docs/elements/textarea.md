@@ -83,14 +83,14 @@ Override `--border-radius` for the corners.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Accessible name', Description: 'Must have an associated `<label>` (wrap the textarea or use `for`/`id`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Focus visible', Description: 'Keyboard focus shows a 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Errors identified', Description: '`aria-invalid` marks the field; pair it with a visible message linked via `aria-describedby`', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
-  { Check: 'Required state', Description: 'Native `required` communicates a mandatory field to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Invalid fields styled', Description: '`:user-invalid` and `aria-invalid=&quot;true&quot;` give the field its error style', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
 ]" :rules="[
-  'Always pair the textarea with a `<label>` — wrap the textarea or link with `for`/`id`',
-  'Never rely on `placeholder` as the label — it disappears on input and fails contrast',
-  'Pair `maxlength` with a visible, `aria-describedby`-linked character counter rather than silently truncating input',
+  { Check: 'Label the field', Description: 'Wrap the textarea in a `<label>`, or link one with `for` / `id`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Don’t use the placeholder as a label', Note: 'It disappears on input and fails contrast' },
+  { Check: 'Link errors to the field', Description: 'Set `aria-invalid` when your own validation fails, and link a visible message with `aria-describedby`', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Show a counter with `maxlength`', Description: 'Link a visible character counter with `aria-describedby`', Note: 'Rather than silently truncating input' },
+  { Check: 'Mark required fields with `required`', Description: 'Native `required` communicates a mandatory field to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
 ]" />
 
 ### Keyboard interactions

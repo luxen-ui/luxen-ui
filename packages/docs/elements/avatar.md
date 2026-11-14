@@ -126,14 +126,14 @@ Wrap avatars in `.l-avatar-group` for an overlapping stack with a surface-colore
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Default `role=&quot;img&quot;` communicates the avatar as an image', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Accessible name', Description: '`aria-label` is set automatically from the `name` attribute', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Interactive mode', Description: 'When `interactive` is set, renders as a `<button>` with focus ring and hover states', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Decorative elements', Description: 'Badge count is hidden from assistive tech with `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content)' },
-  { Check: 'Image fallback', Description: 'Falls back to initials (then default icon) if image fails to load', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content)' },
+  { Check: 'Image role exposed', Description: 'A default `role=&quot;img&quot;` exposes the avatar as an image', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Avatar named from `name`', Description: '`aria-label` follows `name` automatically', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Focus ring on interactive avatars', Description: 'With `interactive` set, it renders as a `<button>` with a focus ring and hover states', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Badge count hidden from assistive tech', Description: 'It carries `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content)' },
+  { Check: 'Fallback when the image fails', Description: 'Initials replace a broken image, then a default icon', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content)' },
 ]" :rules="[
-  'Always provide the `name` attribute — it drives both `aria-label` and the initials fallback',
-  'Add `interactive` only when the avatar triggers an action (e.g., opens a profile menu)',
+  { Check: 'Name every avatar', Description: 'Set the `name` attribute', Note: 'It drives both `aria-label` and the initials fallback' },
+  { Check: 'Add `interactive` only for actions', Description: 'Use it when the avatar triggers an action, such as opening a profile menu' },
 ]" />
 
 ### Keyboard interactions

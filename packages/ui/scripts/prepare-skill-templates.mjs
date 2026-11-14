@@ -28,6 +28,7 @@
 import { readFile, writeFile, mkdir, readdir, realpath } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ACCESSIBILITY_TABLE, readAccessibilityTable, unescapeEntities } from './a11y-table.mjs';
 import { absolutizeDocsUrls } from './absolutize-docs-urls.mjs';
 
 // eslint-disable-next-line no-underscore-dangle -- ESM idiom for resolving the script's directory
@@ -208,40 +209,36 @@ async function replaceComponentWrappers(content, imports) {
 // The optional `:references` prop (human-facing source links) is matched and
 // dropped here on purpose — the actionable guidance already lives in `:rules`.
 function convertAccessibilityTable(content) {
-  const regex =
-    /<AccessibilityTable\s+:data="(\[[\s\S]*?\])"\s*(?::rules="(\[[\s\S]*?\])"\s*)?(?::references="\[[\s\S]*?\]"\s*)?\/>/g;
-  return content.replace(regex, (_, dataStr, rulesStr) => {
-    let data;
+  return content.replace(ACCESSIBILITY_TABLE, (_, dataStr, rulesStr, slotsStr) => {
+    let table;
     try {
-      data = new Function(`return ${unescapeEntities(dataStr)}`)();
+      table = readAccessibilityTable(dataStr, rulesStr, slotsStr);
     } catch {
       return '';
     }
 
     const stripLinks = (s) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
-    const lines = [];
-    for (const row of data) {
-      lines.push(`- **${row.Check}** — ${stripLinks(row.Description)}`);
-    }
+    // A row is `{ Check, Description?, Note?, WCAG?, Code? }`; a rule may also
+    // be a plain string. `Note` is the optional "why" sentence, kept for agents.
+    const toLine = (row) => {
+      if (typeof row === 'string') return `- ${row}`;
+      const text = [row.Description, row.Note].filter(Boolean).map(stripLinks).join('. ');
+      const line = !row.Check
+        ? `- ${text}`
+        : text
+          ? `- **${row.Check}** — ${text}`
+          : `- **${row.Check}**`;
+      const snippet = row.Code && table.slots.get(row.Code);
+      if (!snippet) return line;
+      // Folded on the docs site; shown in full here — agents learn from examples.
+      return [line, ...snippet.fence.split('\n').map((l) => `  ${l}`)].join('\n');
+    };
 
-    if (rulesStr) {
-      let rules;
-      try {
-        rules = new Function(`return ${unescapeEntities(rulesStr)}`)();
-      } catch {
-        rules = [];
-      }
-      if (rules.length) {
-        lines.push('');
-        lines.push('### Rules');
-        lines.push('');
-        for (const rule of rules) {
-          lines.push(`- ${rule}`);
-        }
-      }
+    const lines = table.data.map(toLine);
+    if (table.rules.length) {
+      lines.push('', '### Rules', '', ...table.rules.map(toLine));
     }
-
     return lines.join('\n');
   });
 }
@@ -269,13 +266,6 @@ function convertKeyboardTable(content) {
 
 // Shared HTML-entity unescaper for the `:data="[...]"` Vue attribute payloads.
 // `&amp;` is undone last so an already-escaped `&lt;` is not double-decoded.
-function unescapeEntities(s) {
-  return s
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
-}
 
 // Renders one bullet per metadata item for an API-reference section. A list
 // (not a table) keeps long descriptions readable, needs no pipe escaping, and

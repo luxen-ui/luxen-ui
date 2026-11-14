@@ -127,18 +127,15 @@ Add `disabled` to a segment's input. Arrow keys skip it, and it drops out of the
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Native `<input type=&quot;radio&quot;>` controls expose `radio` and their checked state without any ARIA', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Group name', Description: 'The `<fieldset>` groups the radios and its `<legend>` names them, natively. Without a visible caption, `aria-label` on the fieldset', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.5)' },
-  { Check: 'Segment name', Description: 'The `<label>` wraps its input, so its text is the accessible name — no `for`/`id` pair needed', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Keyboard', Description: 'Arrow keys move and select through the group; the group is a single `Tab` stop. Browser behaviour, not scripted', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
-  { Check: 'Focus ring', Description: 'In the button appearance the input is transparent but focusable, so the ring is mirrored onto its label and raised above the joined borders', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)' },
-  { Check: 'Target size', Description: 'In the button appearance a segment is a full `.l-button`, so it clears the 24px minimum at every size', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
+  { Check: 'One Tab stop for the group', Description: 'Arrow keys move and select through the group', Note: 'Browser behaviour, not scripted', WCAG: '[WCAG 2.1.1](https://www.w3.org/WAI/WCAG22/Understanding/keyboard), [RGAA 7.3](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#7.3)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'In the button appearance the ring is mirrored onto the label and raised above the joined borders', Note: 'The input there is transparent but focusable', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [WCAG 2.4.11](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)' },
+  { Check: '24px minimum target', Description: 'In the button appearance a segment is a full `.l-button`, so it clears the 24px minimum at every size', WCAG: '[WCAG 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum)' },
 ]" :rules="[
-  'The group is a `&lt;fieldset&gt;`, named by a `&lt;legend&gt;` first child — or by `aria-label` when no visible caption fits',
-  'Every input in the group shares one `name`',
-  'Wrap each input in a `&lt;label&gt;` — that names it and makes it the click target, with no `for`/`id` pair',
-  'For the button appearance, set `data-appearance=&quot;button&quot;` on the group and `.l-button` on every label; otherwise put `.l-radio` on every input',
-  'Never hide the input with `display: none` or `visibility: hidden`: it would leave the accessibility tree and the tab order',
+  { Check: 'Group radios in a named `<fieldset>`', Description: 'Name it with a `<legend>` first child, or with `aria-label` when no visible caption fits', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.5](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.5)' },
+  { Check: 'Label the field', Description: 'Wrap each input in a `<label>`; no `for` / `id` pair needed', Note: 'The label text becomes the accessible name, and the label the click target', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Don’t hide the input', Description: 'Never use `display: none` or `visibility: hidden` on it', Note: 'Either would remove it from the accessibility tree and the tab order' },
+  { Check: 'Share one `name` across the group' },
+  { Check: 'Use a native `<input type=&quot;radio&quot;>`', Note: 'Native radios expose `radio` and their checked state without any ARIA', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions

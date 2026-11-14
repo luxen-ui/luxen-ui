@@ -173,12 +173,11 @@ Enable the animated number roller overlay with `with-roller`.
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'Uses native `<input type=&quot;number&quot;>` and native `<button>` elements — built-in semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'The input must have an associated label via `<label>` or `aria-label`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Disabled state', Description: 'Buttons disabled at min/max bounds; entire stepper disabled via `disabled` on the input', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
-  { Check: 'Form integration', Description: 'Native `<input>` participates in form submission and validation directly', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
+  { Check: 'Step buttons exposed as buttons', Description: 'The decrement and increment controls are native `<button>` elements, with built-in semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Buttons disabled at the bounds', Description: 'At `min` / `max` the matching button is disabled; `disabled` on the input disables the whole stepper', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value)' },
 ]" :rules="[
-  'Wrap the stepper with a visible `<label>` or provide `aria-label` on the input element',
+  { Check: 'Label the field', Description: 'Wrap the stepper in a visible `<label>`, or set `aria-label` on the input', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Use a native `<input type=&quot;number&quot;>`', Note: 'It brings built-in semantics', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions

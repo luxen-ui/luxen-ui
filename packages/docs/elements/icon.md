@@ -103,11 +103,11 @@ Icons are decorative by default (`aria-hidden="true"`). Add `label` for meaningf
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Decorative icons', Description: 'Icons are hidden from assistive technology by default via `aria-hidden=&quot;true&quot;`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
-  { Check: 'Meaningful icons', Description: 'Set `label` to convey meaning — adds `aria-label` and removes `aria-hidden`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Decorative icons hidden', Description: 'Icons carry `aria-hidden=&quot;true&quot;` by default', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
+  { Check: 'Labelled icons announced', Description: '`label` adds `aria-label` and removes `aria-hidden`', WCAG: '[WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content), [RGAA 1.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.1)' },
 ]" :rules="[
-  'Always add `label` when the icon is the only content conveying meaning (e.g., icon-only buttons)',
-  'Omit `label` when the icon is next to visible text that already conveys the same meaning',
+  { Check: 'Label icons that carry meaning alone', Description: 'Add `label` when the icon is the only content conveying meaning, as in an icon-only button' },
+  { Check: 'Omit `label` beside matching text', Description: 'Leave it out when visible text next to the icon already conveys the same meaning' },
 ]" />
 
 ## API reference

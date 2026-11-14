@@ -96,16 +96,16 @@ A replaced `<input>` can't hold children, so wrap it in `l-input-group`: the gro
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Accessible name', Description: 'Must have an associated `<label>` (wrap the input or use `for`/`id`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Input purpose', Description: 'Set `type` and `autocomplete` so the field communicates its purpose and benefits from autofill', WCAG: '[WCAG 1.3.5](https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose), [RGAA 11.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.13)' },
-  { Check: 'Focus visible', Description: 'Keyboard focus shows a 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
-  { Check: 'Errors identified', Description: '`aria-invalid` marks the field; pair it with a visible message linked via `aria-describedby`', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
-  { Check: 'Required state', Description: 'Native `required` communicates a mandatory field to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Focus ring on keyboard focus', Description: 'A 2px outline via `:focus-visible`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Invalid fields styled', Description: '`:user-invalid` and `aria-invalid=&quot;true&quot;` give the field its error style', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
 ]" :rules="[
-  'Always pair the input with a `<label>` — wrap the input or link with `for`/`id`',
-  'Never rely on `placeholder` as the label — it disappears on input and fails contrast',
-  'Set the most specific `type` (`email`, `tel`, `url`, `number`, `search`, `date`, `time`) for the right keyboard and validation',
-  'Adornment icons inside `l-input-group` are decorative — never put the field label in one; authored adornment buttons need an `aria-label` (the injected password toggle handles its own)',
+  { Check: 'Label the field', Description: 'Wrap the input in a `<label>`, or link one with `for` / `id`', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Don’t use the placeholder as a label', Note: 'It disappears on input and fails contrast' },
+  { Check: 'Link errors to the field', Description: 'Set `aria-invalid` when your own validation fails, and link a visible message with `aria-describedby`', WCAG: '[WCAG 3.3.1](https://www.w3.org/WAI/WCAG22/Understanding/error-identification), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Set `type` and `autocomplete`', Description: 'Pick the most specific `type`: `email`, `tel`, `url`, `number`, `search`, `date` or `time`', Note: 'The field then communicates its purpose, gets the right keyboard and validation, and benefits from autofill', WCAG: '[WCAG 1.3.5](https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose), [RGAA 11.13](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.13)' },
+  { Check: 'Mark required fields with `required`', Description: 'Native `required` communicates a mandatory field to assistive tech', WCAG: '[WCAG 3.3.2](https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions), [RGAA 11.10](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.10)' },
+  { Check: 'Don’t put the label in an adornment icon', Note: 'Adornment icons inside `l-input-group` are decorative' },
+  { Check: 'Label icon-only buttons', Description: 'Give every authored adornment button an `aria-label`', Note: 'The injected password toggle handles its own' },
 ]" />
 
 ### Keyboard interactions

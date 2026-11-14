@@ -195,11 +195,11 @@ option.label = 'Français';
 ### Criteria
 
 <AccessibilityTable :data="[
-  { Check: 'Role', Description: 'The input is a `role=&quot;combobox&quot;` with `aria-expanded` / `aria-controls` / `aria-activedescendant`; options are `role=&quot;option&quot;` in a `role=&quot;listbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Accessible name', Description: 'Set `label` (or wrap with `<l-form-field>`)', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
-  { Check: 'Focus', Description: 'Focus stays on the input; the active option is tracked via `aria-activedescendant`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
+  { Check: 'Combobox and listbox roles exposed', Description: 'The input is a `role=&quot;combobox&quot;`; options are `role=&quot;option&quot;` in a `role=&quot;listbox&quot;`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Open state exposed', Description: 'The input exposes `aria-expanded` and `aria-controls`', WCAG: '[WCAG 4.1.2](https://www.w3.org/WAI/WCAG22/Understanding/name-role-value), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
+  { Check: 'Focus stays on the input', Description: 'The active option is tracked with `aria-activedescendant`', WCAG: '[WCAG 2.4.7](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible), [RGAA 10.7](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#10.7)' },
 ]" :rules="[
-  'Always set `label` so the input has an accessible name',
+  { Check: 'Label the field', Description: 'Set `label`, or wrap the combobox in `<l-form-field>`', Note: 'It gives the input its accessible name', WCAG: '[WCAG 1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [RGAA 11.1](https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#11.1)' },
 ]" />
 
 ### Keyboard interactions
