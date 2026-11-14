@@ -10,6 +10,7 @@ import stepperRounded from '../.vitepress/examples/input-stepper/InputStepperRou
 import stepperPill from '../.vitepress/examples/input-stepper/InputStepperPill.html?raw'
 import stepperSizes from '../.vitepress/examples/input-stepper/InputStepperSizes.html?raw'
 import stepperRoller from '../.vitepress/examples/input-stepper/InputStepperRoller.html?raw'
+import stepperIcons from '../.vitepress/examples/input-stepper/InputStepperIcons.html?raw'
 import stepperNotDefined from '../.vitepress/examples/input-stepper/InputStepperNotDefined.html?raw'
 import defaultRawCss from 'luxen-ui/css/input-stepper/default?raw'
 import roundedRawCss from 'luxen-ui/css/input-stepper/rounded?raw'
@@ -143,6 +144,17 @@ Native `disabled` attribute on the `<input>`.
 ::: details Code
 ::: code-group
 <<< @/.vitepress/examples/input-stepper/InputStepperDisabled.html [HTML]
+:::
+
+### Icons
+
+Set `--decrement-icon` and `--increment-icon` to a `url()`. The icon is a mask painted in the button color. Set `--l-icon-decrement` and `--l-icon-increment` on `:root` instead to change every stepper at once (see [Design Tokens](/overview/design-tokens#icons)).
+
+<ComponentWrapper :html="stepperIcons" />
+
+::: details Code
+::: code-group
+<<< @/.vitepress/examples/input-stepper/InputStepperIcons.html [HTML]
 :::
 
 ### Roller
