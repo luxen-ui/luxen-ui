@@ -171,9 +171,9 @@ export const COMPONENT_TOKEN_SPEC = {
   '--l-icon-plus': {
     preview: 'icon-plus',
     highlight: HL_ICON,
-    paint: PAINT_ICON,
+    // No color paint: both stepper buttons share the host color.
     legend: 'lucide:plus',
-    touches: 'Disclosure plus marker, stepper increment',
+    touches: 'Stepper increment, disclosure plus marker',
   },
   '--l-icon-minus': {
     preview: 'icon-minus',
