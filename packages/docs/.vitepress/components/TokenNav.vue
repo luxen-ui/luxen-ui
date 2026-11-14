@@ -66,6 +66,12 @@ function barBottom() {
   return bar.value?.getBoundingClientRect().bottom ?? 0;
 }
 
+/**
+ * Gap between the stuck bar and a heading a tab scrolled to. The scroll-spy
+ * line sits just below it, so the heading a tab lands on is the active one.
+ */
+const LANDING_GAP = 16;
+
 /** Where the bar's bottom sits once stuck — the line a heading lands under. */
 function stuckBottom() {
   return stickyTop.value + (bar.value?.offsetHeight ?? 0);
@@ -73,7 +79,7 @@ function stuckBottom() {
 
 function updateActive() {
   if (!bar.value) return;
-  const line = barBottom() + 8;
+  const line = barBottom() + LANDING_GAP + 1;
   let section = null;
   let sub = null;
   for (const s of sections.value) {
@@ -99,7 +105,7 @@ function updateActive() {
 let spy = null;
 function observeHeadings() {
   spy?.disconnect();
-  const line = stuckBottom() + 8;
+  const line = stuckBottom() + LANDING_GAP + 1;
   spy = new IntersectionObserver(updateActive, {
     rootMargin: `100000px 0px -${Math.max(0, window.innerHeight - line)}px 0px`,
   });
@@ -116,7 +122,7 @@ const GLIDE_VIEWPORTS = 0.75;
 function go(id, behavior = 'smooth') {
   const el = document.getElementById(id);
   if (!el) return;
-  const top = el.getBoundingClientRect().top + window.scrollY - stuckBottom() - 16;
+  const top = el.getBoundingClientRect().top + window.scrollY - stuckBottom() - LANDING_GAP;
   if (behavior === 'smooth') {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) behavior = 'instant';
     else {

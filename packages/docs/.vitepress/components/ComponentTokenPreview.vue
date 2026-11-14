@@ -187,7 +187,9 @@ const bubbleStyle = computed(() => ({
         >
       </div>
       <l-tree>
-        <l-tree-item :style="paint('tree')">Tree item<l-tree-item>Child item</l-tree-item></l-tree-item>
+        <l-tree-item :style="paint('tree')"
+          >Tree item<l-tree-item>Child item</l-tree-item></l-tree-item
+        >
       </l-tree>
     </div>
 
