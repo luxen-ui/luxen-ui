@@ -1,5 +1,42 @@
 # luxen-ui
 
+## 0.28.0
+
+### Minor Changes
+
+- ef44c47: New `--l-icon-*` design tokens define the system icons every element draws: `--l-icon-chevron-down`, `--l-icon-chevron-right`, `--l-icon-check`, `--l-icon-close`, `--l-icon-clear`, `--l-icon-increment` and `--l-icon-decrement`. Override one on `:root` to re-skin it library-wide, shadow-DOM elements included — for instance to match your own icon set:
+  
+  ```css
+  :root {
+    --l-icon-chevron-down: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 9h12l-6 7z'/></svg>");
+  }
+  ```
+  
+  The Design Tokens page shows which element draws which token. The per-element properties (`--caret-icon` on `.l-select`, `--chevron-icon` and `--clear-icon` on `l-select` and `l-combobox`) still work and now default to these tokens.
+  
+  All elements now draw the same stroked icon set. The `l-disclosure` markers, the native `.l-select` caret and the `.l-close` cross switch from filled icons to stroked ones. The check marks of `l-select` and `l-combobox` are slightly thinner. The search clear of `.l-input` draws the same plain cross as `l-select` and `l-combobox`, instead of a circled one. The `l-dropdown-item` check and submenu chevron and the `l-tree-item` chevrons are redrawn the same way. The collapsed `l-tree-item` chevron now points to the inline end in right-to-left layouts.
+  
+  `l-input-stepper` draws its buttons from `--l-icon-decrement` and `--l-icon-increment` too: they show at once, with no request to the Iconify API, and no longer stay empty when `l-icon` is not imported. **Breaking:** the `decrement-icon` and `increment-icon` attributes are removed. Set the `--decrement-icon` and `--increment-icon` CSS custom properties instead, with a `url()`:
+  
+  ```css
+  l-input-stepper {
+    --decrement-icon: url('/icons/arrow-down.svg');
+  }
+  ```
+- cb44808: New `luxen-ui/css/tokens/components` entry with every component token (`--l-button-*`, `--l-popover-*`, `--l-menu-item-*`, `--l-tooltip-*`, `--l-form-control-*`). `luxen-ui/css/tokens` is now exactly `tokens/primitives` + `tokens/aliases` + `tokens/components`, so you can split it without losing tokens. **Breaking:** `luxen-ui/css/tokens/forms` is removed; import `luxen-ui/css/tokens/components` instead (or keep `luxen-ui/css/tokens`).
+
+### Patch Changes
+
+- aa87cfd: `<l-avatar>`, `<l-spinner>` and `<l-color-scheme-icon>` now take their final size before their script loads, so the text next to them no longer jumps sideways when they upgrade. The box follows the avatar's `size` attribute and any `--size` set on the element (inline, from a class or a utility), and ignores a `--size` inherited from a parent, as the upgraded element does. Before upgrade, an avatar with a `name` or a `src` no longer shows its children, and slotted text sits centred.
+  
+  The `hidden` attribute now hides every Shadow-DOM element (`<l-dialog>`, `<l-select>`, `<l-tag>`, `<l-tree>`…), before and after it upgrades. It used to be ignored once the element had upgraded, because the element's own `display` overrode the browser's, and a hidden `<l-dropdown>` showed its trigger while its script loaded. `hidden="until-found"` keeps the browser's behaviour: the element keeps its box, and find-in-page can reveal it.
+- 9b38ec5: `npx luxen-ui import design-tokens` now tells you to load the copied file right after `luxen-ui/css/preset`. The previous instructions swapped the preset for `base` + `tokens/primitives` + the copy. That set dropped the component tokens, so buttons, popovers, menus, tooltips and form controls lost their `--l-button-*`, `--l-popover-*`, `--l-menu-item-*`, `--l-tooltip-*` and `--l-form-control-*` values. If you followed the old steps, put `@import 'luxen-ui/css/preset';` back above your copy. Both files declare the aliases in `@layer theme`, so your copy still wins. Deleting an alias from your copy now keeps the preset's value; set it to `initial` to unset it. The `npx luxen-ui import preset` steps no longer suggest an atomic set that drops the component tokens either.
+- 48b927a: An `l-icon` given `display: block` or `inline-block` (a Tailwind `block` or `hidden md:block`, for instance) no longer sits a few pixels too high in a centred row: its glyph stays centred like any other icon.
+  
+  The icon is now a box the size of its glyph instead of `display: contents`. Margin, padding, border, background, `vertical-align` and sizing set on `l-icon` now apply to it, where they were ignored before: check icons that carry a margin class (`mr-2`) next to a `gap`, as the spacing adds up. To centre an icon in a larger box, make it `flex` (`flex size-6`): a `block` one is centred vertically only. Don't set `inline` or `contents` on an icon inside running text: it breaks the line.
+- 898e477: Generated skills now load example images and previews from `https://luxen-ui.com` instead of root-relative paths that only resolved on the docs site, so carousel and sticky bar examples render outside it.
+- 2cd0a21: `luxen-ui/vite-plugin` now loads in a plain Vite or TanStack Start project. It shipped as TypeScript source, which Node refuses to run from `node_modules`, so `vite build` stopped with `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING` and a custom prefix in `luxen.config.js` could not be applied. The plugin now ships as JavaScript with its own type declarations, typed against `vite` instead of `vite-plus`, so type-checking a `vite.config.ts` that uses it no longer fails either.
+
 ## 0.27.0
 
 ### Minor Changes
