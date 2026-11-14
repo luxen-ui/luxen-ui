@@ -209,26 +209,13 @@ const bubbleStyle = computed(() => ({
       :style="paint('close')"
     />
 
-    <div
-      v-else-if="preview === 'icon-plus' || preview === 'icon-minus'"
-      class="flex flex-col items-center gap-2"
-    >
-      <details
-        v-if="preview === 'icon-plus'"
-        class="l-disclosure"
-        data-marker="plus"
-        :style="paint('marker')"
-      >
-        <summary>Shipping</summary>
-      </details>
-      <l-input-stepper>
-        <input
-          type="number"
-          value="2"
-          aria-label="Quantity"
-        />
-      </l-input-stepper>
-    </div>
+    <l-input-stepper v-else-if="preview === 'icon-plus' || preview === 'icon-minus'">
+      <input
+        type="number"
+        value="2"
+        aria-label="Quantity"
+      />
+    </l-input-stepper>
 
     <!-- Tooltip: the bubble and its arrow above an icon-only button. -->
     <div
