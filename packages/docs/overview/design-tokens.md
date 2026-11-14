@@ -96,6 +96,16 @@ Single-source scale: `--l-spacing` is the unit, every step is derived via `calc(
 
 </section>
 
+<section class="not-has-[[data-viz]]:hidden">
+
+## Icons
+
+The icons elements draw themselves, painted in the element's color. Content icons you place in markup are [`<l-icon>`](/elements/icon). To match your icon set, see [Theming](/overview/theming#icons).
+
+<DesignTokens category="icon" />
+
+</section>
+
 </div>
 
 <div class="not-has-[[data-viz]]:hidden" data-token-group="component">
@@ -221,16 +231,6 @@ Panels anchored to a trigger (`l-dropdown`, `l-popover`, the `l-select` / `l-com
 <DesignTokens category="tooltip" />
 
 </section>
-
-</section>
-
-<section class="not-has-[[data-viz]]:hidden">
-
-## Icons
-
-The icons elements draw themselves, painted in the element's color. Content icons you place in markup are [`<l-icon>`](/elements/icon). To match your icon set, see [Theming](/overview/theming#icons).
-
-<DesignTokens category="icon" />
 
 </section>
 
