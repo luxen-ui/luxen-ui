@@ -100,7 +100,9 @@ Single-source scale: `--l-spacing` is the unit, every step is derived via `calc(
 
 ## Icons
 
-The icons elements draw themselves, painted in the element's color. Content icons you place in markup are [`<l-icon>`](/elements/icon). To match your icon set, see [Theming](/overview/theming#icons).
+Icons drawn by the elements themselves are design tokens, like colors: each holds an SVG `url()` that elements paint as a CSS mask in their own text color. Override a token on `:root` and every element that draws it follows, shadow DOM included. The approach comes from Lea Verou's [The best way to use icons in Web UIs](https://lea.verou.me/blog/2026/icons/).
+
+Icons you place in your markup use [`<l-icon>`](/elements/icon). To swap a token for your own SVG, see [Theming](/overview/theming#icons).
 
 <DesignTokens category="icon" />
 

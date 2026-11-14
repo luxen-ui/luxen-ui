@@ -53,10 +53,10 @@ interface InputStepperEventMap {
  *
  * @cssproperty --border-color - Edge color of the stepper container (default and pill appearances) and of each button (rounded appearance). Defaults to `--l-color-border`.
  * @cssproperty --border-radius - Border radius of the stepper container (default appearance). Defaults to `--radius-md`.
- * @cssproperty [--decrement-icon=var(--l-icon-minus)] - Decrement button icon, as a `url()`. Masked, so its color comes from the
- *   button. Re-skin `--l-icon-minus` on `:root` to change it with every other minus icon.
- * @cssproperty [--increment-icon=var(--l-icon-plus)] - Increment button icon, as a `url()`. Masked, so its color comes from the
- *   button. Re-skin `--l-icon-plus` on `:root` to change it with every other plus icon.
+ * @cssproperty [--decrement-icon=var(--l-icon-decrement)] - Decrement button icon, as a `url()`. Masked, so its color comes from the
+ *   button. Re-skin `--l-icon-decrement` on `:root` to change every stepper at once.
+ * @cssproperty [--increment-icon=var(--l-icon-increment)] - Increment button icon, as a `url()`. Masked, so its color comes from the
+ *   button. Re-skin `--l-icon-increment` on `:root` to change every stepper at once.
  * @cssClass .l-input-stepper-decrement - The generated decrement button.
  * @cssClass .l-input-stepper-increment - The generated increment button.
  *

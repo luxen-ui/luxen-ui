@@ -209,7 +209,7 @@ const bubbleStyle = computed(() => ({
       :style="paint('close')"
     />
 
-    <l-input-stepper v-else-if="preview === 'icon-plus' || preview === 'icon-minus'">
+    <l-input-stepper v-else-if="preview === 'icon-increment' || preview === 'icon-decrement'">
       <input
         type="number"
         value="2"
