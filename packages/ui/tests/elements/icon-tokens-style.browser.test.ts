@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vite-plus/test';
 
-// The system icons (chevrons, check, close, clear, plus, minus) are `--l-icon-*` tokens: a
+// The system icons (chevrons, check, close, clear, increment, decrement) are `--l-icon-*` tokens: a
 // brand re-skins one on `:root` and every element that draws it follows, the
 // shadow-DOM ones included. This suite overrides each token with a sentinel URL
 // and asserts the mask each element actually paints. The browser config loads
@@ -26,8 +26,8 @@ const SENTINEL = {
   check: 'sentinel-check',
   close: 'sentinel-close',
   clear: 'sentinel-clear',
-  plus: 'sentinel-plus',
-  minus: 'sentinel-minus',
+  increment: 'sentinel-increment',
+  decrement: 'sentinel-decrement',
 } as const;
 
 /**
@@ -202,26 +202,28 @@ describe('A brand re-skins a system icon once, on :root', () => {
     });
   });
 
-  describe('the plus sign', () => {
-    it('paints the l-disclosure plus marker', async () => {
-      const summary = await mount(
-        '<details class="l-disclosure" data-marker="plus"><summary>Shipping</summary><p>Free.</p></details>',
-        'summary',
-      );
-      expect(maskOf(summary, '::after')).toContain(SENTINEL.plus);
-    });
-
+  describe('the increment icon', () => {
     it('paints the l-input-stepper increment button', async () => {
       const button = await mountStepper();
-      expect(maskOf(button('increment'), '::before')).toContain(SENTINEL.plus);
+      expect(maskOf(button('increment'), '::before')).toContain(SENTINEL.increment);
     });
   });
 
-  describe('the minus sign', () => {
+  describe('the decrement icon', () => {
     it('paints the l-input-stepper decrement button', async () => {
       const button = await mountStepper();
-      expect(maskOf(button('decrement'), '::before')).toContain(SENTINEL.minus);
+      expect(maskOf(button('decrement'), '::before')).toContain(SENTINEL.decrement);
     });
+  });
+
+  it('leaves the l-disclosure plus marker a plus sign, since opening turns it into a cross', async () => {
+    const summary = await mount(
+      '<details class="l-disclosure" data-marker="plus"><summary>Shipping</summary><p>Free.</p></details>',
+      'summary',
+    );
+    const mask = maskOf(summary, '::after');
+    expect(mask).not.toContain(SENTINEL.increment);
+    expect(decodeURIComponent(mask)).toContain('M5 12h14M12 5v14');
   });
 });
 

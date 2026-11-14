@@ -168,15 +168,15 @@ export const COMPONENT_TOKEN_SPEC = {
     legend: 'lucide:x',
     touches: 'Select, combobox & search clear',
   },
-  '--l-icon-plus': {
-    preview: 'icon-plus',
+  '--l-icon-increment': {
+    preview: 'icon-increment',
     highlight: HL_ICON,
     // No color paint: both stepper buttons share the host color.
     legend: 'lucide:plus',
-    touches: 'Stepper increment, disclosure plus marker',
+    touches: 'Stepper increment',
   },
-  '--l-icon-minus': {
-    preview: 'icon-minus',
+  '--l-icon-decrement': {
+    preview: 'icon-decrement',
     highlight: HL_ICON,
     // No color paint: both stepper buttons share the host color.
     legend: 'lucide:minus',

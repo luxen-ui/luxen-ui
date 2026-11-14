@@ -1,0 +1,38 @@
+<style>
+  /* https://lucide.dev/icons/chevron-left, chevron-right */
+  #stepper-chevrons {
+    --decrement-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m15 18-6-6 6-6'/></svg>");
+    --increment-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 18 6-6-6-6'/></svg>");
+  }
+
+  /* https://lucide.dev/icons/arrow-down, arrow-up */
+  #stepper-arrows {
+    --decrement-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14M19 12l-7 7-7-7'/></svg>");
+    --increment-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 19V5M5 12l7-7 7 7'/></svg>");
+  }
+</style>
+
+<div class="flex flex-wrap items-center gap-4">
+  <l-input-stepper id="stepper-chevrons">
+    <input
+      type="number"
+      min="0"
+      max="10"
+      value="5"
+      aria-label="Guests"
+    />
+  </l-input-stepper>
+
+  <l-input-stepper
+    id="stepper-arrows"
+    appearance="pill"
+  >
+    <input
+      type="number"
+      min="-20"
+      max="40"
+      value="21"
+      aria-label="Temperature"
+    />
+  </l-input-stepper>
+</div>
