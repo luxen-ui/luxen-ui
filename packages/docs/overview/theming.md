@@ -48,10 +48,10 @@ A theme inside `@layer base`, `components` or `utilities` wins too, as long as t
 @import 'luxen-ui/css/base'; /* runtime helpers, FOUC fix — no tokens */
 @import 'luxen-ui/css/tokens'; /* primitives + aliases + component tokens */
 
-/* ── Finer grained ───────────────────────────────────────── */
+/* ── Finer grained: luxen-ui/css/tokens = these three ────── */
 /* @import 'luxen-ui/css/tokens/primitives'; */ /* 5 color families, spacing, radius, text… */
 /* @import 'luxen-ui/css/tokens/aliases'; */ /* semantic aliases only */
-/* @import 'luxen-ui/css/tokens/forms'; */ /* form control tokens */
+/* @import 'luxen-ui/css/tokens/components'; */ /* button, popover, tooltip, form control… */
 
 /* ── Optional ────────────────────────────────────────────── */
 /* @import 'luxen-ui/css/tokens/palette'; */ /* 21 more Tailwind color families */
