@@ -60,6 +60,14 @@ export default {
         window.toast = toast;
       });
 
+      // Interface sounds, opt-in (see SoundToggle.vue and foundations/sound.md).
+      // `storageKey: ''` keeps the choice for the visit, like the color-scheme
+      // demos. Plain links and buttons stay silent by default, so browsing the
+      // docs makes no sound once it is on: only state changes speak.
+      void import('luxen-ui/sound').then(({ sound }) => {
+        sound.configure({ storageKey: '' });
+      });
+
       // Exposed so the color-scheme-icon examples drive the real store from inline
       // handlers. `storageKey: ''` keeps the demos session-only, so browsing
       // the docs never writes a color-scheme override into a visitor's browser.

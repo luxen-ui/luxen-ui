@@ -19,6 +19,9 @@
  * Each field is consumed by one or both tools; comments mark which.
  */
 
+import type { SoundName } from './sound/presets.js';
+import type { SoundRecipe } from './sound/synth.js';
+
 /** Per-element subset for `emitTypes.elements`. */
 export type LuxenElementBaseName = string;
 
@@ -66,6 +69,34 @@ export interface LuxenColorSchemeConfig {
 }
 
 /**
+ * Build-time defaults for the `luxen-ui/sound` store. There is deliberately no
+ * field to turn sound on: only the visitor's own control does that.
+ */
+export interface LuxenSoundConfig {
+  /**
+   * `localStorage` key holding the visitor's choice. Default `'luxen-sound'`.
+   * Set to `''` to keep the choice for the visit only.
+   */
+  storageKey?: string;
+  /** Master volume, from 0 to 1, clamped. Default `0.7`. */
+  volume?: number;
+  /** Element and native lifecycle events make sounds. Default `true`. */
+  events?: boolean;
+  /**
+   * Bare clicks on plain buttons and links make sounds too. Default `false`:
+   * only state changes are heard. A control with an explicit `data-sound` name
+   * plays it either way.
+   */
+  clicks?: boolean;
+  /**
+   * Your own recipes for any of the seven sounds; the others keep the default.
+   * The Vite plugin checks them when the build starts. `sound.configure()`
+   * takes the same object at runtime, for sounds that follow the active theme.
+   */
+  presets?: Partial<Record<SoundName, SoundRecipe>>;
+}
+
+/**
  * Shape of `luxen.config.mjs`. Both the Vite plugin and the CLI read this
  * file; each tool ignores the fields that don't apply to it.
  */
@@ -100,6 +131,13 @@ export interface LuxenConfig {
    * never has to call `colorScheme.configure()` from its entry point.
    */
   colorScheme?: LuxenColorSchemeConfig;
+
+  // ── Sound — Vite plugin only ───────────────────────────────────────────────
+  /**
+   * Defaults for `luxen-ui/sound`, baked in at build time so a project never
+   * has to call `sound.configure()` from its entry point.
+   */
+  sound?: LuxenSoundConfig;
 
   // ── Dev tooling — Vite plugin only ─────────────────────────────────────────
   /**

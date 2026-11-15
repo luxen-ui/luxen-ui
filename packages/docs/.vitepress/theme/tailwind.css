@@ -205,11 +205,11 @@ body {
   max-width: none;
 }
 
-/* The theme picker renders through the `nav-bar-content-after` slot, after the
-   social links. Push the controls that follow the version menu one step later
-   so the picker (`order-1`) sits between the version menu and the appearance
-   switch. VitePress draws its dividers from DOM order, so the picker brings its
-   own (see ThemePicker.vue). */
+/* The theme picker and the sound toggle render through the
+   `nav-bar-content-after` slot, after the social links. Push the controls that
+   follow the version menu one step later so both (`order-1`) sit between the
+   version menu and the appearance switch. VitePress draws its dividers from DOM
+   order, so the picker brings its own (see ThemePicker.vue). */
 .VPNavBar .content-body > :is(.appearance, .social-links, .extra, .hamburger) {
   order: 2;
 }
