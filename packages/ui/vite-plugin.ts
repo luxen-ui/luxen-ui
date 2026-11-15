@@ -336,7 +336,8 @@ function bakeInOptimizer(
         {
           name,
           setup(build) {
-            build.onLoad({ filter }, async ({ path }) => {
+            // Files on disk only: a virtual module has no path to read.
+            build.onLoad({ filter, namespace: 'file' }, async ({ path }) => {
               const out = bake(await readFile(path, 'utf8'), path);
               if (out === null) return undefined;
               return { contents: out, loader: path.endsWith('.ts') ? 'ts' : 'js' };
@@ -364,20 +365,28 @@ function hashOf(value: unknown): string {
 }
 
 /**
- * Matches `<name>[: Type] = <literal>;`.
+ * Matches `<name>[: Type] = <literal>;`, with a string literal in either quote.
  *
- * The optional type annotation is what makes this a helper rather than a plain
- * pattern: the module resolves to the compiled `let _apply = false;` in `dist`,
- * but to `let _apply: ColorSchemeApply = false;` when a project points at the
- * TypeScript source — which `modulePath` accepts. A pattern that only matched
- * the compiled shape would drop half a project's configuration there, silently
- * and with no build error.
+ * Both are shapes the plugin really receives. The module resolves to the
+ * compiled `let _apply = false;` in `dist`, but a project pointing at the
+ * TypeScript source — which `modulePath` accepts — hands over two more: the raw
+ * `let _apply: ColorSchemeApply = false;` in the dependency optimizer, and in
+ * `transform`, what Vite's own TypeScript transform printed first, annotations
+ * gone and `'l'` turned into `"l"`. A pattern that missed either would drop the
+ * project's configuration there, silently and with no build error.
  */
 function initialiser(name: string, literal: string, flags = ''): RegExp {
   return new RegExp(
-    `\\b${escapeRegExp(name)}(\\s*:\\s*[\\w.<>|'" ]+?)? = ${escapeRegExp(literal)};`,
+    `\\b${escapeRegExp(name)}(\\s*:\\s*[\\w.<>|'" ]+?)? = ${literalPattern(literal)};`,
     flags,
   );
+}
+
+/** `literal`, or for a single-quoted string, the same string in either quote. */
+function literalPattern(literal: string): string {
+  const text = /^'([^'"\\]*)'$/.exec(literal)?.[1];
+  if (text === undefined) return escapeRegExp(literal);
+  return `(?:'${escapeRegExp(text)}'|"${escapeRegExp(text)}")`;
 }
 
 /**
