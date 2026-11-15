@@ -79,9 +79,9 @@ declare global {
  * @cssstate has-children - The item holds nested `<l-tree-item>` elements. A `lazy` item expands before its children load, so it does not have this state until they do.
  * @cssstate checkbox - The item shows a checkbox: its `<l-tree>` has `selection="multiple"`.
  *
- * @event expand - Fired when the item is expanded.
- * @event collapse - Fired when the item is collapsed.
- * @event lazy-load - Fired when a lazy item is expanded for the first time. Consumers should append children and set `lazy=false`.
+ * @event expand - Fired when the item opens after its first render (chevron, keyboard, `toggle()`, `expandAll()`, a write to `expanded`). Not fired for the initial state, even when the item renders open, nor for a value written before that render (e.g. `expandAll()` in the same tick as inserting the markup): read `expanded` instead. Bubbles. Not cancelable.
+ * @event collapse - Fired when the item closes after its first render. Not fired for the initial state: read `expanded` instead. Bubbles. Not cancelable.
+ * @event lazy-load - Fired when a `lazy` item opens, including on first render for an item authored `expanded lazy`. Consumers should append children and set `lazy=false`, or it fires again on the next open. Bubbles. Not cancelable.
  *
  * @customElement l-tree-item
  */
