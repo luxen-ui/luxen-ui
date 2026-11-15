@@ -125,40 +125,30 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
   let elementPrefix = 'l';
   let cssPrefix = 'l';
   let colorSchemeCfg: ColorSchemeOptions = {};
+  /** What `bake` rewrites, filled in by `config` once the configuration is resolved. */
+  let modules: BakedModule[] = [];
 
   /**
-   * Rewrites the two literal initialisers in `luxen-ui/dist/registry.js`
-   * (`let _elementPrefix = 'l'`, `let _cssPrefix = 'l'`) so the configured
-   * prefixes are baked in at build time — no runtime `setPrefix()` call
-   * needed in the consumer's entry point.
+   * Bakes the configured values into the module `id` points at, by rewriting
+   * its literal initialisers — no runtime `setPrefix()` or `configure()` call
+   * needed in the consumer's entry point. Both stay exported for what the build
+   * cannot know (tests, dynamic switching, a per-user key).
    *
-   * `setPrefix()` remains exported for advanced cases (tests, dynamic
-   * switching), but ordinary consumers don't need to call it.
-   *
-   * Returns `null` when `id` is not a module it rewrites, or nothing changes.
-   * Both `transform` and the dependency optimizer (see `config`) run it.
+   * Returns `null` when `id` is not one of `modules`, or nothing changes. Both
+   * `transform` and the dependency optimizer (see `config`) run it.
    */
   function bake(code: string, id: string): string | null {
-    let out = code;
-
-    if (isLuxenRegistry(id)) {
-      if (elementPrefix !== 'l') {
-        out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
-      }
-      if (cssPrefix !== 'l') {
-        out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
-      }
-    } else if (isLuxenColorScheme(id)) {
-      // Same trick for the color-scheme store: rewrite the two literal
-      // initialisers in `color-scheme.js` so a project's `luxen.config.mjs`
-      // defaults are baked in. `configure()` remains the runtime path.
-      const { storageKey, apply } = colorSchemeCfg;
-      if (storageKey !== undefined) {
-        out = bakeInitialiser(out, '_storageKey', "'luxen-color-scheme'", storageKey);
-      }
-      if (apply !== undefined) out = bakeInitialiser(out, '_apply', 'false', apply);
+    const target = modules.find(({ path }) => path.test(id));
+    // A path alone is not enough: plenty of packages ship a `dist/registry.js`.
+    // Only Luxen's declares every initialiser, exactly as shipped.
+    if (!target?.initialisers.every(([name, literal]) => initialiser(name, literal).test(code))) {
+      return null;
     }
 
+    let out = code;
+    for (const [name, literal, value] of target.initialisers) {
+      if (value !== undefined) out = bakeInitialiser(out, name, literal, value);
+    }
     return out === code ? null : out;
   }
 
@@ -191,18 +181,37 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
         };
       }
 
-      // Everything `bake` writes that differs from what the package ships.
-      const baked: Record<string, unknown> = {};
-      if (elementPrefix !== 'l') baked.elementPrefix = elementPrefix;
-      if (cssPrefix !== 'l') baked.cssPrefix = cssPrefix;
-      if (Object.keys(colorSchemeCfg).length > 0) baked.colorScheme = colorSchemeCfg;
+      // Every value the plugin bakes, and the one place a new one is added:
+      // `bake`, the optimizer's filter and its cache key all read this list.
+      // `undefined` leaves an initialiser as shipped.
+      modules = [
+        bakedModule('registry', [
+          ['_elementPrefix', "'l'", elementPrefix === 'l' ? undefined : elementPrefix],
+          ['_cssPrefix', "'l'", cssPrefix === 'l' ? undefined : cssPrefix],
+        ]),
+        bakedModule('color-scheme', [
+          ['_storageKey', "'luxen-color-scheme'", colorSchemeCfg.storageKey],
+          ['_apply', 'false', colorSchemeCfg.apply],
+        ]),
+      ];
+
+      const baked = modules.flatMap(({ file, initialisers }) =>
+        initialisers
+          .filter(([, , value]) => value !== undefined)
+          .map(([name, , value]) => [file, name, value]),
+      );
 
       // In `vite dev`, a `luxen-ui` installed from npm is pre-bundled into
       // `.vite/deps`, and Vite never runs `transform` over a pre-bundled
       // dependency: without this, dev would serve the defaults while the build
       // bakes the configuration in.
-      if (Object.keys(baked).length > 0) {
-        config.optimizeDeps = bakeInOptimizer(bake, usesRolldown(this), hashOf(baked));
+      if (baked.length > 0) {
+        config.optimizeDeps = bakeInOptimizer(
+          bake,
+          modulePath(modules.map(({ file }) => file)),
+          usesRolldown(this),
+          hashOf(baked),
+        );
       }
 
       return config;
@@ -215,12 +224,45 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
   };
 }
 
-/** Every module of the package: `bake` decides which ones it rewrites. */
-const LUXEN_MODULE = /[\\/]luxen-ui[\\/]/;
+/** `[name, literal it ships with, value to bake or undefined]`. */
+type Initialiser = readonly [name: string, literal: string, value: unknown];
+
+/** A module of the package whose literal initialisers the plugin rewrites. */
+interface BakedModule {
+  /** Its path inside the package without extension, e.g. `registry`. */
+  file: string;
+  /** Matches its id: see `modulePath`. */
+  path: RegExp;
+  initialisers: readonly Initialiser[];
+}
+
+function bakedModule(file: string, initialisers: readonly Initialiser[]): BakedModule {
+  return { file, path: modulePath([file]), initialisers };
+}
 
 /**
- * Dependency-optimizer options that run `bake` over `luxen-ui` while Vite
- * pre-bundles it: through Rolldown on Vite 8+, through esbuild on Vite 5–7.
+ * Matches the ids of `files` by their path inside the package — compiled as
+ * `dist/<file>.js`, or as `src/html/<file>.ts` for a project pointing at the
+ * source — with or without a Vite query (`?used`, `?import`…).
+ *
+ * Never by the package's directory name: a linked install (workspace,
+ * `npm link`, `file:`) resolves to wherever the package really sits, and an npm
+ * alias installs it under another name. Both would go unbaked.
+ *
+ * Also the dependency optimizer's filter, so it stays valid for esbuild's Go
+ * regular expressions: no lookaround, no backreference.
+ */
+function modulePath(files: readonly string[]): RegExp {
+  const names = files.map((file) => file.split('/').map(escapeRegExp).join('[\\\\/]')).join('|');
+  return new RegExp(
+    `[\\\\/](?:dist[\\\\/](?:${names})\\.js|src[\\\\/]html[\\\\/](?:${names})\\.ts)(?:\\?.*)?$`,
+  );
+}
+
+/**
+ * Dependency-optimizer options that run `bake` over the modules `filter`
+ * matches while Vite pre-bundles them: through Rolldown on Vite 8+, through
+ * esbuild on Vite 5–7.
  *
  * `key` goes into the optimizer plugin's name on purpose. Vite keys its
  * `.vite/deps` cache on the names of the optimizer plugins, not on what they
@@ -230,6 +272,7 @@ const LUXEN_MODULE = /[\\/]luxen-ui[\\/]/;
  */
 function bakeInOptimizer(
   bake: (code: string, id: string) => string | null,
+  filter: RegExp,
   rolldown: boolean,
   key: string,
 ): UserConfig['optimizeDeps'] {
@@ -242,7 +285,7 @@ function bakeInOptimizer(
           {
             name,
             transform: {
-              filter: { id: LUXEN_MODULE },
+              filter: { id: filter },
               handler(code, id) {
                 const out = bake(code, id);
                 return out === null ? null : { code: out, map: null };
@@ -262,7 +305,7 @@ function bakeInOptimizer(
         {
           name,
           setup(build) {
-            build.onLoad({ filter: LUXEN_MODULE }, async ({ path }) => {
+            build.onLoad({ filter }, async ({ path }) => {
               const out = bake(await readFile(path, 'utf8'), path);
               if (out === null) return undefined;
               return { contents: out, loader: path.endsWith('.ts') ? 'ts' : 'js' };
@@ -290,35 +333,37 @@ function hashOf(value: unknown): string {
 }
 
 /**
- * Rewrite `let <name>[: Type] = <literal>;` to hold `value`.
+ * Matches `<name>[: Type] = <literal>;`.
  *
  * The optional type annotation is what makes this a helper rather than a plain
- * `String.replace`: the module resolves to the compiled `let _apply = false;` in
- * `dist`, but to `let _apply: ColorSchemeApply = false;` when a project points at
- * the TypeScript source — which `isLuxenColorScheme` accepts. A pattern that only
- * matched the compiled shape would drop half a project's configuration there,
- * silently and with no build error.
+ * pattern: the module resolves to the compiled `let _apply = false;` in `dist`,
+ * but to `let _apply: ColorSchemeApply = false;` when a project points at the
+ * TypeScript source — which `modulePath` accepts. A pattern that only matched
+ * the compiled shape would drop half a project's configuration there, silently
+ * and with no build error.
+ */
+function initialiser(name: string, literal: string, flags = ''): RegExp {
+  return new RegExp(
+    `\\b${escapeRegExp(name)}(\\s*:\\s*[\\w.<>|'" ]+?)? = ${escapeRegExp(literal)};`,
+    flags,
+  );
+}
+
+/**
+ * Rewrite every `<name>[: Type] = <literal>;` to hold `value`, written as a
+ * JSON literal and through a replacer function, so no character in `value` can
+ * end the string early or read as a `$&`-style replacement pattern.
  */
 function bakeInitialiser(code: string, name: string, literal: string, value: unknown): string {
-  const pattern = new RegExp(
-    `${name}(\\s*:\\s*[\\w.<>|'" ]+?)? = ${literal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')};`,
-    'g',
-  );
   return code.replace(
-    pattern,
-    (_match, annotation) => `${name}${annotation ?? ''} = ${JSON.stringify(value)};`,
+    initialiser(name, literal, 'g'),
+    (_match, annotation: string | undefined) =>
+      `${name}${annotation ?? ''} = ${JSON.stringify(value)};`,
   );
 }
 
-function isLuxenColorScheme(id: string): boolean {
-  const path = id.replace(/\\/g, '/').split('?')[0] ?? '';
-  return /\/luxen-ui\/(?:dist|src\/html)\/color-scheme\.(?:js|ts)$/.test(path);
-}
-
-function isLuxenRegistry(id: string): boolean {
-  // Normalise for Windows + strip Vite query params (`?import`, `?used`, …)
-  const path = id.replace(/\\/g, '/').split('?')[0] ?? '';
-  return /\/luxen-ui\/(?:dist|src\/html)\/registry\.(?:js|ts)$/.test(path);
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

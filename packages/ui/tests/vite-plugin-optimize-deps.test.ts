@@ -11,8 +11,9 @@ import luxen, { type LuxenOptions } from '../vite-plugin.js';
 // bakes `luxen.config.mjs` values inside the dependency optimizer too, or they
 // would reach `vite build` only. Tests of the `transform` hook alone kept
 // passing through exactly that, so these run Vite's real optimizer over a
-// `luxen-ui` installed as a plain directory: a workspace link is not
-// pre-bundled at all, which is also why no demo showed it.
+// `luxen-ui` installed as a plain directory, as npm installs it. (A workspace
+// link is not pre-bundled by default, and the demo app that links it sets its
+// prefix at runtime too: neither could show this.)
 //
 // The fixture holds the TypeScript source of the modules the plugin rewrites,
 // rather than `dist`, so the suite does not depend on a build having run. The
@@ -20,10 +21,14 @@ import luxen, { type LuxenOptions } from '../vite-plugin.js';
 
 const SOURCE_DIR = fileURLToPath(new URL('../src/html/', import.meta.url));
 
-/** A project with `luxen-ui` installed as a plain directory in `node_modules`. */
-function createProject(): string {
+/**
+ * A project with the package installed as a plain directory in `node_modules`,
+ * under `name`: an npm alias (`"pulse-ui": "npm:luxen-ui@…"`) installs it under
+ * its alias, with its own `package.json` unchanged.
+ */
+function createProject(name = 'luxen-ui'): string {
   const root = mkdtempSync(join(tmpdir(), 'luxen-optimize-deps-'));
-  const pkg = join(root, 'node_modules', 'luxen-ui');
+  const pkg = join(root, 'node_modules', name);
   mkdirSync(join(pkg, 'src', 'html'), { recursive: true });
   for (const file of ['registry.ts', 'color-scheme.ts']) {
     cpSync(join(SOURCE_DIR, file), join(pkg, 'src', 'html', file));
@@ -46,18 +51,22 @@ function createProject(): string {
 let run = 0;
 
 /**
- * Pre-bundle the project's `luxen-ui` the way `vite dev` does on start-up.
+ * Pre-bundle the project's package the way `vite dev` does on start-up.
  * `force: false` reuses `.vite/deps` when Vite judges the cache still valid,
  * as a plain restart would.
  */
-async function preBundle(root: string, options: LuxenOptions, force = true) {
+async function preBundle(
+  root: string,
+  options: LuxenOptions,
+  { force = true, name = 'luxen-ui' } = {},
+) {
   const config = await resolveConfig(
     {
       root,
       configFile: false,
       logLevel: 'silent',
       plugins: [luxen(options)],
-      optimizeDeps: { include: ['luxen-ui', 'luxen-ui/color-scheme'] },
+      optimizeDeps: { include: [name, `${name}/color-scheme`] },
     },
     'serve',
   );
@@ -72,13 +81,13 @@ async function preBundle(root: string, options: LuxenOptions, force = true) {
   // A fresh URL each time: Node caches modules by URL, and a later run writes
   // over the same file.
   run += 1;
-  const registry = (await import(`${pathToFileURL(fileOf('luxen-ui')).href}?run=${run}`)) as {
+  const registry = (await import(`${pathToFileURL(fileOf(name)).href}?run=${run}`)) as {
     getPrefix(): { element: string; css: string };
   };
 
   return {
     prefix: registry.getPrefix(),
-    colorScheme: readFileSync(fileOf('luxen-ui/color-scheme'), 'utf8'),
+    colorScheme: readFileSync(fileOf(`${name}/color-scheme`), 'utf8'),
   };
 }
 
@@ -108,11 +117,40 @@ describe('Vite pre-bundling luxen-ui for dev', () => {
     expect(result.colorScheme).toMatch(/_storageKey = ["']luxen-color-scheme["']/);
   });
 
+  it('bakes a color-scheme configuration that renames nothing', async () => {
+    const result = await preBundle(root, { colorScheme: { apply: 'root' } });
+
+    expect(result.prefix).toEqual({ element: 'l', css: 'l' });
+    expect(result.colorScheme).toMatch(/_apply = ["']root["']/);
+  });
+
+  it('bakes a value exactly, whatever characters it holds', async () => {
+    const result = await preBundle(root, { elementPrefix: "it's-$&", cssPrefix: `$'"\\` });
+
+    expect(result.prefix).toEqual({ element: "it's-$&", css: `$'"\\` });
+  });
+
   it('bakes the new values after the configuration changes, without clearing the cache', async () => {
     await preBundle(root, { elementPrefix: 'acme' });
-    const result = await preBundle(root, { elementPrefix: 'zeta' }, false);
+    const result = await preBundle(root, { elementPrefix: 'zeta' }, { force: false });
 
     expect(result.prefix.element).toBe('zeta');
+  });
+
+  it('bakes a copy installed under an npm alias', async () => {
+    const aliased = createProject('pulse-ui');
+    try {
+      const result = await preBundle(
+        aliased,
+        { elementPrefix: 'pulse', colorScheme: { storageKey: 'pulse-scheme' } },
+        { name: 'pulse-ui' },
+      );
+
+      expect(result.prefix.element).toBe('pulse');
+      expect(result.colorScheme).toMatch(/_storageKey = ["']pulse-scheme["']/);
+    } finally {
+      rmSync(aliased, { recursive: true, force: true });
+    }
   });
 });
 
@@ -178,7 +216,7 @@ describe('The optimizer the plugin configures', () => {
 
       const result = await plugin.onLoad?.({ path: moduleOf('registry.ts') });
       expect(result?.loader).toBe('ts');
-      expect(result?.contents).toContain("let _elementPrefix = 'acme';");
+      expect(result?.contents).toContain('let _elementPrefix = "acme";');
 
       // Untouched modules fall through to esbuild's own loader.
       expect(await plugin.onLoad?.({ path: moduleOf('color-scheme.ts') })).toBeUndefined();
