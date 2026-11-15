@@ -6,19 +6,22 @@ import { describe, expect, it } from 'vite-plus/test';
 import cdnConfig from '../vite.config.js';
 
 // The CDN build (`vite.config.ts`, written to `cdn/` by `pnpm build`) turns
-// every `src/html/**/*.ts` file into a module of its own, so a page can import
-// any of them by URL. Vite builds it as an app, and an app build drops the
-// exports of an entry that no other module imports: `cdn/elements/toast/index.js`
-// still registered `<l-toast>` but no longer exported `toast`, so
+// every runtime file of `src/html` (its `input`) into a module of its own, so
+// a page can import any of them by URL. Vite builds it as an app, and an app
+// build drops the exports of an entry that no other module imports:
+// `cdn/elements/toast/index.js` still registered `<l-toast>` but no longer
+// exported `toast`, so
 // `import { toast } from '…/cdn/elements/toast/index.js'` failed to load.
 // The build passes and the e2e specs only check that elements register, so
 // nothing else notices.
 //
 // These tests compare, for every entry of that build, the names its source
 // exports (types left out) with the names the built module exports. They are
-// skipped when `cdn/` has not been built; CI builds before it tests.
+// skipped when the modules have not been built (`cdn/` can hold only the
+// standalone bundle); CI builds before it tests.
 
 const CDN = fileURLToPath(new URL('../cdn', import.meta.url));
+const BUILT = existsSync(resolve(CDN, 'index.js'));
 
 // `{ 'elements/toast/index': '/…/src/html/elements/toast/index.ts', … }`
 const input = cdnConfig.build?.rolldownOptions?.input;
@@ -34,13 +37,21 @@ const nameOf = (node: ModuleExportName) =>
 
 /**
  * The runtime names a module exports, following its relative `export *`.
- * `resolveFrom` maps a relative specifier to the file it loads.
+ * `resolveFrom` maps a relative specifier to the file it loads; `seen` stops
+ * an `export *` cycle from recursing forever.
  */
-function exportedNames(file: string, resolveFrom: (from: string, specifier: string) => string) {
+function exportedNames(
+  file: string,
+  resolveFrom: (from: string, specifier: string) => string,
+  seen = new Set<string>(),
+) {
+  const names = new Set<string>();
+  if (seen.has(file)) return names;
+  seen.add(file);
+
   const program: Program = parseAst(readFileSync(file, 'utf-8'), {
     lang: file.endsWith('.ts') ? 'ts' : 'js',
   });
-  const names = new Set<string>();
 
   for (const node of program.body) {
     if (node.type === 'ExportDefaultDeclaration') {
@@ -56,7 +67,7 @@ function exportedNames(file: string, resolveFrom: (from: string, specifier: stri
         throw new Error(`${file}: cannot list the names of \`export * from '${specifier}'\``);
       }
       // `export *` never re-exports a default.
-      for (const name of exportedNames(resolveFrom(file, specifier), resolveFrom)) {
+      for (const name of exportedNames(resolveFrom(file, specifier), resolveFrom, seen)) {
         if (name !== 'default') names.add(name);
       }
     } else if (node.type === 'ExportNamedDeclaration') {
@@ -87,9 +98,15 @@ const resolveSource = (from: string, specifier: string) =>
 const resolveBuilt = (from: string, specifier: string) => resolve(dirname(from), specifier);
 
 const sourceNames = (entry: string) => exportedNames(input[entry], resolveSource);
-const builtNames = (entry: string) => exportedNames(resolve(CDN, `${entry}.js`), resolveBuilt);
+const builtNames = (entry: string) => {
+  const file = resolve(CDN, `${entry}.js`);
+  if (!existsSync(file)) {
+    throw new Error(`cdn/${entry}.js is missing: cdn/ is older than src/html, rebuild luxen-ui`);
+  }
+  return exportedNames(file, resolveBuilt);
+};
 
-describe.skipIf(!existsSync(CDN))('A CDN module exports what its source exports', () => {
+describe.skipIf(!BUILT)('A CDN module exports what its source exports', () => {
   it.each(Object.keys(input))('%s', (entry: string) => {
     const built = builtNames(entry);
     expect([...sourceNames(entry)].filter((name) => !built.has(name))).toEqual([]);
