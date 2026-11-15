@@ -13,10 +13,11 @@ async function exists(path) {
 
 // The CDN modules mirror `dist/`'s layout (src/html/** → **), so the type
 // declarations `tsc` emits there describe them as-is. The build-time plugins
-// (`tsconfig.tooling.json`) also land in dist/ but have no CDN module.
+// (`tsconfig.tooling.json`) and the metadata-only `*.meta.ts` classes also land
+// in dist/ but have no CDN module.
 const declarations = globSync('**/*.d.ts{,.map}', {
   cwd: 'dist',
-  ignore: ['vite-plugin.d.ts', 'postcss-plugin-prefix.d.ts'],
+  ignore: ['vite-plugin.d.ts', 'postcss-plugin-prefix.d.ts', '**/*.meta.d.ts{,.map}'],
 }).map((file) => ({
   from: join('dist', file),
   to: join('cdn', file),
