@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { Plugin, UserConfig } from 'vite';
 import postcssPrefix from './postcss-plugin-prefix.js';
@@ -217,6 +218,36 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
       return config;
     },
 
+    /**
+     * Restarts the dev server when `luxen.config.mjs` (or `.js`) is created,
+     * edited or deleted. Vite only watches its own config file, and `config`
+     * reads this one once: an edit would otherwise wait for a manual restart.
+     * The restart runs `config` again, and new values also rebuild the
+     * pre-bundled dependencies (see `bakeInOptimizer`).
+     */
+    configureServer(server) {
+      const paths = luxenConfigPaths();
+      server.watcher.add(paths);
+
+      // Worded and handled as Vite does for its own config file.
+      const restart = (file: string) => {
+        if (!paths.includes(resolve(file))) return;
+        server.config.logger.info(
+          `${relative(process.cwd(), file)} changed, restarting server...`,
+          {
+            clear: true,
+            timestamp: true,
+          },
+        );
+        server.restart().catch((error: unknown) => {
+          server.config.logger.error(String(error));
+        });
+      };
+      server.watcher.on('add', restart);
+      server.watcher.on('change', restart);
+      server.watcher.on('unlink', restart);
+    },
+
     transform(code, id) {
       const out = bake(code, id);
       return out === null ? null : { code: out, map: null };
@@ -366,6 +397,11 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/** Where `luxen.config` may sit, in the order `loadLuxenConfig` tries them. */
+function luxenConfigPaths(): string[] {
+  return ['luxen.config.mjs', 'luxen.config.js'].map((file) => resolve(process.cwd(), file));
+}
+
 /**
  * Loads `luxen.config.mjs` (or `.js`) from the current working directory, if
  * present. Returns the partial config or `null` if no file is found.
@@ -375,15 +411,17 @@ function escapeRegExp(text: string): string {
  * rebranding and skill generation.
  */
 async function loadLuxenConfig(): Promise<Partial<LuxenOptions> | null> {
-  const candidates = [
-    resolve(process.cwd(), 'luxen.config.mjs'),
-    resolve(process.cwd(), 'luxen.config.js'),
-  ];
-  for (const p of candidates) {
+  for (const p of luxenConfigPaths()) {
     if (existsSync(p)) {
       try {
+        // A dev server restarted after an edit (see `configureServer`) loads
+        // the file again in the same Node process, which caches a module by
+        // its URL, and a CommonJS one by its path too: without clearing both,
+        // every restart would read the file as it was first loaded.
+        delete createRequire(p).cache[p];
+        const version = hashOf(readFileSync(p, 'utf8'));
         // eslint-disable-next-line no-await-in-loop -- early-return on first match
-        const mod = await import(pathToFileURL(p).href);
+        const mod = await import(`${pathToFileURL(p).href}?v=${version}`);
         return (mod.default ?? mod) as Partial<LuxenOptions>;
       } catch (err) {
         console.warn(`[luxen] failed to load ${p}:`, (err as Error).message);
