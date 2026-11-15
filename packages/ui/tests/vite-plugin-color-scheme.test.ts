@@ -88,4 +88,27 @@ describe('A project configuring the color scheme in luxen.config', () => {
 
     expect(result).toBeNull();
   });
+
+  it('bakes the store from a linked install, whatever its directory is called', async () => {
+    const result = await transformWith(
+      { colorScheme: { apply: 'root' } },
+      COMPILED,
+      '/work/design-system/packages/ui/dist/color-scheme.js',
+    );
+
+    expect(result?.code).toContain('let _apply = "root";');
+  });
+
+  it("leaves another package's dist/color-scheme.js alone, however generic its lines", async () => {
+    // `let _apply = false;` alone proves nothing: only Luxen's store also
+    // declares its storage key.
+    const other = 'let _apply = false;\nexport const apply = () => _apply;\n';
+    const result = await transformWith(
+      { colorScheme: { apply: 'root' } },
+      other,
+      '/node_modules/other/dist/color-scheme.js',
+    );
+
+    expect(result).toBeNull();
+  });
 });
