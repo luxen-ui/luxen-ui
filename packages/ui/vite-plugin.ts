@@ -107,7 +107,84 @@ export interface LuxenOptions {
    * never has to call `colorScheme.configure()` from its entry point.
    */
   colorScheme?: ColorSchemeOptions;
+  /**
+   * Build-time defaults for the `luxen-ui/sound` store, so a project never has
+   * to call `sound.configure()` from its entry point.
+   */
+  sound?: SoundOptions;
 }
+
+/**
+ * Build-time defaults for `luxen-ui/sound`. No field turns sound on: only the
+ * visitor's own control does that.
+ */
+export interface SoundOptions {
+  /** `localStorage` key holding the visitor's choice. Default `'luxen-sound'`; `''` keeps it for the visit. */
+  storageKey?: string;
+  /** Master volume, from 0 to 1, clamped. Default `0.7`. */
+  volume?: number;
+  /** Element and native lifecycle events make sounds. Default `true`. */
+  events?: boolean;
+  /** Bare clicks on plain buttons and links make sounds too. Default `false`. */
+  clicks?: boolean;
+  /**
+   * Your own recipes for any of the seven sounds; the others keep the default.
+   * Checked when the build starts.
+   */
+  presets?: Partial<Record<SoundPresetName, readonly SoundLayerOptions[]>>;
+}
+
+/**
+ * The seven sounds of `luxen-ui/sound`. Declared here rather than imported:
+ * this file compiles on its own, without `src/`. `tests/vite-plugin-sound.test.ts`
+ * keeps both lists, and both layer shapes, in step.
+ */
+export type SoundPresetName = 'tap' | 'toggle' | 'select' | 'open' | 'close' | 'notify' | 'error';
+
+/** One voice of a sound recipe — the `SoundLayer` of `luxen-ui/sound`. */
+export interface SoundLayerOptions {
+  wave: 'sine' | 'square' | 'sawtooth' | 'triangle' | 'noise';
+  frequency?: number | { from: number; to: number };
+  filter?: { type: BiquadFilterKind; frequency: number; q?: number };
+  attack?: number;
+  decay: number;
+  gain?: number;
+  delay?: number;
+}
+
+type BiquadFilterKind =
+  | 'lowpass'
+  | 'highpass'
+  | 'bandpass'
+  | 'lowshelf'
+  | 'highshelf'
+  | 'peaking'
+  | 'notch'
+  | 'allpass';
+
+const SOUND_NAMES: readonly string[] = [
+  'tap',
+  'toggle',
+  'select',
+  'open',
+  'close',
+  'notify',
+  'error',
+] satisfies readonly SoundPresetName[];
+const SOUND_WAVES: readonly string[] = ['sine', 'square', 'sawtooth', 'triangle', 'noise'];
+const SOUND_FILTERS: readonly string[] = [
+  'lowpass',
+  'highpass',
+  'bandpass',
+  'lowshelf',
+  'highshelf',
+  'peaking',
+  'notch',
+  'allpass',
+] satisfies readonly BiquadFilterKind[];
+
+/** How long the default sounds last at most, in seconds. Longer is allowed, with a warning. */
+const LONGEST_SOUND = 0.3;
 
 /** Build-time defaults for `luxen-ui/color-scheme`. */
 export interface ColorSchemeOptions {
@@ -126,6 +203,7 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
   let elementPrefix = 'l';
   let cssPrefix = 'l';
   let colorSchemeCfg: ColorSchemeOptions = {};
+  let soundCfg: SoundOptions = {};
   /** What `bake` rewrites, filled in by `config` once the configuration is resolved. */
   let modules: BakedModule[] = [];
 
@@ -164,6 +242,8 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
       elementPrefix = options.elementPrefix ?? fileCfg?.elementPrefix ?? 'l';
       cssPrefix = options.cssPrefix ?? fileCfg?.cssPrefix ?? 'l';
       colorSchemeCfg = { ...fileCfg?.colorScheme, ...options.colorScheme };
+      soundCfg = { ...fileCfg?.sound, ...options.sound };
+      checkSoundPresets(soundCfg.presets);
       const emitTypes = options.emitTypes ?? fileCfg?.emitTypes;
 
       if (emitTypes) {
@@ -193,6 +273,19 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
         bakedModule('color-scheme', [
           ['_storageKey', "'luxen-color-scheme'", colorSchemeCfg.storageKey],
           ['_apply', 'false', colorSchemeCfg.apply],
+        ]),
+        // No field turns sound on, by design. `_presets` holds only the
+        // project's recipes; the store falls back to the defaults for the rest.
+        bakedModule('sound/index', [
+          ['_storageKey', "'luxen-sound'", soundCfg.storageKey],
+          ['_volume', '0.7', soundCfg.volume],
+          ['_events', 'true', soundCfg.events],
+          ['_clicks', 'false', soundCfg.clicks],
+          [
+            '_presets',
+            '{}',
+            Object.keys(soundCfg.presets ?? {}).length > 0 ? soundCfg.presets : undefined,
+          ],
         ]),
       ];
 
@@ -372,8 +465,9 @@ function hashOf(value: unknown): string {
  * TypeScript source — which `modulePath` accepts — hands over two more: the raw
  * `let _apply: ColorSchemeApply = false;` in the dependency optimizer, and in
  * `transform`, what Vite's own TypeScript transform printed first, annotations
- * gone and `'l'` turned into `"l"`. A pattern that missed either would drop the
- * project's configuration there, silently and with no build error.
+ * gone, `'l'` turned into `"l"` and `0.7` into `.7`. A pattern that missed
+ * either would drop the project's configuration there, silently and with no
+ * build error.
  */
 function initialiser(name: string, literal: string, flags = ''): RegExp {
   return new RegExp(
@@ -382,11 +476,15 @@ function initialiser(name: string, literal: string, flags = ''): RegExp {
   );
 }
 
-/** `literal`, or for a single-quoted string, the same string in either quote. */
+/**
+ * `literal`, or the same value as Vite's TypeScript transform may print it: a
+ * single-quoted string in either quote, a fraction with or without its `0`.
+ */
 function literalPattern(literal: string): string {
   const text = /^'([^'"\\]*)'$/.exec(literal)?.[1];
-  if (text === undefined) return escapeRegExp(literal);
-  return `(?:'${escapeRegExp(text)}'|"${escapeRegExp(text)}")`;
+  if (text !== undefined) return `(?:'${escapeRegExp(text)}'|"${escapeRegExp(text)}")`;
+  if (/^0\.\d+$/.test(literal)) return `0?${escapeRegExp(literal.slice(1))}`;
+  return escapeRegExp(literal);
 }
 
 /**
@@ -404,6 +502,105 @@ function bakeInitialiser(code: string, name: string, literal: string, value: unk
 
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Check a project's sound recipes when the build starts, where a mistake can be
+ * named, rather than in the visitor's browser, where it only plays wrong or not
+ * at all. `sound.configure({ presets })` at runtime is not checked.
+ */
+function checkSoundPresets(presets: unknown): void {
+  if (presets === undefined) return;
+  if (!isRecord(presets)) {
+    throw soundError('`sound.presets` must be an object of recipes keyed by sound name.');
+  }
+
+  for (const [name, recipe] of Object.entries(presets)) {
+    const at = `sound.presets.${name}`;
+    if (!SOUND_NAMES.includes(name)) {
+      throw soundError(
+        `\`${at}\`: there is no sound by that name. Use one of ${SOUND_NAMES.join(', ')}.`,
+      );
+    }
+    if (!Array.isArray(recipe) || recipe.length === 0) {
+      throw soundError(`\`${at}\` must be a non-empty array of layers.`);
+    }
+
+    let length = 0;
+    for (const [index, layer] of (recipe as unknown[]).entries()) {
+      length = Math.max(length, checkSoundLayer(layer, `${at}[${index}]`));
+    }
+    if (length > LONGEST_SOUND) {
+      console.warn(
+        `[luxen] \`${at}\` lasts ${Math.round(length * 1000)} ms. The default sounds end within ` +
+          `${LONGEST_SOUND * 1000} ms; a longer one competes with the next interaction.`,
+      );
+    }
+  }
+}
+
+/** Check one layer and return when it falls silent, in seconds. */
+function checkSoundLayer(layer: unknown, at: string): number {
+  if (!isRecord(layer)) throw soundError(`\`${at}\` must be a layer object.`);
+
+  const { wave, frequency, filter, attack, decay, gain, delay } = layer;
+  if (typeof wave !== 'string' || !SOUND_WAVES.includes(wave)) {
+    throw soundError(`\`${at}.wave\` must be one of ${SOUND_WAVES.join(', ')}.`);
+  }
+  if (!isPositive(decay)) throw soundError(`\`${at}.decay\` must be a number of seconds above 0.`);
+
+  if (wave !== 'noise') {
+    const glide = isRecord(frequency) && isPositive(frequency.from) && isPositive(frequency.to);
+    if (!isPositive(frequency) && !glide) {
+      throw soundError(`\`${at}.frequency\` must be a number of Hz above 0, or { from, to }.`);
+    }
+  }
+
+  if (filter !== undefined) {
+    if (
+      !isRecord(filter) ||
+      typeof filter.type !== 'string' ||
+      !SOUND_FILTERS.includes(filter.type)
+    ) {
+      throw soundError(`\`${at}.filter.type\` must be one of ${SOUND_FILTERS.join(', ')}.`);
+    }
+    if (!isPositive(filter.frequency)) {
+      throw soundError(`\`${at}.filter.frequency\` must be a number of Hz above 0.`);
+    }
+    if (filter.q !== undefined && !isFiniteNumber(filter.q)) {
+      throw soundError(`\`${at}.filter.q\` must be a number.`);
+    }
+  }
+
+  for (const [field, value] of [
+    ['attack', attack],
+    ['delay', delay],
+  ] as const) {
+    if (value !== undefined && !(isFiniteNumber(value) && value >= 0)) {
+      throw soundError(`\`${at}.${field}\` must be a number of seconds, 0 or more.`);
+    }
+  }
+  if (gain !== undefined && !(isFiniteNumber(gain) && gain >= 0 && gain <= 1)) {
+    throw soundError(`\`${at}.gain\` must be a number from 0 to 1.`);
+  }
+
+  return ((delay as number | undefined) ?? 0) + ((attack as number | undefined) ?? 0) + decay;
+}
+
+function soundError(message: string): Error {
+  return new Error(`[luxen] ${message}`);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isPositive(value: unknown): value is number {
+  return isFiniteNumber(value) && value > 0;
 }
 
 /** Where `luxen.config` may sit, in the order `loadLuxenConfig` tries them. */

@@ -119,6 +119,7 @@ export default defineConfig({
           { text: 'Color scheme', link: '/overview/color-scheme' },
           { text: 'Theming', link: '/overview/theming' },
           { text: 'Focus', link: '/foundations/focus' },
+          { text: 'Sound', link: '/foundations/sound' },
         ],
       },
       {

@@ -1,6 +1,7 @@
 <script setup>
 import DefaultTheme from 'vitepress/theme';
 import Logo from '../components/Logo.vue';
+import SoundToggle from '../components/SoundToggle.vue';
 import ThemePicker from '../components/ThemePicker.vue';
 </script>
 
@@ -11,6 +12,7 @@ import ThemePicker from '../components/ThemePicker.vue';
     </template>
     <template #nav-bar-content-after>
       <ThemePicker />
+      <SoundToggle />
     </template>
   </DefaultTheme.Layout>
 </template>

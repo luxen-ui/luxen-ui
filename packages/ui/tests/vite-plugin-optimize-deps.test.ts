@@ -229,6 +229,19 @@ describe('The optimizer the plugin configures', () => {
     });
   }
 
+  it('bakes the sound store, recipes included', async () => {
+    // The optimizer reads the TypeScript source with its annotations, which
+    // `transform` never sees: `_presets` is typed there.
+    const tap = [{ wave: 'sine', frequency: 880, decay: 0.08 }] as const;
+    const plugin = await esbuildPlugin({ sound: { clicks: true, presets: { tap } } });
+    const store = join(SOURCE_DIR, 'sound', 'index.ts');
+
+    expect(plugin.onLoadOptions?.filter.test(store)).toBe(true);
+    const result = await plugin.onLoad?.({ path: store });
+    expect(result?.contents).toContain('let _clicks = true;');
+    expect(result?.contents).toContain(`let _presets: SoundPresets = ${JSON.stringify({ tap })};`);
+  });
+
   // Vite keys the `.vite/deps` cache on the optimizer plugins' names (esbuild
   // and Rolldown alike), not on what they do.
   it('names its plugin after the values it bakes, so the dev cache follows them', async () => {

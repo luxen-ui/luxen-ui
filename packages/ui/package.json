@@ -124,6 +124,10 @@
       "types": "./dist/color-scheme.d.ts",
       "import": "./dist/color-scheme.js"
     },
+    "./sound": {
+      "types": "./dist/sound/index.d.ts",
+      "import": "./dist/sound/index.js"
+    },
     "./translations/*": {
       "types": "./dist/translations/*.d.ts",
       "import": "./dist/translations/*.js"

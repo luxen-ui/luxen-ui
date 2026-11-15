@@ -57,3 +57,23 @@ describe('The generated skill ships the Foundations guides', () => {
     expect(guide).not.toMatch(/--l-|<l-|`l-|class="l-/);
   });
 });
+
+describe('The generated skill ships the Sound guide', () => {
+  it('writes it under references/foundations, and SKILL.md points at it', () => {
+    expect(existsSync(join(OUT, 'references/foundations/sound.md'))).toBe(true);
+    expect(read('SKILL.md')).toContain('(references/foundations/sound.md)');
+  });
+
+  it('reads as plain markdown: the live figure is gone, the facts are tables', () => {
+    const guide = read('references/foundations/sound.md');
+    expect(guide).not.toMatch(/<SoundFigure|<AccessibilityTable|<Badge|<script setup>/);
+    expect(guide).toContain('| `notify` |');
+    expect(guide).toContain('### Rules');
+  });
+
+  it('applies the custom prefixes to tags', () => {
+    const guide = read('references/foundations/sound.md');
+    expect(guide).toContain('`pulse-dialog`');
+    expect(guide).not.toMatch(/<l-|`l-|class="l-/);
+  });
+});
