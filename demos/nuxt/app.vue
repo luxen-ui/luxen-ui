@@ -19,9 +19,8 @@
 
       <p class="mx-auto mt-6 max-w-2xl text-lg text-balance opacity-80">
         Default <code class="chip">l-</code> tags, classes and tokens are remapped to
-        <code class="chip chip-brand">ds-</code> via the
-        <code class="chip">luxen-ui/vite-plugin</code> + a single
-        <code class="chip">setPrefix()</code> call.
+        <code class="chip chip-brand">ds-</code> by the
+        <code class="chip">luxen-ui/vite-plugin</code> alone, with no runtime call.
       </p>
 
       <div
@@ -68,10 +67,7 @@ export default defineNuxtConfig({
   },
 });</pre>
           <pre class="code"><span class="comment">// plugins/luxen.client.ts</span>
-import { setPrefix } from <span class="str">'luxen-ui'</span>;
-
 export default defineNuxtPlugin(async () =&gt; {
-  setPrefix({ element: <span class="str">'ds'</span>, css: <span class="str">'ds'</span> });
   await import(<span class="str">'luxen-ui/badge'</span>);
   await import(<span class="str">'luxen-ui/dropdown'</span>);
 });</pre>

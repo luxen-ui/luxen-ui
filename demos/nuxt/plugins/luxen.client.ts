@@ -1,8 +1,6 @@
-import { setPrefix } from 'luxen-ui';
-
+// No `setPrefix()` call: `luxen()` in nuxt.config.ts bakes the `ds` prefix into
+// the registry, in dev and build alike.
 export default defineNuxtPlugin(async () => {
-  setPrefix({ element: 'ds', css: 'ds' });
-
   await Promise.all([
     import('luxen-ui/badge'),
     import('luxen-ui/dialog'),
