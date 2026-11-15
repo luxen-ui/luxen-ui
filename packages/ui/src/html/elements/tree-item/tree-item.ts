@@ -227,9 +227,16 @@ export class TreeItem extends LuxenElement {
       // Emit lazy-load for ANY transition to expanded (keyboard, chevron,
       // `expandAll()`…), not just `toggle()` — otherwise keyboard users expand a
       // lazy branch with no children and no fetch. Fires while still `lazy`; the
-      // consumer appends children and clears `lazy`, so it won't re-fire.
+      // consumer appends children and clears `lazy`, so it won't re-fire. Also
+      // fires on the first render of an item authored `expanded lazy`: it starts
+      // open and empty, so it must still fetch its children.
       if (this.expanded && this.lazy) this.dispatchEvent(new LazyLoadEvent());
-      this.dispatchEvent(this.expanded ? new ExpandEvent() : new CollapseEvent());
+      // expand/collapse report a transition. On the first render Lit lists
+      // `expanded` with an `undefined` old value: that is the initial state, not
+      // a change, so it fires neither.
+      if (changed.get('expanded') !== undefined) {
+        this.dispatchEvent(this.expanded ? new ExpandEvent() : new CollapseEvent());
+      }
     }
 
     if (changed.has('selected')) {

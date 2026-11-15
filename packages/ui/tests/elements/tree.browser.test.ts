@@ -521,6 +521,72 @@ describe('A disabled item', () => {
 });
 
 // ---------------------------------------------------------------------------
+// expand / collapse events
+// ---------------------------------------------------------------------------
+
+/**
+ * Record every `expand`/`collapse` (and `lazy-load`) dispatched anywhere in the
+ * document, from before the tree mounts. A capture listener on `document` sees
+ * the events whether or not they bubble, so it catches the ones fired during the
+ * items' first render.
+ */
+function recordToggleEvents() {
+  const events: string[] = [];
+  const names = ['expand', 'collapse', 'lazy-load'] as const;
+  const record = (e: Event) => events.push(`${e.type}:${(e.target as HTMLElement).id}`);
+  for (const name of names) document.addEventListener(name, record, true);
+  return {
+    events,
+    stop: () => {
+      for (const name of names) document.removeEventListener(name, record, true);
+    },
+  };
+}
+
+describe('A consumer listening for expand and collapse', () => {
+  it('hears nothing when the tree first renders', async () => {
+    const log = recordToggleEvents();
+    try {
+      await mount(FILES);
+      expect(log.events).toEqual([]);
+    } finally {
+      log.stop();
+    }
+  });
+
+  it('hears nothing when an item is authored open', async () => {
+    const log = recordToggleEvents();
+    try {
+      await mount(`
+        <l-tree aria-label="Files">
+          <l-tree-item id="docs" expanded>Documents
+            <l-tree-item id="a">a.txt</l-tree-item>
+          </l-tree-item>
+        </l-tree>
+      `);
+      expect(present(treeitem('Documents', { expanded: true }))).toBe(true);
+      expect(log.events).toEqual([]);
+    } finally {
+      log.stop();
+    }
+  });
+
+  it('hears exactly one expand, then one collapse, when the user toggles a branch', async () => {
+    await mount(FILES);
+    const log = recordToggleEvents();
+    try {
+      await clickExpandButton('docs');
+      expect(log.events).toEqual(['expand:docs']);
+
+      await clickExpandButton('docs');
+      expect(log.events).toEqual(['expand:docs', 'collapse:docs']);
+    } finally {
+      log.stop();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Lazy-loading
 // ---------------------------------------------------------------------------
 
@@ -551,6 +617,20 @@ describe('A branch that loads its children on demand', () => {
     await userEvent.keyboard('{ArrowLeft}');
     await settle();
     expect(requested).toBe(1);
+  });
+
+  it('asks for its children on first render when it is authored open', async () => {
+    const log = recordToggleEvents();
+    try {
+      await mount(
+        `<l-tree aria-label="F"><l-tree-item id="lazy" lazy expanded>Remote</l-tree-item></l-tree>`,
+      );
+      // The branch starts open with nothing in it: it must still request its
+      // children, but it did not open — so no `expand`.
+      expect(log.events).toEqual(['lazy-load:lazy']);
+    } finally {
+      log.stop();
+    }
   });
 
   it('shows a busy state while its children load', async () => {
