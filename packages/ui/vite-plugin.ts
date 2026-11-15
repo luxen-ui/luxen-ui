@@ -1,7 +1,9 @@
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import type { Plugin } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
 import postcssPrefix from './postcss-plugin-prefix.js';
 
 /**
@@ -124,6 +126,42 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
   let cssPrefix = 'l';
   let colorSchemeCfg: ColorSchemeOptions = {};
 
+  /**
+   * Rewrites the two literal initialisers in `luxen-ui/dist/registry.js`
+   * (`let _elementPrefix = 'l'`, `let _cssPrefix = 'l'`) so the configured
+   * prefixes are baked in at build time — no runtime `setPrefix()` call
+   * needed in the consumer's entry point.
+   *
+   * `setPrefix()` remains exported for advanced cases (tests, dynamic
+   * switching), but ordinary consumers don't need to call it.
+   *
+   * Returns `null` when `id` is not a module it rewrites, or nothing changes.
+   * Both `transform` and the dependency optimizer (see `config`) run it.
+   */
+  function bake(code: string, id: string): string | null {
+    let out = code;
+
+    if (isLuxenRegistry(id)) {
+      if (elementPrefix !== 'l') {
+        out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
+      }
+      if (cssPrefix !== 'l') {
+        out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
+      }
+    } else if (isLuxenColorScheme(id)) {
+      // Same trick for the color-scheme store: rewrite the two literal
+      // initialisers in `color-scheme.js` so a project's `luxen.config.mjs`
+      // defaults are baked in. `configure()` remains the runtime path.
+      const { storageKey, apply } = colorSchemeCfg;
+      if (storageKey !== undefined) {
+        out = bakeInitialiser(out, '_storageKey', "'luxen-color-scheme'", storageKey);
+      }
+      if (apply !== undefined) out = bakeInitialiser(out, '_apply', 'false', apply);
+    }
+
+    return out === code ? null : out;
+  }
+
   return {
     name: 'luxen',
 
@@ -143,55 +181,112 @@ export default function luxen(options: LuxenOptions = {}): Plugin {
         syncTypesFile(elementPrefix, cfg);
       }
 
-      if (elementPrefix === 'l' && cssPrefix === 'l') return;
-      return {
-        css: {
+      const config: UserConfig = {};
+
+      if (elementPrefix !== 'l' || cssPrefix !== 'l') {
+        config.css = {
           postcss: {
             plugins: [postcssPrefix({ elementPrefix, cssPrefix })],
           },
-        },
-      };
+        };
+      }
+
+      // Everything `bake` writes that differs from what the package ships.
+      const baked: Record<string, unknown> = {};
+      if (elementPrefix !== 'l') baked.elementPrefix = elementPrefix;
+      if (cssPrefix !== 'l') baked.cssPrefix = cssPrefix;
+      if (Object.keys(colorSchemeCfg).length > 0) baked.colorScheme = colorSchemeCfg;
+
+      // In `vite dev`, a `luxen-ui` installed from npm is pre-bundled into
+      // `.vite/deps`, and Vite never runs `transform` over a pre-bundled
+      // dependency: without this, dev would serve the defaults while the build
+      // bakes the configuration in.
+      if (Object.keys(baked).length > 0) {
+        config.optimizeDeps = bakeInOptimizer(bake, usesRolldown(this), hashOf(baked));
+      }
+
+      return config;
     },
 
-    /**
-     * Rewrites the two literal initialisers in `luxen-ui/dist/registry.js`
-     * (`let _elementPrefix = 'l'`, `let _cssPrefix = 'l'`) so the configured
-     * prefixes are baked in at build time — no runtime `setPrefix()` call
-     * needed in the consumer's entry point.
-     *
-     * `setPrefix()` remains exported for advanced cases (tests, dynamic
-     * switching), but ordinary consumers don't need to call it.
-     */
     transform(code, id) {
-      if (isLuxenRegistry(id)) {
-        if (elementPrefix === 'l' && cssPrefix === 'l') return null;
-        let out = code;
-        if (elementPrefix !== 'l') {
-          out = out.replace(/_elementPrefix = 'l';/g, `_elementPrefix = '${elementPrefix}';`);
-        }
-        if (cssPrefix !== 'l') {
-          out = out.replace(/_cssPrefix = 'l';/g, `_cssPrefix = '${cssPrefix}';`);
-        }
-        return out === code ? null : { code: out, map: null };
-      }
-
-      // Same trick for the color-scheme store: rewrite the two literal
-      // initialisers in `color-scheme.js` so a project's `luxen.config.mjs`
-      // defaults are baked in. `configure()` remains the runtime path.
-      if (isLuxenColorScheme(id)) {
-        const { storageKey, apply } = colorSchemeCfg;
-        if (storageKey === undefined && apply === undefined) return null;
-        let out = code;
-        if (storageKey !== undefined) {
-          out = bakeInitialiser(out, '_storageKey', "'luxen-color-scheme'", storageKey);
-        }
-        if (apply !== undefined) out = bakeInitialiser(out, '_apply', 'false', apply);
-        return out === code ? null : { code: out, map: null };
-      }
-
-      return null;
+      const out = bake(code, id);
+      return out === null ? null : { code: out, map: null };
     },
   };
+}
+
+/** Every module of the package: `bake` decides which ones it rewrites. */
+const LUXEN_MODULE = /[\\/]luxen-ui[\\/]/;
+
+/**
+ * Dependency-optimizer options that run `bake` over `luxen-ui` while Vite
+ * pre-bundles it: through Rolldown on Vite 8+, through esbuild on Vite 5–7.
+ *
+ * `key` goes into the optimizer plugin's name on purpose. Vite keys its
+ * `.vite/deps` cache on the names of the optimizer plugins, not on what they
+ * do: with a fixed name, a project that edits `luxen.config.mjs` and restarts
+ * would keep being served the previously baked values until it cleared the
+ * cache by hand.
+ */
+function bakeInOptimizer(
+  bake: (code: string, id: string) => string | null,
+  rolldown: boolean,
+  key: string,
+): UserConfig['optimizeDeps'] {
+  const name = `luxen:bake-deps-${key}`;
+
+  if (rolldown) {
+    return {
+      rolldownOptions: {
+        plugins: [
+          {
+            name,
+            transform: {
+              filter: { id: LUXEN_MODULE },
+              handler(code, id) {
+                const out = bake(code, id);
+                return out === null ? null : { code: out, map: null };
+              },
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  // Vite 8 still reads `esbuildOptions.plugins`, but warns that it is
+  // deprecated: only older majors get here.
+  return {
+    esbuildOptions: {
+      plugins: [
+        {
+          name,
+          setup(build) {
+            build.onLoad({ filter: LUXEN_MODULE }, async ({ path }) => {
+              const out = bake(await readFile(path, 'utf8'), path);
+              if (out === null) return undefined;
+              return { contents: out, loader: path.endsWith('.ts') ? 'ts' : 'js' };
+            });
+          },
+        },
+      ],
+    },
+  };
+}
+
+/**
+ * Whether the running Vite pre-bundles with Rolldown (Vite 8+, and the
+ * `rolldown-vite` package) rather than esbuild. Vite 8 says so in the `config`
+ * hook's `this.meta`; Vite 7's `meta` has no `rolldownVersion`, and Vite 5 and
+ * 6 call the hook with no `this` at all.
+ */
+function usesRolldown(context: unknown): boolean {
+  const meta = (context as { meta?: { rolldownVersion?: unknown } } | undefined)?.meta;
+  return typeof meta?.rolldownVersion === 'string';
+}
+
+function hashOf(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 8);
 }
 
 /**
