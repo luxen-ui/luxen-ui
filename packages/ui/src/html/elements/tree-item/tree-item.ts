@@ -90,6 +90,8 @@ export class TreeItem extends LuxenElement {
 
   private _internals = this.attachInternals();
   private _childObserver?: MutationObserver;
+  /** Whether the first `updated()` has run; `expand`/`collapse` wait for it. */
+  private _rendered = false;
 
   /** Whether the item is expanded. */
   @property({ type: Boolean, reflect: true })
@@ -231,10 +233,15 @@ export class TreeItem extends LuxenElement {
       // fires on the first render of an item authored `expanded lazy`: it starts
       // open and empty, so it must still fetch its children.
       if (this.expanded && this.lazy) this.dispatchEvent(new LazyLoadEvent());
-      // expand/collapse report a transition. On the first render Lit lists
-      // `expanded` with an `undefined` old value: that is the initial state, not
-      // a change, so it fires neither.
-      if (changed.get('expanded') !== undefined) {
+      // expand/collapse report a transition, so neither fires on the first
+      // render: Lit lists `expanded` there with its initial value, which is not a
+      // change. Compare open/closed rather than raw values: a framework binding
+      // can write `undefined` (React 19: `expanded={open || undefined}`), and
+      // `undefined` → `true` is a real open while `false` ↔ `undefined` is not.
+      const wasOpen = Boolean(changed.get('expanded'));
+      // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- typed boolean, but a binding can write `undefined` at runtime.
+      const isOpen = Boolean(this.expanded);
+      if (this._rendered && wasOpen !== isOpen) {
         this.dispatchEvent(this.expanded ? new ExpandEvent() : new CollapseEvent());
       }
     }
@@ -250,11 +257,16 @@ export class TreeItem extends LuxenElement {
     if (changed.has('loading')) {
       this._aria('ariaBusy', 'aria-busy', this.loading ? 'true' : null);
     }
+
+    this._rendered = true;
   }
 
   /** Leaf items omit `aria-expanded` entirely; branches reflect their state. */
   private _reflectExpanded() {
-    this._aria('ariaExpanded', 'aria-expanded', this.isLeaf() ? null : String(this.expanded));
+    // Not `String(this.expanded)`: a binding that writes `undefined` would
+    // expose the invalid `aria-expanded="undefined"`.
+    const state = this.expanded ? 'true' : 'false';
+    this._aria('ariaExpanded', 'aria-expanded', this.isLeaf() ? null : state);
   }
 
   /**
