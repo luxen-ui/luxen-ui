@@ -21,8 +21,13 @@ import { waitForEvent } from './support/events.js';
 // establish focus on a branch without expanding it.
 
 let host: HTMLElement;
+let stopRecording: (() => void) | undefined;
 
-afterEach(() => host?.remove());
+afterEach(() => {
+  stopRecording?.();
+  stopRecording = undefined;
+  host?.remove();
+});
 
 async function mount(html: string): Promise<HTMLElement> {
   host = document.createElement('div');
@@ -62,6 +67,23 @@ async function clickExpandButton(id: string) {
   const btn = item(id).shadowRoot!.querySelector<HTMLElement>('[part="expand-button"]')!;
   await userEvent.click(btn);
   await settle();
+}
+
+/**
+ * Record every `expand`/`collapse`/`lazy-load` dispatched anywhere in the
+ * document as `type:id`. A capture listener on `document` sees the events
+ * whether or not they bubble, so when started before `mount()` it also catches
+ * the ones fired during the items' first render. Stopped in `afterEach`.
+ */
+function recordToggleEvents(): string[] {
+  const events: string[] = [];
+  const names = ['expand', 'collapse', 'lazy-load'] as const;
+  const record = (e: Event) => events.push(`${e.type}:${(e.target as HTMLElement).id}`);
+  for (const name of names) document.addEventListener(name, record, true);
+  stopRecording = () => {
+    for (const name of names) document.removeEventListener(name, record, true);
+  };
+  return events;
 }
 
 const FILES = `
@@ -524,65 +546,95 @@ describe('A disabled item', () => {
 // expand / collapse events
 // ---------------------------------------------------------------------------
 
-/**
- * Record every `expand`/`collapse` (and `lazy-load`) dispatched anywhere in the
- * document, from before the tree mounts. A capture listener on `document` sees
- * the events whether or not they bubble, so it catches the ones fired during the
- * items' first render.
- */
-function recordToggleEvents() {
-  const events: string[] = [];
-  const names = ['expand', 'collapse', 'lazy-load'] as const;
-  const record = (e: Event) => events.push(`${e.type}:${(e.target as HTMLElement).id}`);
-  for (const name of names) document.addEventListener(name, record, true);
-  return {
-    events,
-    stop: () => {
-      for (const name of names) document.removeEventListener(name, record, true);
-    },
-  };
-}
-
 describe('A consumer listening for expand and collapse', () => {
   it('hears nothing when the tree first renders', async () => {
-    const log = recordToggleEvents();
-    try {
-      await mount(FILES);
-      expect(log.events).toEqual([]);
-    } finally {
-      log.stop();
-    }
+    const events = recordToggleEvents();
+    await mount(FILES);
+    expect(events).toEqual([]);
   });
 
   it('hears nothing when an item is authored open', async () => {
-    const log = recordToggleEvents();
-    try {
-      await mount(`
-        <l-tree aria-label="Files">
-          <l-tree-item id="docs" expanded>Documents
-            <l-tree-item id="a">a.txt</l-tree-item>
-          </l-tree-item>
-        </l-tree>
-      `);
-      expect(present(treeitem('Documents', { expanded: true }))).toBe(true);
-      expect(log.events).toEqual([]);
-    } finally {
-      log.stop();
-    }
+    const events = recordToggleEvents();
+    await mount(`
+      <l-tree aria-label="Files">
+        <l-tree-item id="docs" expanded>Documents
+          <l-tree-item id="a">a.txt</l-tree-item>
+        </l-tree-item>
+      </l-tree>
+    `);
+    expect(present(treeitem('Documents', { expanded: true }))).toBe(true);
+    expect(events).toEqual([]);
   });
 
   it('hears exactly one expand, then one collapse, when the user toggles a branch', async () => {
     await mount(FILES);
-    const log = recordToggleEvents();
-    try {
-      await clickExpandButton('docs');
-      expect(log.events).toEqual(['expand:docs']);
+    const events = recordToggleEvents();
 
-      await clickExpandButton('docs');
-      expect(log.events).toEqual(['expand:docs', 'collapse:docs']);
-    } finally {
-      log.stop();
-    }
+    await clickExpandButton('docs');
+    expect(events).toEqual(['expand:docs']);
+
+    await clickExpandButton('docs');
+    expect(events).toEqual(['expand:docs', 'collapse:docs']);
+  });
+
+  it('hears expand and collapse when a keyboard user opens and closes a branch', async () => {
+    await mount(FILES);
+    // Focus docs without expanding it (Downloads → ArrowUp), then record.
+    await userEvent.click(treeitem('Downloads'));
+    await settle();
+    await userEvent.keyboard('{ArrowUp}');
+    await settle();
+    const events = recordToggleEvents();
+
+    await userEvent.keyboard('{ArrowRight}');
+    await settle();
+    expect(events).toEqual(['expand:docs']);
+
+    await userEvent.keyboard('{ArrowLeft}');
+    await settle();
+    expect(events).toEqual(['expand:docs', 'collapse:docs']);
+  });
+
+  it('hears one event per branch that changes from expandAll() and collapseAll()', async () => {
+    await mount(FILES);
+    const tree = host.querySelector<Tree>('l-tree')!;
+    const events = recordToggleEvents();
+
+    tree.expandAll();
+    await settle();
+    // Document order: each item updates in the order expandAll() wrote it.
+    expect(events).toEqual(['expand:docs', 'expand:photos', 'expand:invoices']);
+
+    // collapseAll() also writes `false` to the leaves, which were never open:
+    // they stay silent.
+    events.length = 0;
+    tree.collapseAll();
+    await settle();
+    expect(events).toEqual(['collapse:docs', 'collapse:photos', 'collapse:invoices']);
+  });
+
+  it('hears only real opens and closes when a binding writes undefined', async () => {
+    await mount(FILES);
+    const events = recordToggleEvents();
+    // A framework binding such as React 19's `expanded={open || undefined}`
+    // writes the property directly, `undefined` included.
+    const bind = async (value: boolean | undefined) => {
+      item('docs').expanded = value as boolean;
+      await settle();
+    };
+
+    await bind(undefined); // closed → still closed
+    expect(events).toEqual([]);
+    expect(present(treeitem('Documents', { expanded: false }))).toBe(true);
+
+    await bind(true);
+    expect(events).toEqual(['expand:docs']);
+
+    await bind(undefined);
+    expect(events).toEqual(['expand:docs', 'collapse:docs']);
+
+    await bind(true); // reopening from `undefined` is a real open
+    expect(events).toEqual(['expand:docs', 'collapse:docs', 'expand:docs']);
   });
 });
 
@@ -620,17 +672,13 @@ describe('A branch that loads its children on demand', () => {
   });
 
   it('asks for its children on first render when it is authored open', async () => {
-    const log = recordToggleEvents();
-    try {
-      await mount(
-        `<l-tree aria-label="F"><l-tree-item id="lazy" lazy expanded>Remote</l-tree-item></l-tree>`,
-      );
-      // The branch starts open with nothing in it: it must still request its
-      // children, but it did not open — so no `expand`.
-      expect(log.events).toEqual(['lazy-load:lazy']);
-    } finally {
-      log.stop();
-    }
+    const events = recordToggleEvents();
+    await mount(
+      `<l-tree aria-label="F"><l-tree-item id="lazy" lazy expanded>Remote</l-tree-item></l-tree>`,
+    );
+    // The branch starts open with nothing in it: it must still request its
+    // children, but it did not open — so no `expand`.
+    expect(events).toEqual(['lazy-load:lazy']);
   });
 
   it('shows a busy state while its children load', async () => {
