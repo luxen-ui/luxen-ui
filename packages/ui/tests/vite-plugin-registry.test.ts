@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { transformWithOxc } from 'vite';
 import { describe, expect, it } from 'vite-plus/test';
 import luxen from '../vite-plugin.js';
 
@@ -57,6 +58,17 @@ describe('A project renaming the prefixes in luxen.config', () => {
       expect(result?.code).toContain('let _cssPrefix = "p";');
     });
   }
+
+  it("bakes the source as Vite's own TypeScript transform hands it over", async () => {
+    // A plugin's `transform` runs after Vite's, which prints `'l'` as `"l"`:
+    // a project pointing Vite at the source only ever shows the plugin that.
+    const id = '/work/luxen/packages/ui/src/html/registry.ts';
+    const { code } = await transformWithOxc(SOURCE, id);
+    const result = await transformWith({ elementPrefix: 'pulse', cssPrefix: 'p' }, id, code);
+
+    expect(result?.code).toContain('let _elementPrefix = "pulse";');
+    expect(result?.code).toContain('let _cssPrefix = "p";');
+  });
 
   it('writes each value as a string literal, whatever characters it holds', async () => {
     // A quote would end a hand-quoted literal early, and `$&` or `$'` would be

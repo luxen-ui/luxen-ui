@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { transformWithOxc } from 'vite';
 import { describe, expect, it } from 'vite-plus/test';
 import luxen from '../vite-plugin.js';
 
@@ -87,6 +88,21 @@ describe('A project configuring the color scheme in luxen.config', () => {
     );
 
     expect(result).toBeNull();
+  });
+
+  it("bakes the source as Vite's own TypeScript transform hands it over", async () => {
+    // A plugin's `transform` runs after Vite's, which drops the annotation and
+    // prints `'luxen-color-scheme'` with double quotes.
+    const id = '/work/luxen/packages/ui/src/html/color-scheme.ts';
+    const { code } = await transformWithOxc(SOURCE, id);
+    const result = await transformWith(
+      { colorScheme: { storageKey: 'acme-scheme', apply: 'root' } },
+      code,
+      id,
+    );
+
+    expect(result?.code).toContain('let _storageKey = "acme-scheme";');
+    expect(result?.code).toContain('let _apply = "root";');
   });
 
   it('bakes the store from a linked install, whatever its directory is called', async () => {

@@ -173,12 +173,14 @@ async function esbuildPlugin(options: LuxenOptions, context?: unknown) {
   }>;
   const [plugin] = plugins;
   let onLoad: OnLoad | undefined;
+  let onLoadOptions: { filter: RegExp; namespace?: string } | undefined;
   plugin?.setup({
-    onLoad: (_options: { filter: RegExp }, callback: OnLoad) => {
+    onLoad: (loadOptions: { filter: RegExp; namespace?: string }, callback: OnLoad) => {
+      onLoadOptions = loadOptions;
       onLoad = callback;
     },
   });
-  return { name: plugin?.name, onLoad, rolldown: optimizer?.rolldownOptions };
+  return { name: plugin?.name, onLoad, onLoadOptions, rolldown: optimizer?.rolldownOptions };
 }
 
 describe('The optimizer the plugin configures', () => {
@@ -220,6 +222,10 @@ describe('The optimizer the plugin configures', () => {
 
       // Untouched modules fall through to esbuild's own loader.
       expect(await plugin.onLoad?.({ path: moduleOf('color-scheme.ts') })).toBeUndefined();
+
+      // It reads the file at `path`: a virtual module, in another namespace,
+      // has none to read.
+      expect(plugin.onLoadOptions?.namespace).toBe('file');
     });
   }
 
