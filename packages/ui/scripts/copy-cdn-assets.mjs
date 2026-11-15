@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { copyFile, cp, mkdir, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { globSync } from 'tinyglobby';
@@ -12,18 +13,18 @@ async function exists(path) {
 }
 
 // The CDN modules mirror `dist/`'s layout (src/html/** → **), so the type
-// declarations `tsc` emits there describe them as-is. The build-time plugins
-// (`tsconfig.tooling.json`) and the metadata-only `*.meta.ts` classes also land
-// in dist/ but have no CDN module.
-const declarations = globSync('**/*.d.ts{,.map}', {
-  cwd: 'dist',
-  ignore: ['vite-plugin.d.ts', 'postcss-plugin-prefix.d.ts', '**/*.meta.d.ts{,.map}'],
-}).map((file) => ({
-  from: join('dist', file),
-  to: join('cdn', file),
-  kind: 'file',
-  quiet: true,
-}));
+// declarations `tsc` emits there describe them as-is. Copy one only when the
+// CDN build emitted its module: dist/ also holds declarations for files that
+// have none (the build-time plugins, the metadata-only `*.meta.ts` classes),
+// and `vite.config.ts` alone decides which those are.
+const declarations = globSync('**/*.d.ts{,.map}', { cwd: 'dist' })
+  .filter((file) => existsSync(join('cdn', file.replace(/\.d\.ts(\.map)?$/, '.js'))))
+  .map((file) => ({
+    from: join('dist', file),
+    to: join('cdn', file),
+    kind: 'file',
+    quiet: true,
+  }));
 
 const tasks = [
   { from: 'dist/css', to: 'cdn/styles', kind: 'dir' },
