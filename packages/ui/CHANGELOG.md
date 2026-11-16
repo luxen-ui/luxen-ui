@@ -1,5 +1,58 @@
 # luxen-ui
 
+## 0.28.0
+
+### Minor Changes
+
+- ef44c47: New `--l-icon-*` design tokens define the system icons every element draws: `--l-icon-chevron-down`, `--l-icon-chevron-right`, `--l-icon-check`, `--l-icon-close`, `--l-icon-clear`, `--l-icon-increment` and `--l-icon-decrement`. Override one on `:root` to re-skin it library-wide, shadow-DOM elements included — for instance to match your own icon set:
+  
+  ```css
+  :root {
+    --l-icon-chevron-down: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 9h12l-6 7z'/></svg>");
+  }
+  ```
+  
+  The Design Tokens page shows which element draws which token. The per-element properties (`--caret-icon` on `.l-select`, `--chevron-icon` and `--clear-icon` on `l-select` and `l-combobox`) still work and now default to these tokens.
+  
+  All elements now draw the same stroked icon set. The `l-disclosure` markers, the native `.l-select` caret and the `.l-close` cross switch from filled icons to stroked ones. The check marks of `l-select` and `l-combobox` are slightly thinner. The search clear of `.l-input` draws the same plain cross as `l-select` and `l-combobox`, instead of a circled one. The `l-dropdown-item` check and submenu chevron and the `l-tree-item` chevrons are redrawn the same way. The collapsed `l-tree-item` chevron now points to the inline end in right-to-left layouts.
+  
+  `l-input-stepper` draws its buttons from `--l-icon-decrement` and `--l-icon-increment` too: they show at once, with no request to the Iconify API, and no longer stay empty when `l-icon` is not imported. **Breaking:** the `decrement-icon` and `increment-icon` attributes are removed. Set the `--decrement-icon` and `--increment-icon` CSS custom properties instead, with a `url()`:
+  
+  ```css
+  l-input-stepper {
+    --decrement-icon: url('/icons/arrow-down.svg');
+  }
+  ```
+- e401f24: New `luxen-ui/sound` (experimental): short interface sounds, off until the visitor turns them on. Nothing plays and nothing is stored until the visitor's own control calls `sound.enable()` or `sound.toggle()`. No option ships sound on, and `prefers-reduced-motion` does not overrule a visitor who chose it. Once on, seven synthesized sounds (`tap`, `toggle`, `select`, `open`, `close`, `notify`, `error`) follow the events that Luxen elements and native `<dialog>`, `<details>`, popovers and form controls already fire: one sound per interaction, and only in answer to the visitor, except the `notify` of a toast. Bare clicks on plain buttons and links stay silent unless you turn on `clicks`.
+  
+  ```js
+  import { sound } from 'luxen-ui/sound';
+  
+  soundButton.addEventListener('click', () => sound.toggle());
+  sound.subscribe((on) => soundButton.setAttribute('aria-pressed', String(on)));
+  ```
+  
+  `sound.preview(name)` plays one sound while sound is off, for a "listen" button next to that control. `data-sound="none"` silences an element and everything inside it, and `data-sound="<name>"` sets the sound of one control. Set `storageKey`, `volume`, `events`, `clicks` and your own `presets` (recipes for any of the seven sounds) under `sound` in `luxen.config.mjs`: the Vite plugin bakes them in and checks every recipe when the build starts. `sound.configure()` takes the same fields at runtime, for sounds that follow a theme or for pages that load Luxen from the CDN. An application that never imports `luxen-ui/sound` carries none of it. See the new Foundations › Sound page; generated skills include it.
+- cb44808: New `luxen-ui/css/tokens/components` entry with every component token (`--l-button-*`, `--l-popover-*`, `--l-menu-item-*`, `--l-tooltip-*`, `--l-form-control-*`). `luxen-ui/css/tokens` is now exactly `tokens/primitives` + `tokens/aliases` + `tokens/components`, so you can split it without losing tokens. **Breaking:** `luxen-ui/css/tokens/forms` is removed; import `luxen-ui/css/tokens/components` instead (or keep `luxen-ui/css/tokens`).
+
+### Patch Changes
+
+- aa87cfd: `<l-avatar>`, `<l-spinner>` and `<l-color-scheme-icon>` now take their final size before their script loads, so the text next to them no longer jumps sideways when they upgrade. The box follows the avatar's `size` attribute and any `--size` set on the element (inline, from a class or a utility), and ignores a `--size` inherited from a parent, as the upgraded element does. Before upgrade, an avatar with a `name` or a `src` no longer shows its children, and slotted text sits centred.
+  
+  The `hidden` attribute now hides every Shadow-DOM element (`<l-dialog>`, `<l-select>`, `<l-tag>`, `<l-tree>`…), before and after it upgrades. It used to be ignored once the element had upgraded, because the element's own `display` overrode the browser's, and a hidden `<l-dropdown>` showed its trigger while its script loaded. `hidden="until-found"` keeps the browser's behaviour: the element keeps its box, and find-in-page can reveal it.
+- 15622b0: The per-module CDN files under `luxen-ui/cdn/` now export what their source exports. The build dropped every export that no other CDN file imported, so `import { toast } from 'https://cdn.jsdelivr.net/npm/luxen-ui/cdn/elements/toast/index.js'` failed to load, and `cdn/index.js` exported nothing at all: `setPrefix`, `getPrefix`, `define`, `colorScheme`, the event classes (`ShowEvent`, `HideEvent`…) and the element classes from each `elements/<name>/index.js` were all missing. Pages that only load a file to register its element were not affected.
+- 9b38ec5: `npx luxen-ui import design-tokens` now tells you to load the copied file right after `luxen-ui/css/preset`. The previous instructions swapped the preset for `base` + `tokens/primitives` + the copy. That set dropped the component tokens, so buttons, popovers, menus, tooltips and form controls lost their `--l-button-*`, `--l-popover-*`, `--l-menu-item-*`, `--l-tooltip-*` and `--l-form-control-*` values. If you followed the old steps, put `@import 'luxen-ui/css/preset';` back above your copy. Both files declare the aliases in `@layer theme`, so your copy still wins. Deleting an alias from your copy now keeps the preset's value; set it to `initial` to unset it. The `npx luxen-ui import preset` steps no longer suggest an atomic set that drops the component tokens either.
+- 48b927a: An `l-icon` given `display: block` or `inline-block` (a Tailwind `block` or `hidden md:block`, for instance) no longer sits a few pixels too high in a centred row: its glyph stays centred like any other icon.
+  
+  The icon is now a box the size of its glyph instead of `display: contents`. Margin, padding, border, background, `vertical-align` and sizing set on `l-icon` now apply to it, where they were ignored before: check icons that carry a margin class (`mr-2`) next to a `gap`, as the spacing adds up. To centre an icon in a larger box, make it `flex` (`flex size-6`): a `block` one is centred vertically only. Don't set `inline` or `contents` on an icon inside running text: it breaks the line.
+- 898e477: Generated skills now load example images and previews from `https://luxen-ui.com` instead of root-relative paths that only resolved on the docs site, so carousel and sticky bar examples render outside it.
+- 898d7fd: `l-tree-item` no longer fires `collapse` (or `expand`, for an item authored `expanded`) when it first renders. The two events now fire only when an item actually opens or closes, so listeners that log, persist or react to them no longer get one event per item on page load. An item authored `expanded lazy` still fires `lazy-load` on first render, so its children are still fetched.
+  
+  A framework binding that sets `expanded` to `undefined` (React 19's `expanded={open || undefined}`, for instance) is now treated as closed: setting it on a closed item no longer fires `collapse`, reopening from it fires `expand`, and the item reports `aria-expanded="false"` instead of the invalid `"undefined"`.
+- 2cd0a21: `luxen-ui/vite-plugin` now loads in a plain Vite or TanStack Start project. It shipped as TypeScript source, which Node refuses to run from `node_modules`, so `vite build` stopped with `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING` and a custom prefix in `luxen.config.js` could not be applied. The plugin now ships as JavaScript with its own type declarations, typed against `vite` instead of `vite-plus`, so type-checking a `vite.config.ts` that uses it no longer fails either.
+- b285be1: Editing `luxen.config.mjs` (or `luxen.config.js`) while `vite dev` runs now restarts the dev server, the way editing `vite.config` does, so a renamed prefix or a new color-scheme setting takes effect without stopping and starting the server by hand.
+- c4b6136: `luxen.config.mjs` now applies in `vite dev` as it does in `vite build`. With `luxen-ui` installed from npm, the dev server ignored it: elements kept the `l-` prefix while the CSS used the configured one, and a custom `colorScheme.storageKey` or `apply` had no effect. The configuration now also applies, in dev and build alike, when `luxen-ui` is installed under an npm alias (`"my-ui": "npm:luxen-ui@…"`), linked from a workspace, `npm link` or a `file:` dependency, or when a project points Vite at its TypeScript source; all of these used to keep every default. A prefix is now written exactly as configured, whatever characters it holds.
+
 ## 0.27.0
 
 ### Minor Changes
